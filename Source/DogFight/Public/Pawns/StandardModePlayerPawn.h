@@ -20,6 +20,9 @@ private:
 	UPROPERTY(Category=CameraActor, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UStandardModeCameraComponent* StandardModeCameraComponent;
 
+	void OnDraggingMovementStart();
+	void OnDraggingMovementStop();
+
 public:
 	/* Return a pointer to the StandardModeCameraComponent attached to this pawn. */
 	UStandardModeCameraComponent* GetStandardModeCameraComponent() const;

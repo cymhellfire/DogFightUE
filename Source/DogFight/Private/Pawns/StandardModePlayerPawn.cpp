@@ -19,8 +19,23 @@ void AStandardModePlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerI
 {
 	check(PlayerInputComponent);
 
+	PlayerInputComponent->BindAction("CameraDraggingMove", EInputEvent::IE_Pressed, this, &AStandardModePlayerPawn::OnDraggingMovementStart);
+	PlayerInputComponent->BindAction("CameraDraggingMove", EInputEvent::IE_Released, this, &AStandardModePlayerPawn::OnDraggingMovementStop);
+
 	PlayerInputComponent->BindAxis("MoveForward", this, &AStandardModePlayerPawn::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AStandardModePlayerPawn::MoveRight);
+}
+
+void AStandardModePlayerPawn::OnDraggingMovementStart()
+{
+	check(StandardModeCameraComponent != nullptr);
+	StandardModeCameraComponent->StartDraggingMovement();
+}
+
+void AStandardModePlayerPawn::OnDraggingMovementStop()
+{
+	check(StandardModeCameraComponent != nullptr);
+	StandardModeCameraComponent->StopDraggingMovement();
 }
 
 UStandardModeCameraComponent* AStandardModePlayerPawn::GetStandardModeCameraComponent() const
