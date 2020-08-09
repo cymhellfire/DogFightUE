@@ -19,12 +19,15 @@ public:
 
 	void UpdateCameraMovement(const APlayerController* InPlayerController);
 
+	/* The angle of camera observes game scene. */
 	UPROPERTY(Category=Camera, EditAnywhere, BlueprintReadWrite)
 	FRotator CameraAngle;
 
+	/* How far the camera from the ground. */
 	UPROPERTY(Category=Camera, EditAnywhere, BlueprintReadWrite)
 	float CameraDistance;
 
+	/* Camera begin scroll when distance between cursor and screen edge smaller than this value. */
 	UPROPERTY(Category=Camera, EditAnywhere, BlueprintReadWrite)
 	float CameraActiveBorder;
 
@@ -36,6 +39,7 @@ public:
 	UPROPERTY(Category=Scroll, EditAnywhere, BlueprintReadWrite)
 	float MaxScrollSpeedDragging;
 
+	/* Maximum scroll speed during dragging moving. */
 	UPROPERTY(Category=Scroll, EditAnywhere, BlueprintReadWrite)
 	float MaxSpeedDistanceWhenDragging;
 

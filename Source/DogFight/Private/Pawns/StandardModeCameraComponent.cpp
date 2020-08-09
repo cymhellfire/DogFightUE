@@ -69,13 +69,11 @@ void UStandardModeCameraComponent::UpdateCameraMovement(const APlayerController*
 			if (MouseX >= ViewLeft && MouseX <= (ViewLeft + CameraActiveBorder))
 			{
 				const float Delta = 1.0f - float(MouseX - ViewLeft) / CameraActiveBorder;
-				UE_LOG(LogDogFight, Display, TEXT("Current Delta = %f"), Delta);
 				PlayerPawn->MoveRight(-DeltaScrollSpeed * Delta);
 			}
 			else if (MouseX >= (ViewRight - CameraActiveBorder) && MouseX <= ViewRight)
 			{
 				const float Delta = float(MouseX - (ViewRight - CameraActiveBorder)) / CameraActiveBorder;
-				UE_LOG(LogDogFight, Display, TEXT("Current Delta = %f"), Delta);
 				PlayerPawn->MoveRight(DeltaScrollSpeed * Delta);
 			}
 
