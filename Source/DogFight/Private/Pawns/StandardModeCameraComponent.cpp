@@ -3,6 +3,8 @@
 
 #include "StandardModeCameraComponent.h"
 
+#include "MathHelper.h"
+#include "StandardGameState.h"
 #include "StandardModePlayerPawn.h"
 #include "DogFight/DogFight.h"
 
@@ -16,6 +18,8 @@ UStandardModeCameraComponent::UStandardModeCameraComponent(const FObjectInitiali
 	BaseScrollSpeed = 50.f;
 	MaxScrollSpeedDragging = 60.f;
 	MaxSpeedDistanceWhenDragging = 100.f;
+	MiniMapBoundsLimit = 0.8f;
+	bShouldClampCamera = 1;
 }
 
 void UStandardModeCameraComponent::GetCameraView(float DeltaTime, FMinimalViewInfo& DesiredView)
@@ -92,6 +96,19 @@ void UStandardModeCameraComponent::UpdateCameraMovement(const APlayerController*
 #endif
 }
 
+void UStandardModeCameraComponent::ClampCameraLocation(const APlayerController* InPlayerController,
+	FVector& OutCameraLocation)
+{
+	if (bShouldClampCamera)
+	{
+		UpdateCameraBounds(InPlayerController);
+		if (CameraMovementBounds.GetSize() != FVector::ZeroVector)
+		{
+			OutCameraLocation = CameraMovementBounds.GetClosestPointTo(OutCameraLocation);
+		}
+	}
+}
+
 void UStandardModeCameraComponent::StartDraggingMovement()
 {
 	bMouseDragging = true;
@@ -121,4 +138,60 @@ APlayerController* UStandardModeCameraComponent::GetPlayerController() const
 		Controller = Cast<APlayerController>(Owner->GetController());
 	}
 	return Controller;
+}
+
+
+
+void UStandardModeCameraComponent::UpdateCameraBounds(const APlayerController* InPlayerController)
+{
+	ULocalPlayer* const LocalPlayer = Cast<ULocalPlayer>(InPlayerController->Player);
+	if (LocalPlayer == nullptr || LocalPlayer->ViewportClient == nullptr)
+	{
+		return;
+	}
+
+	FVector2D CurrentViewportSize;
+	LocalPlayer->ViewportClient->GetViewportSize(CurrentViewportSize);
+
+	// Calculate frustum edge direction, from bottom left corner
+	if (CameraMovementBounds.GetSize() == FVector::ZeroVector || CurrentViewportSize != CameraMovementViewportSize)
+	{
+		const FVector FrustumRay2DDir = GetComponentRotation().Vector();
+		const FVector FrustumRay2DRight = FVector::CrossProduct(FrustumRay2DDir, FVector::UpVector);
+		const FQuat RotQuat(FrustumRay2DRight, FMath::DegreesToRadians(90.f - InPlayerController->PlayerCameraManager->GetFOVAngle() * 0.5f));
+		const FVector FrustumRayDir = RotQuat.RotateVector(FrustumRay2DDir);
+
+		// Collect 3 world bounds' points and matching frustum rays (bottom left, top left, bottom right)
+		AStandardGameState const* const MyGameState = GetWorld()->GetGameState<AStandardGameState>();
+		if (MyGameState != nullptr)
+		{
+			FBox const& WorldBounds = MyGameState->WorldBounds;
+			if (WorldBounds.GetSize() != FVector::ZeroVector)
+			{
+				const FVector WorldBoundPoints[] = {
+					FVector(WorldBounds.Min.X, WorldBounds.Min.Y, WorldBounds.Max.Z),
+					FVector(WorldBounds.Min.X, WorldBounds.Max.Y, WorldBounds.Max.Z),
+					FVector(WorldBounds.Max.X, WorldBounds.Min.Y, WorldBounds.Max.Z)
+				};
+				const FVector FrustumRays[] = {
+					FVector(FrustumRayDir.X, FrustumRayDir.Y, FrustumRayDir.Z),
+					FVector(FrustumRayDir.X, -FrustumRayDir.Y, FrustumRayDir.Z),
+					FVector(-FrustumRayDir.X, FrustumRayDir.Y, FrustumRayDir.Z)
+				};
+
+				// Get camera plane for intersection
+				const FPlane CameraPlane = FPlane(InPlayerController->GetFocalLocation(), FVector::UpVector);
+
+				const FVector CameraPlanePoints[3] = {
+					FMathHelper::IntersectRayWithPlane(WorldBoundPoints[0], FrustumRays[0], CameraPlane) * MiniMapBoundsLimit,
+					FMathHelper::IntersectRayWithPlane(WorldBoundPoints[1], FrustumRays[1], CameraPlane) * MiniMapBoundsLimit,
+					FMathHelper::IntersectRayWithPlane(WorldBoundPoints[2], FrustumRays[2], CameraPlane) * MiniMapBoundsLimit
+				};
+
+				// create new bounds
+				CameraMovementBounds = FBox(CameraPlanePoints, 3);
+				CameraMovementViewportSize = CurrentViewportSize;
+			}
+		}
+	}
 }

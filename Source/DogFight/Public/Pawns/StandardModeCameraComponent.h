@@ -43,6 +43,27 @@ public:
 	UPROPERTY(Category=Scroll, EditAnywhere, BlueprintReadWrite)
 	float MaxSpeedDistanceWhenDragging;
 
+	/* Percentage of minimap where center of camera can be placed. */
+	UPROPERTY(Category=Scroll, EditAnywhere, BlueprintReadWrite)
+	float MiniMapBoundsLimit;
+
+	/* Bounds for camera movement. */
+	FBox CameraMovementBounds;
+
+	/* Viewport size associated with camera bounds. */
+	FVector2D CameraMovementViewportSize;
+
+	UPROPERTY(Category=Scroll, EditAnywhere, BlueprintReadWrite)
+	uint8 bShouldClampCamera : 1;
+
+	/**
+	 * Clamp the camera location with world bounds.
+	 *
+	 * @param	InPlayerController		The player controller relative to this camera.
+	 * @param	OutCameraLocation		Structure to receive the clamped coordinate.
+	 */
+	void ClampCameraLocation(const APlayerController* InPlayerController, FVector& OutCameraLocation);
+
 	/*
 	 * Start mouse dragging movement for camera pawn.
 	 */
@@ -60,4 +81,7 @@ private:
 
 	/* Mouse position when dragging movement activated. */
 	FVector2D MouseStartPosition;
+
+	/* Update the movement bounds of this component. */
+	void UpdateCameraBounds(const APlayerController* InPlayerController);
 };
