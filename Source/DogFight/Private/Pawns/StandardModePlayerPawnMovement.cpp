@@ -27,6 +27,11 @@ void UStandardModePlayerPawnMovement::TickComponent(float DeltaTime, ELevelTick 
 
 	const AStandardModePlayerPawn* PlayerPawn = Cast<AStandardModePlayerPawn>(GetOwner());
 	const AStandardModePlayerController* PC = Cast<AStandardModePlayerController>(PlayerPawn->GetController());
+	if (PC == nullptr)
+	{
+		return;
+	}
+
 	if (PlayerPawn != nullptr)
 	{
 		FVector MyLocation = UpdatedComponent->GetComponentLocation();

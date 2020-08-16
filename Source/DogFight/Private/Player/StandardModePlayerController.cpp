@@ -9,10 +9,12 @@
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "StandardModePlayerCharacter.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
+#include "Net/UnrealNetwork.h"
 
 AStandardModePlayerController::AStandardModePlayerController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	bReplicates = true;
 	bShowMouseCursor = true;
 	bMoveToMouseCursor = false;
 	CharacterPawn = nullptr;
@@ -34,19 +36,7 @@ void AStandardModePlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Spawn character pawn now
-	if (CharacterPawn == nullptr)
-	{
-		if (CharacterPawnClass != nullptr)
-		{
-			CharacterPawn = GetWorld()->SpawnActor<AStandardModePlayerCharacter>(CharacterPawnClass->GetDefaultObject()->GetClass(), RootComponent->GetComponentLocation(), RootComponent->GetComponentRotation());
-			CharacterPawn->SetOwner(this);
-		}
-		else
-		{
-			UE_LOG(LogDogFight, Error, TEXT("No pawn has been specified as character."));
-		}
-	}
+	SpawnCharacterPawn();
 }
 
 void AStandardModePlayerController::SetupInputComponent()
@@ -69,16 +59,22 @@ void AStandardModePlayerController::ProcessPlayerInput(const float DeltaTime, co
 	}
 }
 
+void AStandardModePlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps ) const
+{
+	DOREPLIFETIME(AStandardModePlayerController, CharacterPawnClass);
+	DOREPLIFETIME(AStandardModePlayerController, CharacterPawn);
+}
+
 void AStandardModePlayerController::MoveToMouseCursor()
 {
+	if (CharacterPawn == nullptr)
+		return;
+	
 	if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled())
 	{
-		if (CharacterPawn != nullptr)
+		if (CharacterPawn->GetCursorToWorld() != nullptr)
 		{
-			if (CharacterPawn->GetCursorToWorld() != nullptr)
-			{
-				UAIBlueprintHelperLibrary::SimpleMoveToLocation(CharacterPawn->GetController(), CharacterPawn->GetCursorToWorld()->GetComponentLocation());
-			}
+			UAIBlueprintHelperLibrary::SimpleMoveToLocation(CharacterPawn->GetController(), CharacterPawn->GetCursorToWorld()->GetComponentLocation());
 		}
 	}
 	else
@@ -105,6 +101,39 @@ void AStandardModePlayerController::OnSetDestinationPressed()
 void AStandardModePlayerController::OnSetDestinationReleased()
 {
 	bMoveToMouseCursor = false;
+}
+
+void AStandardModePlayerController::SpawnCharacterPawn_Implementation()
+{
+	// Only do spawn on server side
+	if (GetLocalRole() != ROLE_Authority)
+	{
+		return;
+	}
+
+	UE_LOG(LogDogFight, Display, TEXT("%s Request Spawn Character Pawn."), *GetName());
+	
+	// Spawn character pawn now
+	if (CharacterPawn == nullptr)
+	{
+		if (CharacterPawnClass != nullptr)
+		{
+			// Get a random PlayerStart as spawn location
+			TArray<AActor*> StartPoints;
+			UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), StartPoints);
+			const FVector StartPoint = StartPoints.Num() > 0 ? StartPoints[FMath::RandRange(0, StartPoints.Num() - 1)]->GetActorLocation() : FVector::ZeroVector;
+
+			CharacterPawn = GetWorld()->SpawnActor<AStandardModePlayerCharacter>(
+				CharacterPawnClass->GetDefaultObject()->GetClass(), StartPoint,
+				RootComponent->GetComponentRotation());
+			CharacterPawn->SetOwner(this);
+			UE_LOG(LogDogFight, Display, TEXT("Spawn location at %s"), *(StartPoint.ToString()));
+		}
+		else
+		{
+			UE_LOG(LogDogFight, Error, TEXT("No pawn has been specified as character."));
+		}
+	}
 }
 
 

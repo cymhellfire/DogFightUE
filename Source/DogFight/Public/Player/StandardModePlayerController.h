@@ -18,7 +18,7 @@ class DOGFIGHT_API AStandardModePlayerController : public APlayerController
 
 	virtual void PlayerTick(float DeltaTime) override;
 
-	UPROPERTY(Category=PlayerController, EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(Category=PlayerController, EditAnywhere, BlueprintReadOnly, Replicated)
 	TSubclassOf<AStandardModePlayerCharacter> CharacterPawnClass;
 
 protected:
@@ -33,7 +33,11 @@ protected:
 
 	void OnSetDestinationPressed();
 	void OnSetDestinationReleased();
+
+	UFUNCTION(Server, Reliable)
+	void SpawnCharacterPawn();
 private:
+	UPROPERTY(Category=PlayerController, VisibleAnywhere, Replicated)
 	AStandardModePlayerCharacter* CharacterPawn;
 
 	bool bMoveToMouseCursor;

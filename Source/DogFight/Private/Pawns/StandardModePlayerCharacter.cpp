@@ -12,6 +12,8 @@
 // Sets default values
 AStandardModePlayerCharacter::AStandardModePlayerCharacter()
 {
+	bReplicates = true;
+
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.f);
 
 	// Do not rotate character to camera direction
