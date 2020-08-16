@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "StandardModePlayerController.generated.h"
 
+class AStandardModePlayerCharacter;
+
 /**
  * 
  */
@@ -14,6 +16,25 @@ class DOGFIGHT_API AStandardModePlayerController : public APlayerController
 {
 	GENERATED_UCLASS_BODY()
 
+	virtual void PlayerTick(float DeltaTime) override;
+
+	UPROPERTY(Category=PlayerController, EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<AStandardModePlayerCharacter> CharacterPawnClass;
+
 protected:
+	virtual void BeginPlay() override;
+
+	virtual void SetupInputComponent() override;
+
 	virtual void ProcessPlayerInput(const float DeltaTime, const bool bGamePaused) override;
+
+	/* Navigate character to current mouse cursor position. */
+	void MoveToMouseCursor();
+
+	void OnSetDestinationPressed();
+	void OnSetDestinationReleased();
+private:
+	AStandardModePlayerCharacter* CharacterPawn;
+
+	bool bMoveToMouseCursor;
 };

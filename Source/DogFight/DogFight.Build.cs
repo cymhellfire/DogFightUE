@@ -10,6 +10,7 @@ public class DogFight : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 		
+		PrivateIncludePaths.Add("DogFight");
 		PrivateIncludePaths.Add("DogFight/Public");
 		// Add all sub folder
 		var SourceCodePath = Path.Combine(ModuleDirectory, "Public/");
