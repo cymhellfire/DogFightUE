@@ -6,7 +6,6 @@
 #include "StandardModePlayerPawn.h"
 #include "StandardModeCameraComponent.h"
 #include "DogFight.h"
-#include "HeadMountedDisplayFunctionLibrary.h"
 #include "StandardModePlayerCharacter.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Net/UnrealNetwork.h"
@@ -21,14 +20,21 @@ AStandardModePlayerController::AStandardModePlayerController(const FObjectInitia
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void AStandardModePlayerController::PlayerTick(float DeltaTime)
+void AStandardModePlayerController::Tick(float DeltaTime)
 {
-	Super::PlayerTick(DeltaTime);
+	Super::Tick(DeltaTime);
 
 	// Keep updating the destination every tick
 	if (bMoveToMouseCursor)
 	{
-		MoveToMouseCursor();
+		// Update cursor position
+		GetMouseCursorPosition();
+
+		// Only do the movement on server side
+		if (GetLocalRole() == ROLE_Authority)
+		{
+			MoveToMouseCursor();
+		}
 	}
 }
 
@@ -63,42 +69,55 @@ void AStandardModePlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeP
 {
 	DOREPLIFETIME(AStandardModePlayerController, CharacterPawnClass);
 	DOREPLIFETIME(AStandardModePlayerController, CharacterPawn);
+	DOREPLIFETIME(AStandardModePlayerController, bMoveToMouseCursor);
 }
 
-void AStandardModePlayerController::MoveToMouseCursor()
+void AStandardModePlayerController::MoveToMouseCursor() const
 {
 	if (CharacterPawn == nullptr)
 		return;
-	
-	if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled())
-	{
-		if (CharacterPawn->GetCursorToWorld() != nullptr)
-		{
-			UAIBlueprintHelperLibrary::SimpleMoveToLocation(CharacterPawn->GetController(), CharacterPawn->GetCursorToWorld()->GetComponentLocation());
-		}
-	}
-	else
-	{
-		FHitResult HitResult;
-		GetHitResultUnderCursor(ECC_Visibility, false, HitResult);
 
-		if (HitResult.bBlockingHit)
+	UAIBlueprintHelperLibrary::SimpleMoveToLocation(CharacterPawn->GetController(), CursorWorldPosition);
+}
+
+void AStandardModePlayerController::GetMouseCursorPosition()
+{
+	FHitResult HitResult;
+	GetHitResultUnderCursor(ECC_Visibility, false, HitResult);
+
+	if (HitResult.bBlockingHit)
+	{
+		float const Distance = FVector::Dist(HitResult.Location, CharacterPawn->GetActorLocation());
+		if (Distance > 120.f)
 		{
-			float const Distance = FVector::Dist(HitResult.Location, CharacterPawn->GetActorLocation());
-			if (Distance > 120.f)
-			{
-				UAIBlueprintHelperLibrary::SimpleMoveToLocation(CharacterPawn->GetController(), HitResult.Location);
-			}
+			CmdUploadMouseCursorPosition(HitResult.Location);
 		}
 	}
+}
+
+void AStandardModePlayerController::CmdUploadMouseCursorPosition_Implementation(FVector Position)
+{
+	CursorWorldPosition = Position;
 }
 
 void AStandardModePlayerController::OnSetDestinationPressed()
 {
-	bMoveToMouseCursor = true;
+	// Call RPC function on server side
+	CmdStartMovement();
 }
 
 void AStandardModePlayerController::OnSetDestinationReleased()
+{
+	// Call RPC function on server side
+	CmdStopMovement();
+}
+
+void AStandardModePlayerController::CmdStartMovement_Implementation()
+{
+	bMoveToMouseCursor = true;
+}
+
+void AStandardModePlayerController::CmdStopMovement_Implementation()
 {
 	bMoveToMouseCursor = false;
 }
