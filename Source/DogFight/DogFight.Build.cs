@@ -30,8 +30,12 @@ public class DogFight : ModuleRules
 				"InputCore",
 				"HeadMountedDisplay",
 				"NavigationSystem",
-				"AIModule"
+				"AIModule",
+				"OnlineSubsystem",
+				"OnlineSubsystemUtils"
 			}
 		);
+		
+		DynamicallyLoadedModuleNames.Add("OnlineSubsystemNull");
 	}
 }
