@@ -32,7 +32,8 @@ public class DogFight : ModuleRules
 				"NavigationSystem",
 				"AIModule",
 				"OnlineSubsystem",
-				"OnlineSubsystemUtils"
+				"OnlineSubsystemUtils",
+				"CustomizableCard"
 			}
 		);
 		
