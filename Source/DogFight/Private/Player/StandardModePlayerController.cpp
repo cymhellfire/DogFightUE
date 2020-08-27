@@ -15,27 +15,17 @@ AStandardModePlayerController::AStandardModePlayerController(const FObjectInitia
 {
 	bReplicates = true;
 	bShowMouseCursor = true;
-	bMoveToMouseCursor = false;
+	bClickMoveEnabled = true;
 	CharacterPawn = nullptr;
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void AStandardModePlayerController::Tick(float DeltaTime)
+void AStandardModePlayerController::SetClickMovementEnabled(bool bEnabled)
 {
-	Super::Tick(DeltaTime);
-
-	// Keep updating the destination every tick
-	if (bMoveToMouseCursor)
-	{
-		// Update cursor position
-		GetMouseCursorPosition();
-
-		// Only do the movement on server side
-		if (GetLocalRole() == ROLE_Authority)
-		{
-			MoveToMouseCursor();
-		}
-	}
+	bClickMoveEnabled = bEnabled;
+#if !UE_BUILD_SHIPPING
+	UE_LOG(LogDogFight, Log, TEXT("%s %s click movement."), *GetName(), (bEnabled ? TEXT("enabled") : TEXT("disabled")));
+#endif
 }
 
 void AStandardModePlayerController::BeginPlay()
@@ -50,7 +40,6 @@ void AStandardModePlayerController::SetupInputComponent()
 	Super::SetupInputComponent();
 
 	InputComponent->BindAction("SetDestination", IE_Pressed, this, &AStandardModePlayerController::OnSetDestinationPressed);
-	InputComponent->BindAction("SetDestination", IE_Released, this, &AStandardModePlayerController::OnSetDestinationReleased);
 }
 
 void AStandardModePlayerController::ProcessPlayerInput(const float DeltaTime, const bool bGamePaused)
@@ -69,19 +58,15 @@ void AStandardModePlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeP
 {
 	DOREPLIFETIME(AStandardModePlayerController, CharacterPawnClass);
 	DOREPLIFETIME(AStandardModePlayerController, CharacterPawn);
-	DOREPLIFETIME(AStandardModePlayerController, bMoveToMouseCursor);
+	DOREPLIFETIME(AStandardModePlayerController, bClickMoveEnabled);
 }
 
-void AStandardModePlayerController::MoveToMouseCursor() const
+void AStandardModePlayerController::OnSetDestinationPressed()
 {
-	if (CharacterPawn == nullptr)
+	// Check if click movement is enabled
+	if (!bClickMoveEnabled)
 		return;
-
-	UAIBlueprintHelperLibrary::SimpleMoveToLocation(CharacterPawn->GetController(), CursorWorldPosition);
-}
-
-void AStandardModePlayerController::GetMouseCursorPosition()
-{
+	
 	FHitResult HitResult;
 	GetHitResultUnderCursor(ECC_Visibility, false, HitResult);
 
@@ -90,36 +75,18 @@ void AStandardModePlayerController::GetMouseCursorPosition()
 		float const Distance = FVector::Dist(HitResult.Location, CharacterPawn->GetActorLocation());
 		if (Distance > 120.f)
 		{
-			CmdUploadMouseCursorPosition(HitResult.Location);
+			// Call RPC function on server side
+			CmdMoveToMouseCursor(HitResult.Location);
 		}
 	}
 }
 
-void AStandardModePlayerController::CmdUploadMouseCursorPosition_Implementation(FVector Position)
+void AStandardModePlayerController::CmdMoveToMouseCursor_Implementation(FVector Destination)
 {
-	CursorWorldPosition = Position;
-}
+	if (CharacterPawn == nullptr)
+		return;
 
-void AStandardModePlayerController::OnSetDestinationPressed()
-{
-	// Call RPC function on server side
-	CmdStartMovement();
-}
-
-void AStandardModePlayerController::OnSetDestinationReleased()
-{
-	// Call RPC function on server side
-	CmdStopMovement();
-}
-
-void AStandardModePlayerController::CmdStartMovement_Implementation()
-{
-	bMoveToMouseCursor = true;
-}
-
-void AStandardModePlayerController::CmdStopMovement_Implementation()
-{
-	bMoveToMouseCursor = false;
+	UAIBlueprintHelperLibrary::SimpleMoveToLocation(CharacterPawn->GetController(), Destination);
 }
 
 void AStandardModePlayerController::SpawnCharacterPawn_Implementation()
