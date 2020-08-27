@@ -11,17 +11,27 @@ public class DogFight : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 		
-		PrivateIncludePaths.Add("DogFight");
-		PrivateIncludePaths.Add("DogFight/Public");
+		PublicIncludePaths.Add("DogFight");
+		PublicIncludePaths.Add("DogFight/Public");
 		// Add all sub folder
 		var SourceCodePath = Path.Combine(ModuleDirectory, "Public/");
 		List<string> SubFolderList = new List<string>();
 		GetSubFolders(SourceCodePath, ref SubFolderList);
 		foreach (var Folder in SubFolderList)
 		{
-			Console.WriteLine("Add sub folder: " + Folder);
+			Console.WriteLine("Add public sub folder: " + Folder);
 		}
+		PublicIncludePaths.AddRange(SubFolderList);
 		
+		PrivateIncludePaths.Add("DogFight/Private");
+		// Add all sub folder
+		SourceCodePath = Path.Combine(ModuleDirectory, "Private/");
+		SubFolderList.Clear();
+		GetSubFolders(SourceCodePath, ref SubFolderList);
+		foreach (var Folder in SubFolderList)
+		{
+			Console.WriteLine("Add private sub folder: " + Folder);
+		}
 		PrivateIncludePaths.AddRange(SubFolderList);
 		
 		PublicDependencyModuleNames.AddRange(
