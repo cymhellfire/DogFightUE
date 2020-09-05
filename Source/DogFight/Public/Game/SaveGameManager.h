@@ -31,6 +31,9 @@ public:
 	UFUNCTION(Category="SaveGame|DogFight", BlueprintCallable)
 	bool SaveAtSlot(FString PlayerName, FString OldSlotName);
 
+	UFUNCTION(Category="SaveGame|DogFight", BlueprintCallable)
+	void DeleteAtSlot(FString SlotName);
+
 	/** Select the save game in specified slot. */
 	UFUNCTION(Category="SaveGame|DogFight", BlueprintCallable)
 	void SelectSaveGame(FString SlotName);

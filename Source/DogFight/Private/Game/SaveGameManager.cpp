@@ -86,6 +86,20 @@ bool USaveGameManager::SaveAtSlot(FString PlayerName, FString OldSlotName)
 	return true;
 }
 
+void USaveGameManager::DeleteAtSlot(FString SlotName)
+{
+	if (!CacheSlotList.Contains(SlotName))
+	{
+		UE_LOG(LogDogFight, Error, TEXT("No save game in slot: %s"), *SlotName);
+		return;
+	}
+
+	if (!UGameplayStatics::DeleteGameInSlot(SlotName, 0))
+	{
+		UE_LOG(LogDogFight, Error, TEXT("Failed to delete game in slot: %s"), *SlotName);
+	}
+}
+
 void USaveGameManager::SelectSaveGame(FString SlotName)
 {
 	if (!CacheSlotList.Contains(SlotName))
