@@ -3,6 +3,8 @@
 
 #include "DogFightGameInstance.h"
 
+#include "SaveGameManager.h"
+
 UDogFightGameInstance::UDogFightGameInstance(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -146,6 +148,14 @@ bool UDogFightGameInstance::JoinSpecifiedSession(TSharedPtr<const FUniqueNetId> 
 	}
 
 	return bSuccessful;
+}
+
+void UDogFightGameInstance::Shutdown()
+{
+	// Clear the pointer of SaveGameManager
+	USaveGameManager::DestroyInstance();
+
+	Super::Shutdown();
 }
 
 void UDogFightGameInstance::OnFindSessionsComplete(bool bWasSuccessful)

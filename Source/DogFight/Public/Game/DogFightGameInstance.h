@@ -46,6 +46,7 @@ public:
 	 */
 	bool JoinSpecifiedSession(TSharedPtr<const FUniqueNetId> UserId, FName SessionName, const FOnlineSessionSearchResult& SearchResult);
 
+	virtual void Shutdown() override;
 protected:
 
 	/* Delegate triggered when session created. */
@@ -82,6 +83,7 @@ protected:
 
 	/* Wrapper for getting IOnlineSessionPtr from current Online Subsystem. */
 	IOnlineSessionPtr GetOnlineSessionPtr() const;
+
 private:
 	/* Name of menu map. */
 	FString MenuMapName;

@@ -36,3 +36,87 @@ FVector FMathHelper::IntersectRayWithPlane(const FVector& RayOrigin, const FVect
 	const float Distance = FVector::DotProduct((PlaneOrigin - RayOrigin), PlaneNormal) / FVector::DotProduct(RayDirection, PlaneNormal);
 	return RayOrigin + RayDirection * Distance;
 }
+
+int32 FMathHelper::MinExcludeNumber = 0;
+
+int32 FMathHelper::GetMissingNumber(TArray<int32> InArray, int32 MinNumber = 0)
+{
+	if (MinNumber != 0)
+	{
+		MinExcludeNumber = MinNumber;
+	}
+	
+	const int32 ArraySize = InArray.Num();
+	const int32 Result = FindMissing(InArray, ArraySize);
+
+	// Restore the minimum exclude number
+	if (MinExcludeNumber != 0)
+	{
+		MinExcludeNumber = 0;
+	}
+
+	return Result;
+}
+
+int32 FMathHelper::FindMissing(TArray<int32> InArray, int32 Size)
+{
+	// First separate positive and negative numbers
+	const int32 Shift = Segregate(InArray, Size);
+	TArray<int32> NewArray;
+
+	for (int i = Shift; i < Size; ++i)
+	{
+		NewArray.Add(InArray[i] - MinExcludeNumber);
+	}
+
+	return FindMissingPositive(NewArray, NewArray.Num()) + MinExcludeNumber;
+}
+
+int32 FMathHelper::FindMissingPositive(TArray<int32> InArray, int32 Size)
+{
+	int32 i;
+
+	/**
+	 * Mark InArray[i] as visited by making InArray[InArray[i] - 1] negative.
+	 * Note that 1 is subtracted as index starts from 0 and positive numbers
+	 * starts from 1.
+	 */
+	for (i = 0; i < Size; ++i)
+	{
+		if (FMath::Abs(InArray[i]) - 1 < Size && InArray[FMath::Abs(InArray[i]) - 1] > 0)
+		{
+			InArray[FMath::Abs(InArray[i]) - 1] = -InArray[FMath::Abs(InArray[i]) - 1];
+		}
+	}
+
+	/**
+	 * Return the first index value at which is positive
+	 */
+	for (i = 0; i < Size; ++i)
+	{
+		if (InArray[i] > 0)
+			return i + 1;
+	}
+
+	// 1 is added because indexes start from 0
+	return Size + 1;
+}
+
+int32 FMathHelper::Segregate(TArray<int32> InArray, int32 Size)
+{
+	int32 j = 0;
+	for (int32 i = 0; i < Size; ++i)
+	{
+		if (InArray[i] <= MinExcludeNumber)
+		{
+			const int32 Temp = InArray[i];
+			InArray[i] = InArray[j];
+			InArray[j] = Temp;
+
+			// Increase count of non-positive number
+			j++;
+		}
+	}
+
+	return j;
+}
