@@ -66,6 +66,7 @@ TArray<FString> USaveGameManager::GetAllSaveGame()
 
 bool USaveGameManager::SaveAtSlot(FString PlayerName, FString OldSlotName)
 {
+	// Check whether override current slot or create new slot
 	if (CurrentSaveGameInstance != nullptr)
 	{
 		CurrentSaveGameInstance->PlayerName = PlayerName;
@@ -80,6 +81,23 @@ bool USaveGameManager::SaveAtSlot(FString PlayerName, FString OldSlotName)
 		if (UGameplayStatics::SaveGameToSlot(CurrentSaveGameInstance, PlayerName, CurrentSaveGameInstance->UserIndex))
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("Profile %s saved successful."), *PlayerName));
+		}
+	}
+	else
+	{
+		if (UDogFightSaveGame* SaveGameInstance = Cast<UDogFightSaveGame>(UGameplayStatics::CreateSaveGameObject(UDogFightSaveGame::StaticClass())))
+		{
+			SaveGameInstance->PlayerName = PlayerName;
+
+			// Save data synchronous
+			if (UGameplayStatics::SaveGameToSlot(SaveGameInstance, PlayerName, 0))
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("Profile %s saved successful."), *PlayerName));
+			}
+		}
+		else
+		{
+			UE_LOG(LogDogFight, Error, TEXT("Failed to create new SaveGame at slot: %s"), *PlayerName);
 		}
 	}
 	
