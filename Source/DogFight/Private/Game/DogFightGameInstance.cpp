@@ -303,7 +303,7 @@ void UDogFightGameInstance::DestroySessionAndLeaveGame()
 	const IOnlineSessionPtr Sessions = GetOnlineSessionPtr();
 	if (Sessions && Sessions.IsValid())
 	{
-		Sessions->AddOnDestroySessionCompleteDelegate_Handle(OnDestroySessionCompleteDelegate);
+		OnDestroySessionCompleteDelegateHandle = Sessions->AddOnDestroySessionCompleteDelegate_Handle(OnDestroySessionCompleteDelegate);
 
 		Sessions->DestroySession(GameSessionName);
 	}
