@@ -161,6 +161,9 @@ void USaveGameManager::SetProperty(FString Key, FString Value)
 	if (Key == TEXT("SelectedSlot"))
 	{
 		SelectedSlotName = Value;
+
+		// Load the selected slot
+		LoadSaveGameAtSlot(SelectedSlotName);
 	}
 	else
 	{
@@ -193,7 +196,7 @@ void USaveGameManager::LoadSaveGameAtSlot(FString SlotName)
 	{
 		CurrentSaveGameInstance = LoadedGame;
 
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Current player has %d money"), CurrentSaveGameInstance->Money));
+		UE_LOG(LogDogFight, Log, TEXT("Load save game %s successfully."), *SlotName);
 	}
 	else
 	{

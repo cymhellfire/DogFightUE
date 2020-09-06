@@ -41,6 +41,7 @@ public:
 private:
 	USaveGameManager(const FObjectInitializer& ObjectInitializer);
 
+	UPROPERTY()
 	/** The SaveGameInstance current loaded. */
 	class UDogFightSaveGame* CurrentSaveGameInstance;
 
