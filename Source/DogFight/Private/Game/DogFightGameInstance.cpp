@@ -152,9 +152,6 @@ bool UDogFightGameInstance::JoinSpecifiedSession(TSharedPtr<const FUniqueNetId> 
 
 void UDogFightGameInstance::Shutdown()
 {
-	// Clear the pointer of SaveGameManager
-	USaveGameManager::DestroyInstance();
-
 	Super::Shutdown();
 }
 
@@ -239,6 +236,12 @@ IOnlineSessionPtr UDogFightGameInstance::GetOnlineSessionPtr() const
 	}
 
 	return nullptr;
+}
+
+void UDogFightGameInstance::Init()
+{
+	// Create Save Manager
+	SaveGameManager = NewObject<USaveGameManager>(this, FName(TEXT("SaveGameManager")));
 }
 
 void UDogFightGameInstance::SetMenuMapName(FString InMapName)

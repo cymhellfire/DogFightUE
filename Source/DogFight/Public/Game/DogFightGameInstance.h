@@ -47,6 +47,8 @@ public:
 	bool JoinSpecifiedSession(TSharedPtr<const FUniqueNetId> UserId, FName SessionName, const FOnlineSessionSearchResult& SearchResult);
 
 	virtual void Shutdown() override;
+
+	class USaveGameManager* GetSaveGameManager() { return SaveGameManager; };
 protected:
 
 	/* Delegate triggered when session created. */
@@ -93,6 +95,14 @@ private:
 
 	TSharedPtr<class FOnlineSessionSettings> SessionSettings;
 	TSharedPtr<class FOnlineSessionSearch> SessionSearch;
+
+	UPROPERTY(Transient)
+	class USaveGameManager* SaveGameManager;
+
+
+public:
+	/** Initialize Game Instance. */
+	virtual void Init() override;
 
 #pragma region Blueprint
 public:

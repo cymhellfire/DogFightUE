@@ -8,21 +8,6 @@
 #include "DogFightSaveGame.h"
 #include "Kismet/GameplayStatics.h"
 
-USaveGameManager* USaveGameManager::GetInstance()
-{
-	if (Singleton == nullptr)
-	{
-		Singleton = NewObject<USaveGameManager>();
-	}
-	
-	return Singleton;
-}
-
-void USaveGameManager::DestroyInstance()
-{
-	Singleton = nullptr;
-}
-
 TArray<FString> USaveGameManager::GetAllSaveGame()
 {
 	class FFindSaveGameVisitor : public IPlatformFile::FDirectoryVisitor
@@ -134,8 +119,6 @@ void USaveGameManager::SelectSaveGame(FString SlotName)
 
 	SaveOptionFile();
 }
-
-USaveGameManager* USaveGameManager::Singleton = nullptr;
 
 USaveGameManager::USaveGameManager(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

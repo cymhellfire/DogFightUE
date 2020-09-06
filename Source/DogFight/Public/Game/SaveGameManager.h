@@ -10,19 +10,12 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType)
 class DOGFIGHT_API USaveGameManager : public UObject
 {
 	GENERATED_BODY()
 
 public:
-
-	/** Get SaveGameManager instance. */
-	UFUNCTION(Category="SaveGame|DogFight", BlueprintCallable)
-	static USaveGameManager* GetInstance();
-
-	static void DestroyInstance();
-
 	/** Detect save game list. */
 	UFUNCTION(Category="SaveGame|DogFight", BlueprintCallable)
 	TArray<FString> GetAllSaveGame();
@@ -47,8 +40,6 @@ public:
 
 private:
 	USaveGameManager(const FObjectInitializer& ObjectInitializer);
-
-	static USaveGameManager* Singleton;
 
 	/** The SaveGameInstance current loaded. */
 	class UDogFightSaveGame* CurrentSaveGameInstance;
