@@ -3,6 +3,7 @@
 #pragma once
 
 #include "DogFight.h"
+#include "FMainMenuMessage.h"
 #include "Engine/GameInstance.h"
 #include "DogFightGameInstance.generated.h"
 
@@ -16,6 +17,10 @@ class DOGFIGHT_API UDogFightGameInstance : public UGameInstance
 
 public:
 	UDogFightGameInstance(const FObjectInitializer& ObjectInitializer);
+
+	/* Name of menu map. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=GameInstance)
+	FString MenuMapName;
 
 	/**
 	 * Function to host a game.
@@ -86,19 +91,20 @@ protected:
 	/* Wrapper for getting IOnlineSessionPtr from current Online Subsystem. */
 	IOnlineSessionPtr GetOnlineSessionPtr() const;
 
+	void HandleNetworkFailure(UWorld* World, UNetDriver* NetDriver, ENetworkFailure::Type FailureType, const FString& ErrorString);
 private:
-	/* Name of menu map. */
-	FString MenuMapName;
-
 	/* Name of map to use in new session. */
 	FString GameMapName;
 
 	TSharedPtr<class FOnlineSessionSettings> SessionSettings;
 	TSharedPtr<class FOnlineSessionSearch> SessionSearch;
 
+	/** Messages will pop up when return to main menu. */
+	UPROPERTY()
+	TArray<FMainMenuMessage> PendingMessages;
+
 	UPROPERTY(Transient)
 	class USaveGameManager* SaveGameManager;
-
 
 public:
 	/** Initialize Game Instance. */
@@ -106,9 +112,6 @@ public:
 
 #pragma region Blueprint
 public:
-	UFUNCTION(BlueprintCallable, Category="GameInstance")
-	void SetMenuMapName(FString InMapName);
-
 	UFUNCTION(BlueprintCallable, Category="Network|Test")
 	void HostOnlineGame(FString InMapName);
 
@@ -120,5 +123,17 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Network|Test")
 	void DestroySessionAndLeaveGame();
+
+	UFUNCTION(BlueprintCallable, Category="DogFight|Game", meta=(DisplayName="Add Main Menu Message"))
+	void AddPendingMessage(FText Title, FText Content);
+
+	UFUNCTION(BlueprintCallable, Category="DogFight|Game", meta=(DisplayName="Remove Main Menu Message At Index"))
+	void RemovePendingMessageAt(int32 Index);
+
+	UFUNCTION(BlueprintCallable, Category="DogFight|Game", meta=(DisplayName="Get All Main Menu Messages"))
+	TArray<FMainMenuMessage> GetAllPendingMessages() { return PendingMessages; }
+
+	UFUNCTION(BlueprintCallable, Category="DogFight|Game", meta=(DisplayName="Clear All Main Menu Messages"))
+	void ClearPendingMessages();
 #pragma endregion Blueprint
 };

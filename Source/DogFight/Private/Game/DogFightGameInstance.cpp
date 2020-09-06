@@ -5,6 +5,8 @@
 
 #include "SaveGameManager.h"
 
+#define ST_UI_LOC		"/Game/DogFight/Localization/ST_UserInterface.ST_UserInterface"
+
 UDogFightGameInstance::UDogFightGameInstance(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -238,18 +240,28 @@ IOnlineSessionPtr UDogFightGameInstance::GetOnlineSessionPtr() const
 	return nullptr;
 }
 
+void UDogFightGameInstance::HandleNetworkFailure(UWorld* World, UNetDriver* NetDriver, ENetworkFailure::Type FailureType, const FString& ErrorString)
+{
+	if (FailureType == ENetworkFailure::ConnectionLost)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Lost connection from host."));
+
+		// Enqueue error message
+		AddPendingMessage(FText::FromStringTable(ST_UI_LOC, FString("NetErrorTitle")),
+			FText::FromStringTable(ST_UI_LOC, FString("NetError_LostConnect")));
+
+		// Open the Main Menu level
+		UGameplayStatics::OpenLevel(GetWorld(), FName(*MenuMapName), true);
+	}
+}
+
 void UDogFightGameInstance::Init()
 {
 	// Create Save Manager
 	SaveGameManager = NewObject<USaveGameManager>(this, FName(TEXT("SaveGameManager")));
-}
 
-void UDogFightGameInstance::SetMenuMapName(FString InMapName)
-{
-	if (!InMapName.IsEmpty())
-	{
-		MenuMapName = InMapName;
-	}
+	// Listen to Network Failure
+	GEngine->OnNetworkFailure().AddUObject(this, &UDogFightGameInstance::HandleNetworkFailure);
 }
 
 void UDogFightGameInstance::HostOnlineGame(FString InMapName)
@@ -295,4 +307,24 @@ void UDogFightGameInstance::DestroySessionAndLeaveGame()
 
 		Sessions->DestroySession(GameSessionName);
 	}
+}
+
+void UDogFightGameInstance::AddPendingMessage(FText Title, FText Content)
+{
+	PendingMessages.Add(FMainMenuMessage{Title, Content});
+}
+
+void UDogFightGameInstance::RemovePendingMessageAt(int32 Index)
+{
+	if (PendingMessages.Num() <= Index)
+	{
+		return;
+	}
+
+	PendingMessages.RemoveAt(Index);
+}
+
+void UDogFightGameInstance::ClearPendingMessages()
+{
+	PendingMessages.Empty();
 }
