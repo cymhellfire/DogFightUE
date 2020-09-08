@@ -24,10 +24,10 @@ public:
 
 	virtual void Logout(AController* Exiting) override;
 
-protected:
+	/** Get all player info in current game. */
+	TArray<FLobbyPlayerInfo> GetAllPlayerInfo() const;
 
-	UFUNCTION()
-	virtual void OnLobbyMemberInfoChanged(int32 PlayerId, const FLobbyPlayerInfo& PlayerInfo);
+protected:
 
 	/** List of all player controller in current lobby. */
 	TArray<class ALobbyPlayerController*> PlayerControllerList;

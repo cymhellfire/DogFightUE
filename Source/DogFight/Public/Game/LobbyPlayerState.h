@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerState.h"
 #include "UObject/ObjectMacros.h"
+#include "UObject/ObjectMacros.h"
 
 #include "LobbyPlayerState.generated.h"
 
@@ -23,6 +24,9 @@ USTRUCT(BlueprintType)
 struct FLobbyPlayerInfo
 {
 	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly)
+	int32 PlayerId;
 
 	UPROPERTY(BlueprintReadOnly)
 	FString PlayerName;
@@ -47,12 +51,12 @@ public:
 	FLobbyPlayerStateChangedSignature OnLobbyPlayerStateChanged;
 
 	/** Update player state with provided player information. */
-	UFUNCTION(BlueprintCallable, Category="PlayerState|DogFight")
+	UFUNCTION(BlueprintCallable, Category="DogFight|PlayerState")
 	void SetPlayerInfo(UPARAM(ref) FLobbyPlayerInfo& PlayerState);
 
 	/** Get current lobby status. */
-	UFUNCTION(BlueprintCallable, Category="PlayerState|DogFight")
-	EPlayerLobbyStatus GetLobbyStatus() { return PlayerLobbyStatus; }
+	UFUNCTION(BlueprintCallable, Category="DogFight|PlayerState")
+	EPlayerLobbyStatus GetLobbyStatus() const { return PlayerLobbyStatus; }
 
 protected:
 	/** Current player status in lobby. */

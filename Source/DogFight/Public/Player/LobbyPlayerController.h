@@ -18,7 +18,7 @@ class DOGFIGHT_API ALobbyPlayerController : public APlayerController
 
 public:
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FLobbyPlayerInfoChangeSignature, int32, ChangePlayerId, FLobbyPlayerInfo, PlayerInfo);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FLobbyPlayerInfoChangeSignature, int32, ChangePlayerId, const TArray<FLobbyPlayerInfo>&, PlayerInfoArray);
 
 	UPROPERTY(BlueprintAssignable, Category="DogFight|Lobby")
 	FLobbyPlayerInfoChangeSignature OnLobbyPlayerInfoChanged;
@@ -26,8 +26,12 @@ public:
 public:
 	ALobbyPlayerController(const FObjectInitializer& ObjectInitializer);
 
+	/**
+	 * Gather all information and send to server (only for host).
+	 * Client use OnRep_PlayerState to send player info.
+	 */
 	UFUNCTION(Client, Reliable)
-	void RpcPlayerInfoChanged(int32 PlayerId, FLobbyPlayerInfo PlayerInfo);
+	void RpcHostUploadPlayerInfo();
 
 	virtual void OnRep_PlayerState() override;
 protected:

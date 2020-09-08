@@ -3,8 +3,11 @@
 
 #include "LobbyGameMode.h"
 
+
+#include "LobbyGameState.h"
 #include "LobbyPlayerController.h"
 #include "MenuModePawn.h"
+#include "GameFramework/GameStateBase.h"
 
 ALobbyGameMode::ALobbyGameMode(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -12,13 +15,13 @@ ALobbyGameMode::ALobbyGameMode(const FObjectInitializer& ObjectInitializer)
 	DefaultPawnClass = AMenuModePawn::StaticClass();
 	PlayerControllerClass = ALobbyPlayerController::StaticClass();
 	PlayerStateClass = ALobbyPlayerState::StaticClass();
+	GameStateClass = ALobbyGameState::StaticClass();
 }
 
 void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
-	// Request Player Info
 	ALobbyPlayerController* PlayerController = Cast<ALobbyPlayerController>(NewPlayer);
 	if (PlayerController != nullptr)
 	{
@@ -27,12 +30,8 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 			PlayerControllerList.Add(PlayerController);
 		}
 
-		// Listening the Player State changes
-		ALobbyPlayerState* MyPlayerState = PlayerController->GetPlayerState<ALobbyPlayerState>();
-		if (MyPlayerState != nullptr)
-		{
-			MyPlayerState->OnLobbyPlayerStateChanged.AddDynamic(this, &ALobbyGameMode::OnLobbyMemberInfoChanged);
-		}
+		// Request Player Info
+		PlayerController->RpcHostUploadPlayerInfo();
 	}
 }
 
@@ -41,22 +40,23 @@ void ALobbyGameMode::Logout(AController* Exiting)
 	ALobbyPlayerController* LobbyPlayerController = Cast<ALobbyPlayerController>(Exiting);
 	if (LobbyPlayerController != nullptr && PlayerControllerList.Contains(LobbyPlayerController))
 	{
-		// Unbind the delegate
-		ALobbyPlayerState* MyPlayerState = LobbyPlayerController->GetPlayerState<ALobbyPlayerState>();
-		if (MyPlayerState != nullptr)
-		{
-			MyPlayerState->OnLobbyPlayerStateChanged.RemoveDynamic(this, &ALobbyGameMode::OnLobbyMemberInfoChanged);
-		}
-		
 		PlayerControllerList.Remove(LobbyPlayerController);
 	}
 }
 
-void ALobbyGameMode::OnLobbyMemberInfoChanged(int32 PlayerId, const FLobbyPlayerInfo& PlayerInfo)
+TArray<FLobbyPlayerInfo> ALobbyGameMode::GetAllPlayerInfo() const
 {
-	// Notify all players in lobby
-	for (ALobbyPlayerController* PlayerController : PlayerControllerList)
+	TArray<FLobbyPlayerInfo> PlayerInfos;
+
+	TArray<APlayerState*> PlayerArray = GetGameState<AGameStateBase>()->PlayerArray;
+	for (APlayerState* PlayerState : PlayerArray)
 	{
-		PlayerController->RpcPlayerInfoChanged(PlayerId, PlayerInfo);
+		if (ALobbyPlayerState* LobbyPlayerState = Cast<ALobbyPlayerState>(PlayerState))
+		{
+			PlayerInfos.Add(FLobbyPlayerInfo{LobbyPlayerState->GetPlayerId(), LobbyPlayerState->GetPlayerName(),
+				LobbyPlayerState->GetLobbyStatus()});
+		}
 	}
+
+	return PlayerInfos;
 }

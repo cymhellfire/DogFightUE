@@ -9,6 +9,7 @@
 #include "LobbyPlayerState.h"
 #include "SaveGameManager.h"
 #include "DogFightSaveGame.h"
+#include "LobbyGameMode.h"
 
 void ALobbyPlayerController::GatherPlayerInfo()
 {
@@ -39,8 +40,9 @@ void ALobbyPlayerController::GatherPlayerInfo()
 	}
 	
 	FLobbyPlayerInfo PlayerInfo;
+	PlayerInfo.PlayerId = 0;		// This UniqueId is assigned by server, so this value has no meaning
 	PlayerInfo.PlayerName = SaveGameInstance->PlayerName;
-	PlayerInfo.PlayerStatus = MyPlayerState->GetLobbyStatus();
+	PlayerInfo.PlayerStatus = GetNetMode() == NM_ListenServer ? EPlayerLobbyStatus::Host : MyPlayerState->GetLobbyStatus();
 
 	// Send info to server
 	CmdSendPlayerInfo(PlayerInfo);
@@ -61,17 +63,19 @@ void ALobbyPlayerController::CmdSendPlayerInfo_Implementation(FLobbyPlayerInfo P
 	}
 }
 
-void ALobbyPlayerController::RpcPlayerInfoChanged_Implementation(int32 PlayerId, FLobbyPlayerInfo PlayerInfo)
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player(%d) changed his info."), PlayerId));
-
-	OnLobbyPlayerInfoChanged.Broadcast(PlayerId, PlayerInfo);
-}
-
 ALobbyPlayerController::ALobbyPlayerController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	bShowMouseCursor = true;
+}
+
+void ALobbyPlayerController::RpcHostUploadPlayerInfo_Implementation()
+{
+	// Gather all information and send to server (only for host)
+	if (GetNetMode() == NM_ListenServer)
+	{
+		GatherPlayerInfo();
+	}
 }
 
 void ALobbyPlayerController::OnRep_PlayerState()
