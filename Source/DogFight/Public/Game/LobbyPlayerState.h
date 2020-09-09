@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "DogFight.h"
 #include "GameFramework/PlayerState.h"
 #include "UObject/ObjectMacros.h"
 #include "UObject/ObjectMacros.h"
@@ -45,7 +45,7 @@ class DOGFIGHT_API ALobbyPlayerState : public APlayerState
 
 public:
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FLobbyPlayerStateChangedSignature, int32, ChangedPlayerId, const FLobbyPlayerInfo&, PlayerInfo);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLobbyPlayerStateChangedSignature);
 
 	/** Triggered when player state has changed. */
 	FLobbyPlayerStateChangedSignature OnLobbyPlayerStateChanged;
@@ -58,8 +58,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category="DogFight|PlayerState")
 	EPlayerLobbyStatus GetLobbyStatus() const { return PlayerLobbyStatus; }
 
+	/** Set current lobby status. (Server function call behind.) */
+	UFUNCTION(BlueprintCallable, Category="DogFight|PlayerState")
+	void SetLobbyStatus(EPlayerLobbyStatus NewStatus);
+
+	UFUNCTION(Server, Reliable)
+	void CmdSetLobbyStatus(EPlayerLobbyStatus NewStatus);
+
 protected:
 	/** Current player status in lobby. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=GameLobby)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, ReplicatedUsing=OnRep_PlayerLobbyStatus, Category=GameLobby)
 	EPlayerLobbyStatus PlayerLobbyStatus;
+
+	UFUNCTION()
+	void OnRep_PlayerLobbyStatus();
 };

@@ -8,5 +8,42 @@ void ALobbyPlayerState::SetPlayerInfo(FLobbyPlayerInfo& PlayerState)
 	PlayerLobbyStatus = PlayerState.PlayerStatus;
 
 	// Trigger the delegate
-	OnLobbyPlayerStateChanged.Broadcast(GetPlayerId(), PlayerState);
+	OnLobbyPlayerStateChanged.Broadcast();
+}
+
+void ALobbyPlayerState::SetLobbyStatus(EPlayerLobbyStatus NewStatus)
+{
+	if (GetNetMode() == NM_Client || GetNetMode() == NM_ListenServer)
+	{
+		CmdSetLobbyStatus(NewStatus);
+	}
+}
+
+void ALobbyPlayerState::OnRep_PlayerLobbyStatus()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Yellow, FString::Printf(TEXT("PlayerState %s changed."), *GetName()));
+
+	// Trigger the delegate
+	OnLobbyPlayerStateChanged.Broadcast();
+}
+
+void ALobbyPlayerState::CmdSetLobbyStatus_Implementation(EPlayerLobbyStatus NewStatus)
+{
+	if (NewStatus == PlayerLobbyStatus)
+	{
+		return;
+	}
+
+	// Set the new status
+	PlayerLobbyStatus = NewStatus;
+
+	// Trigger the delegate
+	OnLobbyPlayerStateChanged.Broadcast();
+}
+
+void ALobbyPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ALobbyPlayerState, PlayerLobbyStatus);
 }

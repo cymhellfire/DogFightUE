@@ -18,9 +18,13 @@ class DOGFIGHT_API ALobbyGameState : public AGameStateBase
 
 public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLobbyPlayerStateChangedSignature);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGameReadyChangedSignature, bool, IsGameReady);
 
 	UPROPERTY(BlueprintAssignable, Category="DogFight|Lobby")
 	FLobbyPlayerStateChangedSignature OnLobbyPlayerStateChanged;
+
+	UPROPERTY(BlueprintAssignable, Category="DogFight|Lobby")
+	FGameReadyChangedSignature OnGameReadyChanged;
 
 	virtual void AddPlayerState(APlayerState* PlayerState) override;
 
@@ -29,18 +33,26 @@ public:
 protected:
 
 	UFUNCTION()
-	void OnLobbyPlayerInfoChanged(int32 PlayerId, const FLobbyPlayerInfo& PlayerInfo);
-
-	UFUNCTION(Client, Reliable)
-	void RpcLobbyPlayerInfoChanged();
+	void OnLobbyPlayerInfoChanged();
 
 public:
 
 	UFUNCTION(BlueprintCallable, Category="DogFight|GameState")
 	TArray<ALobbyPlayerState*> GetLobbyPlayerStates() const { return LobbyPlayerArray; }
-	
-protected:
 
-	UPROPERTY(Replicated)
+	/** Are all players ready to play game. */
+	UFUNCTION(BlueprintCallable, Category="DogFight|GameState")
+	bool IsGameReady() const { return bIsGameReady;}
+
+
+protected:
+	/** All LobbyPlayerState in current game. */
+	UPROPERTY()
 	TArray<ALobbyPlayerState*> LobbyPlayerArray;
+
+	/** Are all of players ready? */
+	UPROPERTY(Replicated)
+	bool bIsGameReady;
+
+	bool IsGameReady();
 };

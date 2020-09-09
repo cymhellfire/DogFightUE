@@ -15,7 +15,7 @@ void ALobbyGameState::AddPlayerState(APlayerState* PlayerState)
 			LobbyPlayerArray.Add(LobbyPlayerState);
 
 			// Bind delegate on server side
-			if (GetNetMode() == NM_ListenServer)
+			//if (GetNetMode() == NM_ListenServer)
 			{
 				LobbyPlayerState->OnLobbyPlayerStateChanged.AddDynamic(this, &ALobbyGameState::OnLobbyPlayerInfoChanged);
 			}
@@ -33,7 +33,7 @@ void ALobbyGameState::RemovePlayerState(APlayerState* PlayerState)
 			LobbyPlayerArray.Remove(LobbyPlayerState);
 
 			// Remove delegate on server side
-			if (GetNetMode() == NM_ListenServer)
+			//if (GetNetMode() == NM_ListenServer)
 			{
 				LobbyPlayerState->OnLobbyPlayerStateChanged.RemoveDynamic(this, &ALobbyGameState::OnLobbyPlayerInfoChanged);
 			}
@@ -43,21 +43,41 @@ void ALobbyGameState::RemovePlayerState(APlayerState* PlayerState)
 	Super::RemovePlayerState(PlayerState);
 }
 
-void ALobbyGameState::OnLobbyPlayerInfoChanged(int32 PlayerId, const FLobbyPlayerInfo& PlayerInfo)
+void ALobbyGameState::OnLobbyPlayerInfoChanged()
 {
+	UE_LOG(LogDogFight, Log, TEXT("OnLobbyPlayerInfoChanged"));
+	
 	// Notify all clients there is one player changed state
-	RpcLobbyPlayerInfoChanged();
+	OnLobbyPlayerStateChanged.Broadcast();
+	
+	// Check if game is ready to start
+	const bool Ready = IsGameReady();
+	if (Ready != bIsGameReady)
+	{
+		bIsGameReady = Ready;
+
+		OnGameReadyChanged.Broadcast(bIsGameReady);
+	}
 }
 
-void ALobbyGameState::RpcLobbyPlayerInfoChanged_Implementation()
+bool ALobbyGameState::IsGameReady()
 {
-	OnLobbyPlayerStateChanged.Broadcast();
+	int32 ReadyCount = 0;
+	for(ALobbyPlayerState* LobbyPlayerState : LobbyPlayerArray)
+	{
+		if (LobbyPlayerState->GetLobbyStatus() != EPlayerLobbyStatus::Preparing)
+		{
+			ReadyCount++;
+		}
+	}
+
+	return ReadyCount == LobbyPlayerArray.Num();
 }
 
 void ALobbyGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ALobbyGameState, LobbyPlayerArray);
+	DOREPLIFETIME(ALobbyGameState, bIsGameReady);
 }
 

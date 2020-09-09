@@ -69,6 +69,20 @@ ALobbyPlayerController::ALobbyPlayerController(const FObjectInitializer& ObjectI
 	bShowMouseCursor = true;
 }
 
+void ALobbyPlayerController::ToggleReadyStatus()
+{
+	if (ALobbyPlayerState* LobbyPlayerState = GetPlayerState<ALobbyPlayerState>())
+	{
+		LobbyPlayerState->SetLobbyStatus(LobbyPlayerState->GetLobbyStatus() == EPlayerLobbyStatus::Preparing ?
+			EPlayerLobbyStatus::Ready : EPlayerLobbyStatus::Preparing);
+	}
+}
+
+void ALobbyPlayerController::RpcPlayerStateChanged_Implementation()
+{
+	OnLobbyPlayerInfoChanged.Broadcast();
+}
+
 void ALobbyPlayerController::RpcHostUploadPlayerInfo_Implementation()
 {
 	// Gather all information and send to server (only for host)
@@ -76,6 +90,11 @@ void ALobbyPlayerController::RpcHostUploadPlayerInfo_Implementation()
 	{
 		GatherPlayerInfo();
 	}
+}
+
+void ALobbyPlayerController::RpcGameReadyStateChanged_Implementation(bool bIsReady)
+{
+	OnGameReadyStateChanged.Broadcast(bIsReady);
 }
 
 void ALobbyPlayerController::OnRep_PlayerState()

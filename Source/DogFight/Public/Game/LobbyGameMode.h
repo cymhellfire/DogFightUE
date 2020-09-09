@@ -27,7 +27,17 @@ public:
 	/** Get all player info in current game. */
 	TArray<FLobbyPlayerInfo> GetAllPlayerInfo() const;
 
+
+	virtual void BeginDestroy() override;
 protected:
+
+	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	void OnPlayerStateChanged();
+
+	UFUNCTION()
+	void OnGameReadyChanged(bool NewReadyState);
 
 	/** List of all player controller in current lobby. */
 	TArray<class ALobbyPlayerController*> PlayerControllerList;
