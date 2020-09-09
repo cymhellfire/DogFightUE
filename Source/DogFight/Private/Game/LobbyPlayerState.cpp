@@ -21,8 +21,6 @@ void ALobbyPlayerState::SetLobbyStatus(EPlayerLobbyStatus NewStatus)
 
 void ALobbyPlayerState::OnRep_PlayerLobbyStatus()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Yellow, FString::Printf(TEXT("PlayerState %s changed."), *GetName()));
-
 	// Trigger the delegate
 	OnLobbyPlayerStateChanged.Broadcast();
 }

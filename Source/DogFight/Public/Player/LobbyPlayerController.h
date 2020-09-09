@@ -17,17 +17,6 @@ class DOGFIGHT_API ALobbyPlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
-
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLobbyPlayerInfoChangeSignature);
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FLobbyGameReadyStateChangeSignature, bool, NewReadyState);
-
-	UPROPERTY(BlueprintAssignable, Category="DogFight|Lobby")
-	FLobbyPlayerInfoChangeSignature OnLobbyPlayerInfoChanged;
-
-	UPROPERTY(BlueprintAssignable, Category="DogFight|Lobby")
-	FLobbyGameReadyStateChangeSignature OnGameReadyStateChanged;
-
-public:
 	ALobbyPlayerController(const FObjectInitializer& ObjectInitializer);
 
 	UFUNCTION(BlueprintCallable, Category="DogFight|Lobby")
@@ -39,18 +28,6 @@ public:
 	 */
 	UFUNCTION(Client, Reliable)
 	void RpcHostUploadPlayerInfo();
-
-	/**
-	 * Called by server when one player changed state.
-	 */
-	UFUNCTION(Client, Reliable)
-	void RpcPlayerStateChanged();
-
-	/**
-	 * Called by server when game ready state changed.
-	 */
-	UFUNCTION(Client, Reliable)
-	void RpcGameReadyStateChanged(bool bIsReady);
 
 	virtual void OnRep_PlayerState() override;
 protected:

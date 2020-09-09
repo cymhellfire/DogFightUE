@@ -13,22 +13,12 @@
 
 void ALobbyPlayerController::GatherPlayerInfo()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("GatherPlayerInfo"));
-
 	// Get player name
 	UDogFightSaveGame* SaveGameInstance = Cast<UDogFightGameInstance>(GetGameInstance())->GetSaveGameManager()->GetCurrentSaveGameInstance();
 	if (SaveGameInstance == nullptr)
 	{
 		UE_LOG(LogDogFight, Error, TEXT("No available player profile."));
 		return;
-	}
-
-	UE_LOG(LogDogFight, Display, TEXT("PlayerState: %s"), *PlayerState->StaticClass()->GetName());
-
-	ALobbyPlayerState* LobbyPlayerState = Cast<ALobbyPlayerState>(PlayerState);
-	if (LobbyPlayerState != nullptr)
-	{
-		UE_LOG(LogDogFight, Display, TEXT("Get Lobby Player State."));
 	}
 	
 	// Get Player State
@@ -44,14 +34,14 @@ void ALobbyPlayerController::GatherPlayerInfo()
 	PlayerInfo.PlayerName = SaveGameInstance->PlayerName;
 	PlayerInfo.PlayerStatus = GetNetMode() == NM_ListenServer ? EPlayerLobbyStatus::Host : MyPlayerState->GetLobbyStatus();
 
+	UE_LOG(LogDogFight, Log, TEXT("Send Player Info: Name[%s] Status[%d]"), *PlayerInfo.PlayerName, PlayerInfo.PlayerStatus);
+	
 	// Send info to server
 	CmdSendPlayerInfo(PlayerInfo);
 }
 
 void ALobbyPlayerController::CmdSendPlayerInfo_Implementation(FLobbyPlayerInfo PlayerInfo)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("CmdSendPlayerInfo"));
-	
 	// Change player name
 	ServerChangeName(PlayerInfo.PlayerName);
 
@@ -78,11 +68,6 @@ void ALobbyPlayerController::ToggleReadyStatus()
 	}
 }
 
-void ALobbyPlayerController::RpcPlayerStateChanged_Implementation()
-{
-	OnLobbyPlayerInfoChanged.Broadcast();
-}
-
 void ALobbyPlayerController::RpcHostUploadPlayerInfo_Implementation()
 {
 	// Gather all information and send to server (only for host)
@@ -92,16 +77,9 @@ void ALobbyPlayerController::RpcHostUploadPlayerInfo_Implementation()
 	}
 }
 
-void ALobbyPlayerController::RpcGameReadyStateChanged_Implementation(bool bIsReady)
-{
-	OnGameReadyStateChanged.Broadcast(bIsReady);
-}
-
 void ALobbyPlayerController::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("OnRep_PlayerState."));
 
 	// Gather all information and send to server
 	GatherPlayerInfo();
