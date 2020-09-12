@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 
-#include "GameFramework/PlayerController.h"
+#include "DogFightPlayerController.h"
 #include "LobbyPlayerState.h"
 #include "LobbyPlayerController.generated.h"
 
@@ -12,7 +12,7 @@
  * 
  */
 UCLASS()
-class DOGFIGHT_API ALobbyPlayerController : public APlayerController
+class DOGFIGHT_API ALobbyPlayerController : public ADogFightPlayerController
 {
 	GENERATED_BODY()
 

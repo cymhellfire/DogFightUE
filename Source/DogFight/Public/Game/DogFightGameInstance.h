@@ -7,6 +7,13 @@
 #include "Engine/GameInstance.h"
 #include "DogFightGameInstance.generated.h"
 
+namespace DogFightGameInstanceState
+{
+	extern const FName None;
+	extern const FName MainMenu;
+	extern const FName Playing;
+}
+
 /**
  * 
  */
@@ -51,6 +58,11 @@ public:
 	 */
 	bool JoinSpecifiedSession(TSharedPtr<const FUniqueNetId> UserId, FName SessionName, const FOnlineSessionSearchResult& SearchResult);
 
+	/**
+	 * Shutdown current session and free any using net driver.
+	 */
+	void CleanupSessionOnReturnToMenu();
+
 	virtual void Shutdown() override;
 
 	class USaveGameManager* GetSaveGameManager() { return SaveGameManager; };
@@ -66,12 +78,15 @@ protected:
 	FOnJoinSessionCompleteDelegate OnJoinSessionCompleteDelegate;
 	/* Delegate triggered when session destroyed. */
 	FOnDestroySessionCompleteDelegate OnDestroySessionCompleteDelegate;
+	/* Delegate triggered when session ended. */
+	FOnEndSessionCompleteDelegate OnEndSessionCompleteDelegate;
 
 	FDelegateHandle OnCreateSessionCompleteDelegateHandle;
 	FDelegateHandle OnStartSessionCompleteDelegateHandle;
 	FDelegateHandle OnFindSessionsCompleteDelegateHandle;
 	FDelegateHandle OnJoinSessionCompleteDelegateHandle;
 	FDelegateHandle OnDestroySessionCompleteDelegateHandle;
+	FDelegateHandle OnEndSessionCompleteDelegateHandle;
 
 	/* Callback function for CreateSessionComplete delegate */
 	void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
@@ -88,11 +103,18 @@ protected:
 	/* Callback function for DestroySessionComplete delegate */
 	void OnDestroySessionComplete(FName SessionName, bool bWasSuccessful);
 
+	/* Callback function for EndSessionComplete delegate */
+	void OnEndSessionComplete(FName SessionName, bool bWasSuccessful);
+
 	/* Wrapper for getting IOnlineSessionPtr from current Online Subsystem. */
 	IOnlineSessionPtr GetOnlineSessionPtr() const;
 
 	void HandleNetworkFailure(UWorld* World, UNetDriver* NetDriver, ENetworkFailure::Type FailureType, const FString& ErrorString);
 private:
+
+	FName PendingState;
+	FName CurrentState;
+
 	/* Name of map to use in new session. */
 	FString GameMapName;
 
@@ -110,6 +132,35 @@ public:
 	/** Initialize Game Instance. */
 	virtual void Init() override;
 
+	bool Tick(float DeltaSeconds);
+
+	/** Remove the handler for network failure. */
+	void RemoveNetworkFailureHandler() const;
+
+	UFUNCTION(BlueprintCallable, Category="DogFight|Game")
+	void GoToState(FName NewState);
+private:
+
+	void CheckChangeState();
+
+	void EndCurrentState();
+	void BeginNewState(FName NewState);
+
+	void BeginMainMenuState();
+	void EndMainMenuState();
+	void BeginPlayingState();
+	void EndPlayingState();
+
+	bool LoadFrontEndMap(const FString& MapName);
+
+	/** Register the handler to network failure. */
+	void SetupNetworkFailureHandler();
+
+	FDelegateHandle NetworkFailureHandle;
+
+	FTickerDelegate TickDelegate;
+	FDelegateHandle TickDelegateHandle;
+
 #pragma region Blueprint
 public:
 	UFUNCTION(BlueprintCallable, Category="Network|Test")
@@ -123,6 +174,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Network|Test")
 	void DestroySessionAndLeaveGame();
+
+	UFUNCTION(BlueprintCallable, Category="DogFight|Game")
+	void LeaveGameAndReturnToMainMenu();
 
 	UFUNCTION(BlueprintCallable, Category="DogFight|Game", meta=(DisplayName="Add Main Menu Message"))
 	void AddPendingMessage(FText Title, FText Content);

@@ -4,16 +4,15 @@
 
 #include "CoreMinimal.h"
 
-
+#include "DogFightGameModeBase.h"
 #include "LobbyPlayerState.h"
-#include "GameFramework/GameModeBase.h"
 #include "LobbyGameMode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class DOGFIGHT_API ALobbyGameMode : public AGameModeBase
+class DOGFIGHT_API ALobbyGameMode : public ADogFightGameModeBase
 {
 	GENERATED_BODY()
 

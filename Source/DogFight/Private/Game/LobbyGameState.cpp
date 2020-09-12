@@ -39,6 +39,8 @@ void ALobbyGameState::RemovePlayerState(APlayerState* PlayerState)
 			}
 		}
 	}
+	// If someone left game, it's also treated as player changed info.
+	OnLobbyPlayerInfoChanged();
 
 	Super::RemovePlayerState(PlayerState);
 }

@@ -3,9 +3,19 @@
 
 #include "DogFightGameInstance.h"
 
+
+#include "DogFightGameStateBase.h"
+#include "DogFightTypes.h"
 #include "SaveGameManager.h"
 
 #define ST_UI_LOC		"/Game/DogFight/Localization/ST_UserInterface.ST_UserInterface"
+
+namespace DogFightGameInstanceState
+{
+	const FName None = FName(TEXT("None"));
+	const FName MainMenu = FName(TEXT("MainMenu"));
+	const FName Playing = FName(TEXT("Playing"));
+}
 
 UDogFightGameInstance::UDogFightGameInstance(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -16,6 +26,9 @@ UDogFightGameInstance::UDogFightGameInstance(const FObjectInitializer& ObjectIni
 	OnFindSessionsCompleteDelegate = FOnFindSessionsCompleteDelegate::CreateUObject(this, &UDogFightGameInstance::OnFindSessionsComplete);
 	OnJoinSessionCompleteDelegate = FOnJoinSessionCompleteDelegate::CreateUObject(this, &UDogFightGameInstance::OnJoinSessionComplete);
 	OnDestroySessionCompleteDelegate = FOnDestroySessionCompleteDelegate::CreateUObject(this, &UDogFightGameInstance::OnDestroySessionComplete);
+	OnEndSessionCompleteDelegate = FOnEndSessionCompleteDelegate::CreateUObject(this, &UDogFightGameInstance::OnEndSessionComplete);
+
+	CurrentState = DogFightGameInstanceState::None;
 }
 
 bool UDogFightGameInstance::HostSession(TSharedPtr<const FUniqueNetId> UserId, FName SessionName, FString InMapName, bool bIsLan, bool bIsPresence, int32 MaxNumPlayers)
@@ -99,6 +112,10 @@ void UDogFightGameInstance::OnStartSessionComplete(FName SessionName, bool bWasS
 	if (bWasSuccessful)
 	{
 		UGameplayStatics::OpenLevel(GetWorld(), FName(*GameMapName), true, "listen");
+
+		SetupNetworkFailureHandler();
+
+		GoToState(DogFightGameInstanceState::Playing);
 	}
 }
 
@@ -155,6 +172,9 @@ bool UDogFightGameInstance::JoinSpecifiedSession(TSharedPtr<const FUniqueNetId> 
 void UDogFightGameInstance::Shutdown()
 {
 	Super::Shutdown();
+
+	// Remove the ticker delegate
+	FTicker::GetCoreTicker().RemoveTicker(TickDelegateHandle);
 }
 
 void UDogFightGameInstance::OnFindSessionsComplete(bool bWasSuccessful)
@@ -200,6 +220,10 @@ void UDogFightGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSess
 
 		if (PlayerController && Sessions->GetResolvedConnectString(SessionName, TravelURL))
 		{
+			SetupNetworkFailureHandler();
+
+			GoToState(DogFightGameInstanceState::Playing);
+
 			// Call ClientTravel
 			PlayerController->ClientTravel(TravelURL, ETravelType::TRAVEL_Absolute);
 		}
@@ -219,7 +243,59 @@ void UDogFightGameInstance::OnDestroySessionComplete(FName SessionName, bool bWa
 		// If destroyed successful, open the menu level
 		if (bWasSuccessful)
 		{
-			UGameplayStatics::OpenLevel(GetWorld(), FName(*MenuMapName), true);
+			//UGameplayStatics::OpenLevel(GetWorld(), FName(*MenuMapName), true);
+		}
+	}
+}
+
+void UDogFightGameInstance::OnEndSessionComplete(FName SessionName, bool bWasSuccessful)
+{
+	UE_LOG(LogOnline, Log, TEXT("OnEndSessionComplete %s %d"), *SessionName.ToString(), bWasSuccessful);
+
+	const IOnlineSessionPtr Sessions = GetOnlineSessionPtr();
+	if (Sessions && Sessions.IsValid())
+	{
+		Sessions->ClearOnEndSessionCompleteDelegate_Handle(OnEndSessionCompleteDelegateHandle);
+		Sessions->ClearOnDestroySessionCompleteDelegate_Handle(OnDestroySessionCompleteDelegateHandle);
+		Sessions->ClearOnStartSessionCompleteDelegate_Handle(OnStartSessionCompleteDelegateHandle);
+	}
+
+	// Continue end session process
+	CleanupSessionOnReturnToMenu();
+}
+
+void UDogFightGameInstance::CleanupSessionOnReturnToMenu()
+{
+	const IOnlineSessionPtr Sessions = GetOnlineSessionPtr();
+	if (Sessions && Sessions.IsValid())
+	{
+		const FString SessionName = LexToString(NAME_GameSession);
+		EOnlineSessionState::Type SessionState = Sessions->GetSessionState(NAME_GameSession);
+		UE_LOG(LogOnline, Log, TEXT("Session %s is '%s'"), *SessionName, EOnlineSessionState::ToString(SessionState));
+
+		if (EOnlineSessionState::InProgress == SessionState)
+		{
+			UE_LOG(LogOnline, Log, TEXT("Ending session %s on return to main menu."), *SessionName);
+			OnEndSessionCompleteDelegateHandle = Sessions->AddOnEndSessionCompleteDelegate_Handle(OnEndSessionCompleteDelegate);
+			Sessions->EndSession(NAME_GameSession);
+		}
+		else if (EOnlineSessionState::Ending == SessionState)
+		{
+			UE_LOG(LogOnline, Log, TEXT("Waiting for session %s to end on return to main menu."), *SessionName);
+			OnEndSessionCompleteDelegateHandle = Sessions->AddOnEndSessionCompleteDelegate_Handle(OnEndSessionCompleteDelegate);
+		}
+		else if (EOnlineSessionState::Ended == SessionState || EOnlineSessionState::Pending == SessionState)
+		{
+			UE_LOG(LogOnline, Log, TEXT("Destroying session %s on return to main menu."), *SessionName);
+			OnDestroySessionCompleteDelegateHandle = Sessions->AddOnDestroySessionCompleteDelegate_Handle(OnDestroySessionCompleteDelegate);
+			Sessions->DestroySession(NAME_GameSession);
+
+			RemoveNetworkFailureHandler();
+		}
+		else if (EOnlineSessionState::Starting == SessionState || EOnlineSessionState::Creating == SessionState)
+		{
+			UE_LOG(LogOnline, Log, TEXT("Waiting for session %s to start, and then we will end it to return to main menu."), *SessionName);
+			OnStartSessionCompleteDelegateHandle = Sessions->AddOnStartSessionCompleteDelegate_Handle(OnStartSessionCompleteDelegate);
 		}
 	}
 }
@@ -248,7 +324,7 @@ void UDogFightGameInstance::HandleNetworkFailure(UWorld* World, UNetDriver* NetD
 
 		// Enqueue error message
 		AddPendingMessage(FText::FromStringTable(ST_UI_LOC, FString("NetErrorTitle")),
-			FText::FromStringTable(ST_UI_LOC, FString("NetError_LostConnect")));
+			FText::FromStringTable(ST_UI_LOC, UEnum::GetDisplayValueAsText(EReturnToMainMenuReason::LostConnect).ToString()));
 
 		// Open the Main Menu level
 		UGameplayStatics::OpenLevel(GetWorld(), FName(*MenuMapName), true);
@@ -260,8 +336,144 @@ void UDogFightGameInstance::Init()
 	// Create Save Manager
 	SaveGameManager = NewObject<USaveGameManager>(this, FName(TEXT("SaveGameManager")));
 
+	// Register delegate for ticker callback
+	TickDelegate = FTickerDelegate::CreateUObject(this, &UDogFightGameInstance::Tick);
+	TickDelegateHandle = FTicker::GetCoreTicker().AddTicker(TickDelegate);
+}
+
+bool UDogFightGameInstance::Tick(float DeltaSeconds)
+{
+	// Because this takes place outside the normal UWorld tick, we need to register what world we're ticking/modifying here to avoid issues in the editor
+	FScopedConditionalWorldSwitcher WorldSwitcher(GetWorld());
+
+	CheckChangeState();
+
+	return true;
+}
+
+bool UDogFightGameInstance::LoadFrontEndMap(const FString& MapName)
+{
+	bool bSuccess = true;
+
+	// Do nothing if the map is already loaded
+	UWorld* const World = GetWorld();
+	if (World)
+	{
+		FString const CurrentMapName = *World->PersistentLevel->GetOutermost()->GetName();
+		if (CurrentMapName == MapName)
+		{
+			return bSuccess;
+		}
+	}
+
+	FString Error;
+	EBrowseReturnVal::Type BrowseRet = EBrowseReturnVal::Failure;
+	const FURL URL(*FString::Printf(TEXT("%s"), *MapName));
+
+	if (URL.Valid && !HasAnyFlags(RF_ClassDefaultObject))
+	{
+		BrowseRet = GetEngine()->Browse(*WorldContext, URL, Error);
+
+		// Handle failure
+		if (BrowseRet != EBrowseReturnVal::Success)
+		{
+			UE_LOG(LogLoad, Fatal, TEXT("%s"), *FString::Printf(TEXT("Failed to enter %s: %s. Please check the log for errors."), *MapName, *Error));
+			bSuccess = false;
+		}
+	}
+
+	return bSuccess;
+}
+
+void UDogFightGameInstance::SetupNetworkFailureHandler()
+{
 	// Listen to Network Failure
-	GEngine->OnNetworkFailure().AddUObject(this, &UDogFightGameInstance::HandleNetworkFailure);
+	NetworkFailureHandle = GEngine->OnNetworkFailure().AddUObject(this, &UDogFightGameInstance::HandleNetworkFailure);
+}
+
+void UDogFightGameInstance::RemoveNetworkFailureHandler() const
+{
+	GEngine->OnNetworkFailure().Remove(NetworkFailureHandle);
+}
+
+void UDogFightGameInstance::GoToState(FName NewState)
+{
+	UE_LOG(LogOnline, Log, TEXT("GotoState: %s"), *NewState.ToString());
+
+	PendingState = NewState;
+}
+
+void UDogFightGameInstance::CheckChangeState()
+{
+	if (PendingState != CurrentState && PendingState != DogFightGameInstanceState::None)
+	{
+		// End current state
+		EndCurrentState();
+
+		// Begin new state
+		BeginNewState(PendingState);
+
+		// Clear pending state
+		PendingState = DogFightGameInstanceState::None;
+	}
+}
+
+void UDogFightGameInstance::EndCurrentState()
+{
+	if (CurrentState == DogFightGameInstanceState::MainMenu)
+	{
+		EndMainMenuState();
+	}
+	else if (CurrentState == DogFightGameInstanceState::Playing)
+	{
+		EndPlayingState();
+	}
+
+	CurrentState = DogFightGameInstanceState::None;
+}
+
+void UDogFightGameInstance::BeginNewState(FName NewState)
+{
+	if (NewState == DogFightGameInstanceState::MainMenu)
+	{
+		BeginMainMenuState();
+	}
+	else if (NewState == DogFightGameInstanceState::Playing)
+	{
+		BeginPlayingState();
+	}
+
+	CurrentState = NewState;
+}
+
+void UDogFightGameInstance::BeginMainMenuState()
+{
+	LoadFrontEndMap(FString::Printf(TEXT("/Game/DogFight/Maps/%s"),*MenuMapName));
+}
+
+void UDogFightGameInstance::EndMainMenuState()
+{
+	
+}
+
+void UDogFightGameInstance::BeginPlayingState()
+{
+	
+}
+
+void UDogFightGameInstance::EndPlayingState()
+{
+	UWorld* const World = GetWorld();
+	ADogFightGameStateBase* const GameState = World != nullptr ? World->GetGameState<ADogFightGameStateBase>() : nullptr;
+
+	if (GameState)
+	{
+		GameState->FinishGameAndReturnToMainMenu();
+	}
+	else
+	{
+		CleanupSessionOnReturnToMenu();
+	}
 }
 
 void UDogFightGameInstance::HostOnlineGame(FString InMapName)
@@ -307,6 +519,16 @@ void UDogFightGameInstance::DestroySessionAndLeaveGame()
 
 		Sessions->DestroySession(GameSessionName);
 	}
+}
+
+void UDogFightGameInstance::LeaveGameAndReturnToMainMenu()
+{
+	// if (ADogFightGameStateBase* GameState = GetWorld()->GetGameState<ADogFightGameStateBase>())
+	// {
+	// 	GameState->FinishGameAndReturnToMainMenu();
+	// }
+
+	GoToState(DogFightGameInstanceState::MainMenu);
 }
 
 void UDogFightGameInstance::AddPendingMessage(FText Title, FText Content)

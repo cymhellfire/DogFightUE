@@ -3,16 +3,16 @@
 #pragma once
 
 #include "DogFight.h"
+#include "DogFightGameStateBase.h"
 
 #include "LobbyPlayerState.h"
-#include "GameFramework/GameStateBase.h"
 #include "LobbyGameState.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class DOGFIGHT_API ALobbyGameState : public AGameStateBase
+class DOGFIGHT_API ALobbyGameState : public ADogFightGameStateBase
 {
 	GENERATED_BODY()
 
