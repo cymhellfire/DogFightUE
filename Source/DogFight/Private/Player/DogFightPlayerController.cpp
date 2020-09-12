@@ -5,7 +5,7 @@
 
 #include "DogFightGameInstance.h"
 
-#define ST_UI_LOC	"/Game/DogFight/Localization/ST_UserInterface.ST_UserInterface"
+#define ST_UI_LOC		"/Game/DogFight/Localization/ST_UserInterface.ST_UserInterface"
 
 void ADogFightPlayerController::RpcReturnToMainMenuWithReason_Implementation(EReturnToMainMenuReason::Type Reason)
 {
@@ -22,8 +22,15 @@ void ADogFightPlayerController::RpcReturnToMainMenuWithReason_Implementation(ERe
 		// Add reason message
 		if (UDogFightGameInstance* DogFightGameInstance = Cast<UDogFightGameInstance>(GameInstance))
 		{
+#if UE_EDITOR
+			const FString ErrorContextString = UEnum::GetDisplayValueAsText(Reason).ToString();
+#else
+			const FString ErrorContextString = FString::Printf(TEXT("NetError_%s"),*UEnum::GetDisplayValueAsText(Reason).ToString());
+#endif
+			UE_LOG(LogDogFight, Log, TEXT("DisplayValueAsText: %s"), *ErrorContextString);
+			
 			DogFightGameInstance->AddPendingMessage(FText::FromStringTable(ST_UI_LOC, TEXT("NetErrorTitle")),
-				FText::FromStringTable(ST_UI_LOC, UEnum::GetDisplayValueAsText(Reason).ToString()));
+				FText::FromStringTable(ST_UI_LOC, ErrorContextString));
 		}
 	}
 	else
