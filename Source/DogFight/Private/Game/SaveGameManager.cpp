@@ -97,6 +97,12 @@ void USaveGameManager::DeleteAtSlot(FString SlotName)
 		return;
 	}
 
+	// Clear selected slot if it's deleted
+	if (SlotName == SelectedSlotName)
+	{
+		SelectedSlotName = "";
+	}
+
 	if (!UGameplayStatics::DeleteGameInSlot(SlotName, 0))
 	{
 		UE_LOG(LogDogFight, Error, TEXT("Failed to delete game in slot: %s"), *SlotName);
@@ -201,6 +207,9 @@ void USaveGameManager::LoadSaveGameAtSlot(FString SlotName)
 	else
 	{
 		UE_LOG(LogDogFight, Error, TEXT("Failed load save game at slot: %s"), *SlotName);
+
+		// Clear the selected slot name
+		SelectedSlotName = "";
 	}
 }
 
