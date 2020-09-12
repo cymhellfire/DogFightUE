@@ -24,6 +24,10 @@ public:
 
 	virtual void HandleReturnToMainMenu();
 
+	/** Send just before the host start game. */
+	UFUNCTION(Client, Reliable)
+	virtual void RpcPreStartGame();
+
 protected:
 
 	/** End and/or destroy current game session. */

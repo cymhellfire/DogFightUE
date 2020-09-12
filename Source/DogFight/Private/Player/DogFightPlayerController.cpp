@@ -45,6 +45,15 @@ void ADogFightPlayerController::HandleReturnToMainMenu()
 	CleanupSessionOnReturnMain();
 }
 
+void ADogFightPlayerController::RpcPreStartGame_Implementation()
+{
+	// Let every client show the loading screen
+	if (UDogFightGameInstance* GameInstance = Cast<UDogFightGameInstance>(GetGameInstance()))
+	{
+		GameInstance->ShowLoadingScreen();
+	}
+}
+
 void ADogFightPlayerController::CleanupSessionOnReturnMain()
 {
 	const UWorld* World = GetWorld();

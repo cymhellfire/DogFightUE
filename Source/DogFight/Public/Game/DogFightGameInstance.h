@@ -139,6 +139,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="DogFight|Game")
 	void GoToState(FName NewState);
+
+	void ShowLoadingScreen();
+
 private:
 
 	void CheckChangeState();

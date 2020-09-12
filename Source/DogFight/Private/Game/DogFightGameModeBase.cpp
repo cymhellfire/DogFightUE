@@ -30,3 +30,15 @@ void ADogFightGameModeBase::RequestFinishAndExitToMainMenu()
 		LocalPlayerController->HandleReturnToMainMenu();
 	}
 }
+
+void ADogFightGameModeBase::NotifyClientGameWillStart()
+{
+	// Tell every client game will start
+	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	{
+		if (ADogFightPlayerController* DogFightPlayerController = Cast<ADogFightPlayerController>(*Iterator))
+		{
+			DogFightPlayerController->RpcPreStartGame();
+		}
+	}
+}

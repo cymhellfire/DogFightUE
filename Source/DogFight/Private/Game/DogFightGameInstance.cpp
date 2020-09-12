@@ -4,9 +4,12 @@
 #include "DogFightGameInstance.h"
 
 
+
+#include "DogFightGameModeBase.h"
 #include "DogFightGameStateBase.h"
 #include "DogFightTypes.h"
 #include "SaveGameManager.h"
+#include "Blueprint/UserWidget.h"
 
 #define ST_UI_LOC		"/Game/DogFight/Localization/ST_UserInterface.ST_UserInterface"
 
@@ -409,6 +412,17 @@ void UDogFightGameInstance::GoToState(FName NewState)
 	PendingState = NewState;
 }
 
+void UDogFightGameInstance::ShowLoadingScreen()
+{
+	// Create Loading screen widget
+	const FStringClassReference WidgetClassRef(TEXT("/Game/DogFight/UI/TransitionMap/BP_TransitionMapWidget.BP_TransitionMapWidget_C"));
+	if (UClass* WidgetClass = WidgetClassRef.TryLoadClass<UUserWidget>())
+	{
+		UUserWidget* NewWidget = CreateWidget<UUserWidget>(GetFirstLocalPlayerController(), WidgetClass);
+		NewWidget->AddToViewport();
+	}
+}
+
 void UDogFightGameInstance::CheckChangeState()
 {
 	if (PendingState != CurrentState && PendingState != DogFightGameInstanceState::None)
@@ -564,6 +578,15 @@ void UDogFightGameInstance::TravelToGameMap(FString InMapName, FString InGameMod
 	if (InMapName.IsEmpty())
 	{
 		return;
+	}
+
+	AGameModeBase* GameMode = GetWorld()->GetAuthGameMode();
+	if (GameMode != nullptr)
+	{
+		if (ADogFightGameModeBase* DogFightGameModeBase = Cast<ADogFightGameModeBase>(GameMode))
+		{
+			DogFightGameModeBase->NotifyClientGameWillStart();
+		}
 	}
 
 	FString URL = InMapName;

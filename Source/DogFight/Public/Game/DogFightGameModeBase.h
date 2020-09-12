@@ -18,4 +18,7 @@ public:
 
 	/** Finish current game and pump all players to main menu. */
 	virtual void RequestFinishAndExitToMainMenu();
+
+	/** Notify all clients that game will start. */
+	virtual void NotifyClientGameWillStart();
 };
