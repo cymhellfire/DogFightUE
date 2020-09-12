@@ -175,6 +175,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Network|Test")
 	void DestroySessionAndLeaveGame();
 
+	UFUNCTION(BlueprintCallable, Category="DogFight|Network")
+	void DirectlyConnectToHost(FString IpAddress);
+
+	UFUNCTION(BlueprintCallable, Category="DogFight|Game")
+	void TravelToGameMap(FString InMapName, FString InGameMode);
+
 	UFUNCTION(BlueprintCallable, Category="DogFight|Game")
 	void LeaveGameAndReturnToMainMenu();
 

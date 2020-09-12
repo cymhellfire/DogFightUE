@@ -6,9 +6,13 @@
 #include "StandardModePlayerPawn.h"
 #include "StandardModeCameraComponent.h"
 #include "DogFight.h"
+#include "DogFightGameInstance.h"
+#include "SaveGameManager.h"
 #include "StandardModePlayerCharacter.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Net/UnrealNetwork.h"
+#include "DogFightSaveGame.h"
+#include "Blueprint/UserWidget.h"
 
 AStandardModePlayerController::AStandardModePlayerController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -18,6 +22,7 @@ AStandardModePlayerController::AStandardModePlayerController(const FObjectInitia
 	bClickMoveEnabled = true;
 	CharacterPawn = nullptr;
 	PrimaryActorTick.bCanEverTick = true;
+	bInGameMenuShown = false;
 }
 
 void AStandardModePlayerController::SetClickMovementEnabled(bool bEnabled)
@@ -28,11 +33,46 @@ void AStandardModePlayerController::SetClickMovementEnabled(bool bEnabled)
 #endif
 }
 
+void AStandardModePlayerController::RpcRequestPlayerInfo_Implementation()
+{
+	// Get current save game
+	UDogFightSaveGame* SavedGame = Cast<UDogFightGameInstance>(GetGameInstance())->GetSaveGameManager()->GetCurrentSaveGameInstance();
+
+	if (SavedGame != nullptr)
+	{
+		SetName(SavedGame->PlayerName);
+	}
+}
+
+void AStandardModePlayerController::CloseInGameMenu()
+{
+	if (InGameMenuWidget && bInGameMenuShown)
+	{
+		InGameMenuWidget->RemoveFromParent();
+
+		bInGameMenuShown = false;
+	}
+}
+
 void AStandardModePlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SpawnCharacterPawn();
+	// Create the InGameMenu widget for local player
+	if (IsLocalController())
+	{
+		FStringClassReference WidgetClassRef(TEXT("/Game/DogFight/UI/InGame/BP_InGameMenu.BP_InGameMenu_C"));
+		if (UClass* WidgetClass = WidgetClassRef.TryLoadClass<UUserWidget>())
+		{
+			InGameMenuWidget = CreateWidget<UUserWidget>(this, WidgetClass);
+		}
+		else
+		{
+			UE_LOG(LogLoad, Error, TEXT("Failed to load class %s"), *WidgetClassRef.ToString());
+		}
+	}
+
+	CmdSpawnCharacterPawn();
 }
 
 void AStandardModePlayerController::SetupInputComponent()
@@ -40,10 +80,15 @@ void AStandardModePlayerController::SetupInputComponent()
 	Super::SetupInputComponent();
 
 	InputComponent->BindAction("SetDestination", IE_Pressed, this, &AStandardModePlayerController::OnSetDestinationPressed);
+	InputComponent->BindAction("OpenInGameMenu", IE_Pressed, this, &AStandardModePlayerController::OnOpenInGameMenuPressed);
 }
 
 void AStandardModePlayerController::ProcessPlayerInput(const float DeltaTime, const bool bGamePaused)
 {
+	// Don't update camera movement when in game menu displaying
+	if (bInGameMenuShown)
+		return;
+
 	Super::ProcessPlayerInput(DeltaTime, bGamePaused);
 
 	// Update StandardModePlayerPawn if available
@@ -63,6 +108,9 @@ void AStandardModePlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeP
 
 void AStandardModePlayerController::OnSetDestinationPressed()
 {
+	if (bInGameMenuShown)
+		return;
+
 	// Check if click movement is enabled
 	if (!bClickMoveEnabled)
 		return;
@@ -81,6 +129,16 @@ void AStandardModePlayerController::OnSetDestinationPressed()
 	}
 }
 
+void AStandardModePlayerController::OnOpenInGameMenuPressed()
+{
+	if (InGameMenuWidget && !bInGameMenuShown)
+	{
+		InGameMenuWidget->AddToViewport();
+
+		bInGameMenuShown = true;
+	}
+}
+
 void AStandardModePlayerController::CmdMoveToMouseCursor_Implementation(FVector Destination)
 {
 	if (CharacterPawn == nullptr)
@@ -89,7 +147,7 @@ void AStandardModePlayerController::CmdMoveToMouseCursor_Implementation(FVector 
 	UAIBlueprintHelperLibrary::SimpleMoveToLocation(CharacterPawn->GetController(), Destination);
 }
 
-void AStandardModePlayerController::SpawnCharacterPawn_Implementation()
+void AStandardModePlayerController::CmdSpawnCharacterPawn_Implementation()
 {
 	// Only do spawn on server side
 	if (GetLocalRole() != ROLE_Authority)

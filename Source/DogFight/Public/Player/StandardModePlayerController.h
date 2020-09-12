@@ -21,6 +21,12 @@ class DOGFIGHT_API AStandardModePlayerController : public APlayerController
 	UPROPERTY(Category=PlayerController, EditAnywhere, BlueprintReadOnly, Replicated)
 	TSubclassOf<AStandardModePlayerCharacter> CharacterPawnClass;
 
+	UFUNCTION(Client, Reliable)
+	void RpcRequestPlayerInfo();
+
+	UFUNCTION(BlueprintCallable, Category="DogFight|UI")
+	void CloseInGameMenu();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -29,12 +35,13 @@ protected:
 	virtual void ProcessPlayerInput(const float DeltaTime, const bool bGamePaused) override;
 
 	void OnSetDestinationPressed();
+	void OnOpenInGameMenuPressed();
 
 	UFUNCTION(Server, Reliable)
 	void CmdMoveToMouseCursor(FVector Destination);
 
 	UFUNCTION(Server, Reliable)
-	void SpawnCharacterPawn();
+	void CmdSpawnCharacterPawn();
 private:
 	UPROPERTY(Category=PlayerController, VisibleAnywhere, Replicated)
 	AStandardModePlayerCharacter* CharacterPawn;
@@ -42,4 +49,10 @@ private:
 	/** Is click movement enabled for this player controller? */
 	UPROPERTY(Category=PlayerController, VisibleAnywhere, Replicated)
 	bool bClickMoveEnabled;
+
+	/** Is the in game menu displayed? */
+	bool bInGameMenuShown;
+
+	UPROPERTY()
+	UUserWidget* InGameMenuWidget;
 };

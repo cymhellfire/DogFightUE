@@ -322,9 +322,15 @@ void UDogFightGameInstance::HandleNetworkFailure(UWorld* World, UNetDriver* NetD
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Lost connection from host."));
 
+#if UE_EDITOR
+		const FString NetErrorString = UEnum::GetDisplayValueAsText(EReturnToMainMenuReason::LostConnect).ToString();
+#else
+		const FString NetErrorString = FString::Printf(TEXT("NetError_%s"), *UEnum::GetDisplayValueAsText(EReturnToMainMenuReason::LostConnect).ToString());
+#endif
+
 		// Enqueue error message
 		AddPendingMessage(FText::FromStringTable(ST_UI_LOC, FString("NetErrorTitle")),
-			FText::FromStringTable(ST_UI_LOC, UEnum::GetDisplayValueAsText(EReturnToMainMenuReason::LostConnect).ToString()));
+			FText::FromStringTable(ST_UI_LOC, NetErrorString));
 
 		// Open the Main Menu level
 		UGameplayStatics::OpenLevel(GetWorld(), FName(*MenuMapName), true);
@@ -521,13 +527,57 @@ void UDogFightGameInstance::DestroySessionAndLeaveGame()
 	}
 }
 
+void UDogFightGameInstance::DirectlyConnectToHost(FString IpAddress)
+{
+	if (IpAddress.IsEmpty())
+	{
+		return;
+	}
+
+	// Check if this is a valid ip address
+	TArray<FString> Parts;
+	IpAddress.ParseIntoArray(Parts, TEXT("."));
+	if (Parts.Num() != 4)
+	{
+		UE_LOG(LogDogFight, Error, TEXT("Invalid Ip address to connect: %s"), *IpAddress);
+		return;
+	}
+
+	APlayerController* PlayerController = GetFirstLocalPlayerController();
+	if (PlayerController == nullptr)
+	{
+		UE_LOG(LogDogFight, Error, TEXT("No available local player controller."));
+		return;
+	}
+	const FString Cmd = FString::Printf(TEXT("open %s"), *IpAddress);
+	//GetWorld()->Exec(GetWorld(), *Cmd);
+	PlayerController->ConsoleCommand(Cmd);
+
+	// Setup network failure handler
+	SetupNetworkFailureHandler();
+	
+	GoToState(DogFightGameInstanceState::Playing);
+}
+
+void UDogFightGameInstance::TravelToGameMap(FString InMapName, FString InGameMode)
+{
+	if (InMapName.IsEmpty())
+	{
+		return;
+	}
+
+	FString URL = InMapName;
+	if (!InGameMode.IsEmpty())
+	{
+		URL += "?Game=" + InGameMode;
+	}
+	URL += "?listen";
+
+	GetWorld()->ServerTravel(URL, true, false);
+}
+
 void UDogFightGameInstance::LeaveGameAndReturnToMainMenu()
 {
-	// if (ADogFightGameStateBase* GameState = GetWorld()->GetGameState<ADogFightGameStateBase>())
-	// {
-	// 	GameState->FinishGameAndReturnToMainMenu();
-	// }
-
 	GoToState(DogFightGameInstanceState::MainMenu);
 }
 
