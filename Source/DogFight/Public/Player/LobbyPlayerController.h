@@ -22,18 +22,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="DogFight|Lobby")
 	void ToggleReadyStatus();
 
-	/**
-	 * Gather all information and send to server (only for host).
-	 * Client use OnRep_PlayerState to send player info.
-	 */
-	UFUNCTION(Client, Reliable)
-	void RpcHostUploadPlayerInfo();
-
-	virtual void OnRep_PlayerState() override;
 protected:
 	UFUNCTION(Server, Reliable)
 	void CmdSendPlayerInfo(FLobbyPlayerInfo PlayerInfo);
 
-private:
-	void GatherPlayerInfo();
+	virtual void GatherPlayerInfo() override;
 };

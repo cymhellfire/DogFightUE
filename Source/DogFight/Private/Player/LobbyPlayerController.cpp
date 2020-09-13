@@ -67,20 +67,3 @@ void ALobbyPlayerController::ToggleReadyStatus()
 			EPlayerLobbyStatus::Ready : EPlayerLobbyStatus::Preparing);
 	}
 }
-
-void ALobbyPlayerController::RpcHostUploadPlayerInfo_Implementation()
-{
-	// Gather all information and send to server (only for host)
-	if (GetNetMode() == NM_ListenServer)
-	{
-		GatherPlayerInfo();
-	}
-}
-
-void ALobbyPlayerController::OnRep_PlayerState()
-{
-	Super::OnRep_PlayerState();
-
-	// Gather all information and send to server
-	GatherPlayerInfo();
-}

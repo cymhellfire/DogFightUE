@@ -10,18 +10,15 @@ void ADogFightGameModeBase::RequestFinishAndExitToMainMenu()
 	ADogFightPlayerController* LocalPlayerController = nullptr;
 
 	// Notify everyone else to leave game
-	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	for (ADogFightPlayerController* PlayerController : PlayerControllerList)
 	{
-		if (ADogFightPlayerController* DogFightPlayerController = Cast<ADogFightPlayerController>(*Iterator))
+		if (!PlayerController->IsLocalController())
 		{
-			if (!DogFightPlayerController->IsLocalController())
-			{
-				DogFightPlayerController->RpcReturnToMainMenuWithReason(EReturnToMainMenuReason::HostLeft);
-			}
-			else
-			{
-				LocalPlayerController = DogFightPlayerController;
-			}
+			PlayerController->RpcReturnToMainMenuWithReason(EReturnToMainMenuReason::HostLeft);
+		}
+		else
+		{
+			LocalPlayerController = PlayerController;
 		}
 	}
 
@@ -34,11 +31,37 @@ void ADogFightGameModeBase::RequestFinishAndExitToMainMenu()
 void ADogFightGameModeBase::NotifyClientGameWillStart()
 {
 	// Tell every client game will start
-	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	for (ADogFightPlayerController* PlayerController : PlayerControllerList)
 	{
-		if (ADogFightPlayerController* DogFightPlayerController = Cast<ADogFightPlayerController>(*Iterator))
+		PlayerController->RpcPreStartGame();
+	}
+}
+
+void ADogFightGameModeBase::PostLogin(APlayerController* NewPlayer)
+{
+	Super::PostLogin(NewPlayer);
+
+	if (ADogFightPlayerController* DogFightPlayerController = Cast<ADogFightPlayerController>(NewPlayer))
+	{
+		if (!PlayerControllerList.Contains(DogFightPlayerController))
 		{
-			DogFightPlayerController->RpcPreStartGame();
+			PlayerControllerList.Add(DogFightPlayerController);
+		}
+
+		// Request Player Info
+		DogFightPlayerController->RpcHostUploadPlayerInfo();
+	}
+}
+
+void ADogFightGameModeBase::Logout(AController* Exiting)
+{
+	if (ADogFightPlayerController* DogFightPlayerController = Cast<ADogFightPlayerController>(Exiting))
+	{
+		if (PlayerControllerList.Contains(DogFightPlayerController))
+		{
+			PlayerControllerList.Remove(DogFightPlayerController);
 		}
 	}
+
+	Super::Logout(Exiting);
 }

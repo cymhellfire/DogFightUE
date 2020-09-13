@@ -19,10 +19,6 @@ class DOGFIGHT_API ALobbyGameMode : public ADogFightGameModeBase
 public:
 	ALobbyGameMode(const FObjectInitializer& ObjectInitializer);
 
-	virtual void PostLogin(APlayerController* NewPlayer) override;
-
-	virtual void Logout(AController* Exiting) override;
-
 	/** Get all player info in current game. */
 	TArray<FLobbyPlayerInfo> GetAllPlayerInfo() const;
 

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "GameFramework/GameModeBase.h"
 #include "DogFightGameModeBase.generated.h"
 
@@ -21,4 +22,14 @@ public:
 
 	/** Notify all clients that game will start. */
 	virtual void NotifyClientGameWillStart();
+
+protected:
+	
+	/** List of all player controller in current game. */
+	TArray<class ADogFightPlayerController*> PlayerControllerList;
+
+public:
+	virtual void PostLogin(APlayerController* NewPlayer) override;
+
+	virtual void Logout(AController* Exiting) override;
 };

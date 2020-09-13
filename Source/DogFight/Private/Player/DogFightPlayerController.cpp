@@ -54,6 +54,14 @@ void ADogFightPlayerController::RpcPreStartGame_Implementation()
 	}
 }
 
+void ADogFightPlayerController::RpcHostUploadPlayerInfo_Implementation()
+{
+	if (GetNetMode() == NM_ListenServer || GetNetMode() == NM_Standalone)
+	{
+		GatherPlayerInfo();
+	}
+}
+
 void ADogFightPlayerController::CleanupSessionOnReturnMain()
 {
 	const UWorld* World = GetWorld();
@@ -63,4 +71,12 @@ void ADogFightPlayerController::CleanupSessionOnReturnMain()
 		// Let game instance handle the session stuff
 		DogFightGameInstance->CleanupSessionOnReturnToMenu();
 	}
+}
+
+void ADogFightPlayerController::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	// Gather information and send to server
+	GatherPlayerInfo();
 }

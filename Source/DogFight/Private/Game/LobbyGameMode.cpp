@@ -13,35 +13,9 @@ ALobbyGameMode::ALobbyGameMode(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	DefaultPawnClass = AMenuModePawn::StaticClass();
-	PlayerControllerClass = ALobbyPlayerController::StaticClass();
+	PlayerControllerClass = ALobbyPlayerController::StaticClass(); 
 	PlayerStateClass = ALobbyPlayerState::StaticClass();
 	GameStateClass = ALobbyGameState::StaticClass();
-}
-
-void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
-{
-	Super::PostLogin(NewPlayer);
-
-	ALobbyPlayerController* PlayerController = Cast<ALobbyPlayerController>(NewPlayer);
-	if (PlayerController != nullptr)
-	{
-		if (!PlayerControllerList.Contains(PlayerController))
-		{
-			PlayerControllerList.Add(PlayerController);
-		}
-
-		// Request Player Info
-		PlayerController->RpcHostUploadPlayerInfo();
-	}
-}
-
-void ALobbyGameMode::Logout(AController* Exiting)
-{
-	ALobbyPlayerController* LobbyPlayerController = Cast<ALobbyPlayerController>(Exiting);
-	if (LobbyPlayerController != nullptr && PlayerControllerList.Contains(LobbyPlayerController))
-	{
-		PlayerControllerList.Remove(LobbyPlayerController);
-	}
 }
 
 TArray<FLobbyPlayerInfo> ALobbyGameMode::GetAllPlayerInfo() const
