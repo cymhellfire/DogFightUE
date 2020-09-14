@@ -8,6 +8,7 @@
 #include "StandardGameState.h"
 #include "StandardModePlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/WidgetComponent.h"
 
 // Sets default values
 AStandardModePlayerCharacter::AStandardModePlayerCharacter()
@@ -38,9 +39,40 @@ AStandardModePlayerCharacter::AStandardModePlayerCharacter()
 	CursorToWorld->DecalSize = FVector(16.0f, 32.0f, 32.0f);
 	CursorToWorld->SetRelativeRotation(FRotator(90.f, 0.f, 0.f).Quaternion());
 
+	// Create the Widget component for status UI display
+	WidgetComponent = CreateDefaultSubobject<UWidgetComponent>("WidgetComponent");
+	WidgetComponent->SetupAttachment(RootComponent);
+	WidgetComponent->SetDrawSize(FVector2D(120.f, 30.f));
+	WidgetComponent->SetRelativeLocation(FVector(0.f, 0.f, 150.f));
+	WidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
+}
+
+void AStandardModePlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AStandardModePlayerCharacter, UnitName);
+}
+
+void AStandardModePlayerCharacter::SetUnitName(const FString& NewName)
+{
+	// Check if it's necessary to change name
+	if (NewName.IsEmpty() || NewName == UnitName)
+	{
+		return;
+	}
+	
+	UnitName = NewName;
+
+	// Manually invoke OnRep_UnitName on server
+	if (GetNetMode() != NM_Client)
+	{
+		OnRep_UnitName();
+	}
 }
 
 // Called when the game starts or when spawned
@@ -48,6 +80,11 @@ void AStandardModePlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void AStandardModePlayerCharacter::OnRep_UnitName()
+{
+	UnitNameChanged(FText::FromString(UnitName));
 }
 
 // Called every frame

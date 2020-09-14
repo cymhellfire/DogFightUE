@@ -12,6 +12,7 @@
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "DogFightSaveGame.h"
+#include "StandardPlayerState.h"
 #include "Blueprint/UserWidget.h"
 
 AStandardModePlayerController::AStandardModePlayerController(const FObjectInitializer& ObjectInitializer)
@@ -33,17 +34,6 @@ void AStandardModePlayerController::SetClickMovementEnabled(bool bEnabled)
 #endif
 }
 
-void AStandardModePlayerController::RpcRequestPlayerInfo_Implementation()
-{
-	// Get current save game
-	UDogFightSaveGame* SavedGame = Cast<UDogFightGameInstance>(GetGameInstance())->GetSaveGameManager()->GetCurrentSaveGameInstance();
-
-	if (SavedGame != nullptr)
-	{
-		SetName(SavedGame->PlayerName);
-	}
-}
-
 void AStandardModePlayerController::CloseInGameMenu()
 {
 	if (InGameMenuWidget && bInGameMenuShown)
@@ -52,6 +42,46 @@ void AStandardModePlayerController::CloseInGameMenu()
 
 		bInGameMenuShown = false;
 	}
+}
+
+void AStandardModePlayerController::InitPlayerState()
+{
+	Super::InitPlayerState();
+
+	// Register name changed delegate immediately on server side
+	if (GetNetMode() != NM_Client)
+	{
+		if (AStandardPlayerState* StandardPlayerState = Cast<AStandardPlayerState>(PlayerState))
+		{
+			StandardPlayerState->OnPlayerNameChanged.AddDynamic(this, &AStandardModePlayerController::OnPlayerNameChanged);
+		}
+	}
+}
+
+void AStandardModePlayerController::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	// Register name changed delegate on client side after PlayerState replicated
+	if (GetNetMode() == NM_Client)
+	{
+		if (AStandardPlayerState* StandardPlayerState = Cast<AStandardPlayerState>(PlayerState))
+		{
+			StandardPlayerState->OnPlayerNameChanged.AddDynamic(this, &AStandardModePlayerController::OnPlayerNameChanged);
+
+			// Acquire current player name
+			if (!IsLocalController())
+			{
+				OnPlayerNameChanged(StandardPlayerState->GetPlayerName());
+			}
+		}
+	}
+}
+
+void AStandardModePlayerController::GameStart()
+{
+	// Spawn the character pawn once game started
+	CmdSpawnCharacterPawn();
 }
 
 void AStandardModePlayerController::BeginPlay()
@@ -71,8 +101,6 @@ void AStandardModePlayerController::BeginPlay()
 			UE_LOG(LogLoad, Error, TEXT("Failed to load class %s"), *WidgetClassRef.ToString());
 		}
 	}
-
-	CmdSpawnCharacterPawn();
 }
 
 void AStandardModePlayerController::SetupInputComponent()
@@ -99,8 +127,37 @@ void AStandardModePlayerController::ProcessPlayerInput(const float DeltaTime, co
 	}
 }
 
+void AStandardModePlayerController::GatherPlayerInfo()
+{
+	// Get player name
+	UDogFightSaveGame* SaveGameInstance = Cast<UDogFightGameInstance>(GetGameInstance())->GetSaveGameManager()->GetCurrentSaveGameInstance();
+	if (SaveGameInstance == nullptr)
+	{
+		UE_LOG(LogDogFight, Error, TEXT("No available player profile."));
+		return;
+	}
+
+	// Set player name
+	ServerChangeName(SaveGameInstance->PlayerName);
+}
+
+void AStandardModePlayerController::OnPlayerNameChanged(const FString& NewName)
+{
+	if (CharacterPawn != nullptr)
+	{
+		CharacterPawn->SetUnitName(NewName);
+	}
+	else
+	{
+		// Set the new name to buffer
+		PendingUnitName = NewName;
+	}
+}
+
 void AStandardModePlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps ) const
 {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
 	DOREPLIFETIME(AStandardModePlayerController, CharacterPawnClass);
 	DOREPLIFETIME(AStandardModePlayerController, CharacterPawn);
 	DOREPLIFETIME(AStandardModePlayerController, bClickMoveEnabled);
@@ -112,7 +169,7 @@ void AStandardModePlayerController::OnSetDestinationPressed()
 		return;
 
 	// Check if click movement is enabled
-	if (!bClickMoveEnabled)
+	if (!bClickMoveEnabled || CharacterPawn == nullptr)
 		return;
 	
 	FHitResult HitResult;
@@ -136,6 +193,33 @@ void AStandardModePlayerController::OnOpenInGameMenuPressed()
 		InGameMenuWidget->AddToViewport();
 
 		bInGameMenuShown = true;
+	}
+}
+
+void AStandardModePlayerController::CmdSetCharacterName_Implementation(const FString& NewName)
+{
+	if (CharacterPawn != nullptr)
+	{
+		CharacterPawn->SetUnitName(NewName);
+	}
+}
+
+void AStandardModePlayerController::OnRep_CharacterPawn()
+{
+	// Set the buffed name to new spawned character
+	if (!PendingUnitName.IsEmpty())
+	{
+		CmdSetCharacterName(PendingUnitName);
+		// Clear buffer after use
+		PendingUnitName = "";
+	}
+}
+
+void AStandardModePlayerController::ExecSetCharacterName(FString NewName)
+{
+	if (IsLocalController())
+	{
+		CmdSetCharacterName(NewName);
 	}
 }
 
@@ -178,6 +262,9 @@ void AStandardModePlayerController::CmdSpawnCharacterPawn_Implementation()
 			UE_LOG(LogDogFight, Error, TEXT("No pawn has been specified as character."));
 		}
 	}
+
+	// Trigger OnRep_CharacterPawn on server manually
+	OnRep_CharacterPawn();
 }
 
 

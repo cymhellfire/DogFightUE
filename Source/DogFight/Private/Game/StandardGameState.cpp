@@ -7,4 +7,13 @@ AStandardGameState::AStandardGameState(const FObjectInitializer& ObjectInitializ
 	: Super(ObjectInitializer)
 {
 	MiniMapCamera = nullptr;
+	RemainingTime = 0;
 }
+
+void AStandardGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AStandardGameState, RemainingTime);
+}
+
