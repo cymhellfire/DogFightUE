@@ -56,6 +56,9 @@ protected:
 	UFUNCTION(Server, Reliable)
 	void CmdSetCharacterName(const FString& NewName);
 
+	UFUNCTION(Server, Reliable)
+	void CmdSetCharacterHealth(int32 NewHealth);
+
 	/** Tell server that local player is ready for game. */
 	UFUNCTION(Server, Reliable)
 	void CmdReadyForGame();
@@ -85,5 +88,8 @@ public:
 
 	UFUNCTION(Exec)
 	void ExecSetCharacterName(FString NewName);
+
+	UFUNCTION(Exec)
+	void ExecSetCurrentHealth(int32 NewHealth);
 #pragma endregion DebugCommand
 };

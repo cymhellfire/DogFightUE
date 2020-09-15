@@ -11,7 +11,9 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"UMG",
-				"CoreUObject"
+				"CoreUObject",
+				"Slate",
+				"SlateCore"
 			]
 		},
 		{

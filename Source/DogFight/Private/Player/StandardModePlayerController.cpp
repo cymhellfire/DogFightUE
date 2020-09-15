@@ -219,6 +219,14 @@ void AStandardModePlayerController::CmdReadyForGame_Implementation()
 	}
 }
 
+void AStandardModePlayerController::CmdSetCharacterHealth_Implementation(int32 NewHealth)
+{
+	if (CharacterPawn != nullptr)
+	{
+		CharacterPawn->SetCurrentHealth(NewHealth);
+	}
+}
+
 void AStandardModePlayerController::OnRep_CharacterPawn()
 {
 	// Set the buffed name to new spawned character
@@ -235,6 +243,14 @@ void AStandardModePlayerController::ExecSetCharacterName(FString NewName)
 	if (IsLocalController())
 	{
 		CmdSetCharacterName(NewName);
+	}
+}
+
+void AStandardModePlayerController::ExecSetCurrentHealth(int32 NewHealth)
+{
+	if (IsLocalController())
+	{
+		CmdSetCharacterHealth(NewHealth);
 	}
 }
 

@@ -49,6 +49,9 @@ AStandardModePlayerCharacter::AStandardModePlayerCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
+
+	// Initial value
+	MaxBaseHealth = 100;
 }
 
 void AStandardModePlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const
@@ -75,16 +78,41 @@ void AStandardModePlayerCharacter::SetUnitName(const FString& NewName)
 	}
 }
 
+void AStandardModePlayerCharacter::SetCurrentHealth(int32 NewHealth)
+{
+	if (GetLocalRole() != ROLE_Authority)
+		return;
+	
+	const int32 NewValue = FMath::Clamp(NewHealth, 0, MaxBaseHealth);
+	if (CurrentHealth != NewValue)
+	{
+		CurrentHealth = NewValue;
+		OnRep_CurrentHealth();
+	}
+}
+
 // Called when the game starts or when spawned
 void AStandardModePlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	// Set the begin play state
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		CurrentHealth = MaxBaseHealth;
+		OnRep_CurrentHealth();
+	}
 }
 
 void AStandardModePlayerCharacter::OnRep_UnitName()
 {
 	UnitNameChanged(FText::FromString(UnitName));
+}
+
+void AStandardModePlayerCharacter::OnRep_CurrentHealth()
+{
+	// Invoke Blueprint implementation
+	CurrentHealthChanged(CurrentHealth);
 }
 
 // Called every frame
