@@ -56,6 +56,10 @@ protected:
 	UFUNCTION(Server, Reliable)
 	void CmdSetCharacterName(const FString& NewName);
 
+	/** Tell server that local player is ready for game. */
+	UFUNCTION(Server, Reliable)
+	void CmdReadyForGame();
+
 	UFUNCTION()
 	void OnRep_CharacterPawn();
 

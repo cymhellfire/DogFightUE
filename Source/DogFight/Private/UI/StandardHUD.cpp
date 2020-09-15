@@ -6,13 +6,46 @@
 #include "StandardGameState.h"
 #include "StandardModePlayerController.h"
 #include "MathHelper.h"
-#include "DogFight/DogFight.h"
+#include "DogFight.h"
+#include "GamePhaseMessageWidget.h" 
+#include "StandardGameMode.h"
 
 AStandardHUD::AStandardHUD(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	MiniMapMargin = 40;
 	MiniMapPoints.Init(FVector2D::ZeroVector, 4);
+}
+
+void AStandardHUD::BeginPlay()
+{
+	Super::BeginPlay();
+
+	APlayerController* PlayerController = GetGameInstance()->GetFirstLocalPlayerController();
+
+	// Instantiate GamePhaseMessageWidget
+	if (GamePhaseMessageWidget == nullptr && GamePhaseMessageWidgetClass != nullptr)
+	{
+		GamePhaseMessageWidget = CreateWidget<UGamePhaseMessageWidget>(PlayerController, GamePhaseMessageWidgetClass, FName("GamePhaseMessageWidget"));
+	}
+
+	// Listen the GamePhase change event
+	StandardGameState = GetWorld()->GetGameState<AStandardGameState>();
+	if (StandardGameState != nullptr)
+	{
+		StandardGameState->OnGamePhaseChanged.AddDynamic(this, &AStandardHUD::OnGamePhaseChanged);
+		StandardGameState->OnCountdownContentStringChanged.AddDynamic(this, &AStandardHUD::OnCountdownContentStringChanged);
+
+		// Set the initial display content
+		if (GamePhaseMessageWidget != nullptr)
+		{
+			GamePhaseMessageWidget->SetGamePhase(StandardGameState->GetCurrentGamePhase());
+			GamePhaseMessageWidget->SetCountdownContent(StandardGameState->GetCountdownContentString());
+		}
+
+		// Broadcast current phase
+		OnGamePhaseChanged(StandardGameState->GetCurrentGamePhase());
+	}
 }
 
 void AStandardHUD::DrawHUD()
@@ -88,4 +121,35 @@ void AStandardHUD::DrawMiniMap()
 			}
 		}
 	}
+}
+
+void AStandardHUD::OnGamePhaseChanged(const FName& NewGamePhase)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("GamePhase changed to %s"), *NewGamePhase.ToString()));
+
+	if (GamePhaseMessageWidget == nullptr)
+		return;
+
+	if (NewGamePhase != GamePhase::InProgress)
+	{
+		GamePhaseMessageWidget->SetGamePhase(NewGamePhase);
+		GamePhaseMessageWidget->SetCountdownContent(StandardGameState->GetCountdownContentString());
+		// Add to viewport if not be added yet
+		if (!GamePhaseMessageWidget->IsInViewport())
+		{
+			GamePhaseMessageWidget->AddToViewport();
+		}
+	}
+	else
+	{
+		GamePhaseMessageWidget->RemoveFromParent();
+	}
+}
+
+void AStandardHUD::OnCountdownContentStringChanged()
+{
+	if (GamePhaseMessageWidget == nullptr)
+		return;
+
+	GamePhaseMessageWidget->SetCountdownContent(StandardGameState->GetCountdownContentString());
 }

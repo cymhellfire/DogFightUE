@@ -4,6 +4,7 @@
 #include "StandardGameMode.h"
 
 #include "DogFight.h"
+#include "DogFightGameInstance.h"
 #include "StandardGameState.h"
 #include "StandardHUD.h"
 #include "StandardModePlayerController.h"
@@ -101,6 +102,10 @@ void AStandardGameMode::PreInitializeComponents()
 	Super::PreInitializeComponents();
 
 	GetWorldTimerManager().SetTimer(DefaultTimerHandle, this, &AStandardGameMode::DefaultTimer, GetWorldSettings()->GetEffectiveTimeDilation(), true);
+
+	// Set the joined player count to 1 since host is the first player
+	PlayerJoinedGame = 1;
+	OnJoinedPlayerCountChanged();
 }
 
 void AStandardGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
@@ -111,8 +116,16 @@ void AStandardGameMode::InitGame(const FString& MapName, const FString& Options,
 	SetGamePhase(GamePhase::EnteringMap);
 }
 
+void AStandardGameMode::PlayerReadyForGame()
+{
+	PlayerJoinedGame++;
+	OnJoinedPlayerCountChanged();
+}
+
 void AStandardGameMode::StartGame()
 {
+	SetGamePhase(GamePhase::InProgress);
+
 	// Notify all player controller game has began
 	for (AStandardModePlayerController* PlayerController : StandardPlayerControllerList)
 	{
@@ -124,9 +137,13 @@ void AStandardGameMode::BeginPlay()
 {
 	// Not call super here, thus the BeginPlay event won't fire in Blueprint
 
-	if (CurrentGamePhase == GamePhase::EnteringMap)
+	// Check if all players are already loaded map
+	if (UDogFightGameInstance* GameInstance = Cast<UDogFightGameInstance>(GetWorld()->GetGameInstance()))
 	{
-		SetGamePhase(GamePhase::WaitingForStart);
+		if (GameInstance->GamePlayerCount == PlayerJoinedGame)
+		{
+			SetGamePhase(GamePhase::WaitingForStart);
+		}
 	}
 }
 
@@ -137,11 +154,11 @@ void AStandardGameMode::DefaultTimer()
 	DebugTimerCounter++;
 
 	AStandardGameState* StandardGameState = Cast<AStandardGameState>(GameState);
-	if (StandardGameState && StandardGameState->RemainingTime > 0)
+	if (StandardGameState && StandardGameState->GetRemainingTime() > 0)
 	{
-		StandardGameState->RemainingTime--;
+		StandardGameState->SetRemainingTime(StandardGameState->GetRemainingTime() - 1);
 
-		if (StandardGameState->RemainingTime <= 0)
+		if (StandardGameState->GetRemainingTime() <= 0)
 		{
 			if (CurrentGamePhase == GamePhase::WaitingForStart)
 			{
@@ -163,6 +180,12 @@ void AStandardGameMode::SetGamePhase(FName NewPhase)
 	CurrentGamePhase = NewPhase;
 
 	OnGamePhaseChanged();
+
+	// Sync game state
+	if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())
+	{
+		StandardGameState->SetCurrentGamePhase(CurrentGamePhase);
+	}
 }
 
 void AStandardGameMode::OnGamePhaseChanged()
@@ -184,11 +207,11 @@ void AStandardGameMode::OnGamePhaseChanged()
 void AStandardGameMode::HandlePhaseWaitingForStart()
 {
 	AStandardGameState* StandardGameState = Cast<AStandardGameState>(GameState);
-	if (StandardGameState != nullptr && StandardGameState->RemainingTime == 0)
+	if (StandardGameState != nullptr && StandardGameState->GetRemainingTime() == 0)
 	{
 		if (GameStartDelay > 0)
 		{
-			StandardGameState->RemainingTime = GameStartDelay;
+			StandardGameState->SetRemainingTime(GameStartDelay);
 		}
 	}
 }
@@ -199,6 +222,27 @@ void AStandardGameMode::HandlePhaseInProgress()
 
 void AStandardGameMode::HandlePhaseWaitingPostMatch()
 {
+}
+
+void AStandardGameMode::OnJoinedPlayerCountChanged()
+{
+	if (UDogFightGameInstance* GameInstance = Cast<UDogFightGameInstance>(GetGameInstance()))
+	{
+		// Check if all players are loaded this map
+		if (GameInstance->GamePlayerCount == PlayerJoinedGame)
+		{
+			SetGamePhase(GamePhase::WaitingForStart);
+		}
+		else
+		{
+			// Update the countdown content string
+			AStandardGameState* StandardGameState = Cast<AStandardGameState>(GameState);
+			if (StandardGameState != nullptr)
+			{
+				StandardGameState->SetCountdownContentString(FString::Printf(TEXT("%d/%d"), PlayerJoinedGame, GameInstance->GamePlayerCount));
+			}
+		}
+	}
 }
 
 void AStandardGameMode::SetAllPlayerClickMove(bool bEnable)

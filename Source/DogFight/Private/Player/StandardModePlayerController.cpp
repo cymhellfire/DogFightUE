@@ -12,6 +12,7 @@
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "DogFightSaveGame.h"
+#include "StandardGameMode.h"
 #include "StandardPlayerState.h"
 #include "Blueprint/UserWidget.h"
 
@@ -99,6 +100,12 @@ void AStandardModePlayerController::BeginPlay()
 		else
 		{
 			UE_LOG(LogLoad, Error, TEXT("Failed to load class %s"), *WidgetClassRef.ToString());
+		}
+
+		// Update ready state
+		if (GetNetMode() == NM_Client)
+		{
+			CmdReadyForGame();
 		}
 	}
 }
@@ -201,6 +208,14 @@ void AStandardModePlayerController::CmdSetCharacterName_Implementation(const FSt
 	if (CharacterPawn != nullptr)
 	{
 		CharacterPawn->SetUnitName(NewName);
+	}
+}
+
+void AStandardModePlayerController::CmdReadyForGame_Implementation()
+{
+	if (AStandardGameMode* GameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		GameMode->PlayerReadyForGame();
 	}
 }
 

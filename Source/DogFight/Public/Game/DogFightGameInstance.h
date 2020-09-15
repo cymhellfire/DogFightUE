@@ -142,6 +142,8 @@ public:
 
 	void ShowLoadingScreen();
 
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="DogFight|Game")
+	int32 GamePlayerCount;
 private:
 
 	void CheckChangeState();

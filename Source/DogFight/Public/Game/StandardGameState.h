@@ -16,6 +16,15 @@ class DOGFIGHT_API AStandardGameState : public ADogFightGameStateBase
 {
 	GENERATED_UCLASS_BODY()
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGamePhaseChangeSignature, const FName&, NewGamePhase);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCountdownContentStringChangeSignature);
+
+	UPROPERTY(BlueprintAssignable, Category="DogFight|GameState")
+	FGamePhaseChangeSignature OnGamePhaseChanged;
+
+	UPROPERTY(BlueprintAssignable, Category="DogFight|GameState")
+	FCountdownContentStringChangeSignature OnCountdownContentStringChanged;
+
 public:
 	/* Mini Map Capture Camera */
 	TWeakObjectPtr<AStandardMiniMapCapture> MiniMapCamera;
@@ -24,6 +33,35 @@ public:
 	/* World bounds for Mini Map and Camera movement. */
 	FBox WorldBounds;
 
-	UPROPERTY(Transient, Replicated)
+	void SetCurrentGamePhase(FName NewGamePhase);
+
+	FORCEINLINE FName GetCurrentGamePhase() const { return CurrentGamePhase; }
+
+	void SetRemainingTime(uint32 Time);
+
+	FORCEINLINE uint32 GetRemainingTime() const { return RemainingTime; }
+
+	void SetCountdownContentString(FString NewString);
+
+	FORCEINLINE FString GetCountdownContentString() const { return CountdownContentString; }
+
+protected:
+
+	UPROPERTY(Transient, ReplicatedUsing=OnRep_CurrentGamePhase)
+	FName CurrentGamePhase;
+
+	UPROPERTY(Transient, ReplicatedUsing=OnRep_RemainingTime)
 	int32 RemainingTime;
+
+	UPROPERTY(Transient, ReplicatedUsing=OnRep_CountdownContentString)
+	FString CountdownContentString;
+
+	UFUNCTION()
+	void OnRep_CurrentGamePhase();
+
+	UFUNCTION()
+	void OnRep_RemainingTime();
+
+	UFUNCTION()
+	void OnRep_CountdownContentString();
 };

@@ -6,6 +6,9 @@
 #include "GameFramework/HUD.h"
 #include "StandardHUD.generated.h"
 
+class UGamePhaseMessageWidget;
+class AStandardGameState;
+
 /**
  * 
  */
@@ -13,6 +16,9 @@ UCLASS()
 class DOGFIGHT_API AStandardHUD : public AHUD
 {
 	GENERATED_UCLASS_BODY()
+
+protected:
+	virtual void BeginPlay() override;
 
 public:
 	virtual void DrawHUD() override;
@@ -31,6 +37,20 @@ public:
 	UPROPERTY(Category=Debug, EditAnywhere, BlueprintReadWrite)
 	bool DrawDebugLines;
 
+	/** The GamePhaseMessageWidget class to use in game. */
+	UPROPERTY(Category="UI", EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UGamePhaseMessageWidget> GamePhaseMessageWidgetClass;
+
 protected:
 	void DrawMiniMap();
+
+	UFUNCTION()
+	void OnGamePhaseChanged(const FName& NewGamePhase);
+
+	UFUNCTION()
+	void OnCountdownContentStringChanged();
+
+	UGamePhaseMessageWidget* GamePhaseMessageWidget;
+
+	AStandardGameState* StandardGameState;
 };

@@ -49,6 +49,9 @@ public:
 
 	FName GetGamePhase() const { return CurrentGamePhase; }
 
+	/** Tell GameMode that the invoker is ready to start game. */
+	virtual void PlayerReadyForGame();
+
 	virtual void StartGame();
 protected:
 	virtual void BeginPlay() override;
@@ -59,6 +62,9 @@ protected:
 	FName CurrentGamePhase;
 
 	FTimerHandle DefaultTimerHandle;
+
+	/** Number of players are already loaded this map. */
+	uint32 PlayerJoinedGame;
 
 	/** Update remaining time. */
 	virtual void DefaultTimer();
@@ -72,6 +78,8 @@ protected:
 	virtual void HandlePhaseInProgress();
 
 	virtual void HandlePhaseWaitingPostMatch();
+
+	virtual void OnJoinedPlayerCountChanged();
 
 #pragma region Debug
 public:

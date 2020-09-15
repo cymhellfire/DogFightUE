@@ -32,6 +32,9 @@ UDogFightGameInstance::UDogFightGameInstance(const FObjectInitializer& ObjectIni
 	OnEndSessionCompleteDelegate = FOnEndSessionCompleteDelegate::CreateUObject(this, &UDogFightGameInstance::OnEndSessionComplete);
 
 	CurrentState = DogFightGameInstanceState::None;
+
+	// Set GamePlayerCount default value as 1
+	GamePlayerCount = 1;
 }
 
 bool UDogFightGameInstance::HostSession(TSharedPtr<const FUniqueNetId> UserId, FName SessionName, FString InMapName, bool bIsLan, bool bIsPresence, int32 MaxNumPlayers)
@@ -587,6 +590,9 @@ void UDogFightGameInstance::TravelToGameMap(FString InMapName, FString InGameMod
 		{
 			DogFightGameModeBase->NotifyClientGameWillStart();
 		}
+
+		// Record player count
+		GamePlayerCount = GameMode->GetNumPlayers();
 	}
 
 	FString URL = InMapName;
