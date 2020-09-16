@@ -149,10 +149,6 @@ void AStandardGameMode::BeginPlay()
 
 void AStandardGameMode::DefaultTimer()
 {
-	static uint32 DebugTimerCounter = 0;
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Cyan, FString::Printf(TEXT("Default timer tick: %d"), DebugTimerCounter));
-	DebugTimerCounter++;
-
 	AStandardGameState* StandardGameState = Cast<AStandardGameState>(GameState);
 	if (StandardGameState && StandardGameState->GetRemainingTime() > 0)
 	{

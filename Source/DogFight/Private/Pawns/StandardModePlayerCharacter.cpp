@@ -42,7 +42,7 @@ AStandardModePlayerCharacter::AStandardModePlayerCharacter()
 	// Create the Widget component for status UI display
 	WidgetComponent = CreateDefaultSubobject<UWidgetComponent>("WidgetComponent");
 	WidgetComponent->SetupAttachment(RootComponent);
-	WidgetComponent->SetDrawSize(FVector2D(120.f, 30.f));
+	WidgetComponent->SetDrawSize(FVector2D(150.f, 30.f));
 	WidgetComponent->SetRelativeLocation(FVector(0.f, 0.f, 150.f));
 	WidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
 
@@ -59,6 +59,7 @@ void AStandardModePlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimePr
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AStandardModePlayerCharacter, UnitName);
+	DOREPLIFETIME(AStandardModePlayerCharacter, CurrentHealth);
 }
 
 void AStandardModePlayerCharacter::SetUnitName(const FString& NewName)
