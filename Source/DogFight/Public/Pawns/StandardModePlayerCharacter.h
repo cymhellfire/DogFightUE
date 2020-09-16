@@ -47,7 +47,9 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	FORCEINLINE class UDecalComponent* GetCursorToWorld() const { return CursorToWorld; }
-	
+
+	void SetCursorVisible(bool bVisible);
+
 private:
 	/** Current unit name. */
 	UPROPERTY(Category="Unit", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), ReplicatedUsing=OnRep_UnitName)
@@ -62,4 +64,6 @@ private:
 
 	UPROPERTY(Category=UI, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess="true"))
 	class UWidgetComponent* WidgetComponent;
+
+	bool bShowCursorToWorld;
 };

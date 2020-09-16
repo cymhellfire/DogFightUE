@@ -16,7 +16,8 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 {
 	GENERATED_UCLASS_BODY()
 
-	void SetClickMovementEnabled(bool bEnabled);
+	UFUNCTION(Client, Reliable)
+	void RpcSetClickMovementEnabled(bool bEnabled);
 
 	UPROPERTY(Category=PlayerController, EditAnywhere, BlueprintReadOnly, Replicated)
 	TSubclassOf<AStandardModePlayerCharacter> CharacterPawnClass;
@@ -71,7 +72,7 @@ private:
 	AStandardModePlayerCharacter* CharacterPawn;
 
 	/** Is click movement enabled for this player controller? */
-	UPROPERTY(Category=PlayerController, VisibleAnywhere, Replicated)
+	UPROPERTY(Category=PlayerController, VisibleAnywhere)
 	bool bClickMoveEnabled;
 
 	/** Is the in game menu displayed? */

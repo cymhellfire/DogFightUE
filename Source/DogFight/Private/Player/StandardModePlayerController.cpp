@@ -27,9 +27,14 @@ AStandardModePlayerController::AStandardModePlayerController(const FObjectInitia
 	bInGameMenuShown = false;
 }
 
-void AStandardModePlayerController::SetClickMovementEnabled(bool bEnabled)
+void AStandardModePlayerController::RpcSetClickMovementEnabled_Implementation(bool bEnabled)
 {
 	bClickMoveEnabled = bEnabled;
+
+	if (CharacterPawn != nullptr)
+	{
+		CharacterPawn->SetCursorVisible(bEnabled);
+	}
 #if !UE_BUILD_SHIPPING
 	UE_LOG(LogDogFight, Log, TEXT("%s %s click movement."), *GetName(), (bEnabled ? TEXT("enabled") : TEXT("disabled")));
 #endif
@@ -167,7 +172,6 @@ void AStandardModePlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeP
 
 	DOREPLIFETIME(AStandardModePlayerController, CharacterPawnClass);
 	DOREPLIFETIME(AStandardModePlayerController, CharacterPawn);
-	DOREPLIFETIME(AStandardModePlayerController, bClickMoveEnabled);
 }
 
 void AStandardModePlayerController::OnSetDestinationPressed()
@@ -236,6 +240,9 @@ void AStandardModePlayerController::OnRep_CharacterPawn()
 		// Clear buffer after use
 		PendingUnitName = "";
 	}
+
+	// Update decal visibility
+	CharacterPawn->SetCursorVisible(bClickMoveEnabled);
 }
 
 void AStandardModePlayerController::ExecSetCharacterName(FString NewName)

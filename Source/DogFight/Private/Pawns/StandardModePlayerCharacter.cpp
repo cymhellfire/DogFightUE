@@ -38,6 +38,7 @@ AStandardModePlayerCharacter::AStandardModePlayerCharacter()
 	}
 	CursorToWorld->DecalSize = FVector(16.0f, 32.0f, 32.0f);
 	CursorToWorld->SetRelativeRotation(FRotator(90.f, 0.f, 0.f).Quaternion());
+	CursorToWorld->SetVisibility(false);
 
 	// Create the Widget component for status UI display
 	WidgetComponent = CreateDefaultSubobject<UWidgetComponent>("WidgetComponent");
@@ -52,6 +53,7 @@ AStandardModePlayerCharacter::AStandardModePlayerCharacter()
 
 	// Initial value
 	MaxBaseHealth = 100;
+	bShowCursorToWorld = false;
 }
 
 void AStandardModePlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const
@@ -122,7 +124,7 @@ void AStandardModePlayerCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// Update decal location
-	if (CursorToWorld != nullptr)
+	if (CursorToWorld != nullptr && bShowCursorToWorld)
 	{
 		AStandardModePlayerController const * const PC = Cast<AStandardModePlayerController>(GetOwner());
 		if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled())
@@ -156,5 +158,12 @@ void AStandardModePlayerCharacter::SetupPlayerInputComponent(UInputComponent* Pl
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void AStandardModePlayerCharacter::SetCursorVisible(bool bVisible)
+{
+	bShowCursorToWorld = bVisible;
+
+	CursorToWorld->SetVisibility(bVisible);
 }
 

@@ -42,7 +42,7 @@ void AStandardGameMode::EnablePlayerClickMovement()
 		AStandardModePlayerController* PlayerController = Cast<AStandardModePlayerController>(Actor);
 		if (PlayerController != nullptr)
 		{
-			PlayerController->SetClickMovementEnabled(true);
+			PlayerController->RpcSetClickMovementEnabled(true);
 		}
 	}
 }
@@ -57,7 +57,7 @@ void AStandardGameMode::DisablePlayerClickMovement()
 		AStandardModePlayerController* PlayerController = Cast<AStandardModePlayerController>(Actor);
 		if (PlayerController != nullptr)
 		{
-			PlayerController->SetClickMovementEnabled(false);
+			PlayerController->RpcSetClickMovementEnabled(false);
 		}
 	}
 }
