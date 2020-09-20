@@ -4,15 +4,28 @@
 
 #include "CoreMinimal.h"
 #include "DogFightPlayerController.h"
+#include "GameCardUserPlayerControllerInterface.h"
+#include "GameTargetProviderInterface.h"
+
 #include "StandardModePlayerController.generated.h"
 
 class AStandardModePlayerCharacter;
 
+UENUM(BlueprintType)
+enum class EStandardModePlayerControllerInputMode : uint8
+{
+	IM_Disable				UMETA(DisplayName="Disable"),
+	IM_ClickMove			UMETA(DisplayName="ClickMove"),
+	IM_TargetingActor		UMETA(DisplayName="TargetingActor"),
+	IM_TargetingPosition	UMETA(DisplayName="TargetingPosition"),
+	IM_TargetingDirection	UMETA(DisplayName="TargetingDirection"),
+};
+
 /**
- * 
+ * Player Controller for Standard Mode
  */
 UCLASS()
-class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerController
+class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerController, public IGameTargetProviderInterface, public IGameCardUserPlayerControllerInterface
 {
 	GENERATED_UCLASS_BODY()
 
@@ -32,6 +45,18 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 	/** Current game enter InProgress phase. */
 	virtual void GameStart();
 
+	UFUNCTION(BlueprintCallable, Category="DogFight|PlayerController")
+	AStandardModePlayerCharacter* GetCharacterPawn() const { return CharacterPawn; }
+
+#pragma region Interfaces
+	virtual FCardTargetInfoAcquiredSignature& GetTargetInfoAcquiredDelegate() override { return OnCardTargetInfoAcquired; }
+
+	virtual void RequestActorTarget() override;
+	virtual void RequestPositionTarget() override;
+	virtual void RequestDirectionTarget() override;
+
+	virtual APawn* GetActualPawn() override;
+#pragma endregion Interfaces
 protected:
 	virtual void BeginPlay() override;
 
@@ -67,13 +92,38 @@ protected:
 	UFUNCTION()
 	void OnRep_CharacterPawn();
 
+#pragma region Target Acquire
+	UFUNCTION(Client, Reliable)
+	void RpcRequestActorTarget();
+
+	UFUNCTION(Server, Reliable)
+	void CmdUploadActorTarget(AActor* TargetActor);
+
+	UFUNCTION(Client, Reliable)
+	void RpcRequestPositionTarget();
+
+	UFUNCTION(Server, Reliable)
+	void CmdUploadPositionTarget(FVector TargetPosition);
+
+	UFUNCTION(Client, Reliable)
+	void RpcRequestDirectionTarget();
+
+	UFUNCTION(Server, Reliable)
+	void CmdUploadDirectionTarget(FVector TargetDirection);
+#pragma endregion Target Acquire
+
 private:
+	FCardTargetInfoAcquiredSignature OnCardTargetInfoAcquired;
+
 	UPROPERTY(Category=PlayerController, VisibleAnywhere, ReplicatedUsing=OnRep_CharacterPawn)
 	AStandardModePlayerCharacter* CharacterPawn;
 
 	/** Is click movement enabled for this player controller? */
+	// UPROPERTY(Category=PlayerController, VisibleAnywhere)
+	// bool bClickMoveEnabled;
+
 	UPROPERTY(Category=PlayerController, VisibleAnywhere)
-	bool bClickMoveEnabled;
+	EStandardModePlayerControllerInputMode InputMode;
 
 	/** Is the in game menu displayed? */
 	bool bInGameMenuShown;
@@ -92,5 +142,14 @@ public:
 
 	UFUNCTION(Exec)
 	void ExecSetCurrentHealth(int32 NewHealth);
+
+	UFUNCTION(Exec)
+	void ExecRequireActorTarget();
+
+	UFUNCTION(Exec)
+	void ExecRequirePositionTarget();
+
+	UFUNCTION(Exec)
+	void ExecRequireDirectionTarget();
 #pragma endregion DebugCommand
 };

@@ -15,7 +15,7 @@ public:
 	// Sets default values for this character's properties
 	AStandardModePlayerCharacter();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Gameplay", Config)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Character", Config)
 	int32 MaxBaseHealth;
 
 protected:
@@ -32,6 +32,7 @@ public:
 	/** Set name for this unit. */
 	void SetUnitName(const FString& NewName);
 
+	UFUNCTION(BlueprintCallable, Category="DogFight|Character")
 	void SetCurrentHealth(int32 NewHealth);
 
 	UFUNCTION(BlueprintImplementableEvent, Category="DogFight|Character")
@@ -55,7 +56,7 @@ private:
 	UPROPERTY(Category="Unit", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), ReplicatedUsing=OnRep_UnitName)
 	FString UnitName;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Gameplay", meta = (AllowPrivateAccess = "true"), ReplicatedUsing=OnRep_CurrentHealth)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Character", meta = (AllowPrivateAccess = "true"), ReplicatedUsing=OnRep_CurrentHealth)
 	int32 CurrentHealth;
 
 	/** A decal that projects to the cursor location. */

@@ -13,7 +13,8 @@
 				"UMG",
 				"CoreUObject",
 				"Slate",
-				"SlateCore"
+				"SlateCore",
+				"CustomizableCard"
 			]
 		},
 		{
@@ -21,7 +22,8 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-				"Engine"
+				"Engine",
+				"CoreUObject"
 			]
 		}
 	],

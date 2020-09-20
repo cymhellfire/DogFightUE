@@ -21,7 +21,8 @@ AStandardModePlayerController::AStandardModePlayerController(const FObjectInitia
 {
 	bReplicates = true;
 	bShowMouseCursor = true;
-	bClickMoveEnabled = true;
+	//bClickMoveEnabled = true;
+	InputMode = EStandardModePlayerControllerInputMode::IM_ClickMove;
 	CharacterPawn = nullptr;
 	PrimaryActorTick.bCanEverTick = true;
 	bInGameMenuShown = false;
@@ -29,7 +30,8 @@ AStandardModePlayerController::AStandardModePlayerController(const FObjectInitia
 
 void AStandardModePlayerController::RpcSetClickMovementEnabled_Implementation(bool bEnabled)
 {
-	bClickMoveEnabled = bEnabled;
+	//bClickMoveEnabled = bEnabled;
+	InputMode = bEnabled ? EStandardModePlayerControllerInputMode::IM_ClickMove : EStandardModePlayerControllerInputMode::IM_Disable;
 
 	if (CharacterPawn != nullptr)
 	{
@@ -88,6 +90,30 @@ void AStandardModePlayerController::GameStart()
 {
 	// Spawn the character pawn once game started
 	CmdSpawnCharacterPawn();
+}
+
+void AStandardModePlayerController::RequestActorTarget()
+{
+	// Only server can dispatch the request
+	if (GetNetMode() == NM_Client)
+		return;
+
+	RpcRequestActorTarget();
+}
+
+void AStandardModePlayerController::RequestPositionTarget()
+{
+	
+}
+
+void AStandardModePlayerController::RequestDirectionTarget()
+{
+	
+}
+
+APawn* AStandardModePlayerController::GetActualPawn()
+{
+	return Cast<APawn>(CharacterPawn);
 }
 
 void AStandardModePlayerController::BeginPlay()
@@ -179,21 +205,76 @@ void AStandardModePlayerController::OnSetDestinationPressed()
 	if (bInGameMenuShown)
 		return;
 
-	// Check if click movement is enabled
-	if (!bClickMoveEnabled || CharacterPawn == nullptr)
+	if (InputMode == EStandardModePlayerControllerInputMode::IM_Disable)
 		return;
-	
-	FHitResult HitResult;
-	GetHitResultUnderCursor(ECC_Visibility, false, HitResult);
 
-	if (HitResult.bBlockingHit)
+	FHitResult HitResult;
+
+	switch(InputMode)
 	{
-		float const Distance = FVector::Dist(HitResult.Location, CharacterPawn->GetActorLocation());
-		if (Distance > 120.f)
+	case EStandardModePlayerControllerInputMode::IM_ClickMove:
+		// Check the pawn is spawned
+		if (CharacterPawn == nullptr)
+			return;
+
+		GetHitResultUnderCursor(ECC_Visibility, false, HitResult);
+		if (HitResult.bBlockingHit)
 		{
-			// Call RPC function on server side
-			CmdMoveToMouseCursor(HitResult.Location);
+			float const Distance = FVector::Dist(HitResult.Location, CharacterPawn->GetActorLocation());
+			if (Distance > 120.f)
+			{
+				// Call RPC function on server side
+				CmdMoveToMouseCursor(HitResult.Location);
+			}
 		}
+		break;
+	case EStandardModePlayerControllerInputMode::IM_TargetingActor:
+		GetHitResultUnderCursor(ECC_Camera, false, HitResult);
+		
+		// Get the actor clicked
+		if (HitResult.bBlockingHit)
+		{
+			if (AActor* TargetActor = HitResult.GetActor())
+			{
+				CmdUploadActorTarget(TargetActor);
+
+				// Disable selection after acquire one
+				InputMode = EStandardModePlayerControllerInputMode::IM_Disable;
+			}
+		}
+		break;
+	case EStandardModePlayerControllerInputMode::IM_TargetingPosition:
+		GetHitResultUnderCursor(ECC_Visibility, false, HitResult);
+		// Get the point clicked
+		if (HitResult.bBlockingHit)
+		{
+			CmdUploadPositionTarget(HitResult.Location);
+
+			// Disable selection after acquire one
+			InputMode = EStandardModePlayerControllerInputMode::IM_Disable;
+		}
+		break;
+	case EStandardModePlayerControllerInputMode::IM_TargetingDirection:
+		// Check the pawn is spawned
+		if (CharacterPawn == nullptr)
+			return;
+
+		GetHitResultUnderCursor(ECC_Visibility, false, HitResult);
+		// Calculate the direction
+		if (HitResult.bBlockingHit)
+		{
+			FVector TargetDirection = HitResult.Location - CharacterPawn->GetActorLocation();
+			TargetDirection.Normalize();
+
+			CmdUploadDirectionTarget(TargetDirection);
+
+			// Disable selection after acquire one
+			InputMode = EStandardModePlayerControllerInputMode::IM_Disable;
+		}
+		break;
+	case EStandardModePlayerControllerInputMode::IM_Disable:
+	default:
+		/* Do nothing as default. */;
 	}
 }
 
@@ -242,7 +323,61 @@ void AStandardModePlayerController::OnRep_CharacterPawn()
 	}
 
 	// Update decal visibility
-	CharacterPawn->SetCursorVisible(bClickMoveEnabled);
+	CharacterPawn->SetCursorVisible(InputMode == EStandardModePlayerControllerInputMode::IM_ClickMove);
+}
+
+void AStandardModePlayerController::CmdUploadDirectionTarget_Implementation(FVector TargetDirection)
+{
+	// Package the target info struct
+	FCardInstructionTargetInfo NewTargetInfo;
+	NewTargetInfo.DirectionValue = TargetDirection;
+	NewTargetInfo.TargetType = ECardInstructionTargetType::Direction;
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Selected direction %s"), *TargetDirection.ToString()));
+
+	OnCardTargetInfoAcquired.Broadcast(NewTargetInfo);
+}
+
+void AStandardModePlayerController::RpcRequestDirectionTarget_Implementation()
+{
+	// Setup direction select mode
+	InputMode = EStandardModePlayerControllerInputMode::IM_TargetingDirection;
+}
+
+void AStandardModePlayerController::CmdUploadPositionTarget_Implementation(FVector TargetPosition)
+{
+	// Package the target info struct
+	FCardInstructionTargetInfo NewTargetInfo;
+	NewTargetInfo.PositionValue = TargetPosition;
+	NewTargetInfo.TargetType = ECardInstructionTargetType::Position;
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Selected position %s"), *TargetPosition.ToString()));
+
+	OnCardTargetInfoAcquired.Broadcast(NewTargetInfo);
+}
+
+void AStandardModePlayerController::RpcRequestPositionTarget_Implementation()
+{
+	// Setup position select mode
+	InputMode = EStandardModePlayerControllerInputMode::IM_TargetingPosition;
+}
+
+void AStandardModePlayerController::CmdUploadActorTarget_Implementation(AActor* TargetActor)
+{
+	// Package the target info struct
+	FCardInstructionTargetInfo NewTargetInfo;
+	NewTargetInfo.ActorPtr = TargetActor;
+	NewTargetInfo.TargetType = ECardInstructionTargetType::Actor;
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Selected %s"), *TargetActor->GetName()));
+
+	OnCardTargetInfoAcquired.Broadcast(NewTargetInfo);
+}
+
+void AStandardModePlayerController::RpcRequestActorTarget_Implementation()
+{
+	// Setup actor select mode
+	InputMode = EStandardModePlayerControllerInputMode::IM_TargetingActor;
 }
 
 void AStandardModePlayerController::ExecSetCharacterName(FString NewName)
@@ -258,6 +393,42 @@ void AStandardModePlayerController::ExecSetCurrentHealth(int32 NewHealth)
 	if (IsLocalController())
 	{
 		CmdSetCharacterHealth(NewHealth);
+	}
+}
+
+void AStandardModePlayerController::ExecRequireActorTarget()
+{
+	if (GetNetMode() != NM_Client)
+	{
+		RpcRequestActorTarget();
+	}
+	else
+	{
+		InputMode = EStandardModePlayerControllerInputMode::IM_TargetingActor;
+	}
+}
+
+void AStandardModePlayerController::ExecRequirePositionTarget()
+{
+	if (GetNetMode() != NM_Client)
+	{
+		RpcRequestPositionTarget();
+	}
+	else
+	{
+		InputMode = EStandardModePlayerControllerInputMode::IM_TargetingPosition;
+	}
+}
+
+void AStandardModePlayerController::ExecRequireDirectionTarget()
+{
+	if (GetNetMode() != NM_Client)
+	{
+		RpcRequestDirectionTarget();
+	}
+	else
+	{
+		InputMode = EStandardModePlayerControllerInputMode::IM_TargetingDirection;
 	}
 }
 
