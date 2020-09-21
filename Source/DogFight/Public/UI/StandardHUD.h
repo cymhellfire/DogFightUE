@@ -7,6 +7,7 @@
 #include "StandardHUD.generated.h"
 
 class UGamePhaseMessageWidget;
+class UOperationHintMessageWidget;
 class AStandardGameState;
 
 /**
@@ -16,6 +17,13 @@ UCLASS()
 class DOGFIGHT_API AStandardHUD : public AHUD
 {
 	GENERATED_UCLASS_BODY()
+
+public:
+
+	/** Display specified hint message on screen. */
+	void DisplayHintMessage(FName HintMessage);
+
+	void HideOperationHintMessageWidget();
 
 protected:
 	virtual void BeginPlay() override;
@@ -41,6 +49,10 @@ public:
 	UPROPERTY(Category="UI", EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UGamePhaseMessageWidget> GamePhaseMessageWidgetClass;
 
+	/** The OperationHintMessageWidget class to use in game. */
+	UPROPERTY(Category="UI", EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UOperationHintMessageWidget> OperationHintMessageWidgetClass;
+
 protected:
 	void DrawMiniMap();
 
@@ -51,6 +63,7 @@ protected:
 	void OnCountdownContentStringChanged();
 
 	UGamePhaseMessageWidget* GamePhaseMessageWidget;
+	UOperationHintMessageWidget* OperationHintMessageWidget;
 
 	AStandardGameState* StandardGameState;
 };

@@ -12,7 +12,9 @@
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "DogFightSaveGame.h"
+#include "OperationHintMessageWidget.h"
 #include "StandardGameMode.h"
+#include "StandardHUD.h"
 #include "StandardPlayerState.h"
 #include "Blueprint/UserWidget.h"
 
@@ -179,6 +181,20 @@ void AStandardModePlayerController::GatherPlayerInfo()
 	ServerChangeName(SaveGameInstance->PlayerName);
 }
 
+void AStandardModePlayerController::DisableInputMode()
+{
+	if (InputMode == EStandardModePlayerControllerInputMode::IM_Disable)
+		return;
+
+	InputMode = EStandardModePlayerControllerInputMode::IM_Disable;
+
+	// Clear the operation hint
+	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
+	{
+		StandardHUD->HideOperationHintMessageWidget();
+	}
+}
+
 void AStandardModePlayerController::OnPlayerNameChanged(const FString& NewName)
 {
 	if (CharacterPawn != nullptr)
@@ -239,7 +255,7 @@ void AStandardModePlayerController::OnSetDestinationPressed()
 				CmdUploadActorTarget(TargetActor);
 
 				// Disable selection after acquire one
-				InputMode = EStandardModePlayerControllerInputMode::IM_Disable;
+				DisableInputMode();
 			}
 		}
 		break;
@@ -251,7 +267,7 @@ void AStandardModePlayerController::OnSetDestinationPressed()
 			CmdUploadPositionTarget(HitResult.Location);
 
 			// Disable selection after acquire one
-			InputMode = EStandardModePlayerControllerInputMode::IM_Disable;
+			DisableInputMode();
 		}
 		break;
 	case EStandardModePlayerControllerInputMode::IM_TargetingDirection:
@@ -269,7 +285,7 @@ void AStandardModePlayerController::OnSetDestinationPressed()
 			CmdUploadDirectionTarget(TargetDirection);
 
 			// Disable selection after acquire one
-			InputMode = EStandardModePlayerControllerInputMode::IM_Disable;
+			DisableInputMode();
 		}
 		break;
 	case EStandardModePlayerControllerInputMode::IM_Disable:
@@ -342,6 +358,12 @@ void AStandardModePlayerController::RpcRequestDirectionTarget_Implementation()
 {
 	// Setup direction select mode
 	InputMode = EStandardModePlayerControllerInputMode::IM_TargetingDirection;
+
+	// Update the operation hint
+	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
+	{
+		StandardHUD->DisplayHintMessage(EOperationHintMessageContent::SelectDirectionTarget);
+	}
 }
 
 void AStandardModePlayerController::CmdUploadPositionTarget_Implementation(FVector TargetPosition)
@@ -360,6 +382,12 @@ void AStandardModePlayerController::RpcRequestPositionTarget_Implementation()
 {
 	// Setup position select mode
 	InputMode = EStandardModePlayerControllerInputMode::IM_TargetingPosition;
+
+	// Update the operation hint
+	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
+	{
+		StandardHUD->DisplayHintMessage(EOperationHintMessageContent::SelectPositionTarget);
+	}
 }
 
 void AStandardModePlayerController::CmdUploadActorTarget_Implementation(AActor* TargetActor)
@@ -378,6 +406,12 @@ void AStandardModePlayerController::RpcRequestActorTarget_Implementation()
 {
 	// Setup actor select mode
 	InputMode = EStandardModePlayerControllerInputMode::IM_TargetingActor;
+
+	// Update the operation hint
+	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
+	{
+		StandardHUD->DisplayHintMessage(EOperationHintMessageContent::SelectActorTarget);
+	}
 }
 
 void AStandardModePlayerController::ExecSetCharacterName(FString NewName)

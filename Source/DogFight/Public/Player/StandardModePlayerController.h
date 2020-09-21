@@ -66,6 +66,9 @@ protected:
 
 	virtual void GatherPlayerInfo() override;
 
+	/** Set InputMode to IM_Disable and clear operation hint message. */
+	void DisableInputMode();
+
 	/** Callback function triggers when player name has been changed. */
 	UFUNCTION()
 	virtual void OnPlayerNameChanged(const FString& NewName);

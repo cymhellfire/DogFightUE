@@ -7,7 +7,8 @@
 #include "StandardModePlayerController.h"
 #include "MathHelper.h"
 #include "DogFight.h"
-#include "GamePhaseMessageWidget.h" 
+#include "GamePhaseMessageWidget.h"
+#include "OperationHintMessageWidget.h"
 #include "StandardGameMode.h"
 
 AStandardHUD::AStandardHUD(const FObjectInitializer& ObjectInitializer)
@@ -15,6 +16,36 @@ AStandardHUD::AStandardHUD(const FObjectInitializer& ObjectInitializer)
 {
 	MiniMapMargin = 40;
 	MiniMapPoints.Init(FVector2D::ZeroVector, 4);
+}
+
+void AStandardHUD::DisplayHintMessage(FName HintMessage)
+{
+	if (OperationHintMessageWidget != nullptr)
+	{
+		if (HintMessage.IsNone())
+		{
+			HideOperationHintMessageWidget();
+		}
+		else
+		{
+			if (!OperationHintMessageWidget->IsInViewport())
+			{
+				OperationHintMessageWidget->AddToViewport();
+			}
+			OperationHintMessageWidget->SetHintMessage(HintMessage);
+		}
+	}
+}
+
+void AStandardHUD::HideOperationHintMessageWidget()
+{
+	if (OperationHintMessageWidget != nullptr)
+	{
+		if (OperationHintMessageWidget->IsInViewport())
+		{
+			OperationHintMessageWidget->RemoveFromParent();
+		}
+	}
 }
 
 void AStandardHUD::BeginPlay()
@@ -27,6 +58,11 @@ void AStandardHUD::BeginPlay()
 	if (GamePhaseMessageWidget == nullptr && GamePhaseMessageWidgetClass != nullptr)
 	{
 		GamePhaseMessageWidget = CreateWidget<UGamePhaseMessageWidget>(PlayerController, GamePhaseMessageWidgetClass, FName("GamePhaseMessageWidget"));
+	}
+
+	if (OperationHintMessageWidget == nullptr && OperationHintMessageWidgetClass != nullptr)
+	{
+		OperationHintMessageWidget = CreateWidget<UOperationHintMessageWidget>(PlayerController, OperationHintMessageWidgetClass, FName("OperationHintMessageWidget"));
 	}
 
 	// Listen the GamePhase change event
