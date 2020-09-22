@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "StandardModePlayerCharacter.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/GameProjectileInterface.h"
 
@@ -39,6 +41,8 @@ public:
 	virtual void SetInitialSpeed(float NewSpeed) override;
 	virtual void SetMaxSpeed(float NewSpeed) override;
 	virtual void LaunchAtDirection(const FVector& Direction) override;
+	virtual void SetOwnerController(AController* NewController) override;
+	virtual void SetOwnerCharacter(AActor* NewActor) override;
 #pragma endregion GameProjectileInterface
 
 protected:
@@ -56,6 +60,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Projectile")
 	bool DeadOnHit;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Projectile")
+	AController* OwnerController;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Projectile")
+	AStandardModePlayerCharacter* OwnerCharacter;
 
 protected:
 

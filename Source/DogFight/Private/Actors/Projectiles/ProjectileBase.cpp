@@ -2,6 +2,8 @@
 
 
 #include "ProjectileBase.h"
+
+#include "CustomizableCard.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
@@ -36,7 +38,13 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActo
 	FVector NormalImpulse, const FHitResult& Hit)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Hit on %s"), *OtherActor->GetName()));
-	
+
+	// Damage hit actor
+	if (OtherActor != nullptr)
+	{
+		OtherActor->TakeDamage(BaseDamage, FDamageEvent(), OwnerController, OwnerCharacter);
+	}
+
 	if (DeadOnHit)
 	{
 		Dead();
@@ -91,4 +99,20 @@ void AProjectileBase::LaunchAtDirection(const FVector& Direction)
 		MovementComponent->Velocity = MovementComponent->InitialSpeed * Direction;
 	}
 }
+
+void AProjectileBase::SetOwnerController(AController* NewController)
+{
+	OwnerController = NewController;
+}
+
+void AProjectileBase::SetOwnerCharacter(AActor* NewActor)
+{
+	OwnerCharacter = Cast<AStandardModePlayerCharacter>(NewActor);
+
+	if (OwnerCharacter == nullptr)
+	{
+		UE_LOG(LogDogFight, Error, TEXT("Failed cast %s to AStandardModePlayerCharacter."), *NewActor->GetName());
+	}
+}
+
 

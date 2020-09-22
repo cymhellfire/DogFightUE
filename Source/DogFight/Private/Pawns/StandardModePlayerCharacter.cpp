@@ -160,6 +160,21 @@ void AStandardModePlayerCharacter::SetupPlayerInputComponent(UInputComponent* Pl
 
 }
 
+float AStandardModePlayerCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	const float ActualDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+	if (ActualDamage > 0.f)
+	{
+		CurrentHealth = FMath::Clamp<int32>(CurrentHealth - ActualDamage, 0, MaxBaseHealth);
+
+		// Invoke OnRep on server side manually
+		OnRep_CurrentHealth();
+	}
+
+	return ActualDamage;
+}
+
 void AStandardModePlayerCharacter::SetCursorVisible(bool bVisible)
 {
 	bShowCursorToWorld = bVisible;

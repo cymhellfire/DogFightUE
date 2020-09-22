@@ -25,4 +25,8 @@ public:
 	virtual void SetMaxSpeed(float NewSpeed) {};
 
 	virtual void LaunchAtDirection(const FVector& Direction) {};
+
+	virtual void SetOwnerController(AController* NewController) {};
+
+	virtual void SetOwnerCharacter(AActor* NewActor) {};
 };

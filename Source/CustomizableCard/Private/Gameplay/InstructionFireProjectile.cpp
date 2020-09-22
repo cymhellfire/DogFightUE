@@ -59,6 +59,8 @@ void UInstructionFireProjectile::SpawnProjectileAndLaunch(FVector Position, FRot
 	ProjectileInstance = GetWorld()->SpawnActor<IGameProjectileInterface>(ProjectileClass, Position, Rotation);
 	if (ProjectileInstance != nullptr)
 	{
+		ProjectileInstance->SetOwnerController(GetOwnerCard()->GetOwnerPlayerController());
+		ProjectileInstance->SetOwnerCharacter(GetOwnerControlledPawn());
 		ProjectileInstance->SetInitialSpeed(MuzzleSpeed);
 		ProjectileInstance->LaunchAtDirection(FireDirection);
 	}
