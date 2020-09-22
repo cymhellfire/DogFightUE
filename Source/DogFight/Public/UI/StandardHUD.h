@@ -62,7 +62,9 @@ protected:
 	UFUNCTION()
 	void OnCountdownContentStringChanged();
 
+	UPROPERTY()
 	UGamePhaseMessageWidget* GamePhaseMessageWidget;
+	UPROPERTY()
 	UOperationHintMessageWidget* OperationHintMessageWidget;
 
 	AStandardGameState* StandardGameState;

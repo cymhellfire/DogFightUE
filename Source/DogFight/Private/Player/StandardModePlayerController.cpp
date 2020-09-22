@@ -438,7 +438,7 @@ void AStandardModePlayerController::ExecRequireActorTarget()
 	}
 	else
 	{
-		InputMode = EStandardModePlayerControllerInputMode::IM_TargetingActor;
+		RpcRequestActorTarget_Implementation();
 	}
 }
 
@@ -450,7 +450,7 @@ void AStandardModePlayerController::ExecRequirePositionTarget()
 	}
 	else
 	{
-		InputMode = EStandardModePlayerControllerInputMode::IM_TargetingPosition;
+		RpcRequestPositionTarget_Implementation();
 	}
 }
 
@@ -462,7 +462,7 @@ void AStandardModePlayerController::ExecRequireDirectionTarget()
 	}
 	else
 	{
-		InputMode = EStandardModePlayerControllerInputMode::IM_TargetingDirection;
+		RpcRequestDirectionTarget_Implementation();
 	}
 }
 
