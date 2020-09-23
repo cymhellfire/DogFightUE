@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "DogFight.h"
 
 #include "StandardModePlayerCharacter.h"
 #include "GameFramework/Actor.h"
@@ -53,6 +53,18 @@ protected:
 	/** Handle the collision of projectiles */
 	virtual void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
+	UFUNCTION()
+	void OnRep_MaxSpeed();
+
+	UFUNCTION()
+	void OnRep_InitialSpeed();
+
+	UFUNCTION()
+	void OnRep_GravityScale();
+
+	UFUNCTION()
+	void OnRep_LaunchVelocity();
+
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Projectile")
@@ -66,6 +78,18 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Projectile")
 	AStandardModePlayerCharacter* OwnerCharacter;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Projectile", ReplicatedUsing=OnRep_MaxSpeed)
+	float MaxSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Projectile", ReplicatedUsing=OnRep_InitialSpeed)
+	float InitialSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Projectile", ReplicatedUsing=OnRep_GravityScale)
+	float GravityScale;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Projectile", ReplicatedUsing=OnRep_LaunchVelocity)
+	FVector LaunchVelocity;
 
 protected:
 

@@ -22,6 +22,25 @@ void UTargetingInstructionBase::Execute()
 	if (TargetProvider != nullptr)
 	{
 		TargetProvider->GetTargetInfoAcquiredDelegate().AddDynamic(this, &UTargetingInstructionBase::OnTargetAcquired);
+
+		RequestTarget();
+	}
+}
+
+void UTargetingInstructionBase::RequestTarget()
+{
+	switch(TargetType)
+	{
+	case ECardInstructionTargetType::Actor:
+		TargetProvider->RequestActorTarget();
+        break;
+	case ECardInstructionTargetType::Position:
+		TargetProvider->RequestPositionTarget();
+		break;
+	case ECardInstructionTargetType::Direction:
+		TargetProvider->RequestDirectionTarget();
+		break;
+	default: ;
 	}
 }
 
@@ -33,10 +52,17 @@ void UTargetingInstructionBase::OnTargetAcquired(FCardInstructionTargetInfo& Tar
 	GetOwnerCard()->PushTargetInfo(TargetInfo);
 
 	// Remove the callback and finish this instruction if all targets are acquired
-	if (TargetAcquired >= TargetCount && TargetProvider != nullptr)
+	if (TargetProvider != nullptr)
 	{
-		TargetProvider->GetTargetInfoAcquiredDelegate().RemoveDynamic(this, &UTargetingInstructionBase::OnTargetAcquired);
+		if (TargetAcquired >= TargetCount)
+		{
+			TargetProvider->GetTargetInfoAcquiredDelegate().RemoveDynamic(this, &UTargetingInstructionBase::OnTargetAcquired);
 
-		Finish();
+			Finish();
+		}
+		else
+		{
+			RequestTarget();
+		}
 	}
 }

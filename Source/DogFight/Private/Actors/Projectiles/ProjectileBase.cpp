@@ -13,6 +13,9 @@ AProjectileBase::AProjectileBase()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	// Replicate this actor for network spawn
+	bReplicates = true;
+
 	// Create collision
 	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
 	CollisionComponent->InitSphereRadius(15.0f);
@@ -39,8 +42,8 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActo
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Hit on %s"), *OtherActor->GetName()));
 
-	// Damage hit actor
-	if (OtherActor != nullptr)
+	// Damage hit actor on server
+	if (OtherActor != nullptr && GetLocalRole() == ROLE_Authority)
 	{
 		OtherActor->TakeDamage(BaseDamage, FDamageEvent(), OwnerController, OwnerCharacter);
 	}
@@ -51,11 +54,53 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActo
 	}
 }
 
+void AProjectileBase::OnRep_MaxSpeed()
+{
+	if (MovementComponent != nullptr)
+	{
+		MovementComponent->MaxSpeed = MaxSpeed;
+	}
+}
+
+void AProjectileBase::OnRep_InitialSpeed()
+{
+	if (MovementComponent != nullptr)
+	{
+		MovementComponent->InitialSpeed = InitialSpeed;
+	}
+}
+
+void AProjectileBase::OnRep_GravityScale()
+{
+	if (MovementComponent != nullptr)
+	{
+		MovementComponent->ProjectileGravityScale = GravityScale;
+	}
+}
+
+void AProjectileBase::OnRep_LaunchVelocity()
+{
+	if (MovementComponent != nullptr)
+	{
+		MovementComponent->Velocity = LaunchVelocity;
+	}
+}
+
 // Called every frame
 void AProjectileBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AProjectileBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps ) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AProjectileBase, MaxSpeed);
+	DOREPLIFETIME(AProjectileBase, InitialSpeed);
+	DOREPLIFETIME(AProjectileBase, GravityScale);
+	DOREPLIFETIME(AProjectileBase, LaunchVelocity);
 }
 
 void AProjectileBase::Dead()
@@ -70,33 +115,41 @@ void AProjectileBase::Dead()
 
 void AProjectileBase::AdjustGravityScale(float NewGravityScale)
 {
-	if (MovementComponent != nullptr)
+	if (GetNetMode() != NM_Client)
 	{
-		MovementComponent->ProjectileGravityScale = NewGravityScale;
+		GravityScale = NewGravityScale;
+
+		OnRep_GravityScale();
 	}
 }
 
 void AProjectileBase::SetInitialSpeed(float NewSpeed)
 {
-	if (MovementComponent != nullptr)
+	if (GetNetMode() != NM_Client)
 	{
-		MovementComponent->InitialSpeed = NewSpeed;
+		InitialSpeed = NewSpeed;
+
+		OnRep_InitialSpeed();
 	}
 }
 
 void AProjectileBase::SetMaxSpeed(float NewSpeed)
 {
-	if (MovementComponent != nullptr)
+	if (GetNetMode() != NM_Client)
 	{
-		MovementComponent->MaxSpeed = NewSpeed;
+		MaxSpeed = NewSpeed;
+
+		OnRep_MaxSpeed();
 	}
 }
 
 void AProjectileBase::LaunchAtDirection(const FVector& Direction)
 {
-	if (MovementComponent != nullptr)
+	if (MovementComponent != nullptr && GetLocalRole() == ROLE_Authority)
 	{
-		MovementComponent->Velocity = MovementComponent->InitialSpeed * Direction;
+		LaunchVelocity = MovementComponent->InitialSpeed * Direction;
+
+		OnRep_LaunchVelocity();
 	}
 }
 

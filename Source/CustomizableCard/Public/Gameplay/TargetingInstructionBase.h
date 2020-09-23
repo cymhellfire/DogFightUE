@@ -24,6 +24,8 @@ public:
 
 protected:
 
+	void RequestTarget();
+
 	UFUNCTION()
 	void OnTargetAcquired(FCardInstructionTargetInfo& TargetInfo);
 
