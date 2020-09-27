@@ -116,8 +116,13 @@ void AStandardGameMode::InitGame(const FString& MapName, const FString& Options,
 	SetGamePhase(GamePhase::EnteringMap);
 }
 
-void AStandardGameMode::PlayerReadyForGame()
+void AStandardGameMode::PlayerReadyForGame(AStandardModePlayerController* PlayerController)
 {
+	// Broadcast player joined message
+	TArray<FString> Arguments;
+	Arguments.Add(PlayerController->GetName());
+	BroadcastGameMessageToAllPlayers(TEXT("GameMsg_PlayerJoined"), Arguments);
+	
 	PlayerJoinedGame++;
 	OnJoinedPlayerCountChanged();
 }
@@ -130,6 +135,14 @@ void AStandardGameMode::StartGame()
 	for (AStandardModePlayerController* PlayerController : StandardPlayerControllerList)
 	{
 		PlayerController->GameStart();
+	}
+}
+
+void AStandardGameMode::BroadcastGameMessageToAllPlayers(FString Message, TArray<FString> Arguments)
+{
+	for (AStandardModePlayerController* PlayerController : StandardPlayerControllerList)
+	{
+		PlayerController->RpcReceivedGameMessage(Message, Arguments);
 	}
 }
 

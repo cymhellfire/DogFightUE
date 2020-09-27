@@ -48,6 +48,9 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 	UFUNCTION(BlueprintCallable, Category="DogFight|PlayerController")
 	AStandardModePlayerCharacter* GetCharacterPawn() const { return CharacterPawn; }
 
+	UFUNCTION(Client, Reliable)
+	void RpcReceivedGameMessage(const FString& GameMessage, const TArray<FString> & Arguments);
+
 #pragma region Interfaces
 	virtual FCardTargetInfoAcquiredSignature& GetTargetInfoAcquiredDelegate() override { return OnCardTargetInfoAcquired; }
 

@@ -9,6 +9,7 @@
 #include "DogFight.h"
 #include "GamePhaseMessageWidget.h"
 #include "OperationHintMessageWidget.h"
+#include "GameMessageWindowWidget.h"
 #include "StandardGameMode.h"
 
 AStandardHUD::AStandardHUD(const FObjectInitializer& ObjectInitializer)
@@ -48,6 +49,19 @@ void AStandardHUD::HideOperationHintMessageWidget()
 	}
 }
 
+void AStandardHUD::ShowGameMessage(const FString& MessageContent, const TArray<FString>& Arguments)
+{
+	if (GameMessageWindowWidget != nullptr)
+	{
+		if (!GameMessageWindowWidget->IsInViewport())
+		{
+			GameMessageWindowWidget->AddToViewport();
+		}
+		
+		GameMessageWindowWidget->AddGameMessage(MessageContent, Arguments);
+	}
+}
+
 void AStandardHUD::BeginPlay()
 {
 	Super::BeginPlay();
@@ -63,6 +77,11 @@ void AStandardHUD::BeginPlay()
 	if (OperationHintMessageWidget == nullptr && OperationHintMessageWidgetClass != nullptr)
 	{
 		OperationHintMessageWidget = CreateWidget<UOperationHintMessageWidget>(PlayerController, OperationHintMessageWidgetClass, FName("OperationHintMessageWidget"));
+	}
+
+	if (GameMessageWindowWidget == nullptr && GameMessageWindowWidgetClass != nullptr)
+	{
+		GameMessageWindowWidget = CreateWidget<UGameMessageWindowWidget>(PlayerController, GameMessageWindowWidgetClass, FName("GameMessageWindowWidget"));
 	}
 
 	// Listen the GamePhase change event

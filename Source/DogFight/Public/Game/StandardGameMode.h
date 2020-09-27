@@ -50,9 +50,12 @@ public:
 	FName GetGamePhase() const { return CurrentGamePhase; }
 
 	/** Tell GameMode that the invoker is ready to start game. */
-	virtual void PlayerReadyForGame();
+	virtual void PlayerReadyForGame(AStandardModePlayerController* PlayerController);
 
 	virtual void StartGame();
+
+	/** Broadcast a localized message to all players in current game. */
+	void BroadcastGameMessageToAllPlayers(FString Message, TArray<FString> Arguments);
 protected:
 	virtual void BeginPlay() override;
 	

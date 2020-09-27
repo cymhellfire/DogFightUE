@@ -94,6 +94,14 @@ void AStandardModePlayerController::GameStart()
 	CmdSpawnCharacterPawn();
 }
 
+void AStandardModePlayerController::RpcReceivedGameMessage_Implementation(const FString& GameMessage,	const TArray<FString>& Arguments)
+{
+	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
+	{
+		StandardHUD->ShowGameMessage(GameMessage, Arguments);
+	}
+}
+
 void AStandardModePlayerController::RequestActorTarget()
 {
 	// Only server can dispatch the request
@@ -316,7 +324,7 @@ void AStandardModePlayerController::CmdReadyForGame_Implementation()
 {
 	if (AStandardGameMode* GameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
 	{
-		GameMode->PlayerReadyForGame();
+		GameMode->PlayerReadyForGame(this);
 	}
 }
 

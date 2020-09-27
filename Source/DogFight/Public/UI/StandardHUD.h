@@ -8,6 +8,7 @@
 
 class UGamePhaseMessageWidget;
 class UOperationHintMessageWidget;
+class UGameMessageWindowWidget;
 class AStandardGameState;
 
 /**
@@ -24,6 +25,8 @@ public:
 	void DisplayHintMessage(FName HintMessage);
 
 	void HideOperationHintMessageWidget();
+
+	void ShowGameMessage(const FString& MessageContent, const TArray<FString>& Arguments);
 
 protected:
 	virtual void BeginPlay() override;
@@ -53,6 +56,9 @@ public:
 	UPROPERTY(Category="UI", EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UOperationHintMessageWidget> OperationHintMessageWidgetClass;
 
+	UPROPERTY(Category="UI", EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UGameMessageWindowWidget> GameMessageWindowWidgetClass;
+
 protected:
 	void DrawMiniMap();
 
@@ -66,6 +72,8 @@ protected:
 	UGamePhaseMessageWidget* GamePhaseMessageWidget;
 	UPROPERTY()
 	UOperationHintMessageWidget* OperationHintMessageWidget;
+	UPROPERTY()
+	UGameMessageWindowWidget* GameMessageWindowWidget;
 
 	AStandardGameState* StandardGameState;
 };
