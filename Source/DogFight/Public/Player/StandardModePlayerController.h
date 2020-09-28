@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DogFightPlayerController.h"
+#include "DogFightTypes.h"
 #include "GameCardUserPlayerControllerInterface.h"
 #include "GameTargetProviderInterface.h"
 
@@ -48,8 +49,12 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 	UFUNCTION(BlueprintCallable, Category="DogFight|PlayerController")
 	AStandardModePlayerCharacter* GetCharacterPawn() const { return CharacterPawn; }
 
+	/** Send a message to all other players in current game. */
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category="DogFight|PlayerController")
+	void CmdBroadcastGameMessageToAll(const FString& GameMessage, const TArray<FString>& Arguments);
+
 	UFUNCTION(Client, Reliable)
-	void RpcReceivedGameMessage(const FString& GameMessage, const TArray<FString> & Arguments);
+	void RpcReceivedGameMessage(FGameMessage Message);
 
 #pragma region Interfaces
 	virtual FCardTargetInfoAcquiredSignature& GetTargetInfoAcquiredDelegate() override { return OnCardTargetInfoAcquired; }

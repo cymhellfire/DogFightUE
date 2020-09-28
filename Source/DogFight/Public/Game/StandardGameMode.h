@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DogFightGameModeBase.h"
+#include "DogFightTypes.h"
 #include "StandardGameMode.generated.h"
 
 class AStandardModePlayerController;
@@ -55,7 +56,7 @@ public:
 	virtual void StartGame();
 
 	/** Broadcast a localized message to all players in current game. */
-	void BroadcastGameMessageToAllPlayers(FString Message, TArray<FString> Arguments);
+	void BroadcastGameMessageToAllPlayers(FGameMessage Message);
 protected:
 	virtual void BeginPlay() override;
 	

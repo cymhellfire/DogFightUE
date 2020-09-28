@@ -94,11 +94,26 @@ void AStandardModePlayerController::GameStart()
 	CmdSpawnCharacterPawn();
 }
 
-void AStandardModePlayerController::RpcReceivedGameMessage_Implementation(const FString& GameMessage,	const TArray<FString>& Arguments)
+void AStandardModePlayerController::CmdBroadcastGameMessageToAll_Implementation(const FString& GameMessage, const TArray<FString>& Arguments)
+{
+	if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		FString SourceName;
+		if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
+		{
+			SourceName = StandardPlayerState->GetPlayerName();
+		}
+		
+		const FGameMessage NewMessage{SourceName, EGameMessageType::GMT_Player, GameMessage, Arguments};
+		StandardGameMode->BroadcastGameMessageToAllPlayers(NewMessage);
+	}
+}
+
+void AStandardModePlayerController::RpcReceivedGameMessage_Implementation(FGameMessage Message)
 {
 	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
 	{
-		StandardHUD->ShowGameMessage(GameMessage, Arguments);
+		StandardHUD->ShowGameMessage(Message);
 	}
 }
 

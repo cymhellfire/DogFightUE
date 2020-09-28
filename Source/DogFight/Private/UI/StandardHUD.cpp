@@ -49,7 +49,7 @@ void AStandardHUD::HideOperationHintMessageWidget()
 	}
 }
 
-void AStandardHUD::ShowGameMessage(const FString& MessageContent, const TArray<FString>& Arguments)
+void AStandardHUD::ShowGameMessage(FGameMessage Message)
 {
 	if (GameMessageWindowWidget != nullptr)
 	{
@@ -58,7 +58,7 @@ void AStandardHUD::ShowGameMessage(const FString& MessageContent, const TArray<F
 			GameMessageWindowWidget->AddToViewport();
 		}
 		
-		GameMessageWindowWidget->AddGameMessage(MessageContent, Arguments);
+		GameMessageWindowWidget->AddGameMessage(Message);
 	}
 }
 

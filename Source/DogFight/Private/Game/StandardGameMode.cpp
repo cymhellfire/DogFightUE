@@ -121,8 +121,10 @@ void AStandardGameMode::PlayerReadyForGame(AStandardModePlayerController* Player
 	// Broadcast player joined message
 	TArray<FString> Arguments;
 	Arguments.Add(PlayerController->GetName());
-	BroadcastGameMessageToAllPlayers(TEXT("GameMsg_PlayerJoined"), Arguments);
-	
+
+	const FGameMessage NewMessage{TEXT("System"), EGameMessageType::GMT_System, TEXT("GameMsg_PlayerJoined"), Arguments};
+	BroadcastGameMessageToAllPlayers(NewMessage);
+
 	PlayerJoinedGame++;
 	OnJoinedPlayerCountChanged();
 }
@@ -138,11 +140,11 @@ void AStandardGameMode::StartGame()
 	}
 }
 
-void AStandardGameMode::BroadcastGameMessageToAllPlayers(FString Message, TArray<FString> Arguments)
+void AStandardGameMode::BroadcastGameMessageToAllPlayers(FGameMessage Message)
 {
 	for (AStandardModePlayerController* PlayerController : StandardPlayerControllerList)
 	{
-		PlayerController->RpcReceivedGameMessage(Message, Arguments);
+		PlayerController->RpcReceivedGameMessage(Message);
 	}
 }
 

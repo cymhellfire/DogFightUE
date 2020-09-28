@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "DogFightTypes.h"
 #include "Blueprint/UserWidget.h"
 #include "GameMessageWindowWidget.generated.h"
 
@@ -17,8 +19,8 @@ class UGameMessageWindowWidget : public UUserWidget
 public:
 	/** Fired when a new GameMessage is received. */
 	UFUNCTION(BlueprintImplementableEvent, Category="DogFight|UI")
-	void OnGameMessageReceived(const FText& GameMessage);
+	void OnGameMessageReceived(EGameMessageType Type, const FText& GameMessage, const FString& MessageSource);
 
-	void AddGameMessage(const FString& MessageContent, const TArray<FString>& ArgumentList);
+	void AddGameMessage(FGameMessage Message);
 
 };

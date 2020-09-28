@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "DogFightTypes.h"
 #include "GameFramework/HUD.h"
 #include "StandardHUD.generated.h"
 
@@ -26,7 +28,7 @@ public:
 
 	void HideOperationHintMessageWidget();
 
-	void ShowGameMessage(const FString& MessageContent, const TArray<FString>& Arguments);
+	void ShowGameMessage(FGameMessage Message);
 
 protected:
 	virtual void BeginPlay() override;

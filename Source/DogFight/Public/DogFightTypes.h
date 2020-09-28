@@ -12,3 +12,29 @@ namespace EReturnToMainMenuReason
 		HostLeft		UMETA(DisplayName="NetError_HostLeft"),
 	};
 }
+
+UENUM(BlueprintType)
+enum class EGameMessageType : uint8
+{
+	GMT_Default			UMETA(DisplayName="Default"),
+	GMT_System			UMETA(DisplayName="System"),
+	GMT_Player			UMETA(DisplayName="Player"),
+};
+
+USTRUCT(BlueprintType)
+struct FGameMessage
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly)
+	FString Source;
+
+	UPROPERTY(BlueprintReadOnly)
+	EGameMessageType Type;
+
+	UPROPERTY(BlueprintReadOnly)
+	FString MessageString;
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<FString> Arguments;
+};
