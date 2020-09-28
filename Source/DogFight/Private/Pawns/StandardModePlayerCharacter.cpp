@@ -182,3 +182,8 @@ void AStandardModePlayerCharacter::SetCursorVisible(bool bVisible)
 	CursorToWorld->SetVisibility(bVisible);
 }
 
+void AStandardModePlayerCharacter::StopMoveImmediately()
+{
+	GetMovementComponent()->StopMovementImmediately();
+}
+

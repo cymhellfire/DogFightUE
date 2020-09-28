@@ -31,7 +31,7 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 	GENERATED_UCLASS_BODY()
 
 	UFUNCTION(Client, Reliable)
-	void RpcSetClickMovementEnabled(bool bEnabled);
+	void RpcSetClickMovementEnabled(bool bEnabled, bool bStopNow = false);
 
 	UPROPERTY(Category=PlayerController, EditAnywhere, BlueprintReadOnly, Replicated)
 	TSubclassOf<AStandardModePlayerCharacter> CharacterPawnClass;
@@ -98,7 +98,7 @@ protected:
 
 	/** Tell server that local player is ready for game. */
 	UFUNCTION(Server, Reliable)
-	void CmdReadyForGame();
+	void CmdReadyForGame(const FString& PlayerName);
 
 	UFUNCTION()
 	void OnRep_CharacterPawn();

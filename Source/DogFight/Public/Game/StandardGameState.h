@@ -47,7 +47,11 @@ public:
 
 protected:
 
-	UPROPERTY(Transient, ReplicatedUsing=OnRep_CurrentGamePhase)
+	bool ShouldCountdownDisplay() const;
+
+protected:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Transient, ReplicatedUsing=OnRep_CurrentGamePhase)
 	FName CurrentGamePhase;
 
 	UPROPERTY(Transient, ReplicatedUsing=OnRep_RemainingTime)

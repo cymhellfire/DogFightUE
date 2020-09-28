@@ -13,8 +13,14 @@ namespace GamePhase
 {
 	extern DOGFIGHT_API const FName EnteringMap;			// Players are entering this map, actors are not yet ticking
 	extern DOGFIGHT_API const FName WaitingForStart;		// Actors are ticking, but the match has not yet begun
-	extern DOGFIGHT_API const FName InProgress;			// Normal gameplay is occurring.
-	extern DOGFIGHT_API const FName WaitingPostMatch;	// Match has ended but actors are still ticking
+	extern DOGFIGHT_API const FName SpawnPlayers;			// Spawn character for players in game.
+	extern DOGFIGHT_API const FName FreeMoving;				// All players can move around without limitation.
+	extern DOGFIGHT_API const FName DecideOrder;			// The order of players can take action will be decided here.
+	extern DOGFIGHT_API const FName PlayerRoundBegin;		// Phase before a player's round begin.
+	extern DOGFIGHT_API const FName PlayerRound;			// Specified player can take action in this phase.
+	extern DOGFIGHT_API const FName PlayerRoundEnd;			// Phase after a player's round end.
+	extern DOGFIGHT_API const FName InProgress;				// Normal gameplay is occurring.
+	extern DOGFIGHT_API const FName WaitingPostMatch;		// Match has ended but actors are still ticking
 }
 
 /**
@@ -28,6 +34,12 @@ class DOGFIGHT_API AStandardGameMode : public ADogFightGameModeBase
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="StandardMode")
 	int32 GameStartDelay;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="StandardMode", meta=(ClampMin="0.01", ClampMax="2"))
+	float SpawnPlayerInterval;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="StandardMode")
+	float FreeMovingDuration;
 
 public:
 	AStandardGameMode(const FObjectInitializer& ObjectInitializer);
@@ -51,7 +63,7 @@ public:
 	FName GetGamePhase() const { return CurrentGamePhase; }
 
 	/** Tell GameMode that the invoker is ready to start game. */
-	virtual void PlayerReadyForGame(AStandardModePlayerController* PlayerController);
+	virtual void PlayerReadyForGame(const FString& PlayerName);
 
 	virtual void StartGame();
 
@@ -66,9 +78,13 @@ protected:
 	FName CurrentGamePhase;
 
 	FTimerHandle DefaultTimerHandle;
+	FTimerHandle SecondaryTimerHandle;
 
 	/** Number of players are already loaded this map. */
 	uint32 PlayerJoinedGame;
+
+	/** The index of player in list to spawn character. */
+	int32 CurrentSpawnPlayerIndex;
 
 	/** Update remaining time. */
 	virtual void DefaultTimer();
@@ -82,6 +98,12 @@ protected:
 	virtual void HandlePhaseInProgress();
 
 	virtual void HandlePhaseWaitingPostMatch();
+
+	virtual void HandlePhaseSpawnPlayers();
+
+	void SpawnPlayerTick();
+
+	virtual void HandlePhaseFreeMoving();
 
 	virtual void OnJoinedPlayerCountChanged();
 

@@ -53,6 +53,9 @@ public:
 
 	void SetCursorVisible(bool bVisible);
 
+	/** Stop character movement immediately. */
+	void StopMoveImmediately();
+
 private:
 	/** Current unit name. */
 	UPROPERTY(Category="Unit", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), ReplicatedUsing=OnRep_UnitName)

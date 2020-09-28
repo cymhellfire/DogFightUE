@@ -33,6 +33,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	bool ShouldPhaseMessageDisplay(FName GamePhase) const;
+
 public:
 	virtual void DrawHUD() override;
 

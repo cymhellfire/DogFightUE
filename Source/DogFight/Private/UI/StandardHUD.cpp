@@ -103,6 +103,11 @@ void AStandardHUD::BeginPlay()
 	}
 }
 
+bool AStandardHUD::ShouldPhaseMessageDisplay(FName GamePhase) const
+{
+	return GamePhase == GamePhase::EnteringMap || GamePhase == GamePhase::WaitingForStart || GamePhase == GamePhase::FreeMoving;
+}
+
 void AStandardHUD::DrawHUD()
 {
 	if (GEngine && GEngine->GameViewport)
@@ -185,7 +190,7 @@ void AStandardHUD::OnGamePhaseChanged(const FName& NewGamePhase)
 	if (GamePhaseMessageWidget == nullptr)
 		return;
 
-	if (NewGamePhase != GamePhase::InProgress)
+	if (ShouldPhaseMessageDisplay(NewGamePhase))
 	{
 		GamePhaseMessageWidget->SetGamePhase(NewGamePhase);
 		GamePhaseMessageWidget->SetCountdownContent(StandardGameState->GetCountdownContentString());

@@ -15,6 +15,12 @@ namespace GamePhase
 {
 	const FName EnteringMap = FName(TEXT("EnteringMap"));
 	const FName WaitingForStart = FName(TEXT("WaitingForStart"));
+	const FName SpawnPlayers = FName(TEXT("SpawnPlayers"));
+	const FName FreeMoving = FName(TEXT("FreeMoving"));
+	const FName DecideOrder = FName(TEXT("DecideOrder"));
+	const FName PlayerRoundBegin = FName(TEXT("PlayerRoundBegin"));
+	const FName PlayerRound = FName(TEXT("PlayerRound"));
+	const FName PlayerRoundEnd = FName(TEXT("PlayerRoundEnd"));
 	const FName InProgress = FName(TEXT("InProgress"));
 	const FName WaitingPostMatch = FName(TEXT("WaitingPostMatch"));
 }
@@ -30,35 +36,23 @@ AStandardGameMode::AStandardGameMode(const FObjectInitializer& ObjectInitializer
 
 	CurrentGamePhase = GamePhase::EnteringMap;
 	GameStartDelay = 5;
+	SpawnPlayerInterval = 0.5f;
+	FreeMovingDuration = 5;
 }
 
 void AStandardGameMode::EnablePlayerClickMovement()
 {
-	TArray<AActor*> ActorList;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AStandardModePlayerController::StaticClass(), ActorList);
-
-	for(AActor* Actor : ActorList)
+	for (AStandardModePlayerController* PlayerController : StandardPlayerControllerList)
 	{
-		AStandardModePlayerController* PlayerController = Cast<AStandardModePlayerController>(Actor);
-		if (PlayerController != nullptr)
-		{
-			PlayerController->RpcSetClickMovementEnabled(true);
-		}
+		PlayerController->RpcSetClickMovementEnabled(true);
 	}
 }
 
 void AStandardGameMode::DisablePlayerClickMovement()
 {
-	TArray<AActor*> ActorList;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AStandardModePlayerController::StaticClass(), ActorList);
-
-	for(AActor* Actor : ActorList)
+	for (AStandardModePlayerController* PlayerController : StandardPlayerControllerList)
 	{
-		AStandardModePlayerController* PlayerController = Cast<AStandardModePlayerController>(Actor);
-		if (PlayerController != nullptr)
-		{
-			PlayerController->RpcSetClickMovementEnabled(false);
-		}
+		PlayerController->RpcSetClickMovementEnabled(false, true);
 	}
 }
 
@@ -116,11 +110,11 @@ void AStandardGameMode::InitGame(const FString& MapName, const FString& Options,
 	SetGamePhase(GamePhase::EnteringMap);
 }
 
-void AStandardGameMode::PlayerReadyForGame(AStandardModePlayerController* PlayerController)
+void AStandardGameMode::PlayerReadyForGame(const FString& PlayerName)
 {
 	// Broadcast player joined message
 	TArray<FString> Arguments;
-	Arguments.Add(PlayerController->GetName());
+	Arguments.Add(PlayerName);
 
 	const FGameMessage NewMessage{TEXT("System"), EGameMessageType::GMT_System, TEXT("GameMsg_PlayerJoined"), Arguments};
 	BroadcastGameMessageToAllPlayers(NewMessage);
@@ -131,13 +125,11 @@ void AStandardGameMode::PlayerReadyForGame(AStandardModePlayerController* Player
 
 void AStandardGameMode::StartGame()
 {
-	SetGamePhase(GamePhase::InProgress);
+	SetGamePhase(GamePhase::SpawnPlayers);
 
-	// Notify all player controller game has began
-	for (AStandardModePlayerController* PlayerController : StandardPlayerControllerList)
-	{
-		PlayerController->GameStart();
-	}
+	// Send GameStart message
+	const FGameMessage NewMessage{TEXT("Server"), EGameMessageType::GMT_System, TEXT("GameMsg_GameStart")};
+	BroadcastGameMessageToAllPlayers(NewMessage);
 }
 
 void AStandardGameMode::BroadcastGameMessageToAllPlayers(FGameMessage Message)
@@ -174,6 +166,13 @@ void AStandardGameMode::DefaultTimer()
 			if (CurrentGamePhase == GamePhase::WaitingForStart)
 			{
 				StartGame();
+			}
+			else if (CurrentGamePhase == GamePhase::FreeMoving)
+			{
+				// Disable click movement
+				DisablePlayerClickMovement();
+
+				SetGamePhase(GamePhase::DecideOrder);
 			}
 		}
 	}
@@ -213,6 +212,14 @@ void AStandardGameMode::OnGamePhaseChanged()
 	{
 		HandlePhaseWaitingPostMatch();
 	}
+	else if (CurrentGamePhase == GamePhase::SpawnPlayers)
+	{
+		HandlePhaseSpawnPlayers();
+	}
+	else if (CurrentGamePhase == GamePhase::FreeMoving)
+	{
+		HandlePhaseFreeMoving();
+	}
 }
 
 void AStandardGameMode::HandlePhaseWaitingForStart()
@@ -233,6 +240,46 @@ void AStandardGameMode::HandlePhaseInProgress()
 
 void AStandardGameMode::HandlePhaseWaitingPostMatch()
 {
+}
+
+void AStandardGameMode::HandlePhaseSpawnPlayers()
+{
+	CurrentSpawnPlayerIndex = 0;
+	// Setup timer for spawn all player characters with interval
+	GetWorldTimerManager().SetTimer(SecondaryTimerHandle, this, &AStandardGameMode::SpawnPlayerTick, SpawnPlayerInterval, true);
+}
+
+void AStandardGameMode::SpawnPlayerTick()
+{
+	// Skip and clear the timer if the index is out of range
+	if (CurrentSpawnPlayerIndex >= PlayerControllerList.Num())
+	{
+		GetWorldTimerManager().ClearTimer(SecondaryTimerHandle);
+		
+		// Go to next phase
+		SetGamePhase(GamePhase::FreeMoving);
+		return;
+	}
+
+	// Spawn character for current player
+	StandardPlayerControllerList[CurrentSpawnPlayerIndex]->GameStart();
+	CurrentSpawnPlayerIndex++;
+}
+
+void AStandardGameMode::HandlePhaseFreeMoving()
+{
+	// Enable click move for all players
+	EnablePlayerClickMovement();
+
+	// Set the countdown
+	AStandardGameState* StandardGameState = Cast<AStandardGameState>(GameState);
+	if (StandardGameState != nullptr && StandardGameState->GetRemainingTime() == 0)
+	{
+		if (FreeMovingDuration > 0)
+		{
+			StandardGameState->SetRemainingTime(FreeMovingDuration);
+		}
+	}
 }
 
 void AStandardGameMode::OnJoinedPlayerCountChanged()

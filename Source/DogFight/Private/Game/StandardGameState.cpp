@@ -60,12 +60,17 @@ void AStandardGameState::SetCountdownContentString(FString NewString)
 	}
 }
 
+bool AStandardGameState::ShouldCountdownDisplay() const
+{
+	return CurrentGamePhase == GamePhase::WaitingForStart || CurrentGamePhase == GamePhase::FreeMoving;
+}
+
 void AStandardGameState::OnRep_CurrentGamePhase()
 {
 	OnGamePhaseChanged.Broadcast(CurrentGamePhase);
 
 	// Update the countdown context string once game phase changed
-	if (CurrentGamePhase == GamePhase::WaitingForStart)
+	if (ShouldCountdownDisplay())
 	{
 		CountdownContentString = FString::FromInt(RemainingTime);
 		OnCountdownContentStringChanged.Broadcast();
@@ -74,7 +79,7 @@ void AStandardGameState::OnRep_CurrentGamePhase()
 
 void AStandardGameState::OnRep_RemainingTime()
 {
-	if (CurrentGamePhase == GamePhase::WaitingForStart)
+	if (ShouldCountdownDisplay())
 	{
 		CountdownContentString = FString::FromInt(RemainingTime);
 		OnCountdownContentStringChanged.Broadcast();

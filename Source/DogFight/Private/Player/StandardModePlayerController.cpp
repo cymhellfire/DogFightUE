@@ -23,21 +23,25 @@ AStandardModePlayerController::AStandardModePlayerController(const FObjectInitia
 {
 	bReplicates = true;
 	bShowMouseCursor = true;
-	//bClickMoveEnabled = true;
-	InputMode = EStandardModePlayerControllerInputMode::IM_ClickMove;
+	InputMode = EStandardModePlayerControllerInputMode::IM_Disable;
 	CharacterPawn = nullptr;
 	PrimaryActorTick.bCanEverTick = true;
 	bInGameMenuShown = false;
 }
 
-void AStandardModePlayerController::RpcSetClickMovementEnabled_Implementation(bool bEnabled)
+void AStandardModePlayerController::RpcSetClickMovementEnabled_Implementation(bool bEnabled, bool bStopNow)
 {
-	//bClickMoveEnabled = bEnabled;
 	InputMode = bEnabled ? EStandardModePlayerControllerInputMode::IM_ClickMove : EStandardModePlayerControllerInputMode::IM_Disable;
 
 	if (CharacterPawn != nullptr)
 	{
 		CharacterPawn->SetCursorVisible(bEnabled);
+
+		// Stop movement if necessary
+		if (bStopNow)
+		{
+			CharacterPawn->StopMoveImmediately();
+		}
 	}
 #if !UE_BUILD_SHIPPING
 	UE_LOG(LogDogFight, Log, TEXT("%s %s click movement."), *GetName(), (bEnabled ? TEXT("enabled") : TEXT("disabled")));
@@ -161,7 +165,14 @@ void AStandardModePlayerController::BeginPlay()
 		// Update ready state
 		if (GetNetMode() == NM_Client)
 		{
-			CmdReadyForGame();
+			UDogFightSaveGame* SaveGameInstance = Cast<UDogFightGameInstance>(GetGameInstance())->GetSaveGameManager()->GetCurrentSaveGameInstance();
+			if (SaveGameInstance == nullptr)
+			{
+				UE_LOG(LogDogFight, Error, TEXT("No available player profile."));
+				return;
+			}
+			
+			CmdReadyForGame(SaveGameInstance->PlayerName);
 		}
 	}
 }
@@ -335,11 +346,11 @@ void AStandardModePlayerController::CmdSetCharacterName_Implementation(const FSt
 	}
 }
 
-void AStandardModePlayerController::CmdReadyForGame_Implementation()
+void AStandardModePlayerController::CmdReadyForGame_Implementation(const FString& PlayerName)
 {
 	if (AStandardGameMode* GameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
 	{
-		GameMode->PlayerReadyForGame(this);
+		GameMode->PlayerReadyForGame(PlayerName);
 	}
 }
 
