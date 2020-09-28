@@ -60,6 +60,20 @@ void AStandardGameState::SetCountdownContentString(FString NewString)
 	}
 }
 
+void AStandardGameState::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	if (GetNetMode() == NM_Client)
+		return;
+
+	// Acquire current game phase as GameState begin play
+	if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		SetCurrentGamePhase(StandardGameMode->GetGamePhase());
+	}
+}
+
 bool AStandardGameState::ShouldCountdownDisplay() const
 {
 	return CurrentGamePhase == GamePhase::WaitingForStart || CurrentGamePhase == GamePhase::FreeMoving;

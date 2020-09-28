@@ -45,7 +45,9 @@ public:
 
 	FORCEINLINE FString GetCountdownContentString() const { return CountdownContentString; }
 
+
 protected:
+	virtual void BeginPlay() override;
 
 	bool ShouldCountdownDisplay() const;
 

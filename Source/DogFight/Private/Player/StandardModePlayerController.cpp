@@ -29,19 +29,13 @@ AStandardModePlayerController::AStandardModePlayerController(const FObjectInitia
 	bInGameMenuShown = false;
 }
 
-void AStandardModePlayerController::RpcSetClickMovementEnabled_Implementation(bool bEnabled, bool bStopNow)
+void AStandardModePlayerController::RpcSetClickMovementEnabled_Implementation(bool bEnabled)
 {
 	InputMode = bEnabled ? EStandardModePlayerControllerInputMode::IM_ClickMove : EStandardModePlayerControllerInputMode::IM_Disable;
 
 	if (CharacterPawn != nullptr)
 	{
 		CharacterPawn->SetCursorVisible(bEnabled);
-
-		// Stop movement if necessary
-		if (bStopNow)
-		{
-			CharacterPawn->StopMoveImmediately();
-		}
 	}
 #if !UE_BUILD_SHIPPING
 	UE_LOG(LogDogFight, Log, TEXT("%s %s click movement."), *GetName(), (bEnabled ? TEXT("enabled") : TEXT("disabled")));
@@ -118,6 +112,17 @@ void AStandardModePlayerController::RpcReceivedGameMessage_Implementation(FGameM
 	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
 	{
 		StandardHUD->ShowGameMessage(Message);
+	}
+}
+
+void AStandardModePlayerController::StopCharacterMovementImmediately()
+{
+	if (GetNetMode() == NM_Client)
+		return;
+
+	if (CharacterPawn != nullptr)
+	{
+		CharacterPawn->StopMoveImmediately();
 	}
 }
 

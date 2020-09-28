@@ -31,7 +31,7 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 	GENERATED_UCLASS_BODY()
 
 	UFUNCTION(Client, Reliable)
-	void RpcSetClickMovementEnabled(bool bEnabled, bool bStopNow = false);
+	void RpcSetClickMovementEnabled(bool bEnabled);
 
 	UPROPERTY(Category=PlayerController, EditAnywhere, BlueprintReadOnly, Replicated)
 	TSubclassOf<AStandardModePlayerCharacter> CharacterPawnClass;
@@ -55,6 +55,9 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 
 	UFUNCTION(Client, Reliable)
 	void RpcReceivedGameMessage(FGameMessage Message);
+
+	/** Stop the character movement immediately. */
+	void StopCharacterMovementImmediately();
 
 #pragma region Interfaces
 	virtual FCardTargetInfoAcquiredSignature& GetTargetInfoAcquiredDelegate() override { return OnCardTargetInfoAcquired; }

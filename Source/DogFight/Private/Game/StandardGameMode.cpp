@@ -52,7 +52,9 @@ void AStandardGameMode::DisablePlayerClickMovement()
 {
 	for (AStandardModePlayerController* PlayerController : StandardPlayerControllerList)
 	{
-		PlayerController->RpcSetClickMovementEnabled(false, true);
+		PlayerController->RpcSetClickMovementEnabled(false);
+		// Also stop current movement
+		PlayerController->StopCharacterMovementImmediately();
 	}
 }
 

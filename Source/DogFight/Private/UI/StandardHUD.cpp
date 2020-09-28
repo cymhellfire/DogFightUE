@@ -186,6 +186,7 @@ void AStandardHUD::DrawMiniMap()
 void AStandardHUD::OnGamePhaseChanged(const FName& NewGamePhase)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("GamePhase changed to %s"), *NewGamePhase.ToString()));
+	UE_LOG(LogDogFight, Log, TEXT("GamePhase changed to %s"), *NewGamePhase.ToString());
 
 	if (GamePhaseMessageWidget == nullptr)
 		return;
