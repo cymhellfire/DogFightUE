@@ -65,6 +65,8 @@ public:
 	/** Tell GameMode that the invoker is ready to start game. */
 	virtual void PlayerReadyForGame(const FString& PlayerName);
 
+	void RegisterPlayerToTimeline(int32 PlayerId, FString PlayerName);
+
 	virtual void StartGame();
 
 	/** Broadcast a localized message to all players in current game. */
@@ -100,6 +102,8 @@ protected:
 	virtual void HandlePhaseWaitingPostMatch();
 
 	virtual void HandlePhaseSpawnPlayers();
+
+	virtual void HandlePhaseDecideOrder();
 
 	void SpawnPlayerTick();
 

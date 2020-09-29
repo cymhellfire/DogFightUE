@@ -179,6 +179,11 @@ void AStandardModePlayerController::BeginPlay()
 			
 			CmdReadyForGame(SaveGameInstance->PlayerName);
 		}
+		// Host register to Timeline here
+		else
+		{
+			CmdRegisterToGameTimeline();
+		}
 	}
 }
 
@@ -245,6 +250,9 @@ void AStandardModePlayerController::OnPlayerNameChanged(const FString& NewName)
 		// Set the new name to buffer
 		PendingUnitName = NewName;
 	}
+
+	// Clients register to Timeline after they uploaded name
+	CmdRegisterToGameTimeline();
 }
 
 void AStandardModePlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps ) const
@@ -364,6 +372,28 @@ void AStandardModePlayerController::CmdSetCharacterHealth_Implementation(int32 N
 	if (CharacterPawn != nullptr)
 	{
 		CharacterPawn->SetCurrentHealth(NewHealth);
+	}
+}
+
+void AStandardModePlayerController::CmdRegisterToGameTimeline_Implementation()
+{
+	if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
+	{
+		if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
+		{
+			StandardGameMode->RegisterPlayerToTimeline(StandardPlayerState->GetPlayerId(), StandardPlayerState->GetPlayerName());
+		}
+	}
+}
+
+void AStandardModePlayerController::RpcSetupTimelineDisplay_Implementation()
+{
+	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
+	{
+		StandardHUD->InitializeTimelineDisplayTimeline();
+
+		// Show the Timeline widget after initialized
+		StandardHUD->SetTimelineVisibility(true);
 	}
 }
 

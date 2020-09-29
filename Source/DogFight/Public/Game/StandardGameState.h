@@ -8,6 +8,8 @@
 #include "StandardMiniMapCapture.h"
 #include "StandardGameState.generated.h"
 
+class AGameRoundsTimeline;
+
 /**
  * 
  */
@@ -45,6 +47,9 @@ public:
 
 	FORCEINLINE FString GetCountdownContentString() const { return CountdownContentString; }
 
+	void RegisterGameRoundTimeline(AGameRoundsTimeline* NewTimeline);
+
+	FORCEINLINE AGameRoundsTimeline* GetGameRoundsTimeline() const { return GameRoundsTimeline; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -61,6 +66,9 @@ protected:
 
 	UPROPERTY(Transient, ReplicatedUsing=OnRep_CountdownContentString)
 	FString CountdownContentString;
+
+	UPROPERTY(VisibleAnywhere, Transient, Replicated)
+	AGameRoundsTimeline* GameRoundsTimeline;
 
 	UFUNCTION()
 	void OnRep_CurrentGamePhase();

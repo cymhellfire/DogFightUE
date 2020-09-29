@@ -10,6 +10,7 @@
 #include "StandardModePlayerController.h"
 #include "StandardModePlayerPawn.h"
 #include "StandardPlayerState.h"
+#include "GameRoundsTimeline.h"
 
 namespace GamePhase
 {
@@ -102,6 +103,21 @@ void AStandardGameMode::PreInitializeComponents()
 	// Set the joined player count to 1 since host is the first player
 	PlayerJoinedGame = 1;
 	OnJoinedPlayerCountChanged();
+
+	// Spawn Timeline actor
+	if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())
+	{
+		AGameRoundsTimeline* Timeline = GetWorld()->SpawnActor<AGameRoundsTimeline>(AGameRoundsTimeline::StaticClass(), FVector::ZeroVector,
+            FRotator(0.f, 0.f,0.f));
+		Timeline->SetOwner(StandardGameState);
+
+		// Register the new timeline
+		StandardGameState->RegisterGameRoundTimeline(Timeline);
+	}
+	else
+	{
+		UE_LOG(LogDogFight, Error, TEXT("Failed to spawn Timeline due to no GameState available."));
+	}
 }
 
 void AStandardGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
@@ -123,6 +139,17 @@ void AStandardGameMode::PlayerReadyForGame(const FString& PlayerName)
 
 	PlayerJoinedGame++;
 	OnJoinedPlayerCountChanged();
+}
+
+void AStandardGameMode::RegisterPlayerToTimeline(int32 PlayerId, FString PlayerName)
+{
+	if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())
+	{
+		if (AGameRoundsTimeline* Timeline = StandardGameState->GetGameRoundsTimeline())
+		{
+			Timeline->RegisterPlayer(PlayerId, PlayerName);
+		}
+	}
 }
 
 void AStandardGameMode::StartGame()
@@ -222,6 +249,10 @@ void AStandardGameMode::OnGamePhaseChanged()
 	{
 		HandlePhaseFreeMoving();
 	}
+	else if (CurrentGamePhase == GamePhase::DecideOrder)
+	{
+		HandlePhaseDecideOrder();
+	}
 }
 
 void AStandardGameMode::HandlePhaseWaitingForStart()
@@ -249,6 +280,21 @@ void AStandardGameMode::HandlePhaseSpawnPlayers()
 	CurrentSpawnPlayerIndex = 0;
 	// Setup timer for spawn all player characters with interval
 	GetWorldTimerManager().SetTimer(SecondaryTimerHandle, this, &AStandardGameMode::SpawnPlayerTick, SpawnPlayerInterval, true);
+}
+
+void AStandardGameMode::HandlePhaseDecideOrder()
+{
+	if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())
+	{
+		StandardGameState->GetGameRoundsTimeline()->RandomizeOrder();
+		StandardGameState->GetGameRoundsTimeline()->SortTimelineByIndex();
+
+		// Let all clients setup their Timeline widget
+		for (AStandardModePlayerController* PlayerController : StandardPlayerControllerList)
+		{
+			PlayerController->RpcSetupTimelineDisplay();
+		}
+	}
 }
 
 void AStandardGameMode::SpawnPlayerTick()

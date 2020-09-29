@@ -10,6 +10,7 @@
 #include "GamePhaseMessageWidget.h"
 #include "OperationHintMessageWidget.h"
 #include "GameMessageWindowWidget.h"
+#include "GameRoundsTimelineWidget.h"
 #include "StandardGameMode.h"
 
 AStandardHUD::AStandardHUD(const FObjectInitializer& ObjectInitializer)
@@ -62,6 +63,29 @@ void AStandardHUD::ShowGameMessage(FGameMessage Message)
 	}
 }
 
+void AStandardHUD::InitializeTimelineDisplayTimeline()
+{
+	if (GameRoundsTimelineWidget != nullptr)
+	{
+		GameRoundsTimelineWidget->SetupTimelineDisplay();
+	}
+}
+
+void AStandardHUD::SetTimelineVisibility(bool bVisible)
+{
+	if (GameRoundsTimelineWidget != nullptr)
+	{
+		if (bVisible && !GameRoundsTimelineWidget->IsInViewport())
+		{
+			GameRoundsTimelineWidget->AddToViewport();
+		}
+		else if (!bVisible && GameRoundsTimelineWidget->IsInViewport())
+		{
+			GameRoundsTimelineWidget->RemoveFromParent();
+		}
+	}
+}
+
 void AStandardHUD::BeginPlay()
 {
 	Super::BeginPlay();
@@ -82,6 +106,11 @@ void AStandardHUD::BeginPlay()
 	if (GameMessageWindowWidget == nullptr && GameMessageWindowWidgetClass != nullptr)
 	{
 		GameMessageWindowWidget = CreateWidget<UGameMessageWindowWidget>(PlayerController, GameMessageWindowWidgetClass, FName("GameMessageWindowWidget"));
+	}
+
+	if (GameRoundsTimelineWidget == nullptr && GameRoundsTimelineWidgetClass != nullptr)
+	{
+		GameRoundsTimelineWidget = CreateWidget<UGameRoundsTimelineWidget>(PlayerController, GameRoundsTimelineWidgetClass, FName("GameRoundsTimelineWidget"));
 	}
 
 	// Listen the GamePhase change event

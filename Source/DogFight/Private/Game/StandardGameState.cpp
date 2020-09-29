@@ -4,6 +4,7 @@
 #include "StandardGameState.h"
 
 #include "StandardGameMode.h"
+#include "GameRoundsTimeline.h"
 
 AStandardGameState::AStandardGameState(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -19,6 +20,7 @@ void AStandardGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & 
 	DOREPLIFETIME(AStandardGameState, RemainingTime);
 	DOREPLIFETIME(AStandardGameState, CurrentGamePhase);
 	DOREPLIFETIME(AStandardGameState, CountdownContentString);
+	DOREPLIFETIME(AStandardGameState, GameRoundsTimeline);
 }
 
 void AStandardGameState::SetCurrentGamePhase(FName NewGamePhase)
@@ -58,6 +60,11 @@ void AStandardGameState::SetCountdownContentString(FString NewString)
 			OnRep_CountdownContentString();
 		}
 	}
+}
+
+void AStandardGameState::RegisterGameRoundTimeline(AGameRoundsTimeline* NewTimeline)
+{
+	GameRoundsTimeline = NewTimeline;
 }
 
 void AStandardGameState::BeginPlay()

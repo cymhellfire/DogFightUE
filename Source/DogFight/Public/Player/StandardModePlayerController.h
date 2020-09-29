@@ -56,6 +56,9 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 	UFUNCTION(Client, Reliable)
 	void RpcReceivedGameMessage(FGameMessage Message);
 
+	UFUNCTION(Client, Reliable)
+	void RpcSetupTimelineDisplay();
+
 	/** Stop the character movement immediately. */
 	void StopCharacterMovementImmediately();
 
@@ -102,6 +105,9 @@ protected:
 	/** Tell server that local player is ready for game. */
 	UFUNCTION(Server, Reliable)
 	void CmdReadyForGame(const FString& PlayerName);
+
+	UFUNCTION(Server, Reliable)
+	void CmdRegisterToGameTimeline();
 
 	UFUNCTION()
 	void OnRep_CharacterPawn();
