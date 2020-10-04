@@ -16,6 +16,7 @@
 #include "StandardGameMode.h"
 #include "StandardHUD.h"
 #include "StandardPlayerState.h"
+#include "CardDisplayWidget.h"
 #include "Blueprint/UserWidget.h"
 
 AStandardModePlayerController::AStandardModePlayerController(const FObjectInitializer& ObjectInitializer)
@@ -62,6 +63,8 @@ void AStandardModePlayerController::InitPlayerState()
 		if (AStandardPlayerState* StandardPlayerState = Cast<AStandardPlayerState>(PlayerState))
 		{
 			StandardPlayerState->OnPlayerNameChanged.AddDynamic(this, &AStandardModePlayerController::OnPlayerNameChanged);
+
+			StandardPlayerState->OnPlayerCardInfoListChanged.AddDynamic(this, &AStandardModePlayerController::OnCardInfoListChanged);
 		}
 	}
 }
@@ -70,11 +73,11 @@ void AStandardModePlayerController::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 
-	// Register name changed delegate on client side after PlayerState replicated
 	if (GetNetMode() == NM_Client)
 	{
 		if (AStandardPlayerState* StandardPlayerState = Cast<AStandardPlayerState>(PlayerState))
 		{
+			// Register name changed delegate on client side after PlayerState replicated
 			StandardPlayerState->OnPlayerNameChanged.AddDynamic(this, &AStandardModePlayerController::OnPlayerNameChanged);
 
 			// Acquire current player name
@@ -82,8 +85,12 @@ void AStandardModePlayerController::OnRep_PlayerState()
 			{
 				OnPlayerNameChanged(StandardPlayerState->GetPlayerName());
 			}
+
+			// Register card info list changed delegate
+			StandardPlayerState->OnPlayerCardInfoListChanged.AddDynamic(this, &AStandardModePlayerController::OnCardInfoListChanged);
 		}
 	}
+	
 }
 
 void AStandardModePlayerController::GameStart()
@@ -112,6 +119,45 @@ void AStandardModePlayerController::RpcReceivedGameMessage_Implementation(FGameM
 	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
 	{
 		StandardHUD->ShowGameMessage(Message);
+	}
+}
+
+void AStandardModePlayerController::RpcShowCardDisplayWidgetWithSelectMode_Implementation(ECardSelectionMode SelectionMode)
+{
+	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
+	{
+		StandardHUD->ToggleCardDisplayWidgetVisibility(true);
+		StandardHUD->SetCardSelectionMode(SelectionMode);
+
+		// Setup the delegate for get the selection result
+		StandardHUD->GetCardDisplayWidget()->OnCardSelectionConfirmed.AddDynamic(this, &AStandardModePlayerController::OnCardSelectionConfirmed);
+	}
+}
+
+void AStandardModePlayerController::OnCardSelectionConfirmed(const TArray<int32>& SelectedIndexList)
+{
+	CmdUploadSelectedCardIndex(SelectedIndexList);
+}
+
+void AStandardModePlayerController::CmdUploadSelectedCardIndex_Implementation(const TArray<int32>& SelectedIndexList)
+{
+	if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
+	{
+		for (int32 Index : SelectedIndexList)
+		{
+			StandardPlayerState->CmdUseCardByIndex(Index);
+		}
+	}
+}
+
+void AStandardModePlayerController::RpcHideCardDisplayWidget_Implementation()
+{
+	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
+	{
+		// Clear the delegate
+		StandardHUD->GetCardDisplayWidget()->OnCardSelectionConfirmed.RemoveDynamic(this, &AStandardModePlayerController::OnCardSelectionConfirmed);
+
+		StandardHUD->ToggleCardDisplayWidgetVisibility(false);
 	}
 }
 
@@ -397,6 +443,20 @@ void AStandardModePlayerController::RpcSetupTimelineDisplay_Implementation()
 	}
 }
 
+void AStandardModePlayerController::CmdFinishMyRound_Implementation()
+{
+	if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
+		{
+			if (StandardGameMode->GetCurrentPlayerId() == StandardPlayerState->GetPlayerId())
+			{
+				StandardGameMode->EndCurrentPlayerRound();
+			}
+		}
+	}
+}
+
 void AStandardModePlayerController::OnRep_CharacterPawn()
 {
 	// Set the buffed name to new spawned character
@@ -409,6 +469,17 @@ void AStandardModePlayerController::OnRep_CharacterPawn()
 
 	// Update decal visibility
 	CharacterPawn->SetCursorVisible(InputMode == EStandardModePlayerControllerInputMode::IM_ClickMove);
+}
+
+void AStandardModePlayerController::OnCardInfoListChanged()
+{
+	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
+	{
+		if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
+		{
+			StandardHUD->SetCardDisplayInfoList(StandardPlayerState->GetCardDisplayInfoList());
+		}
+	}
 }
 
 void AStandardModePlayerController::CmdUploadDirectionTarget_Implementation(FVector TargetDirection)
@@ -532,6 +603,14 @@ void AStandardModePlayerController::ExecRequireDirectionTarget()
 	else
 	{
 		RpcRequestDirectionTarget_Implementation();
+	}
+}
+
+void AStandardModePlayerController::ExecToggleCardDisplayWidget(bool bVisible)
+{
+	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
+	{
+		StandardHUD->ToggleCardDisplayWidgetVisibility(bVisible);
 	}
 }
 

@@ -2,9 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "DogFight.h"
 #include "GameFramework/PlayerState.h"
+#include "CustomizableCardTypes.h"
 #include "StandardPlayerState.generated.h"
+
+class ACardBase;
 
 /**
  * 
@@ -16,8 +19,51 @@ class DOGFIGHT_API AStandardPlayerState : public APlayerState
 
 public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerNameChangedSignature, const FString&, NewName);
-
 	FPlayerNameChangedSignature OnPlayerNameChanged;
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerCardInfoListChangedSignature);
+	FPlayerCardInfoListChangedSignature OnPlayerCardInfoListChanged;
+
+	AStandardPlayerState(const FObjectInitializer& ObjectInitializer);
+
 	virtual void OnRep_PlayerName() override;
+
+	void AddCard(ACardBase* Card);
+
+	UFUNCTION(Server, Reliable)
+	void CmdUseCardByIndex(int32 Index);
+
+	FORCEINLINE bool CanUseCard() const { return UsedCardNum < MaxUseNum; }
+
+	/** Get the number of cards can be gained in this round. */
+	int32 GetCardGainNumByRound();
+
+	FORCEINLINE TArray<FCardInstanceDisplayInfo> GetCardDisplayInfoList() const { return CardInfoList; }
+
+protected:
+	UFUNCTION()
+	void OnRep_CardInfoList();
+
+	UFUNCTION()
+	void OnCardFinished();
+
+protected:
+
+	int32 UsingCardIndex;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState", ReplicatedUsing=OnRep_CardInfoList)
+	TArray<FCardInstanceDisplayInfo> CardInfoList;
+
+	/** The list of card instances. (Server Only) */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState")
+	TArray<ACardBase*> CardInstanceList;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState", Replicated)
+	int32 MaxUseNum;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState", Replicated)
+	int32 UsedCardNum;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="StandardPlayerState", Replicated)
+	int32 CardGainPerRounds;
 };

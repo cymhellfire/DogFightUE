@@ -142,6 +142,15 @@ void AGameRoundsTimeline::SortTimelineByIndex()
 	}
 }
 
+void AGameRoundsTimeline::StepForward()
+{
+	// Move the first Player to the trail
+	FTimelinePlayerInfo PlayerInfo = TimelinePlayerInfoList[0];
+	PlayerInfo.FinishedRounds += 1;				// Increase the Game Rounds counter
+	TimelinePlayerInfoList.RemoveAt(0);
+	TimelinePlayerInfoList.Add(PlayerInfo);
+}
+
 void AGameRoundsTimeline::OnRep_TimelinePlayerInfoList()
 {
 	// Broadcast the event

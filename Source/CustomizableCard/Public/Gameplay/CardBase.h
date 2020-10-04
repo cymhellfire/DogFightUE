@@ -21,11 +21,14 @@ public:
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCardStartExecuting);
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCardFinished);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCardCancelled);
 
 	/** This delegate triggered before card executing. */
 	FOnCardStartExecuting OnCardStartExecuting;
 	/** This delegate triggered when card is finished. */
 	FOnCardFinished OnCardFinished;
+	/** This delegate triggered when card is cancelled. */
+	FOnCardCancelled OnCardCancelled;
 
 	// Sets default values for this actor's properties
 	ACardBase();
@@ -73,6 +76,8 @@ public:
 		OwnerPlayerController = PlayerController;
 	}
 
+	FCardInstanceDisplayInfo GetCardDisplayInfo();
+
 protected:
 	/** Do prepare operations before card executing phase. */
 	virtual void Prepare() {};
@@ -91,6 +96,13 @@ protected:
 
 	UFUNCTION()
 	virtual void OnInstructionFinished(UCardInstructionBase* InstructionBase);
+
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="CustomizableCard")
+	FString CardName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="CustomizableCard")
+	FString CardDescription;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="CustomizableCard")

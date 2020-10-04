@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 
+#include "CustomizableCardTypes.h"
 #include "DogFightTypes.h"
+#include "UIType.h"
 #include "GameFramework/HUD.h"
 #include "StandardHUD.generated.h"
 
@@ -12,6 +14,7 @@ class UGamePhaseMessageWidget;
 class UOperationHintMessageWidget;
 class UGameMessageWindowWidget;
 class UGameRoundsTimelineWidget;
+class UCardDisplayWidget;
 class AStandardGameState;
 
 /**
@@ -32,6 +35,14 @@ public:
 	void ShowGameMessage(FGameMessage Message);
 
 	void InitializeTimelineDisplayTimeline();
+
+	void SetCardDisplayInfoList(const TArray<FCardInstanceDisplayInfo>& CardInfoList);
+
+	void ToggleCardDisplayWidgetVisibility(bool bVisible);
+
+	void SetCardSelectionMode(ECardSelectionMode SelectionMode);
+
+	FORCEINLINE UCardDisplayWidget* GetCardDisplayWidget() const { return CardDisplayWidget; }
 
 	/** Switch the visibility of TimelineDisplayWidget. */
 	void SetTimelineVisibility(bool bVisible);
@@ -72,6 +83,9 @@ public:
 	UPROPERTY(Category="UI", EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UGameRoundsTimelineWidget> GameRoundsTimelineWidgetClass;
 
+	UPROPERTY(Category="UI", EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UCardDisplayWidget> CardDisplayWidgetClass;
+
 protected:
 	void DrawMiniMap();
 
@@ -89,6 +103,8 @@ protected:
 	UGameMessageWindowWidget* GameMessageWindowWidget;
 	UPROPERTY()
 	UGameRoundsTimelineWidget* GameRoundsTimelineWidget;
+	UPROPERTY()
+	UCardDisplayWidget* CardDisplayWidget;
 
 	AStandardGameState* StandardGameState;
 };

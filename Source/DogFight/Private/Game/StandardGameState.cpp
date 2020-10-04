@@ -21,6 +21,8 @@ void AStandardGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & 
 	DOREPLIFETIME(AStandardGameState, CurrentGamePhase);
 	DOREPLIFETIME(AStandardGameState, CountdownContentString);
 	DOREPLIFETIME(AStandardGameState, GameRoundsTimeline);
+	DOREPLIFETIME(AStandardGameState, PlayerCount);
+	DOREPLIFETIME(AStandardGameState, AlivePlayerCount);
 }
 
 void AStandardGameState::SetCurrentGamePhase(FName NewGamePhase)

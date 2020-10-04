@@ -49,7 +49,13 @@ public:
 
 	void SortTimelineByIndex();
 
+	/** Let the Timeline step forward one player. */
+	void StepForward();
+
 	FORCEINLINE TArray<FTimelinePlayerInfo> GetPlayerInfos() const { return TimelinePlayerInfoList; }
+
+	/** Get the Id of player is currently active. */
+	FORCEINLINE int32 GetCurrentPlayerId() const { return TimelinePlayerInfoList[0].PlayerId; }
 
 protected:
 	UFUNCTION()

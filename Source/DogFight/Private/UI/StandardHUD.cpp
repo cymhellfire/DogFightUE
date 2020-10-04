@@ -11,6 +11,7 @@
 #include "OperationHintMessageWidget.h"
 #include "GameMessageWindowWidget.h"
 #include "GameRoundsTimelineWidget.h"
+#include "CardDisplayWidget.h"
 #include "StandardGameMode.h"
 
 AStandardHUD::AStandardHUD(const FObjectInitializer& ObjectInitializer)
@@ -71,6 +72,39 @@ void AStandardHUD::InitializeTimelineDisplayTimeline()
 	}
 }
 
+void AStandardHUD::SetCardDisplayInfoList(const TArray<FCardInstanceDisplayInfo>& CardInfoList)
+{
+	if (CardDisplayWidget != nullptr)
+	{
+		CardDisplayWidget->SetCardDisplayInfos(CardInfoList);
+	}
+}
+
+void AStandardHUD::ToggleCardDisplayWidgetVisibility(bool bVisible)
+{
+	if (CardDisplayWidget == nullptr)
+		return;
+
+	if (bVisible && !CardDisplayWidget->IsInViewport())
+	{
+		CardDisplayWidget->AddToViewport();
+	}
+	else if (!bVisible && CardDisplayWidget->IsInViewport())
+	{
+		CardDisplayWidget->RemoveFromParent();
+	}
+}
+
+void AStandardHUD::SetCardSelectionMode(ECardSelectionMode SelectionMode)
+{
+	if (CardDisplayWidget != nullptr)
+	{
+		CardDisplayWidget->SetSelectMode(SelectionMode);
+	}
+}
+
+
+
 void AStandardHUD::SetTimelineVisibility(bool bVisible)
 {
 	if (GameRoundsTimelineWidget != nullptr)
@@ -111,6 +145,11 @@ void AStandardHUD::BeginPlay()
 	if (GameRoundsTimelineWidget == nullptr && GameRoundsTimelineWidgetClass != nullptr)
 	{
 		GameRoundsTimelineWidget = CreateWidget<UGameRoundsTimelineWidget>(PlayerController, GameRoundsTimelineWidgetClass, FName("GameRoundsTimelineWidget"));
+	}
+
+	if (CardDisplayWidget == nullptr && CardDisplayWidgetClass != nullptr)
+	{
+		CardDisplayWidget = CreateWidget<UCardDisplayWidget>(PlayerController, CardDisplayWidgetClass, FName("CardDisplayWidget"));
 	}
 
 	// Listen the GamePhase change event

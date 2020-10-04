@@ -3,6 +3,8 @@
 
 #include "StandardGameMode.h"
 
+
+#include "CardBase.h"
 #include "DogFight.h"
 #include "DogFightGameInstance.h"
 #include "StandardGameState.h"
@@ -10,6 +12,7 @@
 #include "StandardModePlayerController.h"
 #include "StandardModePlayerPawn.h"
 #include "StandardPlayerState.h"
+#include "GameplayCardPool.h"
 #include "GameRoundsTimeline.h"
 
 namespace GamePhase
@@ -22,7 +25,8 @@ namespace GamePhase
 	const FName PlayerRoundBegin = FName(TEXT("PlayerRoundBegin"));
 	const FName PlayerRound = FName(TEXT("PlayerRound"));
 	const FName PlayerRoundEnd = FName(TEXT("PlayerRoundEnd"));
-	const FName InProgress = FName(TEXT("InProgress"));
+	const FName CheckGameEnd = FName(TEXT("CheckGameEnd"));
+	const FName GameSummary = FName(TEXT("GameSummary"));
 	const FName WaitingPostMatch = FName(TEXT("WaitingPostMatch"));
 }
 
@@ -108,7 +112,7 @@ void AStandardGameMode::PreInitializeComponents()
 	if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())
 	{
 		AGameRoundsTimeline* Timeline = GetWorld()->SpawnActor<AGameRoundsTimeline>(AGameRoundsTimeline::StaticClass(), FVector::ZeroVector,
-            FRotator(0.f, 0.f,0.f));
+			FRotator(0.f, 0.f,0.f));
 		Timeline->SetOwner(StandardGameState);
 
 		// Register the new timeline
@@ -117,6 +121,12 @@ void AStandardGameMode::PreInitializeComponents()
 	else
 	{
 		UE_LOG(LogDogFight, Error, TEXT("Failed to spawn Timeline due to no GameState available."));
+	}
+
+	// Spawn CardPool
+	if (CardPoolClass != nullptr)
+	{
+		CardPool = NewObject<UGameplayCardPool>(this, CardPoolClass, FName(TEXT("CardPool")));
 	}
 }
 
@@ -152,6 +162,69 @@ void AStandardGameMode::RegisterPlayerToTimeline(int32 PlayerId, FString PlayerN
 	}
 }
 
+AStandardModePlayerController* AStandardGameMode::GetPlayerControllerById(int32 PlayerId)
+{
+	for (AStandardModePlayerController* PlayerController : StandardPlayerControllerList)
+	{
+		if (AStandardPlayerState* PlayerState = PlayerController->GetPlayerState<AStandardPlayerState>())
+		{
+			if (PlayerState->GetPlayerId() == PlayerId)
+			{
+				return PlayerController;
+			}
+		}
+	}
+
+	UE_LOG(LogDogFight, Error, TEXT("Failed to get the PlayerController with Id %d"), PlayerId);
+	return nullptr;
+}
+
+void AStandardGameMode::GivePlayerCards(int32 PlayerId, int32 CardNum)
+{
+	if (CardPool == nullptr)
+	{
+		UE_LOG(LogDogFight, Error, TEXT("No CardPool available."));
+		return;
+	}
+
+	ACardBase* Card = nullptr;
+	if (AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(PlayerId))
+	{
+		if (AStandardPlayerState* PlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
+		{
+			for (int i = 0; i < CardNum; ++i)
+			{
+				Card = CardPool->GetRandomCard();
+				Card->SetOwnerPlayerController(StandardModePlayerController);
+				PlayerState->AddCard(Card);
+			}
+		}
+	}
+}
+
+void AStandardGameMode::GivePlayerCardsByCardIndex(int32 PlayerId, int32 CardNum, int32 CardIndex)
+{
+	if (CardPool == nullptr)
+	{
+		UE_LOG(LogDogFight, Error, TEXT("No CardPool available."));
+		return;
+	}
+
+	ACardBase* Card = nullptr;
+	if (AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(PlayerId))
+	{
+		if (AStandardPlayerState* PlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
+		{
+			for (int i = 0; i < CardNum; ++i)
+			{
+				Card = CardPool->GetCardByIndex(CardIndex);
+				Card->SetOwnerPlayerController(StandardModePlayerController);
+				PlayerState->AddCard(Card);
+			}
+		}
+	}
+}
+
 void AStandardGameMode::StartGame()
 {
 	SetGamePhase(GamePhase::SpawnPlayers);
@@ -167,6 +240,25 @@ void AStandardGameMode::BroadcastGameMessageToAllPlayers(FGameMessage Message)
 	{
 		PlayerController->RpcReceivedGameMessage(Message);
 	}
+}
+
+void AStandardGameMode::EndCurrentPlayerRound()
+{
+	if (CurrentGamePhase == GamePhase::PlayerRound)
+	{
+		SetGamePhase(GamePhase::PlayerRoundEnd);
+	}
+}
+
+int32 AStandardGameMode::GetCurrentPlayerId() const
+{
+	if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())
+	{
+		return StandardGameState->GetGameRoundsTimeline()->GetCurrentPlayerId();
+	}
+
+	UE_LOG(LogDogFight, Error, TEXT("Failed to get the StandardGameState."));
+	return -1;
 }
 
 void AStandardGameMode::BeginPlay()
@@ -233,9 +325,9 @@ void AStandardGameMode::OnGamePhaseChanged()
 	{
 		HandlePhaseWaitingForStart();
 	}
-	else if (CurrentGamePhase == GamePhase::InProgress)
+	else if (CurrentGamePhase == GamePhase::GameSummary)
 	{
-		HandlePhaseInProgress();
+		HandlePhaseGameSummary();
 	}
 	else if (CurrentGamePhase == GamePhase::WaitingPostMatch)
 	{
@@ -253,6 +345,22 @@ void AStandardGameMode::OnGamePhaseChanged()
 	{
 		HandlePhaseDecideOrder();
 	}
+	else if (CurrentGamePhase == GamePhase::PlayerRoundBegin)
+	{
+		HandlePhasePlayerRoundBegin();
+	}
+	else if (CurrentGamePhase == GamePhase::PlayerRound)
+	{
+		HandlePhasePlayerRound();
+	}
+	else if (CurrentGamePhase == GamePhase::PlayerRoundEnd)
+	{
+		HandlePhasePlayerRoundEnd();
+	}
+	else if (CurrentGamePhase == GamePhase::CheckGameEnd)
+	{
+		HandlePhaseCheckGameEnd();
+	}
 }
 
 void AStandardGameMode::HandlePhaseWaitingForStart()
@@ -267,8 +375,13 @@ void AStandardGameMode::HandlePhaseWaitingForStart()
 	}
 }
 
-void AStandardGameMode::HandlePhaseInProgress()
+void AStandardGameMode::HandlePhaseGameSummary()
 {
+	// Let all player hide the card display widget
+	for (AStandardModePlayerController* StandardModePlayerController : StandardPlayerControllerList)
+	{
+		StandardModePlayerController->RpcHideCardDisplayWidget();
+	}
 }
 
 void AStandardGameMode::HandlePhaseWaitingPostMatch()
@@ -293,6 +406,61 @@ void AStandardGameMode::HandlePhaseDecideOrder()
 		for (AStandardModePlayerController* PlayerController : StandardPlayerControllerList)
 		{
 			PlayerController->RpcSetupTimelineDisplay();
+		}
+	}
+
+	SetGamePhase(GamePhase::PlayerRoundBegin);
+}
+
+void AStandardGameMode::HandlePhasePlayerRoundBegin()
+{
+	AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(GetCurrentPlayerId());
+	if (StandardModePlayerController == nullptr)
+	{
+		UE_LOG(LogDogFight, Error, TEXT("Failed to get PlayerController with Id %d"), GetCurrentPlayerId());
+		return;
+	}
+	
+	// Give current player random cards
+	if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
+	{
+		GivePlayerCards(GetCurrentPlayerId(), StandardPlayerState->GetCardGainNumByRound());
+	}
+
+	SetGamePhase(GamePhase::PlayerRound);
+}
+
+void AStandardGameMode::HandlePhasePlayerRound()
+{
+	if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())
+	{
+		AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(StandardGameState->GetGameRoundsTimeline()->GetCurrentPlayerId());
+		if (StandardModePlayerController != nullptr)
+		{
+			StandardModePlayerController->RpcShowCardDisplayWidgetWithSelectMode(ECardSelectionMode::CSM_SingleNoConfirm);
+		}
+	}
+}
+
+void AStandardGameMode::HandlePhasePlayerRoundEnd()
+{
+	// Goto check phase
+	SetGamePhase(GamePhase::CheckGameEnd);
+}
+
+void AStandardGameMode::HandlePhaseCheckGameEnd()
+{
+	// Check current alive players
+	if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())
+	{
+		if (StandardGameState->GetAlivePlayerCount() <= 1)
+		{
+			SetGamePhase(GamePhase::GameSummary);
+		}
+		else
+		{
+			StandardGameState->GetGameRoundsTimeline()->StepForward();
+			SetGamePhase(GamePhase::PlayerRoundBegin);
 		}
 	}
 }
@@ -362,3 +530,9 @@ void AStandardGameMode::SetAllPlayerClickMove(bool bEnable)
 		DisablePlayerClickMovement();
 	}
 }
+
+void AStandardGameMode::GivePlayerCard(int32 PlayerId, int32 CardNum, int32 CardIndex)
+{
+	GivePlayerCardsByCardIndex(PlayerId, CardNum, CardIndex);
+}
+

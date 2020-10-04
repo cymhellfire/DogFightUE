@@ -8,6 +8,8 @@
 #include "StandardGameMode.generated.h"
 
 class AStandardModePlayerController;
+class AStandardPlayerState;
+class UGameplayCardPool;
 
 namespace GamePhase
 {
@@ -19,7 +21,8 @@ namespace GamePhase
 	extern DOGFIGHT_API const FName PlayerRoundBegin;		// Phase before a player's round begin.
 	extern DOGFIGHT_API const FName PlayerRound;			// Specified player can take action in this phase.
 	extern DOGFIGHT_API const FName PlayerRoundEnd;			// Phase after a player's round end.
-	extern DOGFIGHT_API const FName InProgress;				// Normal gameplay is occurring.
+	extern DOGFIGHT_API const FName CheckGameEnd;			// Check if the game should end or continue.
+	extern DOGFIGHT_API const FName GameSummary;			// Summary the game and display the result.
 	extern DOGFIGHT_API const FName WaitingPostMatch;		// Match has ended but actors are still ticking
 }
 
@@ -67,10 +70,32 @@ public:
 
 	void RegisterPlayerToTimeline(int32 PlayerId, FString PlayerName);
 
+	AStandardModePlayerController* GetPlayerControllerById(int32 PlayerId);
+
+	/**
+	 * Give random cards to specified player.
+	 * @param PlayerId		Id of player to give cards.
+	 * @param CardNum		Number of cards player will gain.
+	 */
+	void GivePlayerCards(int32 PlayerId, int32 CardNum);
+
+	/**
+	 * Give cards to specified player by giving a CardId.
+	 * @param PlayerId		Id of player to give cards.
+	 * @param CardNum		Number of cards player will gain.
+	 * @param CardIndex		Index of card in CardPool.
+	 */
+	void GivePlayerCardsByCardIndex(int32 PlayerId, int32 CardNum, int32 CardIndex);
+
 	virtual void StartGame();
 
 	/** Broadcast a localized message to all players in current game. */
 	void BroadcastGameMessageToAllPlayers(FGameMessage Message);
+
+	/** End current player round. */
+	void EndCurrentPlayerRound();
+
+	int32 GetCurrentPlayerId() const;
 protected:
 	virtual void BeginPlay() override;
 	
@@ -97,7 +122,7 @@ protected:
 
 	virtual void HandlePhaseWaitingForStart();
 
-	virtual void HandlePhaseInProgress();
+	virtual void HandlePhaseGameSummary();
 
 	virtual void HandlePhaseWaitingPostMatch();
 
@@ -105,15 +130,33 @@ protected:
 
 	virtual void HandlePhaseDecideOrder();
 
+	virtual void HandlePhasePlayerRoundBegin();
+
+	virtual void HandlePhasePlayerRound();
+
+	virtual void HandlePhasePlayerRoundEnd();
+
+	virtual void HandlePhaseCheckGameEnd();
+
 	void SpawnPlayerTick();
 
 	virtual void HandlePhaseFreeMoving();
 
 	virtual void OnJoinedPlayerCountChanged();
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardGameMode")
+	UGameplayCardPool* CardPool;
+
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="StandardGameMode")
+	TSubclassOf<UGameplayCardPool> CardPoolClass;
+
 #pragma region Debug
 public:
 	UFUNCTION(Exec)
 	void SetAllPlayerClickMove(bool bEnable);
+
+	UFUNCTION(Exec)
+	void GivePlayerCard(int32 PlayerId, int32 CardNum, int32 CardIndex);
 #pragma endregion Debug
 };

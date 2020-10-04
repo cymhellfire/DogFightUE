@@ -73,6 +73,13 @@ FCardInstructionTargetInfo ACardBase::GetTargetInfo(int32 Index)
 	return TargetInfoList[Index];
 }
 
+FCardInstanceDisplayInfo ACardBase::GetCardDisplayInfo()
+{
+	FCardInstanceDisplayInfo Result {CardName,CardDescription};
+
+	return Result;
+}
+
 void ACardBase::Execute()
 {
 	// Broadcast delegate

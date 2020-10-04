@@ -47,3 +47,30 @@ struct FCardInstructionTargetInfo
 		return !(Lhs == RHS);
 	}
 };
+
+USTRUCT(BlueprintType)
+struct FCardDisplayInfoArgument
+{
+	GENERATED_BODY()
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="CardDisplayArgument")
+	FColor DisplayColor;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="CardDisplayArgument")
+	FString StringValue;
+};
+
+USTRUCT(BlueprintType)
+struct FCardInstanceDisplayInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="CardInstanceInfo")
+	FString CardName;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="CardInstanceInfo")
+	FString CardDescription;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="CardInstanceInfo")
+	TArray<FCardDisplayInfoArgument> Arguments;
+};

@@ -51,6 +51,8 @@ public:
 
 	FORCEINLINE AGameRoundsTimeline* GetGameRoundsTimeline() const { return GameRoundsTimeline; }
 
+	FORCEINLINE int32 GetAlivePlayerCount() const { return AlivePlayerCount; }
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -58,7 +60,7 @@ protected:
 
 protected:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Transient, ReplicatedUsing=OnRep_CurrentGamePhase)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Transient, ReplicatedUsing=OnRep_CurrentGamePhase, Category="StandardGameState")
 	FName CurrentGamePhase;
 
 	UPROPERTY(Transient, ReplicatedUsing=OnRep_RemainingTime)
@@ -67,8 +69,14 @@ protected:
 	UPROPERTY(Transient, ReplicatedUsing=OnRep_CountdownContentString)
 	FString CountdownContentString;
 
-	UPROPERTY(VisibleAnywhere, Transient, Replicated)
+	UPROPERTY(VisibleAnywhere, Transient, Replicated, Category="StandardGameState")
 	AGameRoundsTimeline* GameRoundsTimeline;
+
+	UPROPERTY(VisibleAnywhere, Transient, Replicated, Category="StandardGameState")
+	int32 PlayerCount;
+
+	UPROPERTY(VisibleAnywhere, Transient, Replicated, Category="StandardGameState")
+	int32 AlivePlayerCount;
 
 	UFUNCTION()
 	void OnRep_CurrentGamePhase();

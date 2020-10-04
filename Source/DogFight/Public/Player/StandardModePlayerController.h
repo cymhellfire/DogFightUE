@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "DogFightPlayerController.h"
 #include "DogFightTypes.h"
+#include "UIType.h"
 #include "GameCardUserPlayerControllerInterface.h"
 #include "GameTargetProviderInterface.h"
 
@@ -59,6 +60,15 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 	UFUNCTION(Client, Reliable)
 	void RpcSetupTimelineDisplay();
 
+	UFUNCTION(Client, Reliable)
+	void RpcShowCardDisplayWidgetWithSelectMode(ECardSelectionMode SelectionMode);
+
+	UFUNCTION(Client, Reliable)
+	void RpcHideCardDisplayWidget();
+
+	UFUNCTION(Server, Reliable)
+	void CmdUploadSelectedCardIndex(const TArray<int32>& SelectedIndexList);
+
 	/** Stop the character movement immediately. */
 	void StopCharacterMovementImmediately();
 
@@ -109,8 +119,18 @@ protected:
 	UFUNCTION(Server, Reliable)
 	void CmdRegisterToGameTimeline();
 
+	/** Forcibly finish current round of this player. */
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category="DogFight|Game")
+	void CmdFinishMyRound();
+
 	UFUNCTION()
 	void OnRep_CharacterPawn();
+
+	UFUNCTION()
+	void OnCardInfoListChanged();
+
+	UFUNCTION()
+	void OnCardSelectionConfirmed(const TArray<int32>& SelectedIndexList);
 
 #pragma region Target Acquire
 	UFUNCTION(Client, Reliable)
@@ -137,10 +157,6 @@ private:
 
 	UPROPERTY(Category=PlayerController, VisibleAnywhere, ReplicatedUsing=OnRep_CharacterPawn)
 	AStandardModePlayerCharacter* CharacterPawn;
-
-	/** Is click movement enabled for this player controller? */
-	// UPROPERTY(Category=PlayerController, VisibleAnywhere)
-	// bool bClickMoveEnabled;
 
 	UPROPERTY(Category=PlayerController, VisibleAnywhere)
 	EStandardModePlayerControllerInputMode InputMode;
@@ -171,5 +187,8 @@ public:
 
 	UFUNCTION(Exec)
 	void ExecRequireDirectionTarget();
+
+	UFUNCTION(Exec)
+	void ExecToggleCardDisplayWidget(bool bVisible);
 #pragma endregion DebugCommand
 };
