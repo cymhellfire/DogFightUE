@@ -103,6 +103,13 @@ void AStandardHUD::SetCardSelectionMode(ECardSelectionMode SelectionMode)
 	}
 }
 
+void AStandardHUD::SetCardDisplayWidgetSelectable(bool bSelectable)
+{
+	if (CardDisplayWidget != nullptr)
+	{
+		CardDisplayWidget->SetCardItemsSelectable(bSelectable);
+	}
+}
 
 
 void AStandardHUD::SetTimelineVisibility(bool bVisible)

@@ -420,11 +420,19 @@ void AStandardGameMode::HandlePhasePlayerRoundBegin()
 		UE_LOG(LogDogFight, Error, TEXT("Failed to get PlayerController with Id %d"), GetCurrentPlayerId());
 		return;
 	}
-	
-	// Give current player random cards
+
+	// Enable card selection for new player
+	StandardModePlayerController->RpcSetCardDisplayWidgetSelectable(true);
+
 	if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
 	{
+		// Reset player state for new round
+		StandardPlayerState->InitializePlayerForNewRound();
+		// Give current player random cards
 		GivePlayerCards(GetCurrentPlayerId(), StandardPlayerState->GetCardGainNumByRound());
+
+		// Register card finished delegate
+		StandardPlayerState->OnUsingCardFinished.AddDynamic(this, &AStandardGameMode::OnPlayerUsingCardFinished);
 	}
 
 	SetGamePhase(GamePhase::PlayerRound);
@@ -444,6 +452,22 @@ void AStandardGameMode::HandlePhasePlayerRound()
 
 void AStandardGameMode::HandlePhasePlayerRoundEnd()
 {
+	AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(GetCurrentPlayerId());
+	if (StandardModePlayerController == nullptr)
+	{
+		UE_LOG(LogDogFight, Error, TEXT("Failed to get PlayerController with Id %d"), GetCurrentPlayerId());
+		return;
+	}
+
+	// Disable card selection for ended player
+	StandardModePlayerController->RpcSetCardDisplayWidgetSelectable(false);
+
+	if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
+	{
+		// Remove the card finished delegate
+		StandardPlayerState->OnUsingCardFinished.RemoveDynamic(this, &AStandardGameMode::OnPlayerUsingCardFinished);
+	}
+
 	// Goto check phase
 	SetGamePhase(GamePhase::CheckGameEnd);
 }
@@ -471,7 +495,12 @@ void AStandardGameMode::SpawnPlayerTick()
 	if (CurrentSpawnPlayerIndex >= PlayerControllerList.Num())
 	{
 		GetWorldTimerManager().ClearTimer(SecondaryTimerHandle);
-		
+
+		if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())
+		{
+			StandardGameState->SetAlivePlayerCount(StandardPlayerControllerList.Num());
+		}
+
 		// Go to next phase
 		SetGamePhase(GamePhase::FreeMoving);
 		return;
@@ -515,6 +544,22 @@ void AStandardGameMode::OnJoinedPlayerCountChanged()
 			{
 				StandardGameState->SetCountdownContentString(FString::Printf(TEXT("%d/%d"), PlayerJoinedGame, GameInstance->GamePlayerCount));
 			}
+		}
+	}
+}
+
+void AStandardGameMode::OnPlayerUsingCardFinished(bool bShouldEndRound)
+{
+	if (bShouldEndRound)
+	{
+		EndCurrentPlayerRound();
+	}
+	else
+	{
+		// Re-enable the card display widget using functionality
+		if (AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(GetCurrentPlayerId()))
+		{
+			StandardModePlayerController->RpcSetCardDisplayWidgetSelectable(true);
 		}
 	}
 }

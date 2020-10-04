@@ -24,6 +24,9 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerCardInfoListChangedSignature);
 	FPlayerCardInfoListChangedSignature OnPlayerCardInfoListChanged;
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUsingCardFinsishedSignature, bool, bPlayerRoundFinished);
+	FUsingCardFinsishedSignature OnUsingCardFinished;
+
 	AStandardPlayerState(const FObjectInitializer& ObjectInitializer);
 
 	virtual void OnRep_PlayerName() override;
@@ -34,6 +37,9 @@ public:
 	void CmdUseCardByIndex(int32 Index);
 
 	FORCEINLINE bool CanUseCard() const { return UsedCardNum < MaxUseNum; }
+
+	/** Initialize the player for his new round. */
+	void InitializePlayerForNewRound();
 
 	/** Get the number of cards can be gained in this round. */
 	int32 GetCardGainNumByRound();

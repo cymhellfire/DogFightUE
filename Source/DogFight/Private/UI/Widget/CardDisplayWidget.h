@@ -18,6 +18,8 @@ class UCardDisplayWidget : public UUserWidget
 
 public:
 
+	UCardDisplayWidget(const FObjectInitializer& ObjectInitializer);
+
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCardSelectionConfirmSignature, const TArray<int32>&, SelectionIndexList);
 	FCardSelectionConfirmSignature OnCardSelectionConfirmed;
 
@@ -26,6 +28,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category="DogFight|UI")
 	void OnCardSelectionModeChanged(ECardSelectionMode NewMode);
+
+	UFUNCTION(BlueprintImplementableEvent, Category="DogFight|UI")
+	void OnCardItemsActiveChanged(bool Active);
 
 	void SetCardDisplayInfos(const TArray<FCardInstanceDisplayInfo>& CardDisplayInfos);
 
@@ -40,6 +45,8 @@ public:
 
 	void SetSelectMode(ECardSelectionMode NewMode);
 
+	void SetCardItemsSelectable(bool bSelectable);
+
 protected:
 
 	void HandleSelectionChanged();
@@ -52,4 +59,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="DogFight|CardDisplayWidget")
 	TArray<FCardInstanceDisplayInfo> CardDisplayInfoList;
+
+	bool bCardItemSelectable;
 };

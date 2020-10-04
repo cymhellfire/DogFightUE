@@ -42,6 +42,9 @@ public:
 
 	void SetCardSelectionMode(ECardSelectionMode SelectionMode);
 
+	/** Set the card item selectable. */
+	void SetCardDisplayWidgetSelectable(bool bSelectable);
+
 	FORCEINLINE UCardDisplayWidget* GetCardDisplayWidget() const { return CardDisplayWidget; }
 
 	/** Switch the visibility of TimelineDisplayWidget. */

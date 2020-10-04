@@ -128,9 +128,6 @@ void AStandardModePlayerController::RpcShowCardDisplayWidgetWithSelectMode_Imple
 	{
 		StandardHUD->ToggleCardDisplayWidgetVisibility(true);
 		StandardHUD->SetCardSelectionMode(SelectionMode);
-
-		// Setup the delegate for get the selection result
-		StandardHUD->GetCardDisplayWidget()->OnCardSelectionConfirmed.AddDynamic(this, &AStandardModePlayerController::OnCardSelectionConfirmed);
 	}
 }
 
@@ -154,10 +151,32 @@ void AStandardModePlayerController::RpcHideCardDisplayWidget_Implementation()
 {
 	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
 	{
-		// Clear the delegate
-		StandardHUD->GetCardDisplayWidget()->OnCardSelectionConfirmed.RemoveDynamic(this, &AStandardModePlayerController::OnCardSelectionConfirmed);
-
 		StandardHUD->ToggleCardDisplayWidgetVisibility(false);
+	}
+}
+
+void AStandardModePlayerController::RpcSetCardDisplayWidgetSelectable_Implementation(bool bSelectable)
+{
+	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
+	{
+		StandardHUD->SetCardDisplayWidgetSelectable(bSelectable);
+
+		if (bSelectable)
+		{
+			// Setup the delegate for get the selection result
+			if (!StandardHUD->GetCardDisplayWidget()->OnCardSelectionConfirmed.IsAlreadyBound(this, &AStandardModePlayerController::OnCardSelectionConfirmed))
+			{
+				StandardHUD->GetCardDisplayWidget()->OnCardSelectionConfirmed.AddDynamic(this, &AStandardModePlayerController::OnCardSelectionConfirmed);
+			}
+		}
+		else
+		{
+			// Clear the delegate
+			if (StandardHUD->GetCardDisplayWidget()->OnCardSelectionConfirmed.IsAlreadyBound(this, &AStandardModePlayerController::OnCardSelectionConfirmed))
+			{
+				StandardHUD->GetCardDisplayWidget()->OnCardSelectionConfirmed.RemoveDynamic(this, &AStandardModePlayerController::OnCardSelectionConfirmed);
+			}
+		}
 	}
 }
 

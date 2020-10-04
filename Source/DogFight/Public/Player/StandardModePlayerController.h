@@ -66,6 +66,9 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 	UFUNCTION(Client, Reliable)
 	void RpcHideCardDisplayWidget();
 
+	UFUNCTION(Client, Reliable)
+	void RpcSetCardDisplayWidgetSelectable(bool bSelectable);
+
 	UFUNCTION(Server, Reliable)
 	void CmdUploadSelectedCardIndex(const TArray<int32>& SelectedIndexList);
 

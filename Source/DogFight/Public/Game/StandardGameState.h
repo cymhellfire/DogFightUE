@@ -51,6 +51,8 @@ public:
 
 	FORCEINLINE AGameRoundsTimeline* GetGameRoundsTimeline() const { return GameRoundsTimeline; }
 
+	void SetAlivePlayerCount(int32 Count) { AlivePlayerCount = Count; }
+
 	FORCEINLINE int32 GetAlivePlayerCount() const { return AlivePlayerCount; }
 
 protected:

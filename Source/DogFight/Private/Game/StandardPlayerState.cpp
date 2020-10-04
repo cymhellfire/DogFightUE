@@ -7,7 +7,9 @@
 AStandardPlayerState::AStandardPlayerState(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	// Initial value
 	CardGainPerRounds = 2;
+	MaxUseNum = 2;
 }
 
 void AStandardPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -61,10 +63,21 @@ void AStandardPlayerState::OnCardFinished()
 	CardInstanceList.RemoveAt(UsingCardIndex);
 	CardInfoList.RemoveAt(UsingCardIndex);
 
+	// Increase used card count
+	UsedCardNum++;
+	// Check if player round should be ended
+	const bool bFinishRound = (UsedCardNum >= MaxUseNum || CardInstanceList.Num() <= 0);
+	OnUsingCardFinished.Broadcast(bFinishRound);
+
 	UsingCardIndex = -1;
 
 	// Invoke OnRep on server side
 	OnRep_CardInfoList();
+}
+
+void AStandardPlayerState::InitializePlayerForNewRound()
+{
+	UsedCardNum = 0;
 }
 
 int32 AStandardPlayerState::GetCardGainNumByRound()

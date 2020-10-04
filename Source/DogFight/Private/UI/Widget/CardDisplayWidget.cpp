@@ -7,6 +7,13 @@
 #include "Chaos/AABB.h"
 #include "Chaos/AABB.h"
 
+UCardDisplayWidget::UCardDisplayWidget(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	bCardItemSelectable = true;
+}
+
+
 void UCardDisplayWidget::SetCardDisplayInfos(const TArray<FCardInstanceDisplayInfo>& CardDisplayInfos)
 {
 	CardDisplayInfoList = CardDisplayInfos;
@@ -44,8 +51,14 @@ void UCardDisplayWidget::ConfirmSelection()
 		IndexArray.AppendChar(' ');
 	}
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("Selection: %s"), *IndexArray));
-	
+
+	// Disable all items after confirm
+	SetCardItemsSelectable(false);
+
 	OnCardSelectionConfirmed.Broadcast(SelectedCardIndexList);
+
+	// Clear selected list
+	SelectedCardIndexList.Empty();
 }
 
 void UCardDisplayWidget::SetSelectMode(ECardSelectionMode NewMode)
@@ -55,6 +68,15 @@ void UCardDisplayWidget::SetSelectMode(ECardSelectionMode NewMode)
 		CardSelectionMode = NewMode;
 
 		OnCardSelectionModeChanged(NewMode);
+	}
+}
+
+void UCardDisplayWidget::SetCardItemsSelectable(bool bSelectable)
+{
+	if (bCardItemSelectable != bSelectable)
+	{
+		bCardItemSelectable = bSelectable;
+		OnCardItemsActiveChanged(bSelectable);
 	}
 }
 

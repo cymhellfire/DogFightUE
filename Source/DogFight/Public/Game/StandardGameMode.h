@@ -144,6 +144,9 @@ protected:
 
 	virtual void OnJoinedPlayerCountChanged();
 
+	UFUNCTION()
+	void OnPlayerUsingCardFinished(bool bShouldEndRound);
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardGameMode")
 	UGameplayCardPool* CardPool;
 
