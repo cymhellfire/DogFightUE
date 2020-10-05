@@ -31,6 +31,9 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 {
 	GENERATED_UCLASS_BODY()
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerDeadSignature, int32, PlayerId);
+	FPlayerDeadSignature OnPlayerDead;
+
 	UFUNCTION(Client, Reliable)
 	void RpcSetClickMovementEnabled(bool bEnabled);
 
@@ -154,6 +157,9 @@ protected:
 	UFUNCTION(Server, Reliable)
 	void CmdUploadDirectionTarget(FVector TargetDirection);
 #pragma endregion Target Acquire
+
+	UFUNCTION()
+	void OnCharacterDead();
 
 private:
 	FCardTargetInfoAcquiredSignature OnCardTargetInfoAcquired;

@@ -12,6 +12,9 @@ class DOGFIGHT_API AStandardModePlayerCharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCharacterDeadSignature);
+	FCharacterDeadSignature OnCharacterDead;
+
 	// Sets default values for this character's properties
 	AStandardModePlayerCharacter();
 
@@ -27,6 +30,8 @@ protected:
 
 	UFUNCTION()
 	void OnRep_CurrentHealth();
+
+	void Dead();
 
 public:
 	/** Set name for this unit. */

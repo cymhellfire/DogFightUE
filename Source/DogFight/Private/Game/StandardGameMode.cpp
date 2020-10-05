@@ -43,6 +43,10 @@ AStandardGameMode::AStandardGameMode(const FObjectInitializer& ObjectInitializer
 	GameStartDelay = 5;
 	SpawnPlayerInterval = 0.5f;
 	FreeMovingDuration = 5;
+
+	// Enable the primary tick
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = true;
 }
 
 void AStandardGameMode::EnablePlayerClickMovement()
@@ -60,6 +64,20 @@ void AStandardGameMode::DisablePlayerClickMovement()
 		PlayerController->RpcSetClickMovementEnabled(false);
 		// Also stop current movement
 		PlayerController->StopCharacterMovementImmediately();
+	}
+}
+
+void AStandardGameMode::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (DelayActionQueue.Num() > 0)
+	{
+		for(EGameModeDelayAction DelayAction : DelayActionQueue)
+		{
+			HandleDelayAction(DelayAction);
+		}
+		DelayActionQueue.Empty();
 	}
 }
 
@@ -93,6 +111,7 @@ void AStandardGameMode::PostLogin(APlayerController* NewPlayer)
 		{
 			StandardPlayerControllerList.Add(StandardModePlayerController);
 
+			StandardModePlayerController->OnPlayerDead.AddDynamic(this, &AStandardGameMode::OnPlayerDead);
 			UE_LOG(LogDogFight, Log, TEXT("Add controller [%s] to list."), *StandardModePlayerController->GetName());
 		}
 	}
@@ -561,6 +580,49 @@ void AStandardGameMode::OnPlayerUsingCardFinished(bool bShouldEndRound)
 		{
 			StandardModePlayerController->RpcSetCardDisplayWidgetSelectable(true);
 		}
+	}
+}
+
+void AStandardGameMode::OnPlayerDead(int32 PlayerId)
+{
+	// Decrease the alive player count
+	if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())
+	{
+		StandardGameState->SetAlivePlayerCount(StandardGameState->GetAlivePlayerCount() - 1);
+
+		PushDelayAction(DA_PlayerCountCheck);
+	}
+
+	// Check if is current player dead
+	if (GetCurrentPlayerId() == PlayerId)
+	{
+		EndCurrentPlayerRound();
+	}
+}
+
+void AStandardGameMode::HandleDelayAction(EGameModeDelayAction DelayAction)
+{
+	switch (DelayAction)
+	{
+	case DA_PlayerCountCheck:
+		if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())
+		{
+			// If no enough player to continue the game, jump to GameSummary phase.
+			if (StandardGameState->GetAlivePlayerCount() <= 1)
+			{
+				SetGamePhase(GamePhase::GameSummary);
+			}
+		}
+		break;
+	default: ;
+	}
+}
+
+void AStandardGameMode::PushDelayAction(EGameModeDelayAction DelayAction)
+{
+	if (!DelayActionQueue.Contains(DelayAction))
+	{
+		DelayActionQueue.Add(DelayAction);
 	}
 }
 

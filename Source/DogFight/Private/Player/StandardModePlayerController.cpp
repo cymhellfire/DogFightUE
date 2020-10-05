@@ -136,6 +136,14 @@ void AStandardModePlayerController::OnCardSelectionConfirmed(const TArray<int32>
 	CmdUploadSelectedCardIndex(SelectedIndexList);
 }
 
+void AStandardModePlayerController::OnCharacterDead()
+{
+	if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
+	{
+		OnPlayerDead.Broadcast(StandardPlayerState->GetPlayerId());
+	}
+}
+
 void AStandardModePlayerController::CmdUploadSelectedCardIndex_Implementation(const TArray<int32>& SelectedIndexList)
 {
 	if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
@@ -665,6 +673,8 @@ void AStandardModePlayerController::CmdSpawnCharacterPawn_Implementation()
 				CharacterPawnClass->GetDefaultObject()->GetClass(), StartPoint,
 				RootComponent->GetComponentRotation());
 			CharacterPawn->SetOwner(this);
+			// Register listener
+			CharacterPawn->OnCharacterDead.AddDynamic(this, &AStandardModePlayerController::OnCharacterDead);
 			UE_LOG(LogDogFight, Display, TEXT("Spawn location at %s"), *(StartPoint.ToString()));
 		}
 		else

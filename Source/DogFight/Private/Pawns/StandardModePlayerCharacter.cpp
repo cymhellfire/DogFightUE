@@ -114,8 +114,18 @@ void AStandardModePlayerCharacter::OnRep_UnitName()
 
 void AStandardModePlayerCharacter::OnRep_CurrentHealth()
 {
+	if (CurrentHealth <= 0)
+	{
+		Dead();
+	}
+
 	// Invoke Blueprint implementation
 	CurrentHealthChanged(CurrentHealth);
+}
+
+void AStandardModePlayerCharacter::Dead()
+{
+	OnCharacterDead.Broadcast();
 }
 
 // Called every frame

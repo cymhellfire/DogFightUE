@@ -26,6 +26,11 @@ namespace GamePhase
 	extern DOGFIGHT_API const FName WaitingPostMatch;		// Match has ended but actors are still ticking
 }
 
+enum EGameModeDelayAction : uint8
+{
+	DA_PlayerCountCheck
+};
+
 /**
  * 
  */
@@ -44,6 +49,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="StandardMode")
 	float FreeMovingDuration;
 
+	TArray<EGameModeDelayAction> DelayActionQueue;
+
 public:
 	AStandardGameMode(const FObjectInitializer& ObjectInitializer);
 
@@ -52,6 +59,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Standard Game Mode")
 	void DisablePlayerClickMovement();
+
+	virtual void Tick(float DeltaSeconds) override;
 
 	/** Override version. Remove corresponding record in PlayerControllerList. */
 	virtual void Logout(AController* Exiting) override;
@@ -146,6 +155,14 @@ protected:
 
 	UFUNCTION()
 	void OnPlayerUsingCardFinished(bool bShouldEndRound);
+
+	UFUNCTION()
+	void OnPlayerDead(int32 PlayerId);
+
+	void HandleDelayAction(EGameModeDelayAction DelayAction);
+
+	/** Add a DelayAction to the queue. */
+	void PushDelayAction(EGameModeDelayAction DelayAction);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardGameMode")
 	UGameplayCardPool* CardPool;
