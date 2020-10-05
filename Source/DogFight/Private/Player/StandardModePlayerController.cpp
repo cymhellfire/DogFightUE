@@ -140,6 +140,7 @@ void AStandardModePlayerController::OnCharacterDead()
 {
 	if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
 	{
+		StandardPlayerState->SetAlive(false);
 		OnPlayerDead.Broadcast(StandardPlayerState->GetPlayerId());
 	}
 }

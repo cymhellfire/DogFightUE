@@ -161,7 +161,7 @@ void AStandardGameMode::PlayerReadyForGame(const FString& PlayerName)
 {
 	// Broadcast player joined message
 	TArray<FString> Arguments;
-	Arguments.Add(PlayerName);
+	Arguments.Add(FString::Printf(TEXT("<PlayerName>%s</>"),*PlayerName));
 
 	const FGameMessage NewMessage{TEXT("System"), EGameMessageType::GMT_System, TEXT("GameMsg_PlayerJoined"), Arguments};
 	BroadcastGameMessageToAllPlayers(NewMessage);
@@ -400,6 +400,38 @@ void AStandardGameMode::HandlePhaseGameSummary()
 	for (AStandardModePlayerController* StandardModePlayerController : StandardPlayerControllerList)
 	{
 		StandardModePlayerController->RpcHideCardDisplayWidget();
+	}
+
+	// Get the winner
+	AStandardGameState* StandardGameState = GetGameState<AStandardGameState>();
+	AStandardPlayerState* WinnerState = nullptr;
+	if (StandardGameState->GetAlivePlayerCount() > 0)
+	{
+		for (APlayerState* PlayerState: StandardGameState->PlayerArray)
+		{
+			if (AStandardPlayerState* StandardPlayerState = Cast<AStandardPlayerState>(PlayerState))
+			{
+				if (StandardPlayerState->IsAlive())
+				{
+					WinnerState = StandardPlayerState;
+					break;
+				}
+			}
+		}
+	}
+	// Broadcast winner message
+	TArray<FString> Arguments;
+	if (WinnerState != nullptr)
+	{
+		Arguments.Add(FString::Printf(TEXT("<PlayerName>%s</>"),*WinnerState->GetPlayerName()));
+		const FGameMessage WinnerMessage{TEXT("System"), EGameMessageType::GMT_System, TEXT("GameMsg_Winner"), Arguments};
+		BroadcastGameMessageToAllPlayers(WinnerMessage);
+	}
+	else
+	{
+		// Consider no survivor as a draw
+		const FGameMessage DrawMessage{TEXT("System"), EGameMessageType::GMT_System, TEXT("GameMsg_Draw"), Arguments};
+		BroadcastGameMessageToAllPlayers(DrawMessage);
 	}
 }
 

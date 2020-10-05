@@ -46,6 +46,10 @@ public:
 
 	FORCEINLINE TArray<FCardInstanceDisplayInfo> GetCardDisplayInfoList() const { return CardInfoList; }
 
+	void SetAlive(bool bIsAlive);
+
+	FORCEINLINE bool IsAlive() const { return bAlive; }
+
 protected:
 	UFUNCTION()
 	void OnRep_CardInfoList();
@@ -72,4 +76,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="StandardPlayerState", Replicated)
 	int32 CardGainPerRounds;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState", Replicated)
+	bool bAlive;
 };

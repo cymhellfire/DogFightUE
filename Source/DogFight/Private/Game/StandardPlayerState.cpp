@@ -10,6 +10,7 @@ AStandardPlayerState::AStandardPlayerState(const FObjectInitializer& ObjectIniti
 	// Initial value
 	CardGainPerRounds = 2;
 	MaxUseNum = 2;
+	bAlive = true;
 }
 
 void AStandardPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -83,6 +84,16 @@ void AStandardPlayerState::InitializePlayerForNewRound()
 int32 AStandardPlayerState::GetCardGainNumByRound()
 {
 	return CardGainPerRounds;
+}
+
+void AStandardPlayerState::SetAlive(bool bIsAlive)
+{
+	if (GetNetMode() == NM_Client)
+	{
+		return;
+	}
+
+	bAlive = bIsAlive;
 }
 
 void AStandardPlayerState::OnRep_CardInfoList()
