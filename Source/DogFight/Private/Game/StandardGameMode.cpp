@@ -111,7 +111,7 @@ void AStandardGameMode::PostLogin(APlayerController* NewPlayer)
 		{
 			StandardPlayerControllerList.Add(StandardModePlayerController);
 
-			StandardModePlayerController->OnPlayerDead.AddDynamic(this, &AStandardGameMode::OnPlayerDead);
+			StandardModePlayerController->OnPlayerDead.AddDynamic(this, &AStandardGameMode::OnPlayerDeadCallback);
 			UE_LOG(LogDogFight, Log, TEXT("Add controller [%s] to list."), *StandardModePlayerController->GetName());
 		}
 	}
@@ -513,6 +513,9 @@ void AStandardGameMode::HandlePhasePlayerRoundEnd()
 	// Disable card selection for ended player
 	StandardModePlayerController->RpcSetCardDisplayWidgetSelectable(false);
 
+	// Broadcast event
+	OnPlayerRoundEnd.Broadcast(GetCurrentPlayerId());
+
 	if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
 	{
 		// Remove the card finished delegate
@@ -615,7 +618,7 @@ void AStandardGameMode::OnPlayerUsingCardFinished(bool bShouldEndRound)
 	}
 }
 
-void AStandardGameMode::OnPlayerDead(int32 PlayerId)
+void AStandardGameMode::OnPlayerDeadCallback(int32 PlayerId)
 {
 	// Decrease the alive player count
 	if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())
@@ -624,6 +627,9 @@ void AStandardGameMode::OnPlayerDead(int32 PlayerId)
 
 		PushDelayAction(DA_PlayerCountCheck);
 	}
+
+	// Broadcast dead event
+	OnPlayerDead.Broadcast(PlayerId);
 
 	// Check if is current player dead
 	if (GetCurrentPlayerId() == PlayerId)

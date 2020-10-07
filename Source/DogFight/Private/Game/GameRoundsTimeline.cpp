@@ -142,6 +142,20 @@ void AGameRoundsTimeline::SortTimelineByIndex()
 	}
 }
 
+TArray<int32> AGameRoundsTimeline::GetLifetime(int32 RoundCount)
+{
+	TArray<int32> Result;
+	for (int i = 0; i < RoundCount; ++i)
+	{
+		for (FTimelinePlayerInfo PlayerInfo : TimelinePlayerInfoList)
+		{
+			Result.Add(PlayerInfo.PlayerId);
+		}
+	}
+
+	return Result;
+}
+
 void AGameRoundsTimeline::StepForward()
 {
 	// Move the first Player to the trail

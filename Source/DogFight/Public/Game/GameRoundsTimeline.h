@@ -49,6 +49,8 @@ public:
 
 	void SortTimelineByIndex();
 
+	TArray<int32> GetLifetime(int32 RoundCount);
+
 	/** Let the Timeline step forward one player. */
 	void StepForward();
 

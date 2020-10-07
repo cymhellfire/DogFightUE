@@ -38,6 +38,16 @@ UCLASS()
 class DOGFIGHT_API AStandardGameMode : public ADogFightGameModeBase
 {
 	GENERATED_BODY()
+	
+public:
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerRoundEndSignature, int32, PlayerId);
+	FPlayerRoundEndSignature OnPlayerRoundEnd;
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerDeadSignature, int32, PlayerId);
+	FPlayerDeadSignature OnPlayerDead;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="StandardGameMode")
+	TSubclassOf<UGameplayCardPool> CardPoolClass;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="StandardMode")
@@ -157,7 +167,7 @@ protected:
 	void OnPlayerUsingCardFinished(bool bShouldEndRound);
 
 	UFUNCTION()
-	void OnPlayerDead(int32 PlayerId);
+	void OnPlayerDeadCallback(int32 PlayerId);
 
 	void HandleDelayAction(EGameModeDelayAction DelayAction);
 
@@ -166,10 +176,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardGameMode")
 	UGameplayCardPool* CardPool;
-
-public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="StandardGameMode")
-	TSubclassOf<UGameplayCardPool> CardPoolClass;
 
 #pragma region Debug
 public:
