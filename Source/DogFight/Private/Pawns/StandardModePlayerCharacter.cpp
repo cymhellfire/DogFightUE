@@ -4,11 +4,13 @@
 #include "StandardModePlayerCharacter.h"
 
 #include "DogFight.h"
+#include "DogFightGameModeBase.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "StandardGameState.h"
 #include "StandardModePlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/WidgetComponent.h"
+#include "ReceiveDamageComponent.h"
 
 // Sets default values
 AStandardModePlayerCharacter::AStandardModePlayerCharacter()
@@ -46,6 +48,10 @@ AStandardModePlayerCharacter::AStandardModePlayerCharacter()
 	WidgetComponent->SetDrawSize(FVector2D(150.f, 30.f));
 	WidgetComponent->SetRelativeLocation(FVector(0.f, 0.f, 150.f));
 	WidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+
+	// Create ReceiveDamageComponent
+	ReceiveDamageComponent = CreateDefaultSubobject<UReceiveDamageComponent>("ReceiveDamageComponent");
+	ReceiveDamageComponent->SetIsReplicated(true);
 
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -92,6 +98,47 @@ void AStandardModePlayerCharacter::SetCurrentHealth(int32 NewHealth)
 		CurrentHealth = NewValue;
 		OnRep_CurrentHealth();
 	}
+}
+
+UReceiveDamageComponent* AStandardModePlayerCharacter::GetDamageReceiveComponent()
+{
+	return ReceiveDamageComponent;
+}
+
+void AStandardModePlayerCharacter::SetPhysicalArmor(int32 NewArmor)
+{
+	if (ReceiveDamageComponent != nullptr)
+	{
+		ReceiveDamageComponent->PhysicalArmor = NewArmor;
+	}
+}
+
+int32 AStandardModePlayerCharacter::GetPhysicalArmor() const
+{
+	if (ReceiveDamageComponent != nullptr)
+	{
+		return ReceiveDamageComponent->PhysicalArmor;
+	}
+
+	return 0;
+}
+
+void AStandardModePlayerCharacter::SetMagicalArmor(int32 NewArmor)
+{
+	if (ReceiveDamageComponent != nullptr)
+	{
+		ReceiveDamageComponent->MagicalArmor = NewArmor;
+	}
+}
+
+int32 AStandardModePlayerCharacter::GetMagicalArmor() const
+{
+	if (ReceiveDamageComponent != nullptr)
+	{
+		return ReceiveDamageComponent->MagicalArmor;
+	}
+
+	return 0;
 }
 
 // Called when the game starts or when spawned
@@ -172,7 +219,15 @@ void AStandardModePlayerCharacter::SetupPlayerInputComponent(UInputComponent* Pl
 
 float AStandardModePlayerCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	const float ActualDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+	float ActualDamage = 0;
+	// Modify the damage by current GameMode
+	if (ADogFightGameModeBase* DogFightGameModeBase = Cast<ADogFightGameModeBase>(GetWorld()->GetAuthGameMode()))
+	{
+		ActualDamage = DogFightGameModeBase->CalculateDamage(this, Damage, DamageEvent, EventInstigator, DamageCauser);
+	}
+
+	// Apply modified damage
+	ActualDamage = Super::TakeDamage(ActualDamage, DamageEvent, EventInstigator, DamageCauser);
 
 	if (ActualDamage > 0.f)
 	{

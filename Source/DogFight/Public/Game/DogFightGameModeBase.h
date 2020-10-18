@@ -7,6 +7,8 @@
 #include "GameFramework/GameModeBase.h"
 #include "DogFightGameModeBase.generated.h"
 
+class UDamageCalculatorBase;
+
 /**
  * 
  */
@@ -14,8 +16,13 @@ UCLASS()
 class DOGFIGHT_API ADogFightGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-
+	
 public:
+	virtual void BeginDestroy() override;
+
+	virtual void PostLogin(APlayerController* NewPlayer) override;
+
+	virtual void Logout(AController* Exiting) override;
 
 	/** Finish current game and pump all players to main menu. */
 	virtual void RequestFinishAndExitToMainMenu();
@@ -23,13 +30,20 @@ public:
 	/** Notify all clients that game will start. */
 	virtual void NotifyClientGameWillStart();
 
+	virtual float CalculateDamage(AActor* DamageTaker, float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
+
+protected:
+
+	virtual void BeginPlay() override;
 protected:
 	
 	/** List of all player controller in current game. */
 	TArray<class ADogFightPlayerController*> PlayerControllerList;
 
-public:
-	virtual void PostLogin(APlayerController* NewPlayer) override;
+	/** Class to calculate the damage to apply during game. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="DogFightGameMode")
+	TSubclassOf<UDamageCalculatorBase> DamageCalculatorClass;
 
-	virtual void Logout(AController* Exiting) override;
+	UPROPERTY()
+	UDamageCalculatorBase* DamageCalculator;
 };

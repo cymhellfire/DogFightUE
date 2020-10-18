@@ -282,7 +282,7 @@ int32 AStandardGameMode::GetCurrentPlayerId() const
 
 void AStandardGameMode::BeginPlay()
 {
-	// Not call super here, thus the BeginPlay event won't fire in Blueprint
+	Super::BeginPlay();
 
 	// Check if all players are already loaded map
 	if (UDogFightGameInstance* GameInstance = Cast<UDogFightGameInstance>(GetWorld()->GetGameInstance()))

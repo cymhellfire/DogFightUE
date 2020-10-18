@@ -70,6 +70,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Projectile")
 	float BaseDamage;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
+	TSubclassOf<UDamageType> DamageType;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Projectile")
 	bool DeadOnHit;
 

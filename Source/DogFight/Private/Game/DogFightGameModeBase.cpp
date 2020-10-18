@@ -4,6 +4,7 @@
 #include "DogFightGameModeBase.h"
 
 #include "DogFightPlayerController.h"
+#include "DamageCalculatorBase.h"
 
 void ADogFightGameModeBase::RequestFinishAndExitToMainMenu()
 {
@@ -34,6 +35,38 @@ void ADogFightGameModeBase::NotifyClientGameWillStart()
 	for (ADogFightPlayerController* PlayerController : PlayerControllerList)
 	{
 		PlayerController->RpcPreStartGame();
+	}
+}
+
+float ADogFightGameModeBase::CalculateDamage(AActor* DamageTaker, float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	if (DamageCalculator != nullptr)
+	{
+		return DamageCalculator->CalculateActualDamage(DamageTaker, Damage, DamageEvent, EventInstigator, DamageCauser);
+	}
+
+	return Damage;
+}
+
+void ADogFightGameModeBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// Create damage calculator
+	if (IsValid(DamageCalculatorClass))
+	{
+		DamageCalculator = NewObject<UDamageCalculatorBase>(this, DamageCalculatorClass, FName(TEXT("DamageCalculator")));
+	}
+}
+
+void ADogFightGameModeBase::BeginDestroy()
+{
+	Super::BeginDestroy();
+
+	// Destroy damage calculator
+	if (DamageCalculator != nullptr)
+	{
+		DamageCalculator->ConditionalBeginDestroy();
 	}
 }
 

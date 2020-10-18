@@ -23,4 +23,7 @@ public:
 
 	/** Handle the lifetime setup for gameplay buffs. */
 	virtual void SetLifetime(float Lifetime) {};
+
+	/** Set the target actor of this buff. */
+	virtual void SetTargetActor(AActor* TargetActor) {};
 };

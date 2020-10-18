@@ -3,11 +3,12 @@
 #pragma once
 
 #include "DogFight.h"
+#include "ActorInterfaces.h"
 #include "GameFramework/Character.h"
 #include "StandardModePlayerCharacter.generated.h"
 
 UCLASS(Config=Game)
-class DOGFIGHT_API AStandardModePlayerCharacter : public ACharacter
+class DOGFIGHT_API AStandardModePlayerCharacter : public ACharacter, public IDamageableActorInterface
 {
 	GENERATED_BODY()
 
@@ -20,6 +21,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Character", Config)
 	int32 MaxBaseHealth;
+
+#pragma region IDamageableActorInterface
+
+	virtual UReceiveDamageComponent* GetDamageReceiveComponent() override;
+	virtual void SetPhysicalArmor(int32 NewArmor) override;
+	virtual int32 GetPhysicalArmor() const override;
+	virtual void SetMagicalArmor(int32 NewArmor) override;
+	virtual int32 GetMagicalArmor() const override;
+#pragma endregion IDamageableActorInterface
 
 protected:
 	// Called when the game starts or when spawned
@@ -60,6 +70,10 @@ public:
 
 	/** Stop character movement immediately. */
 	void StopMoveImmediately();
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Unit", meta=(ExposeFunctionCategories = "ReceiveDamageComponent", AllowPrivateAccess = "true"))
+	UReceiveDamageComponent* ReceiveDamageComponent;
 
 private:
 	/** Current unit name. */

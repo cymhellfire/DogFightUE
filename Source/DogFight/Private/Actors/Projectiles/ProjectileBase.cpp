@@ -45,7 +45,7 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActo
 	// Damage hit actor on server
 	if (OtherActor != nullptr && GetLocalRole() == ROLE_Authority)
 	{
-		OtherActor->TakeDamage(BaseDamage, FDamageEvent(), OwnerController, OwnerCharacter);
+		OtherActor->TakeDamage(BaseDamage, FDamageEvent{DamageType}, OwnerController, OwnerCharacter);
 	}
 
 	if (DeadOnHit)
