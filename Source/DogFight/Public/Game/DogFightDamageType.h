@@ -7,6 +7,7 @@
 #include "DogFightDamageType.generated.h"
 
 #define TEST_DAMAGE_CATEGORY(Bitmask, Bit) (((Bitmask) & (1 << static_cast<uint8>(Bit))) > 0)
+#define TEST_MULTI_DAMAGE_CATEGORY(Bitmask, DesiredFlags) (((Bitmask) & (DesiredFlags)) == (DesiredFlags))
 
 UENUM(BlueprintType, meta=(Bitflag))
 enum class EDogFightDamageCategory : uint8

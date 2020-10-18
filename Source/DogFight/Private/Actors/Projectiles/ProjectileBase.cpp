@@ -28,6 +28,7 @@ AProjectileBase::AProjectileBase()
 	MovementComponent->bRotationFollowsVelocity = true;
 
 	DeadOnHit = true;
+	DecayDuration = 0;
 }
 
 // Called when the game starts or when spawned
@@ -86,6 +87,16 @@ void AProjectileBase::OnRep_LaunchVelocity()
 	}
 }
 
+void AProjectileBase::OnDecayTimerFinished()
+{
+	// Clear timer handle
+	GetWorldTimerManager().ClearTimer(DecayTimerHandle);
+
+	// Destroy this projectile
+	// TODO: Pool projectiles in the future
+	Destroy();
+}
+
 // Called every frame
 void AProjectileBase::Tick(float DeltaTime)
 {
@@ -108,9 +119,16 @@ void AProjectileBase::Dead()
 	// Broadcast the event
 	OnProjectileDead.Broadcast(this);
 
-	// Destroy this projectile
-	// TODO: Pool projectiles in the future
-	Destroy();
+	if (DecayDuration > 0.f)
+	{
+		GetWorldTimerManager().SetTimer(DecayTimerHandle, this, &AProjectileBase::OnDecayTimerFinished, DecayDuration);
+	}
+	else
+	{
+		// Destroy this projectile
+		// TODO: Pool projectiles in the future
+		Destroy();
+	}
 }
 
 void AProjectileBase::AdjustGravityScale(float NewGravityScale)

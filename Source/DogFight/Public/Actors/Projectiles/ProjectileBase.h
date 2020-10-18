@@ -65,6 +65,9 @@ protected:
 	UFUNCTION()
 	void OnRep_LaunchVelocity();
 
+	UFUNCTION()
+	void OnDecayTimerFinished();
+
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Projectile")
@@ -75,6 +78,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Projectile")
 	bool DeadOnHit;
+
+	/** How long does this projectile stay after dead? (Wait for Vfx or etc.) */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
+	float DecayDuration;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Projectile")
 	AController* OwnerController;
@@ -101,4 +108,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category="Projectile")
 	UProjectileMovementComponent* MovementComponent;
+
+	FTimerHandle DecayTimerHandle;
 };
