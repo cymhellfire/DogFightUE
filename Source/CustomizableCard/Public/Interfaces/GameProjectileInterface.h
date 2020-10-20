@@ -9,6 +9,9 @@ class UGameProjectileInterface : public  UInterface
 	GENERATED_BODY()
 };
 
+/** Delegate which is fired when this projectile dead. */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FProjectileDeadSignature, AActor*, Projectile);
+
 /**
  * Interface that allows projectiles interact with card instruction.
  */
@@ -29,4 +32,6 @@ public:
 	virtual void SetOwnerController(AController* NewController) {};
 
 	virtual void SetOwnerCharacter(AActor* NewActor) {};
+
+	virtual FProjectileDeadSignature& GetProjectileDeadDelegate() = 0;
 };

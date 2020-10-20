@@ -20,8 +20,6 @@ class DOGFIGHT_API AProjectileBase : public AActor, public IGameProjectileInterf
 	
 public:
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FProjectileDeadSignature, AProjectileBase*, Projectile);
-
 	UPROPERTY(BlueprintAssignable, Category="Projectile")
 	FProjectileDeadSignature OnProjectileDead;
 
@@ -43,6 +41,7 @@ public:
 	virtual void LaunchAtDirection(const FVector& Direction) override;
 	virtual void SetOwnerController(AController* NewController) override;
 	virtual void SetOwnerCharacter(AActor* NewActor) override;
+	virtual FProjectileDeadSignature& GetProjectileDeadDelegate() override { return OnProjectileDead; }
 #pragma endregion GameProjectileInterface
 
 protected:

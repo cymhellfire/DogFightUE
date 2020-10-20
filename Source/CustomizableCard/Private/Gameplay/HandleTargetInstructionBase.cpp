@@ -6,6 +6,12 @@
 #include "CustomizableCard.h"
 #include "CardBase.h"
 
+UHandleTargetInstructionBase::UHandleTargetInstructionBase(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	bAutoFinish = true;
+}
+
 bool UHandleTargetInstructionBase::ProcessTarget()
 {
 	if (OwnerCard == nullptr)
@@ -47,7 +53,10 @@ void UHandleTargetInstructionBase::Execute()
 
 	while(!ProcessTarget()) { }
 
-	Finish();
+	if (bAutoFinish)
+	{
+		Finish();
+	}
 }
 
 int32 UHandleTargetInstructionBase::ParseTargetInfo(FCardInstructionTargetInfo TargetInfo, AActor** ActorPtr, FVector& PositionValue, FVector& DirectionValue)

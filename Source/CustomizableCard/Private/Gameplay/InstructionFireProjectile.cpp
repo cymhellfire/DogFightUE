@@ -13,6 +13,9 @@ UInstructionFireProjectile::UInstructionFireProjectile(const FObjectInitializer&
 	MuzzleSpeed = 1000.f;
 	ProjectileSpawnDistance = 50.f;
 	ProjectileSpawnHeight = 100.f;
+
+	// Turn off the auto finish since we need wait for projectiles dead
+	bAutoFinish = false;
 }
 
 void UInstructionFireProjectile::HandleActorTarget(AActor* Target)
@@ -54,16 +57,39 @@ void UInstructionFireProjectile::HandleDirectionTarget(FVector Direction)
 	}
 }
 
+void UInstructionFireProjectile::OnProjectileDead(AActor* Projectile)
+{
+	check(Projectile);
+
+	IGameProjectileInterface* GameProjectileInterface = Cast<IGameProjectileInterface>(Projectile);
+	// Remove from list
+	if (ProjectileInstanceList.Contains(GameProjectileInterface))
+	{
+		GameProjectileInterface->GetProjectileDeadDelegate().RemoveDynamic(this, &UInstructionFireProjectile::OnProjectileDead);
+		ProjectileInstanceList.Remove(GameProjectileInterface);
+
+		// Invoke Finish() after all projectiles are dead
+		if (ProjectileInstanceList.Num() == 0)
+		{
+			Finish();
+		}
+	}
+}
+
 void UInstructionFireProjectile::SpawnProjectileAndLaunch(FVector Position, FRotator Rotation, FVector FireDirection)
 {
-	ProjectileInstance = GetWorld()->SpawnActor<IGameProjectileInterface>(ProjectileClass, Position, Rotation);
-	if (ProjectileInstance != nullptr)
+	IGameProjectileInterface* Projectile = GetWorld()->SpawnActor<IGameProjectileInterface>(ProjectileClass, Position, Rotation);
+	if (Projectile != nullptr)
 	{
-		ProjectileInstance->SetOwnerController(GetOwnerCard()->GetOwnerPlayerController());
-		ProjectileInstance->SetOwnerCharacter(GetOwnerControlledPawn());
-		ProjectileInstance->SetInitialSpeed(MuzzleSpeed);
-		ProjectileInstance->LaunchAtDirection(FireDirection);
+		Projectile->GetProjectileDeadDelegate().AddDynamic(this, &UInstructionFireProjectile::OnProjectileDead);
+		Projectile->SetOwnerController(GetOwnerCard()->GetOwnerPlayerController());
+		Projectile->SetOwnerCharacter(GetOwnerControlledPawn());
+		Projectile->SetInitialSpeed(MuzzleSpeed);
+		Projectile->LaunchAtDirection(FireDirection);
 	}
+
+	// Record the new instance to list
+	ProjectileInstanceList.Add(Projectile);
 }
 
 APawn* UInstructionFireProjectile::GetOwnerControlledPawn() const

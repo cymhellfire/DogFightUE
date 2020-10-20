@@ -17,6 +17,7 @@ class CUSTOMIZABLECARD_API UHandleTargetInstructionBase : public UCardInstructio
 	GENERATED_BODY()
 
 public:
+	UHandleTargetInstructionBase(const FObjectInitializer& ObjectInitializer);
 
 	/**
 	 * Process the target information store in owner card.
@@ -44,4 +45,7 @@ protected:
 	virtual void HandleDirectionTarget(FVector Direction) {};
 
 	int32 CurrentTargetIndex;
+
+	/** Does this instruction invoke Finish() automatically at the end of Execute()? (True as default)*/
+	bool bAutoFinish;
 };

@@ -25,6 +25,10 @@ protected:
 	virtual void HandlePositionTarget(FVector Position) override;
 	virtual void HandleDirectionTarget(FVector Direction) override;
 
+	/** Handle the projectile dead event. */
+	UFUNCTION()
+	void OnProjectileDead(AActor* Projectile);
+
 	/** Spawn a projectile and launch it toward specified direction. */
 	void SpawnProjectileAndLaunch(FVector Position, FRotator Rotation, FVector FireDirection);
 
@@ -46,5 +50,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Instruction")
 	float ProjectileSpawnHeight;
 
-	IGameProjectileInterface* ProjectileInstance;
+	/** List of projectiles launched by this instruction. */
+	TArray<IGameProjectileInterface*> ProjectileInstanceList;
 };
