@@ -12,6 +12,8 @@
 
 class USphereComponent;
 class UProjectileMovementComponent;
+class AVfxBase;
+class UAudioComponent;
 
 UCLASS()
 class DOGFIGHT_API AProjectileBase : public AActor, public IGameProjectileInterface
@@ -78,6 +80,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Projectile")
 	bool DeadOnHit;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
+	TSubclassOf<AVfxBase> VfxOnDead;
+
+	/** Whether make the Vfx forward direction align with the hit normal vector. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
+	bool AlignVfxWithHitNormal;
+
 	/** How long does this projectile stay after dead? (Wait for Vfx or etc.) */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
 	float DecayDuration;
@@ -107,6 +116,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category="Projectile")
 	UProjectileMovementComponent* MovementComponent;
+
+	UPROPERTY(VisibleAnywhere, Category="Projectile")
+	UAudioComponent* AudioComponent;
 
 	FTimerHandle DecayTimerHandle;
 };

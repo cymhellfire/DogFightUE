@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "VfxBase.generated.h"
 
+class UAudioComponent;
+
 UCLASS(Blueprintable)
 class DOGFIGHT_API AVfxBase : public AActor
 {
@@ -26,4 +28,9 @@ public:
 	/** The lifetime of this VFX. (0 means infinite.) */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Vfx")
 	float Lifetime;
+
+protected:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Vfx")
+	UAudioComponent* AudioComponent;
 };

@@ -6,6 +6,8 @@
 #include "CustomizableCard.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Components/AudioComponent.h"
+#include "VfxBase.h"
 
 // Sets default values
 AProjectileBase::AProjectileBase()
@@ -27,15 +29,22 @@ AProjectileBase::AProjectileBase()
 	MovementComponent->SetUpdatedComponent(CollisionComponent);
 	MovementComponent->bRotationFollowsVelocity = true;
 
+	// Create Audio Component
+	AudioComponent = CreateDefaultSubobject<UAudioComponent>("AudioComponent");
+	AudioComponent->SetupAttachment(RootComponent);
+
 	DeadOnHit = true;
 	DecayDuration = 0;
+	AlignVfxWithHitNormal = false;
 }
 
 // Called when the game starts or when spawned
 void AProjectileBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	// Play the audio clip as default
+	AudioComponent->Play();
 }
 
 void AProjectileBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
@@ -118,6 +127,25 @@ void AProjectileBase::Dead()
 {
 	// Broadcast the event
 	OnProjectileDead.Broadcast(this);
+
+	// Stop the audio
+	if (AudioComponent->IsPlaying())
+	{
+		AudioComponent->Stop();
+	}
+
+	// Spawn Dead Vfx
+	if (IsValid(VfxOnDead))
+	{
+		AVfxBase* Vfx = GetWorld()->SpawnActor<AVfxBase>(VfxOnDead);
+
+		// Synchronize Vfx location with projectile
+		Vfx->SetActorLocation(GetActorLocation());
+		if (AlignVfxWithHitNormal)
+		{
+			
+		}
+	}
 
 	if (DecayDuration > 0.f)
 	{

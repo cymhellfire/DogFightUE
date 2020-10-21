@@ -2,6 +2,7 @@
 
 
 #include "VfxBase.h"
+#include "Components/AudioComponent.h"
 
 // Sets default values
 AVfxBase::AVfxBase()
@@ -10,6 +11,10 @@ AVfxBase::AVfxBase()
 	PrimaryActorTick.bCanEverTick = false;
 
 	bReplicates = true;
+
+	// Create the audio component
+	AudioComponent = CreateDefaultSubobject<UAudioComponent>("AudioComponent");
+	AudioComponent->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -19,4 +24,7 @@ void AVfxBase::BeginPlay()
 
 	// Set life span
 	SetLifeSpan(Lifetime);
+
+	// Auto play audio clip as default
+	AudioComponent->Play();
 }
