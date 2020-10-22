@@ -60,6 +60,9 @@ AStandardModePlayerCharacter::AStandardModePlayerCharacter()
 	// Initial value
 	MaxBaseHealth = 100;
 	bShowCursorToWorld = false;
+	AimingState = 0;
+	AimingApproximateAngle = 1.f;
+	AimingRotateSpeed = 90.f;
 }
 
 void AStandardModePlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const
@@ -208,6 +211,29 @@ void AStandardModePlayerCharacter::Tick(float DeltaTime)
 			CursorToWorld->SetWorldLocationAndRotation(TraceHitResult.Location, CursorR);
 		}
 	}
+
+	if (AimingState != 0)
+	{
+		FRotator CurrentRotation = GetActorRotation();
+
+		// Rotate Clockwise
+		if (AimingState == 1)
+		{
+			CurrentRotation.Yaw += DeltaTime * AimingRotateSpeed;
+		}
+		// Rotate count Clockwise
+		else if (AimingState == 2)
+		{
+			CurrentRotation.Yaw -= DeltaTime * AimingRotateSpeed;
+		}
+
+		if (FMath::Abs(CurrentRotation.Yaw - DesireFacingRotation.Yaw) <= AimingApproximateAngle)
+		{
+			CurrentRotation.Yaw = DesireFacingRotation.Yaw;
+			AimingState = 0;
+		}
+		SetActorRotation(CurrentRotation);
+	}
 }
 
 // Called to bind functionality to input
@@ -250,5 +276,27 @@ void AStandardModePlayerCharacter::SetCursorVisible(bool bVisible)
 void AStandardModePlayerCharacter::StopMoveImmediately()
 {
 	GetMovementComponent()->StopMovementImmediately();
+}
+
+void AStandardModePlayerCharacter::SetAimingDirection(FVector NewDirection)
+{
+	// Decide rotating clockwise or not
+	DesireFacingRotation = NewDirection.Rotation();
+	float YawDelta = DesireFacingRotation.Yaw - GetActorRotation().Yaw;
+
+	// Keep the angle in range [0,360)
+	if (YawDelta < 0)
+		YawDelta += 360;
+
+	if (YawDelta <= 180)
+	{
+		// Clockwise
+		AimingState = 1;
+	}
+	else
+	{
+		// Count clockwise
+		AimingState = 2;
+	}
 }
 

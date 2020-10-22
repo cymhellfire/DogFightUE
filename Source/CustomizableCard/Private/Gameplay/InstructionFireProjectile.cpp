@@ -33,7 +33,7 @@ void UInstructionFireProjectile::HandlePositionTarget(FVector Position)
 		FVector FireDirection = (Position - GetOwnerControlledPawn()->GetActorLocation());
 		FireDirection.Normalize();
 
-		const FRotator DirRotator = FRotator::MakeFromEuler(FireDirection);
+		const FRotator DirRotator = FireDirection.Rotation();
 		// Calculate the spawn position
 		FVector SpawnPosition = GetOwnerControlledPawn()->GetActorLocation();
 		SpawnPosition += DirRotator.RotateVector(FVector(ProjectileSpawnDistance, 0, ProjectileSpawnHeight));
@@ -48,7 +48,7 @@ void UInstructionFireProjectile::HandleDirectionTarget(FVector Direction)
 	{
 		FVector FireDirection = Direction.GetSafeNormal();
 
-		const FRotator DirRotator = FRotator::MakeFromEuler(FireDirection);
+		const FRotator DirRotator = FireDirection.Rotation();
 		// Calculate spawn position
 		FVector SpawnPosition = GetOwnerControlledPawn()->GetActorLocation();
 		SpawnPosition += DirRotator.RotateVector(FVector(ProjectileSpawnDistance, 0, ProjectileSpawnHeight));

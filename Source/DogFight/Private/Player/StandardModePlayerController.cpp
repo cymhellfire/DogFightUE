@@ -579,6 +579,9 @@ void AStandardModePlayerController::CmdUploadActorTarget_Implementation(AActor* 
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Selected %s"), *TargetActor->GetName()));
 
 	OnCardTargetInfoAcquired.Broadcast(NewTargetInfo);
+
+	// Let the character aim at target
+	CharacterPawn->SetAimingDirection(TargetActor->GetActorLocation() - CharacterPawn->GetActorLocation());
 }
 
 void AStandardModePlayerController::RpcRequestActorTarget_Implementation()

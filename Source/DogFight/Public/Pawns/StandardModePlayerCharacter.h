@@ -71,6 +71,9 @@ public:
 	/** Stop character movement immediately. */
 	void StopMoveImmediately();
 
+	/** Set the aiming direction and start rotating. */
+	void SetAimingDirection(FVector NewDirection);
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Unit", meta=(ExposeFunctionCategories = "ReceiveDamageComponent", AllowPrivateAccess = "true"))
 	UReceiveDamageComponent* ReceiveDamageComponent;
@@ -91,4 +94,17 @@ private:
 	class UWidgetComponent* WidgetComponent;
 
 	bool bShowCursorToWorld;
+
+	/** The desired rotation when character is aimed. */
+	FRotator DesireFacingRotation;
+
+	uint8 AimingState;
+
+	/** The threshold angle when consider aiming is finished. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character", meta=(AllowPrivateAccess="true"))
+	float AimingApproximateAngle;
+
+	/** Rotating speed while aiming. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character", meta=(AllowPrivateAccess="true"))
+	float AimingRotateSpeed;
 };
