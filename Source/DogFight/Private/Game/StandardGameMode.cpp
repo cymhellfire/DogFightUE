@@ -45,6 +45,7 @@ AStandardGameMode::AStandardGameMode(const FObjectInitializer& ObjectInitializer
 	GameStartDelay = 5;
 	SpawnPlayerInterval = 0.5f;
 	FreeMovingDuration = 5;
+	GameRoundInterval = 2;
 
 	// Enable the primary tick
 	PrimaryActorTick.bCanEverTick = true;
@@ -334,6 +335,14 @@ void AStandardGameMode::BroadcastGameMessageToAllPlayers(FGameMessage Message)
 	}
 }
 
+void AStandardGameMode::BroadcastGameTitleMessageToAllPlayers(FGameTitleMessage TitleMessage)
+{
+	for (AStandardModePlayerController* PlayerController : StandardPlayerControllerList)
+	{
+		PlayerController->RpcReceivedGameTitleMessage(TitleMessage);
+	}
+}
+
 void AStandardGameMode::EndCurrentPlayerRound()
 {
 	if (CurrentGamePhase == GamePhase::PlayerRound)
@@ -399,6 +408,10 @@ void AStandardGameMode::DefaultTimer()
 				DisablePlayerClickMovement();
 
 				SetGamePhase(GamePhase::DecideOrder);
+			}
+			else if (CurrentGamePhase == GamePhase::CheckGameEnd)
+			{
+				CheckGameEndAction();
 			}
 		}
 	}
@@ -568,6 +581,8 @@ void AStandardGameMode::HandlePhaseDecideOrder()
 
 void AStandardGameMode::HandlePhasePlayerRoundBegin()
 {
+	TArray<FString> NewRoundMessageArgument;
+
 	if (!bIsCurrentAIPlayer)
 	{
 		// Handle human player
@@ -590,6 +605,8 @@ void AStandardGameMode::HandlePhasePlayerRoundBegin()
 
 			// Register card finished delegate
 			StandardPlayerState->OnUsingCardFinished.AddDynamic(this, &AStandardGameMode::OnPlayerUsingCardFinished);
+
+			NewRoundMessageArgument.Add(StandardPlayerState->GetPlayerName());
 		}
 	}
 	else
@@ -611,8 +628,13 @@ void AStandardGameMode::HandlePhasePlayerRoundBegin()
 
 			// Register card finished delegate
 			StandardPlayerState->OnUsingCardFinished.AddDynamic(this, &AStandardGameMode::OnPlayerUsingCardFinished);
+
+			NewRoundMessageArgument.Add(StandardPlayerState->GetPlayerName());
 		}
 	}
+
+	// Broadcast title message
+	BroadcastGameTitleMessageToAllPlayers(FGameTitleMessage {FString(TEXT("TitleMsg_PlayerRoundBegin")), NewRoundMessageArgument});
 
 	SetGamePhase(GamePhase::PlayerRound);
 }
@@ -644,6 +666,8 @@ void AStandardGameMode::HandlePhasePlayerRound()
 
 void AStandardGameMode::HandlePhasePlayerRoundEnd()
 {
+	TArray<FString> NewRoundEndArguments;
+
 	if (!bIsCurrentAIPlayer)
 	{
 		// Handle human player
@@ -664,6 +688,8 @@ void AStandardGameMode::HandlePhasePlayerRoundEnd()
 		{
 			// Remove the card finished delegate
 			StandardPlayerState->OnUsingCardFinished.RemoveDynamic(this, &AStandardGameMode::OnPlayerUsingCardFinished);
+
+			NewRoundEndArguments.Add(StandardPlayerState->GetPlayerName());
 		}
 	}
 	else
@@ -686,14 +712,35 @@ void AStandardGameMode::HandlePhasePlayerRoundEnd()
 		{
 			// Remove the card finished delegate
 			StandardPlayerState->OnUsingCardFinished.RemoveDynamic(this, &AStandardGameMode::OnPlayerUsingCardFinished);
+
+			NewRoundEndArguments.Add(StandardPlayerState->GetPlayerName());
 		}
 	}
+
+	// Broadcast round end message
+	BroadcastGameTitleMessageToAllPlayers(FGameTitleMessage {FString(TEXT("TitleMsg_PlayerRoundEnd")), NewRoundEndArguments});
 
 	// Goto check phase
 	SetGamePhase(GamePhase::CheckGameEnd);
 }
 
 void AStandardGameMode::HandlePhaseCheckGameEnd()
+{
+	AStandardGameState* StandardGameState = Cast<AStandardGameState>(GameState);
+	if (StandardGameState != nullptr && StandardGameState->GetRemainingTime() == 0)
+	{
+		if (GameRoundInterval > 0)
+		{
+			StandardGameState->SetRemainingTime(GameRoundInterval);
+		}
+		else
+		{
+			CheckGameEndAction();
+		}
+	}
+}
+
+void AStandardGameMode::CheckGameEndAction()
 {
 	// Check current alive players
 	if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())

@@ -13,6 +13,7 @@
 #include "GameRoundsTimelineWidget.h"
 #include "CardDisplayWidget.h"
 #include "StandardGameMode.h"
+#include "GameTitleMessageWidget.h"
 
 AStandardHUD::AStandardHUD(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -127,6 +128,19 @@ void AStandardHUD::SetTimelineVisibility(bool bVisible)
 	}
 }
 
+void AStandardHUD::ShowGameTitleMessage(FGameTitleMessage Message)
+{
+	if (GameTitleMessageWidget != nullptr)
+	{
+		if (!GameTitleMessageWidget->IsInViewport())
+		{
+			GameTitleMessageWidget->AddToViewport();
+		}
+
+		GameTitleMessageWidget->DisplayTitleMessage(Message);
+	}
+}
+
 void AStandardHUD::BeginPlay()
 {
 	Super::BeginPlay();
@@ -157,6 +171,11 @@ void AStandardHUD::BeginPlay()
 	if (CardDisplayWidget == nullptr && CardDisplayWidgetClass != nullptr)
 	{
 		CardDisplayWidget = CreateWidget<UCardDisplayWidget>(PlayerController, CardDisplayWidgetClass, FName("CardDisplayWidget"));
+	}
+
+	if (GameTitleMessageWidget == nullptr && GameTitleMessageWidgetClass != nullptr)
+	{
+		GameTitleMessageWidget = CreateWidget<UGameTitleMessageWidget>(PlayerController, GameTitleMessageWidgetClass, FName("GameTitleMessageWidget"));
 	}
 
 	// Listen the GamePhase change event

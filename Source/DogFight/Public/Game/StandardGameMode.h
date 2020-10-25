@@ -65,6 +65,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="StandardMode")
 	float FreeMovingDuration;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="StandardMode")
+	int32 GameRoundInterval;
+
 	TArray<EGameModeDelayAction> DelayActionQueue;
 
 public:
@@ -126,6 +129,9 @@ public:
 	/** Broadcast a localized message to all players in current game. */
 	void BroadcastGameMessageToAllPlayers(FGameMessage Message);
 
+	/** Broadcast a localized title message to all players. */
+	void BroadcastGameTitleMessageToAllPlayers(FGameTitleMessage TitleMessage);
+
 	/** End current player round. */
 	void EndCurrentPlayerRound();
 
@@ -182,6 +188,8 @@ protected:
 	virtual void HandlePhasePlayerRoundEnd();
 
 	virtual void HandlePhaseCheckGameEnd();
+
+	virtual void CheckGameEndAction();
 
 	void SpawnPlayerTick();
 

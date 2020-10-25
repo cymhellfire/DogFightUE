@@ -186,6 +186,12 @@ void AGameRoundsTimeline::StepForward()
 	PlayerInfo.FinishedRounds += 1;				// Increase the Game Rounds counter
 	TimelinePlayerInfoList.RemoveAt(0);
 	TimelinePlayerInfoList.Add(PlayerInfo);
+
+	// Invoke OnRep on server side
+	if (GetNetMode() != NM_Client)
+	{
+		OnRep_TimelinePlayerInfoList();
+	}
 }
 
 void AGameRoundsTimeline::DebugTimeline()

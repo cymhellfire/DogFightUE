@@ -39,6 +39,18 @@ struct FGameMessage
 	TArray<FString> Arguments;
 };
 
+USTRUCT(BlueprintType)
+struct FGameTitleMessage
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly)
+	FString MessageString;
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<FString> Arguments;
+};
+
 UENUM(BlueprintType)
 enum class EAIControllerState : uint8
 {

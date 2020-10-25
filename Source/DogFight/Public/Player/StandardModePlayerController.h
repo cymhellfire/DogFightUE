@@ -61,6 +61,9 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 	void RpcReceivedGameMessage(FGameMessage Message);
 
 	UFUNCTION(Client, Reliable)
+	void RpcReceivedGameTitleMessage(FGameTitleMessage Message);
+
+	UFUNCTION(Client, Reliable)
 	void RpcSetupTimelineDisplay();
 
 	UFUNCTION(Client, Reliable)

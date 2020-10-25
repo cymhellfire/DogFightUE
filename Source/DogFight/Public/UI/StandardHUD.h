@@ -15,6 +15,7 @@ class UOperationHintMessageWidget;
 class UGameMessageWindowWidget;
 class UGameRoundsTimelineWidget;
 class UCardDisplayWidget;
+class UGameTitleMessageWidget;
 class AStandardGameState;
 
 /**
@@ -49,6 +50,8 @@ public:
 
 	/** Switch the visibility of TimelineDisplayWidget. */
 	void SetTimelineVisibility(bool bVisible);
+
+	void ShowGameTitleMessage(FGameTitleMessage Message);
 
 protected:
 	virtual void BeginPlay() override;
@@ -89,6 +92,9 @@ public:
 	UPROPERTY(Category="UI", EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UCardDisplayWidget> CardDisplayWidgetClass;
 
+	UPROPERTY(Category="UI", EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UGameTitleMessageWidget> GameTitleMessageWidgetClass;
+
 protected:
 	void DrawMiniMap();
 
@@ -108,6 +114,8 @@ protected:
 	UGameRoundsTimelineWidget* GameRoundsTimelineWidget;
 	UPROPERTY()
 	UCardDisplayWidget* CardDisplayWidget;
+	UPROPERTY()
+	UGameTitleMessageWidget* GameTitleMessageWidget;
 
 	AStandardGameState* StandardGameState;
 };

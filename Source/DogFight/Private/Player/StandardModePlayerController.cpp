@@ -99,6 +99,14 @@ void AStandardModePlayerController::GameStart()
 	CmdSpawnCharacterPawn();
 }
 
+void AStandardModePlayerController::RpcReceivedGameTitleMessage_Implementation(FGameTitleMessage Message)
+{
+	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
+	{
+		StandardHUD->ShowGameTitleMessage(Message);
+	}
+}
+
 void AStandardModePlayerController::CmdBroadcastGameMessageToAll_Implementation(const FString& GameMessage, const TArray<FString>& Arguments)
 {
 	if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
