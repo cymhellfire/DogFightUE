@@ -12,6 +12,8 @@ AVfxBase::AVfxBase()
 
 	bReplicates = true;
 
+	RootComponent = CreateDefaultSubobject<USceneComponent>("SceneComponent");
+
 	// Create the audio component
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>("AudioComponent");
 	AudioComponent->SetupAttachment(RootComponent);

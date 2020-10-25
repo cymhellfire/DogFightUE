@@ -36,6 +36,7 @@ AProjectileBase::AProjectileBase()
 	DeadOnHit = true;
 	DecayDuration = 0;
 	AlignVfxWithHitNormal = false;
+	bIgnoreOwnerCollisionAtStart = true;
 }
 
 // Called when the game starts or when spawned
@@ -113,6 +114,18 @@ void AProjectileBase::Tick(float DeltaTime)
 
 }
 
+void AProjectileBase::NotifyActorEndOverlap(AActor* OtherActor)
+{
+	if (OwnerCharacter == nullptr)
+		return;
+
+	// Recover collision of owner character after end overlap
+	if (OtherActor == OwnerCharacter && bIgnoreOwnerCollisionAtStart)
+	{
+		CollisionComponent->IgnoreActorWhenMoving(OtherActor, false);
+	}
+}
+
 void AProjectileBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps ) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -127,6 +140,9 @@ void AProjectileBase::Dead()
 {
 	// Broadcast the event
 	OnProjectileDead.Broadcast(this);
+
+	// Disable collision
+	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	// Stop the audio
 	if (AudioComponent->IsPlaying())
@@ -206,6 +222,12 @@ void AProjectileBase::SetOwnerController(AController* NewController)
 
 void AProjectileBase::SetOwnerCharacter(AActor* NewActor)
 {
+	if (bIgnoreOwnerCollisionAtStart)
+	{
+		// Ignore the owner collision at start to avoid hit self
+		CollisionComponent->IgnoreActorWhenMoving(NewActor, true);
+	}
+
 	OwnerCharacter = Cast<AStandardModePlayerCharacter>(NewActor);
 
 	if (OwnerCharacter == nullptr)

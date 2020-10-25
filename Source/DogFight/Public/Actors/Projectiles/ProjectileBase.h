@@ -31,6 +31,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
+
 	/**
 	 * Execute when projectile dead.
 	 */
@@ -90,6 +92,10 @@ public:
 	/** How long does this projectile stay after dead? (Wait for Vfx or etc.) */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
 	float DecayDuration;
+
+	/** Whether this projectile ignore its owner at the start. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
+	bool bIgnoreOwnerCollisionAtStart;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Projectile")
 	AController* OwnerController;
