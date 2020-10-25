@@ -22,7 +22,7 @@ void ABuffBase::SetLifetime(float NewLifetime)
 	
 }
 
-void ABuffBase::SetSourcePlayerController(APlayerController* PlayerController)
+void ABuffBase::SetSourcePlayerController(AController* PlayerController)
 {
 	SourcePlayerController = PlayerController;
 }

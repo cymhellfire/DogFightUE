@@ -68,10 +68,10 @@ public:
 	int32 GetTargetInfoCount() const { return TargetInfoList.Num(); }
 
 	UFUNCTION(BlueprintCallable, Category="CustomizableCard|Card")
-	FORCEINLINE APlayerController* GetOwnerPlayerController() const { return OwnerPlayerController; }
+	FORCEINLINE AController* GetOwnerPlayerController() const { return OwnerPlayerController; }
 
 	UFUNCTION(BlueprintCallable, Category="CustomizableCard|Card")
-	void SetOwnerPlayerController(APlayerController* PlayerController)
+	void SetOwnerPlayerController(AController* PlayerController)
 	{
 		OwnerPlayerController = PlayerController;
 	}
@@ -116,5 +116,5 @@ protected:
 	/** Counter for executing instructions. */
 	int32 ExecutingInstructionCount;
 
-	APlayerController* OwnerPlayerController;
+	AController* OwnerPlayerController;
 };

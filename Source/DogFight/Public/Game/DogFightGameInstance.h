@@ -144,6 +144,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="DogFight|Game")
 	int32 GamePlayerCount;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category="DogFight|Game")
+	int32 GameAICount;
 private:
 
 	void CheckChangeState();

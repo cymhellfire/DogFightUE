@@ -94,7 +94,7 @@ void UInstructionFireProjectile::SpawnProjectileAndLaunch(FVector Position, FRot
 
 APawn* UInstructionFireProjectile::GetOwnerControlledPawn() const
 {
-	APlayerController* PlayerController = GetOwnerCard()->GetOwnerPlayerController();
+	AController* PlayerController = GetOwnerCard()->GetOwnerPlayerController();
 	if (IGameCardUserPlayerControllerInterface* CardUserController = Cast<IGameCardUserPlayerControllerInterface>(PlayerController))
 	{
 		return CardUserController->GetActualPawn();

@@ -29,10 +29,33 @@ void AGameRoundsTimeline::RegisterPlayer(int32 PlayerId, FString PlayerName)
 		}
 	}
 
-	const FTimelinePlayerInfo NewPlayer{PlayerId, PlayerName, TimelinePlayerInfoList.Num(), 0};
+	const FTimelinePlayerInfo NewPlayer{PlayerId, PlayerName, TimelinePlayerInfoList.Num(), 0, true};
 	TimelinePlayerInfoList.Add(NewPlayer);
 
 	UE_LOG(LogDogFight, Log, TEXT("Register player [%s] with index [%d] to Timeline."), *PlayerName, PlayerId);
+
+	// Invoke the OnRep function on server side manually
+	if (GetNetMode() != NM_Client)
+	{
+		OnRep_TimelinePlayerInfoList();
+	}
+}
+
+void AGameRoundsTimeline::RegisterAI(int32 PlayerId, FString PlayerName)
+{
+	for (FTimelinePlayerInfo PlayerInfo : TimelinePlayerInfoList)
+	{
+		// Rename the existing player
+		if (PlayerInfo.PlayerId == PlayerId)
+		{
+			RenamePlayer(PlayerId, PlayerName);
+		}
+	}
+
+	const FTimelinePlayerInfo NewPlayer{PlayerId, PlayerName, TimelinePlayerInfoList.Num(), 0, false};
+	TimelinePlayerInfoList.Add(NewPlayer);
+
+	UE_LOG(LogDogFight, Log, TEXT("Register AI [%s] with index [%d] to Timeline."), *PlayerName, PlayerId);
 
 	// Invoke the OnRep function on server side manually
 	if (GetNetMode() != NM_Client)
@@ -49,7 +72,7 @@ void AGameRoundsTimeline::RenamePlayer(int32 PlayerId, FString NewName)
 		{
 			if (TimelinePlayerInfoList[i].PlayerName != NewName)
 			{
-				const FTimelinePlayerInfo NewInfo{PlayerId, NewName, TimelinePlayerInfoList[i].TimelineIndex, TimelinePlayerInfoList[i].FinishedRounds}; 
+				const FTimelinePlayerInfo NewInfo{PlayerId, NewName, TimelinePlayerInfoList[i].TimelineIndex, TimelinePlayerInfoList[i].FinishedRounds, TimelinePlayerInfoList[i].bIsPlayer}; 
 				TimelinePlayerInfoList.RemoveAt(i);
 				TimelinePlayerInfoList.Insert(NewInfo, i);
 				UE_LOG(LogDogFight, Log, TEXT("Rename player [%d] to %s"), PlayerId, *NewName);
@@ -163,6 +186,15 @@ void AGameRoundsTimeline::StepForward()
 	PlayerInfo.FinishedRounds += 1;				// Increase the Game Rounds counter
 	TimelinePlayerInfoList.RemoveAt(0);
 	TimelinePlayerInfoList.Add(PlayerInfo);
+}
+
+void AGameRoundsTimeline::DebugTimeline()
+{
+	UE_LOG(LogDogFight, Display, TEXT("Debug Timeline"));
+	for(FTimelinePlayerInfo PlayerInfo : TimelinePlayerInfoList)
+	{
+		UE_LOG(LogDogFight, Display, TEXT("ID [%d] PlayerName [%s] IsPlayer [%d]"), PlayerInfo.PlayerId, *PlayerInfo.PlayerName, PlayerInfo.bIsPlayer);
+	}
 }
 
 void AGameRoundsTimeline::OnRep_TimelinePlayerInfoList()

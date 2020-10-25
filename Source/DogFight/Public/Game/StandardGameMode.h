@@ -8,14 +8,17 @@
 #include "StandardGameMode.generated.h"
 
 class AStandardModePlayerController;
+class AStandardModeAIController;
 class AStandardPlayerState;
 class UGameplayCardPool;
+class ADogFightAIController;
 
 namespace GamePhase
 {
 	extern DOGFIGHT_API const FName EnteringMap;			// Players are entering this map, actors are not yet ticking
 	extern DOGFIGHT_API const FName WaitingForStart;		// Actors are ticking, but the match has not yet begun
 	extern DOGFIGHT_API const FName SpawnPlayers;			// Spawn character for players in game.
+	extern DOGFIGHT_API const FName SpawnAIs;				// Spawn AI players for game.
 	extern DOGFIGHT_API const FName FreeMoving;				// All players can move around without limitation.
 	extern DOGFIGHT_API const FName DecideOrder;			// The order of players can take action will be decided here.
 	extern DOGFIGHT_API const FName PlayerRoundBegin;		// Phase before a player's round begin.
@@ -48,6 +51,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="StandardGameMode")
 	TSubclassOf<UGameplayCardPool> CardPoolClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="StandardGameMode")
+	TSubclassOf<AStandardModeAIController> AIControllerClass;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="StandardMode")
@@ -91,6 +97,15 @@ public:
 
 	AStandardModePlayerController* GetPlayerControllerById(int32 PlayerId);
 
+	AStandardModeAIController* GetAIControllerById(int32 PlayerId);
+
+	/** Register a AIController to current game. */
+	void RegisterAIController(AStandardModeAIController* NewController);
+
+	void RegisterAIToTimeline(int32 PlayerId, FString PlayerName);
+
+	int32 GetAIControllerCount() const { return StandardAIControllerList.Num(); }
+
 	/**
 	 * Give random cards to specified player.
 	 * @param PlayerId		Id of player to give cards.
@@ -115,11 +130,17 @@ public:
 	void EndCurrentPlayerRound();
 
 	int32 GetCurrentPlayerId() const;
+
+	/** Get a random AController from game. */
+	AController* GetRandomController();
 protected:
 	virtual void BeginPlay() override;
 	
 	/** All PlayerController instances in current game. */
 	TArray<AStandardModePlayerController*> StandardPlayerControllerList;
+
+	/** All AIController instances in current game. */
+	TArray<AStandardModeAIController*> StandardAIControllerList;
 
 	FName CurrentGamePhase;
 
@@ -131,6 +152,9 @@ protected:
 
 	/** The index of player in list to spawn character. */
 	int32 CurrentSpawnPlayerIndex;
+
+	/** Indicate that current player is an AI. */
+	bool bIsCurrentAIPlayer;
 
 	/** Update remaining time. */
 	virtual void DefaultTimer();
@@ -147,6 +171,8 @@ protected:
 
 	virtual void HandlePhaseSpawnPlayers();
 
+	virtual void HandlePhaseSpawnAIs();
+
 	virtual void HandlePhaseDecideOrder();
 
 	virtual void HandlePhasePlayerRoundBegin();
@@ -158,6 +184,8 @@ protected:
 	virtual void HandlePhaseCheckGameEnd();
 
 	void SpawnPlayerTick();
+
+	void SpawnAITick();
 
 	virtual void HandlePhaseFreeMoving();
 
@@ -176,6 +204,8 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardGameMode")
 	UGameplayCardPool* CardPool;
+
+	void GivePlayerCards(AController* TargetController, AStandardPlayerState* TargetPlayerState, int32 CardNum);
 
 #pragma region Debug
 public:

@@ -47,7 +47,8 @@ public class DogFight : ModuleRules
 				"OnlineSubsystemUtils",
 				"CustomizableCard",
 				"Slate",
-				"SlateCore"
+				"SlateCore",
+				"GameplayTasks"
 			}
 		);
 		

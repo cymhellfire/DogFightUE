@@ -17,7 +17,7 @@ void UTargetingInstructionBase::Execute()
 {
 	TargetAcquired = 0;
 	
-	APlayerController* PlayerController = GetOwnerCard()->GetOwnerPlayerController();
+	AController* PlayerController = GetOwnerCard()->GetOwnerPlayerController();
 	TargetProvider = Cast<IGameTargetProviderInterface>(PlayerController);
 	if (TargetProvider != nullptr)
 	{

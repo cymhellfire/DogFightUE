@@ -14,7 +14,8 @@
 				"CoreUObject",
 				"Slate",
 				"SlateCore",
-				"CustomizableCard"
+				"CustomizableCard",
+				"AIModule"
 			]
 		},
 		{

@@ -22,7 +22,7 @@ public:
 #pragma region Interface
 	virtual void SetLifetime(float NewLifetime) override;
 
-	virtual void SetSourcePlayerController(APlayerController* PlayerController) override;
+	virtual void SetSourcePlayerController(AController* PlayerController) override;
 
 	virtual void SetTargetActor(AActor* Target) override;
 #pragma endregion Interface
@@ -60,7 +60,7 @@ public:
 protected:
 
 	/** Id of source player. */
-	APlayerController* SourcePlayerController;
+	AController* SourcePlayerController;
 
 	/** A list of player rounds as the buff lifetime. */
 	TArray<int32> LifetimeQueue;

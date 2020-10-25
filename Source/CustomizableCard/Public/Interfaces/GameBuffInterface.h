@@ -19,7 +19,7 @@ class IGameBuffInterface
 public:
 
 	/** Set id of source player. */
-	virtual void SetSourcePlayerController(APlayerController* PlayerController) {};
+	virtual void SetSourcePlayerController(AController* PlayerController) {};
 
 	/** Handle the lifetime setup for gameplay buffs. */
 	virtual void SetLifetime(float Lifetime) {};

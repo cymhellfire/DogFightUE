@@ -50,6 +50,9 @@ public:
 
 	FORCEINLINE bool IsAlive() const { return bAlive; }
 
+	/** Get the count of cards this player has. */
+	FORCEINLINE int32 GetCurrentCardCount() const { return CardInstanceList.Num(); }
+
 protected:
 	UFUNCTION()
 	void OnRep_CardInfoList();

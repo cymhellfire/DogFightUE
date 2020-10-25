@@ -22,6 +22,9 @@ struct FTimelinePlayerInfo
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int32 FinishedRounds;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool bIsPlayer;
 };
 
 /**
@@ -41,6 +44,8 @@ public:
 
 	void RegisterPlayer(int32 PlayerId, FString PlayerName);
 
+	void RegisterAI(int32 PlayerId, FString PlayerName);
+
 	void RenamePlayer(int32 PlayerId, FString NewName);
 
 	void RemovePlayer(int32 PlayerId);
@@ -58,6 +63,14 @@ public:
 
 	/** Get the Id of player is currently active. */
 	FORCEINLINE int32 GetCurrentPlayerId() const { return TimelinePlayerInfoList[0].PlayerId; }
+
+	/** Get if current player is AI controlled. */
+	FORCEINLINE bool IsCurrentAIPlayer() const
+	{
+		return !TimelinePlayerInfoList[0].bIsPlayer;
+	}
+
+	void DebugTimeline();
 
 protected:
 	UFUNCTION()
