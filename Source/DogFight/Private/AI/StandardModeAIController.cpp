@@ -11,12 +11,14 @@
 #include "NavigationSystem.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "BrainComponent.h"
 
 namespace EStandardModeAIControllerState
 {
 	const FName Idle = FName(TEXT("Idle"));
 	const FName UsingCard = FName(TEXT("UsingCard"));
 	const FName WaitingOrder = FName(TEXT("WaitingOrder"));
+	const FName Dead = FName(TEXT("Dead"));
 }
 
 AStandardModeAIController::AStandardModeAIController(const FObjectInitializer& ObjectInitializer)
@@ -48,7 +50,7 @@ void AStandardModeAIController::InitPlayerState()
 		MyPlayerState->SetPlayerId(StandardGameMode->GetAIControllerCount() + 1);
 		MyPlayerState->SetPlayerName(FString::Printf(TEXT("AI%d"), MyPlayerState->GetPlayerId()));
 		StandardGameMode->RegisterAIController(this);
-		StandardGameMode->RegisterAIToTimeline(MyPlayerState->GetPlayerId(), MyPlayerState->GetPlayerName());
+		StandardGameMode->RegisterAIToTimeline(this);
 	}
 
 	// Register delegate
@@ -68,6 +70,7 @@ void AStandardModeAIController::InitPlayerState()
 		CharacterPawn = World->SpawnActor<AStandardModePlayerCharacter>(CharacterPawnClass, StartPoint, RootComponent->GetComponentRotation());
 		UE_LOG(LogDogFight, Display, TEXT("Spawn AI pawn at %s"), *StartPoint.ToString());
 		CharacterPawn->SetUnitName(MyPlayerState->GetPlayerName());
+		CharacterPawn->OnCharacterDead.AddDynamic(this, &AStandardModeAIController::OnCharacterPawnDead);
 	}
 }
 
@@ -222,6 +225,10 @@ void AStandardModeAIController::BeginPlay()
 
 void AStandardModeAIController::OnStateChanged(FName NewState)
 {
+	if (NewState == EStandardModeAIControllerState::Dead)
+	{
+		BrainComponent->StopLogic(FString(TEXT("Dead")));
+	}
 }
 
 void AStandardModeAIController::OnCardFinished(bool bPlayerRoundFinished)
@@ -229,4 +236,14 @@ void AStandardModeAIController::OnCardFinished(bool bPlayerRoundFinished)
 	SetState(EStandardModeAIControllerState::WaitingOrder);
 }
 
+void AStandardModeAIController::OnCharacterPawnDead()
+{
+	if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
+	{
+		SetState(EStandardModeAIControllerState::Dead);
+
+		StandardPlayerState->SetAlive(false);
+		OnAIPlayerDead.Broadcast(StandardPlayerState->GetPlayerId());
+	}
+}
 

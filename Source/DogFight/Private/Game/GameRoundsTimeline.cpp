@@ -2,6 +2,9 @@
 
 
 #include "GameRoundsTimeline.h"
+#include "StandardModePlayerController.h"
+#include "StandardModeAIController.h"
+#include "StandardPlayerState.h"
 
 AGameRoundsTimeline::AGameRoundsTimeline(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -17,8 +20,18 @@ void AGameRoundsTimeline::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(AGameRoundsTimeline, TimelinePlayerInfoList);
 }
 
-void AGameRoundsTimeline::RegisterPlayer(int32 PlayerId, FString PlayerName)
+void AGameRoundsTimeline::RegisterPlayer(AStandardModePlayerController* PlayerController)
 {
+	AStandardPlayerState* StandardPlayerState = PlayerController->GetPlayerState<AStandardPlayerState>();
+	if(StandardPlayerState == nullptr)
+	{
+		UE_LOG(LogDogFight, Error, TEXT("No StandardPlayerState available for %s"), *PlayerController->GetName());
+		return;
+	}
+
+	const int32 PlayerId = StandardPlayerState->GetPlayerId();
+	const FString PlayerName = StandardPlayerState->GetPlayerName();
+
 	for (FTimelinePlayerInfo PlayerInfo : TimelinePlayerInfoList)
 	{
 		// Rename the existing player
@@ -32,6 +45,9 @@ void AGameRoundsTimeline::RegisterPlayer(int32 PlayerId, FString PlayerName)
 	const FTimelinePlayerInfo NewPlayer{PlayerId, PlayerName, TimelinePlayerInfoList.Num(), 0, true};
 	TimelinePlayerInfoList.Add(NewPlayer);
 
+	// Register delegate
+	PlayerController->OnPlayerDead.AddDynamic(this, &AGameRoundsTimeline::OnPlayerDead);
+
 	UE_LOG(LogDogFight, Log, TEXT("Register player [%s] with index [%d] to Timeline."), *PlayerName, PlayerId);
 
 	// Invoke the OnRep function on server side manually
@@ -41,8 +57,18 @@ void AGameRoundsTimeline::RegisterPlayer(int32 PlayerId, FString PlayerName)
 	}
 }
 
-void AGameRoundsTimeline::RegisterAI(int32 PlayerId, FString PlayerName)
+void AGameRoundsTimeline::RegisterAI(AStandardModeAIController* AIController)
 {
+	AStandardPlayerState* StandardPlayerState = AIController->GetPlayerState<AStandardPlayerState>();
+	if (StandardPlayerState == nullptr)
+	{
+		UE_LOG(LogDogFight, Error, TEXT("No StandardPlayerState available for %s"), *AIController->GetName());
+		return;
+	}
+
+	const int32 PlayerId = StandardPlayerState->GetPlayerId();
+	const FString PlayerName = StandardPlayerState->GetPlayerName();
+
 	for (FTimelinePlayerInfo PlayerInfo : TimelinePlayerInfoList)
 	{
 		// Rename the existing player
@@ -54,6 +80,9 @@ void AGameRoundsTimeline::RegisterAI(int32 PlayerId, FString PlayerName)
 
 	const FTimelinePlayerInfo NewPlayer{PlayerId, PlayerName, TimelinePlayerInfoList.Num(), 0, false};
 	TimelinePlayerInfoList.Add(NewPlayer);
+
+	// Register delegate
+	AIController->OnAIPlayerDead.AddDynamic(this, &AGameRoundsTimeline::OnPlayerDead);
 
 	UE_LOG(LogDogFight, Log, TEXT("Register AI [%s] with index [%d] to Timeline."), *PlayerName, PlayerId);
 
@@ -208,3 +237,39 @@ void AGameRoundsTimeline::OnRep_TimelinePlayerInfoList()
 	// Broadcast the event
 	OnTimelinePlayerInfoListChanged.Broadcast();
 }
+
+void AGameRoundsTimeline::OnPlayerDead(int32 PlayerId)
+{
+	const int32 TargetIndex = GetIndexByPlayerId(PlayerId);
+
+	// Remove item at target index
+	TimelinePlayerInfoList.RemoveAt(TargetIndex);
+
+	// Invoke OnRep on server side
+	if (GetNetMode() != NM_Client)
+	{
+		OnRep_TimelinePlayerInfoList();
+	}
+}
+
+int32 AGameRoundsTimeline::GetIndexByPlayerId(int32 PlayerId)
+{
+	// Iterate through list to search the target
+	int32 Index = -1;
+	for (int i = 0; i < TimelinePlayerInfoList.Num(); ++i)
+	{
+		if (TimelinePlayerInfoList[i].PlayerId == PlayerId)
+		{
+			Index = i;
+			break;
+		}
+	}
+
+	if (Index < 0)
+	{
+		UE_LOG(LogDogFight, Error, TEXT("Failed to find Player with Id %d"), PlayerId);
+	}
+
+	return Index;
+}
+

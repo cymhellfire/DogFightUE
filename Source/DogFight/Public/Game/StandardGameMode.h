@@ -96,7 +96,7 @@ public:
 	/** Tell GameMode that the invoker is ready to start game. */
 	virtual void PlayerReadyForGame(const FString& PlayerName);
 
-	void RegisterPlayerToTimeline(int32 PlayerId, FString PlayerName);
+	void RegisterPlayerToTimeline(AStandardModePlayerController* PlayerController);
 
 	AStandardModePlayerController* GetPlayerControllerById(int32 PlayerId);
 
@@ -105,7 +105,7 @@ public:
 	/** Register a AIController to current game. */
 	void RegisterAIController(AStandardModeAIController* NewController);
 
-	void RegisterAIToTimeline(int32 PlayerId, FString PlayerName);
+	void RegisterAIToTimeline(AStandardModeAIController* AIController);
 
 	int32 GetAIControllerCount() const { return StandardAIControllerList.Num(); }
 
@@ -204,6 +204,9 @@ protected:
 
 	UFUNCTION()
 	void OnPlayerDeadCallback(int32 PlayerId);
+
+	UFUNCTION()
+	void OnAIPlayerDeadCallback(int32 PlayerId);
 
 	void HandleDelayAction(EGameModeDelayAction DelayAction);
 

@@ -95,6 +95,9 @@ private:
 
 	bool bShowCursorToWorld;
 
+	UPROPERTY(Category="Unit", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess="true"))
+	bool bAlive;
+
 	/** The desired rotation when character is aimed. */
 	FRotator DesireFacingRotation;
 

@@ -16,6 +16,7 @@ namespace EStandardModeAIControllerState
 	extern DOGFIGHT_API const FName Idle;
 	extern DOGFIGHT_API const FName UsingCard;
 	extern DOGFIGHT_API const FName WaitingOrder;
+	extern DOGFIGHT_API const FName Dead;
 }
 
 /**
@@ -27,6 +28,9 @@ class DOGFIGHT_API AStandardModeAIController : public ADogFightAIController, pub
 	GENERATED_BODY()
 
 public:
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAIPlayerDeadSignature, int32, PlayerId);
+	FAIPlayerDeadSignature OnAIPlayerDead;
+
 	AStandardModeAIController(const FObjectInitializer& ObjectInitializer);
 
 	virtual void InitPlayerState() override;
@@ -65,6 +69,9 @@ protected:
 
 	UFUNCTION()
 	void OnCardFinished(bool bPlayerRoundFinished);
+
+	UFUNCTION()
+	void OnCharacterPawnDead();
 
 public:
 	UPROPERTY(Category="AIController", EditDefaultsOnly, BlueprintReadOnly)

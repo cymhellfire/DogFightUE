@@ -474,7 +474,7 @@ void AStandardModePlayerController::CmdRegisterToGameTimeline_Implementation()
 	{
 		if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
 		{
-			StandardGameMode->RegisterPlayerToTimeline(StandardPlayerState->GetPlayerId(), StandardPlayerState->GetPlayerName());
+			StandardGameMode->RegisterPlayerToTimeline(this);
 		}
 	}
 }

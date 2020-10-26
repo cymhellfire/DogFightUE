@@ -183,13 +183,13 @@ void AStandardGameMode::PlayerReadyForGame(const FString& PlayerName)
 	OnJoinedPlayerCountChanged();
 }
 
-void AStandardGameMode::RegisterPlayerToTimeline(int32 PlayerId, FString PlayerName)
+void AStandardGameMode::RegisterPlayerToTimeline(AStandardModePlayerController* PlayerController)
 {
 	if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())
 	{
 		if (AGameRoundsTimeline* Timeline = StandardGameState->GetGameRoundsTimeline())
 		{
-			Timeline->RegisterPlayer(PlayerId, PlayerName);
+			Timeline->RegisterPlayer(PlayerController);
 		}
 	}
 }
@@ -237,15 +237,18 @@ void AStandardGameMode::RegisterAIController(AStandardModeAIController* NewContr
 	}
 
 	StandardAIControllerList.Add(NewController);
+
+	// Register delegate
+	NewController->OnAIPlayerDead.AddDynamic(this, &AStandardGameMode::OnAIPlayerDeadCallback);
 }
 
-void AStandardGameMode::RegisterAIToTimeline(int32 PlayerId, FString PlayerName)
+void AStandardGameMode::RegisterAIToTimeline(AStandardModeAIController* AIController)
 {
 	if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())
 	{
 		if (AGameRoundsTimeline* Timeline = StandardGameState->GetGameRoundsTimeline())
 		{
-			Timeline->RegisterAI(PlayerId, PlayerName);
+			Timeline->RegisterAI(AIController);
 		}
 	}
 }
@@ -886,6 +889,26 @@ void AStandardGameMode::OnPlayerUsingCardFinished(bool bShouldEndRound)
 }
 
 void AStandardGameMode::OnPlayerDeadCallback(int32 PlayerId)
+{
+	// Decrease the alive player count
+	if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())
+	{
+		StandardGameState->SetAlivePlayerCount(StandardGameState->GetAlivePlayerCount() - 1);
+
+		PushDelayAction(DA_PlayerCountCheck);
+	}
+
+	// Broadcast dead event
+	OnPlayerDead.Broadcast(PlayerId);
+
+	// Check if is current player dead
+	if (GetCurrentPlayerId() == PlayerId)
+	{
+		EndCurrentPlayerRound();
+	}
+}
+
+void AStandardGameMode::OnAIPlayerDeadCallback(int32 PlayerId)
 {
 	// Decrease the alive player count
 	if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())

@@ -6,6 +6,9 @@
 #include "UObject/NoExportTypes.h"
 #include "GameRoundsTimeline.generated.h"
 
+class AStandardModePlayerController;
+class AStandardModeAIController;
+
 USTRUCT(BlueprintType)
 struct FTimelinePlayerInfo
 {
@@ -42,9 +45,9 @@ public:
 
 	AGameRoundsTimeline(const FObjectInitializer& ObjectInitializer);
 
-	void RegisterPlayer(int32 PlayerId, FString PlayerName);
+	void RegisterPlayer(AStandardModePlayerController* PlayerController);
 
-	void RegisterAI(int32 PlayerId, FString PlayerName);
+	void RegisterAI(AStandardModeAIController* AIController);
 
 	void RenamePlayer(int32 PlayerId, FString NewName);
 
@@ -75,6 +78,11 @@ public:
 protected:
 	UFUNCTION()
 	void OnRep_TimelinePlayerInfoList();
+
+	UFUNCTION()
+	void OnPlayerDead(int32 PlayerId);
+
+	int32 GetIndexByPlayerId(int32 PlayerId);
 
 protected:
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_TimelinePlayerInfoList)

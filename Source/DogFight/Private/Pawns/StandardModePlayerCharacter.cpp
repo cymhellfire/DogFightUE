@@ -63,6 +63,7 @@ AStandardModePlayerCharacter::AStandardModePlayerCharacter()
 	AimingState = 0;
 	AimingApproximateAngle = 1.f;
 	AimingRotateSpeed = 90.f;
+	bAlive = true;
 }
 
 void AStandardModePlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const
@@ -175,6 +176,8 @@ void AStandardModePlayerCharacter::OnRep_CurrentHealth()
 
 void AStandardModePlayerCharacter::Dead()
 {
+	bAlive = false;
+
 	OnCharacterDead.Broadcast();
 }
 
@@ -245,6 +248,11 @@ void AStandardModePlayerCharacter::SetupPlayerInputComponent(UInputComponent* Pl
 
 float AStandardModePlayerCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	if (!bAlive)
+	{
+		return 0.f;
+	}
+
 	float ActualDamage = 0;
 	// Modify the damage by current GameMode
 	if (ADogFightGameModeBase* DogFightGameModeBase = Cast<ADogFightGameModeBase>(GetWorld()->GetAuthGameMode()))
