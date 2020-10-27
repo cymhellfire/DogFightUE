@@ -27,6 +27,8 @@ public:
 
 	virtual void SetMaxSpeed(float NewSpeed) {};
 
+	virtual void SetIgnoreCollisionAtStart(bool bIgnore) {};
+
 	virtual void LaunchAtDirection(const FVector& Direction) {};
 
 	virtual void SetOwnerController(AController* NewController) {};

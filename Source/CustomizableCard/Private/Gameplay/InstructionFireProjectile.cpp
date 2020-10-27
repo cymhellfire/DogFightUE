@@ -30,15 +30,19 @@ void UInstructionFireProjectile::HandlePositionTarget(FVector Position)
 {
 	if (IsValid(ProjectileClass))
 	{
-		FVector FireDirection = (Position - GetOwnerControlledPawn()->GetActorLocation());
-		FireDirection.Normalize();
+		FVector SpawnDirection = (Position - GetOwnerControlledPawn()->GetActorLocation());
+		SpawnDirection.Normalize();
 
-		const FRotator DirRotator = FireDirection.Rotation();
+		const FRotator SpawnRotation = SpawnDirection.Rotation();
 		// Calculate the spawn position
 		FVector SpawnPosition = GetOwnerControlledPawn()->GetActorLocation();
-		SpawnPosition += DirRotator.RotateVector(FVector(ProjectileSpawnDistance, 0, ProjectileSpawnHeight));
+		SpawnPosition += SpawnRotation.RotateVector(FVector(ProjectileSpawnDistance, 0, ProjectileSpawnHeight));
 
-		SpawnProjectileAndLaunch(SpawnPosition, DirRotator, FireDirection);
+		// Calculate launch direction
+		FVector FireDirection = Position - SpawnPosition;
+		FireDirection.Normalize();
+
+		SpawnProjectileAndLaunch(SpawnPosition, SpawnRotation, FireDirection, SpawnDirection == FVector::ZeroVector);
 	}
 }
 
@@ -48,12 +52,12 @@ void UInstructionFireProjectile::HandleDirectionTarget(FVector Direction)
 	{
 		FVector FireDirection = Direction.GetSafeNormal();
 
-		const FRotator DirRotator = FireDirection.Rotation();
+		const FRotator SpawnRotation = FireDirection.Rotation();
 		// Calculate spawn position
 		FVector SpawnPosition = GetOwnerControlledPawn()->GetActorLocation();
-		SpawnPosition += DirRotator.RotateVector(FVector(ProjectileSpawnDistance, 0, ProjectileSpawnHeight));
+		SpawnPosition += SpawnRotation.RotateVector(FVector(ProjectileSpawnDistance, 0, ProjectileSpawnHeight));
 
-		SpawnProjectileAndLaunch(SpawnPosition, DirRotator, FireDirection);
+		SpawnProjectileAndLaunch(SpawnPosition, SpawnRotation, FireDirection, false);
 	}
 }
 
@@ -76,12 +80,13 @@ void UInstructionFireProjectile::OnProjectileDead(AActor* Projectile)
 	}
 }
 
-void UInstructionFireProjectile::SpawnProjectileAndLaunch(FVector Position, FRotator Rotation, FVector FireDirection)
+void UInstructionFireProjectile::SpawnProjectileAndLaunch(FVector Position, FRotator Rotation, FVector FireDirection, bool bMayHitSelf)
 {
 	IGameProjectileInterface* Projectile = GetWorld()->SpawnActor<IGameProjectileInterface>(ProjectileClass, Position, Rotation);
 	if (Projectile != nullptr)
 	{
 		Projectile->GetProjectileDeadDelegate().AddDynamic(this, &UInstructionFireProjectile::OnProjectileDead);
+		Projectile->SetIgnoreCollisionAtStart(!bMayHitSelf);
 		Projectile->SetOwnerController(GetOwnerCard()->GetOwnerPlayerController());
 		Projectile->SetOwnerCharacter(GetOwnerControlledPawn());
 		Projectile->SetInitialSpeed(MuzzleSpeed);

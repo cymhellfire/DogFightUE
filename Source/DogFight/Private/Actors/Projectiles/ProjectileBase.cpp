@@ -205,6 +205,11 @@ void AProjectileBase::SetMaxSpeed(float NewSpeed)
 	}
 }
 
+void AProjectileBase::SetIgnoreCollisionAtStart(bool bIgnore)
+{
+	bIgnoreOwnerCollisionAtStart = bIgnore;
+}
+
 void AProjectileBase::LaunchAtDirection(const FVector& Direction)
 {
 	if (MovementComponent != nullptr && GetLocalRole() == ROLE_Authority)

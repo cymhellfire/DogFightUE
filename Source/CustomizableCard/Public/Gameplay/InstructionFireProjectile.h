@@ -30,7 +30,7 @@ protected:
 	void OnProjectileDead(AActor* Projectile);
 
 	/** Spawn a projectile and launch it toward specified direction. */
-	void SpawnProjectileAndLaunch(FVector Position, FRotator Rotation, FVector FireDirection);
+	void SpawnProjectileAndLaunch(FVector Position, FRotator Rotation, FVector FireDirection, bool bMayHitSelf);
 
 	APawn* GetOwnerControlledPawn() const;
 
