@@ -16,6 +16,9 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCharacterDeadSignature);
 	FCharacterDeadSignature OnCharacterDead;
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterHealthChangedSignature, int32, NewHealth);
+	FCharacterHealthChangedSignature OnCharacterHealthChanged;
+
 	// Sets default values for this character's properties
 	AStandardModePlayerCharacter();
 
@@ -73,6 +76,8 @@ public:
 
 	/** Set the aiming direction and start rotating. */
 	void SetAimingDirection(FVector NewDirection);
+
+	int32 GetCurrentHealth() const { return CurrentHealth; }
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Unit", meta=(ExposeFunctionCategories = "ReceiveDamageComponent", AllowPrivateAccess = "true"))

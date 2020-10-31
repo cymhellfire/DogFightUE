@@ -10,6 +10,31 @@
 class ACardBase;
 
 /**
+ * Struct that handles the data describe relationship between players.
+ */
+USTRUCT(BlueprintType)
+struct FPlayerRelationStatistic
+{
+	GENERATED_BODY()
+
+	UPROPERTY(VisibleAnywhere)
+	int32 PlayerId;
+
+	UPROPERTY(VisibleAnywhere)
+	bool IsAIPlayer;
+
+	/** Represents Enemy if this value less than 0. Represents Ally when larger than 0. */
+	UPROPERTY(VisibleAnywhere)
+	int32 RelationPoint;
+
+	UPROPERTY(VisibleAnywhere)
+	int32 ReceiveDamage;
+
+	UPROPERTY(VisibleAnywhere)
+	int32 CurrentHealth;
+};
+
+/**
  * 
  */
 UCLASS()
@@ -46,12 +71,26 @@ public:
 
 	FORCEINLINE TArray<FCardInstanceDisplayInfo> GetCardDisplayInfoList() const { return CardInfoList; }
 
+	/** Get the card instance list. */
+	FORCEINLINE TArray<ACardBase*> GetCardInstanceList() const { return CardInstanceList; }
+
 	void SetAlive(bool bIsAlive);
 
 	FORCEINLINE bool IsAlive() const { return bAlive; }
 
 	/** Get the count of cards this player has. */
 	FORCEINLINE int32 GetCurrentCardCount() const { return CardInstanceList.Num(); }
+
+	void RegisterPlayersForRelation();
+
+	bool GetPlayerRelationStatistic(int32 TargetPlayerId, FPlayerRelationStatistic** PlayerRelationStatistic);
+
+	void RecordReceivedDamage(int32 SourcePlayerId, float Damage);
+
+	void ModifyPlayerHealth(int32 TargetPlayerId, int32 NewHealth);
+
+	/** Get all player relation statistic. */
+	TArray<FPlayerRelationStatistic> GetPlayerRelationStatisticList() const { return TArray<FPlayerRelationStatistic>(PlayerStatisticArray); }
 
 protected:
 	UFUNCTION()
@@ -82,4 +121,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState", Replicated)
 	bool bAlive;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState", Replicated)
+	TArray<FPlayerRelationStatistic> PlayerStatisticArray;
 };

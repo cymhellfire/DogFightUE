@@ -74,3 +74,14 @@ struct FCardInstanceDisplayInfo
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="CardInstanceInfo")
 	TArray<FCardDisplayInfoArgument> Arguments;
 };
+
+/** Test if all desired flags are toggled on. */
+#define TEST_MULTI_CARD_CATEGORY(Bitmask, DesiredFlags) (((Bitmask) & (DesiredFlags)) == (DesiredFlags))
+
+UENUM(Meta = (Bitflags))
+enum class ECardCategoryFlags
+{
+	ECC_Attack			UMETA(DisplayName = "Attack"),
+	ECC_Defence			UMETA(DisplayName = "Defence"),
+	ECC_Support			UMETA(DisplayName = "Support")
+};

@@ -153,6 +153,15 @@ void AStandardModePlayerController::OnCharacterDead()
 	}
 }
 
+void AStandardModePlayerController::OnHealthChanged(int32 NewHealth)
+{
+	// Delegate
+	if (APlayerState* MyPlayerState = GetPlayerState<APlayerState>())
+	{
+		OnPlayerHealthChanged.Broadcast(MyPlayerState->GetPlayerId(), NewHealth);
+	}
+}
+
 void AStandardModePlayerController::CmdUploadSelectedCardIndex_Implementation(const TArray<int32>& SelectedIndexList)
 {
 	if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
@@ -539,6 +548,9 @@ void AStandardModePlayerController::CmdUploadDirectionTarget_Implementation(FVec
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Selected direction %s"), *TargetDirection.ToString()));
 
 	OnCardTargetInfoAcquired.Broadcast(NewTargetInfo);
+
+	// Let the character aim at target
+	CharacterPawn->SetAimingDirection(TargetDirection);
 }
 
 void AStandardModePlayerController::RpcRequestDirectionTarget_Implementation()
@@ -563,6 +575,13 @@ void AStandardModePlayerController::CmdUploadPositionTarget_Implementation(FVect
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Selected position %s"), *TargetPosition.ToString()));
 
 	OnCardTargetInfoAcquired.Broadcast(NewTargetInfo);
+
+	// Let the character aim at target
+	const FVector AimingDirection = TargetPosition - CharacterPawn->GetActorLocation();
+	if (AimingDirection.Size() > 0.01f)
+	{
+		CharacterPawn->SetAimingDirection(AimingDirection);
+	}
 }
 
 void AStandardModePlayerController::RpcRequestPositionTarget_Implementation()
@@ -589,7 +608,11 @@ void AStandardModePlayerController::CmdUploadActorTarget_Implementation(AActor* 
 	OnCardTargetInfoAcquired.Broadcast(NewTargetInfo);
 
 	// Let the character aim at target
-	CharacterPawn->SetAimingDirection(TargetActor->GetActorLocation() - CharacterPawn->GetActorLocation());
+	const FVector AimingDirection = TargetActor->GetActorLocation() - CharacterPawn->GetActorLocation();
+	if (AimingDirection.Size() > 0.01f)
+	{
+		CharacterPawn->SetAimingDirection(AimingDirection);
+	}
 }
 
 void AStandardModePlayerController::RpcRequestActorTarget_Implementation()
@@ -701,8 +724,10 @@ void AStandardModePlayerController::CmdSpawnCharacterPawn_Implementation()
 				CharacterPawnClass->GetDefaultObject()->GetClass(), StartPoint,
 				RootComponent->GetComponentRotation());
 			CharacterPawn->SetOwner(this);
+			CharacterPawn->SetPlayerState(PlayerState);
 			// Register listener
 			CharacterPawn->OnCharacterDead.AddDynamic(this, &AStandardModePlayerController::OnCharacterDead);
+			CharacterPawn->OnCharacterHealthChanged.AddDynamic(this, &AStandardModePlayerController::OnHealthChanged);
 			UE_LOG(LogDogFight, Display, TEXT("Spawn location at %s"), *(StartPoint.ToString()));
 		}
 		else

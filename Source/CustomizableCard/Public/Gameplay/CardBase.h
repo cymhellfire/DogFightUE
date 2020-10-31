@@ -78,6 +78,12 @@ public:
 
 	FCardInstanceDisplayInfo GetCardDisplayInfo();
 
+	/** Check if this card matches all given category flags. */
+	FORCEINLINE bool IsCardMatchCategoryFlags(int32 CategoryFlags) const
+	{
+		return TEST_MULTI_CARD_CATEGORY(CardCategories, CategoryFlags);
+	}
+
 protected:
 	/** Do prepare operations before card executing phase. */
 	virtual void Prepare() {};
@@ -110,6 +116,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="CustomizableCard")
 	TArray<FCardInstructionTargetInfo> TargetInfoList;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="CustomizableCard", Meta = (Bitmask, BitmaskEnum = "ECardCategoryFlags"))
+	int32 CardCategories;
 
 	int32 CurrentInstructionIndex;
 

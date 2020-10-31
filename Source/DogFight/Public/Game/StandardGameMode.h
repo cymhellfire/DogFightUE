@@ -91,6 +91,8 @@ public:
 
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 
+	virtual float CalculateDamage(AActor* DamageTaker, float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
 	FName GetGamePhase() const { return CurrentGamePhase; }
 
 	/** Tell GameMode that the invoker is ready to start game. */
@@ -207,6 +209,9 @@ protected:
 
 	UFUNCTION()
 	void OnAIPlayerDeadCallback(int32 PlayerId);
+
+	UFUNCTION()
+	void OnCharacterHealthChangedCallback(int32 PlayerId, int32 NewHealth);
 
 	void HandleDelayAction(EGameModeDelayAction DelayAction);
 

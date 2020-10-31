@@ -34,6 +34,9 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerDeadSignature, int32, PlayerId);
 	FPlayerDeadSignature OnPlayerDead;
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPlayerHealthChangedSignature, int32, PlayerId, int32, NewHealth);
+	FPlayerHealthChangedSignature OnPlayerHealthChanged;
+
 	UFUNCTION(Client, Reliable)
 	void RpcSetClickMovementEnabled(bool bEnabled);
 
@@ -166,6 +169,9 @@ protected:
 
 	UFUNCTION()
 	void OnCharacterDead();
+
+	UFUNCTION()
+	void OnHealthChanged(int32 NewHealth);
 
 private:
 	FCardTargetInfoAcquiredSignature OnCardTargetInfoAcquired;

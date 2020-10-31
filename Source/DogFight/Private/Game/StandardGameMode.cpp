@@ -10,6 +10,7 @@
 #include "StandardGameState.h"
 #include "StandardHUD.h"
 #include "StandardModePlayerController.h"
+#include "StandardModePlayerCharacter.h"
 #include "StandardModePlayerPawn.h"
 #include "StandardPlayerState.h"
 #include "GameplayCardPool.h"
@@ -125,6 +126,7 @@ void AStandardGameMode::PostLogin(APlayerController* NewPlayer)
 			StandardPlayerControllerList.Add(StandardModePlayerController);
 
 			StandardModePlayerController->OnPlayerDead.AddDynamic(this, &AStandardGameMode::OnPlayerDeadCallback);
+			StandardModePlayerController->OnPlayerHealthChanged.AddDynamic(this, &AStandardGameMode::OnCharacterHealthChangedCallback);
 			UE_LOG(LogDogFight, Log, TEXT("Add controller [%s] to list."), *StandardModePlayerController->GetName());
 		}
 	}
@@ -170,6 +172,26 @@ void AStandardGameMode::InitGame(const FString& MapName, const FString& Options,
 	SetGamePhase(GamePhase::EnteringMap);
 }
 
+float AStandardGameMode::CalculateDamage(AActor* DamageTaker, float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	const float FinalDamage = Super::CalculateDamage(DamageTaker, Damage, DamageEvent, EventInstigator, DamageCauser); 
+
+	// Record the damage to PlayerState if taker and source are both PlayerCharacter
+	AStandardModePlayerCharacter* PlayerCharacter = Cast<AStandardModePlayerCharacter>(DamageTaker);
+	AStandardModePlayerCharacter* SourceCharacter = Cast<AStandardModePlayerCharacter>(DamageCauser);
+	if (PlayerCharacter && SourceCharacter)
+	{
+		AStandardPlayerState* SourcePlayerState = Cast<AStandardPlayerState>(SourceCharacter->GetPlayerState());
+		AStandardPlayerState* StandardPlayerState = Cast<AStandardPlayerState>(PlayerCharacter->GetPlayerState());
+		if (StandardPlayerState && SourcePlayerState)
+		{
+			StandardPlayerState->RecordReceivedDamage(SourcePlayerState->GetPlayerId(), FinalDamage);
+		}
+	}
+
+	return FinalDamage;
+}
+
 void AStandardGameMode::PlayerReadyForGame(const FString& PlayerName)
 {
 	// Broadcast player joined message
@@ -207,7 +229,7 @@ AStandardModePlayerController* AStandardGameMode::GetPlayerControllerById(int32 
 		}
 	}
 
-	UE_LOG(LogDogFight, Error, TEXT("Failed to get the PlayerController with Id %d"), PlayerId);
+	UE_LOG(LogDogFight, Warning, TEXT("Failed to get the PlayerController with Id %d"), PlayerId);
 	return nullptr;
 }
 
@@ -224,7 +246,7 @@ AStandardModeAIController* AStandardGameMode::GetAIControllerById(int32 PlayerId
 		}
 	}
 
-	UE_LOG(LogDogFight, Error, TEXT("Failed to get the AIController with Id %d"), PlayerId);
+	UE_LOG(LogDogFight, Warning, TEXT("Failed to get the AIController with Id %d"), PlayerId);
 	return nullptr;
 }
 
@@ -240,6 +262,7 @@ void AStandardGameMode::RegisterAIController(AStandardModeAIController* NewContr
 
 	// Register delegate
 	NewController->OnAIPlayerDead.AddDynamic(this, &AStandardGameMode::OnAIPlayerDeadCallback);
+	NewController->OnPlayerHealthChanged.AddDynamic(this, &AStandardGameMode::OnCharacterHealthChangedCallback);
 }
 
 void AStandardGameMode::RegisterAIToTimeline(AStandardModeAIController* AIController)
@@ -576,6 +599,21 @@ void AStandardGameMode::HandlePhaseDecideOrder()
 		for (AStandardModePlayerController* PlayerController : StandardPlayerControllerList)
 		{
 			PlayerController->RpcSetupTimelineDisplay();
+
+			// Register players statistic
+			if (AStandardPlayerState* StandardPlayerState = PlayerController->GetPlayerState<AStandardPlayerState>())
+			{
+				StandardPlayerState->RegisterPlayersForRelation();
+			}
+		}
+
+		// Register players statistic for AI
+		for (AStandardModeAIController* AIController : StandardAIControllerList)
+		{
+			if (AStandardPlayerState* StandardPlayerState = AIController->GetPlayerState<AStandardPlayerState>())
+			{
+				StandardPlayerState->RegisterPlayersForRelation();
+			}
 		}
 	}
 
@@ -925,6 +963,21 @@ void AStandardGameMode::OnAIPlayerDeadCallback(int32 PlayerId)
 	if (GetCurrentPlayerId() == PlayerId)
 	{
 		EndCurrentPlayerRound();
+	}
+}
+
+void AStandardGameMode::OnCharacterHealthChangedCallback(int32 PlayerId, int32 NewHealth)
+{
+	// Notify all players the health changes
+	if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())
+	{
+		for (APlayerState* PlayerState : StandardGameState->PlayerArray)
+		{
+			if (AStandardPlayerState* StandardPlayerState = Cast<AStandardPlayerState>(PlayerState))
+			{
+				StandardPlayerState->ModifyPlayerHealth(PlayerId, NewHealth);
+			}
+		}
 	}
 }
 

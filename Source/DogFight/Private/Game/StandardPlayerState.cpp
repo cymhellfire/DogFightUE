@@ -3,6 +3,11 @@
 
 #include "StandardPlayerState.h"
 #include "CardBase.h"
+#include "StandardGameState.h"
+#include "StandardGameMode.h"
+#include "StandardModePlayerController.h"
+#include "StandardModePlayerCharacter.h"
+#include "StandardModeAIController.h"
 
 AStandardPlayerState::AStandardPlayerState(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -18,6 +23,11 @@ void AStandardPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AStandardPlayerState, CardInfoList);
+	DOREPLIFETIME(AStandardPlayerState, MaxUseNum);
+	DOREPLIFETIME(AStandardPlayerState, UsedCardNum);
+	DOREPLIFETIME(AStandardPlayerState, CardGainPerRounds);
+	DOREPLIFETIME(AStandardPlayerState, bAlive);
+	DOREPLIFETIME(AStandardPlayerState, PlayerStatisticArray);
 }
 
 void AStandardPlayerState::OnRep_PlayerName()
@@ -94,6 +104,98 @@ void AStandardPlayerState::SetAlive(bool bIsAlive)
 	}
 
 	bAlive = bIsAlive;
+}
+
+void AStandardPlayerState::RegisterPlayersForRelation()
+{
+	if (GetNetMode() == NM_Client)
+	{
+		UE_LOG(LogDogFight, Error, TEXT("Cannot register players on client side."));
+		return;
+	}
+
+	AStandardGameState* StandardGameState = GetWorld()->GetGameState<AStandardGameState>();
+	if (StandardGameState == nullptr)
+	{
+		UE_LOG(LogDogFight, Error, TEXT("Failed to get GameState"));
+		return;
+	}
+
+	for (APlayerState* TargetPlayerState : StandardGameState->PlayerArray)
+	{
+		// Skip myself
+		if (TargetPlayerState->GetPlayerId() == GetPlayerId())
+		{
+			continue;
+		}
+
+		AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode());
+		if (StandardGameMode == nullptr)
+		{
+			UE_LOG(LogDogFight, Error, TEXT("Failed to get GameMode."));
+			return;
+		}
+
+		const int32 TargetPlayerId = TargetPlayerState->GetPlayerId();
+		int32 CurrentHealth = 0;
+
+		if (TargetPlayerState->IsABot())
+		{
+			AStandardModeAIController* AIController = StandardGameMode->GetAIControllerById(TargetPlayerId);
+			CurrentHealth = AIController->GetCharacterPawn()->GetCurrentHealth();
+		}
+		else
+		{
+			AStandardModePlayerController* PlayerController = StandardGameMode->GetPlayerControllerById(TargetPlayerId);
+			CurrentHealth = PlayerController->GetCharacterPawn()->GetCurrentHealth();
+		}
+
+		const FPlayerRelationStatistic PlayerRelationStatistic{TargetPlayerId, TargetPlayerState->IsABot(), 0, 0, CurrentHealth};
+		PlayerStatisticArray.Add(PlayerRelationStatistic);
+	}
+}
+
+bool AStandardPlayerState::GetPlayerRelationStatistic(int32 TargetPlayerId, FPlayerRelationStatistic** PlayerRelationStatistic)
+{
+	bool bFound = false;
+	int32 Index = -1;
+	for (int32 i = 0; i < PlayerStatisticArray.Num(); ++i)
+	{
+		if (PlayerStatisticArray[i].PlayerId == TargetPlayerId)
+		{
+			bFound = true;
+			Index = i;
+			break;
+		}
+	}
+
+	if (bFound)
+	{
+		*PlayerRelationStatistic = &PlayerStatisticArray[Index];
+	}
+
+	return bFound;
+}
+
+void AStandardPlayerState::RecordReceivedDamage(int32 SourcePlayerId, float Damage)
+{
+	FPlayerRelationStatistic* TargetStatistic = nullptr;
+	if (GetPlayerRelationStatistic(SourcePlayerId, &TargetStatistic))
+	{
+		TargetStatistic->ReceiveDamage += (int32)Damage;
+
+		// Modify relation point
+		TargetStatistic->RelationPoint -= (int32)Damage;
+	}
+}
+
+void AStandardPlayerState::ModifyPlayerHealth(int32 TargetPlayerId, int32 NewHealth)
+{
+	FPlayerRelationStatistic* TargetStatistic = nullptr;
+	if (GetPlayerRelationStatistic(TargetPlayerId, &TargetStatistic))
+	{
+		TargetStatistic->CurrentHealth = NewHealth;
+	}
 }
 
 void AStandardPlayerState::OnRep_CardInfoList()

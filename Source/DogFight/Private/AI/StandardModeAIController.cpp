@@ -2,16 +2,21 @@
 
 
 #include "StandardModeAIController.h"
+
+#include "AIType.h"
 #include "DogFight.h"
 #include "StandardGameMode.h"
 #include "GameFramework/PlayerState.h"
 #include "StandardGameMode.h"
 #include "StandardPlayerState.h"
+#include "StandardModePlayerController.h"
 #include "StandardModePlayerCharacter.h"
 #include "NavigationSystem.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BrainComponent.h"
+#include "CardBase.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
 
 namespace EStandardModeAIControllerState
 {
@@ -42,6 +47,9 @@ void AStandardModeAIController::InitPlayerState()
 		return;
 	}
 
+	// Mark as AI
+	MyPlayerState->SetIsABot(true);
+
 	// Register this controller to current GameMode
 	UWorld* World = GetWorld();
 	AStandardGameMode* StandardGameMode = World ? Cast<AStandardGameMode>(World->GetAuthGameMode()) : nullptr;
@@ -69,8 +77,10 @@ void AStandardModeAIController::InitPlayerState()
 		
 		CharacterPawn = World->SpawnActor<AStandardModePlayerCharacter>(CharacterPawnClass, StartPoint, RootComponent->GetComponentRotation());
 		UE_LOG(LogDogFight, Display, TEXT("Spawn AI pawn at %s"), *StartPoint.ToString());
+		CharacterPawn->SetPlayerState(PlayerState);
 		CharacterPawn->SetUnitName(MyPlayerState->GetPlayerName());
 		CharacterPawn->OnCharacterDead.AddDynamic(this, &AStandardModeAIController::OnCharacterPawnDead);
+		CharacterPawn->OnCharacterHealthChanged.AddDynamic(this, &AStandardModeAIController::OnHealthChanged);
 	}
 }
 
@@ -154,6 +164,174 @@ void AStandardModeAIController::UseRandomCard()
 	}
 }
 
+bool AStandardModeAIController::UseCardByCategoryFlags(int32 CategoryFlags)
+{
+	// Check if there is card available
+	if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
+	{
+		if (StandardPlayerState->GetCurrentCardCount() > 0)
+		{
+			TArray<ACardBase*> CardInstanceList = StandardPlayerState->GetCardInstanceList();
+			bool bFound = false;
+			for (int32 Index = 0; Index < CardInstanceList.Num(); ++Index)
+			{
+				if (CardInstanceList[Index]->IsCardMatchCategoryFlags(CategoryFlags))
+				{
+					StandardPlayerState->CmdUseCardByIndex(Index);
+					bFound = true;
+					break;
+				}
+			}
+
+			if (bFound)
+			{
+				SetState(EStandardModeAIControllerState::UsingCard);
+				return true;
+			}
+		}
+	}
+
+	// Failed to use card will return false
+	return false;
+}
+
+AStandardModePlayerCharacter* AStandardModeAIController::AcquireTargetPlayerCharacter(int32 TargetFlags)
+{
+	if (TEST_PLAYER_FLAG(TargetFlags, EFindPlayerFlags::EFP_Self))
+	{
+		return CharacterPawn;
+	}
+
+	TArray<FPlayerRelationStatistic> PlayerRelationStatisticList;
+	if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
+	{
+		PlayerRelationStatisticList = StandardPlayerState->GetPlayerRelationStatisticList();
+	}
+	else
+	{
+		UE_LOG(LogDogFight, Error, TEXT("Failed to get StandardPlayerState."));
+		return nullptr;
+	}
+
+	if (TEST_PLAYER_FLAG(TargetFlags, EFindPlayerFlags::EFP_Enemy))
+	{
+		FilterForEnemyPlayer(PlayerRelationStatisticList);
+	}
+	else if (TEST_PLAYER_FLAG(TargetFlags, EFindPlayerFlags::EFP_Ally))
+	{
+		FilterForAllyPlayer(PlayerRelationStatisticList);
+	}
+
+	if (TEST_PLAYER_FLAG(TargetFlags, EFindPlayerFlags::EFP_Human))
+	{
+		FilterForHumanPlayer(PlayerRelationStatisticList);
+	}
+	else if (TEST_PLAYER_FLAG(TargetFlags, EFindPlayerFlags::EFP_AI))
+	{
+		FilterForAIPlayer(PlayerRelationStatisticList);
+	}
+
+	if (PlayerRelationStatisticList.Num() > 0)
+	{
+		FPlayerRelationStatistic const * TargetPlayerStatistic = &PlayerRelationStatisticList[0];
+		AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode());
+		if (TargetPlayerStatistic->IsAIPlayer)
+		{
+			AStandardModeAIController* AIController = StandardGameMode->GetAIControllerById(TargetPlayerStatistic->PlayerId);
+
+			UBrainComponent* MyBrainComponent = GetBrainComponent();
+			MyBrainComponent->GetBlackboardComponent()->SetValue<UBlackboardKeyType_Object>(FName(TEXT("TargetCharacter")), AIController->GetCharacterPawn());
+			return AIController->GetCharacterPawn();
+		}
+		else
+		{
+			AStandardModePlayerController* PlayerController = StandardGameMode->GetPlayerControllerById(TargetPlayerStatistic->PlayerId);
+			return PlayerController->GetCharacterPawn();
+		}
+	}
+
+	return nullptr;
+}
+
+void AStandardModeAIController::FilterForEnemyPlayer(TArray<FPlayerRelationStatistic>& ResultArray)
+{
+	// Sort player with ascending order based on RelationPoint
+	ResultArray.Sort([](const FPlayerRelationStatistic& PlayerA, const FPlayerRelationStatistic& PlayerB)
+	{
+		return PlayerA.RelationPoint < PlayerB.RelationPoint;
+	});
+
+	// Filter out players do not meet requirement
+	for (int32 Index = ResultArray.Num() - 1; Index >= 0; --Index)
+	{
+		if (ResultArray[Index].RelationPoint > 0)
+		{
+			ResultArray.RemoveAt(Index);
+		}
+		else
+		{
+			// Stop loop since the array is sorted and no need to check other player
+			break;
+		}
+	}
+}
+
+void AStandardModeAIController::FilterForAllyPlayer(TArray<FPlayerRelationStatistic>& ResultArray)
+{
+	// Sort player with descending order based on RelationPoint
+	ResultArray.Sort([](const FPlayerRelationStatistic& PlayerA, const FPlayerRelationStatistic& PlayerB)
+	{
+		return PlayerA.RelationPoint > PlayerB.RelationPoint;
+	});
+
+	// Filter out players do not meet requirement
+	for (int32 Index = ResultArray.Num() - 1; Index >= 0; --Index)
+	{
+		if (ResultArray[Index].RelationPoint < 0)
+		{
+			ResultArray.RemoveAt(Index);
+		}
+		else
+		{
+			break;
+		}
+	}
+}
+
+void AStandardModeAIController::FilterForHumanPlayer(TArray<FPlayerRelationStatistic>& ResultArray)
+{
+	TArray<int32> FilterOutIndex;
+	for (int32 Index = ResultArray.Num() - 1; Index >= 0; --Index)
+	{
+		if (ResultArray[Index].IsAIPlayer)
+		{
+			FilterOutIndex.Add(Index);
+		}
+	}
+
+	for (int32 Index : FilterOutIndex)
+	{
+		ResultArray.RemoveAt(Index);
+	}
+}
+
+void AStandardModeAIController::FilterForAIPlayer(TArray<FPlayerRelationStatistic>& ResultArray)
+{
+	TArray<int32> FilterOutIndex;
+	for (int32 Index = ResultArray.Num() - 1; Index >= 0; --Index)
+	{
+		if (!ResultArray[Index].IsAIPlayer)
+		{
+			FilterOutIndex.Add(Index);
+		}
+	}
+
+	for (int32 Index : FilterOutIndex)
+	{
+		ResultArray.RemoveAt(Index);
+	}
+}
+
 void AStandardModeAIController::SetState(FName NewState)
 {
 	if (CurrentState == NewState)
@@ -167,6 +345,25 @@ void AStandardModeAIController::SetState(FName NewState)
 
 void AStandardModeAIController::RequestActorTarget()
 {
+	// Use target pawn if it's already specified
+	if (TargetCharacterPawn != nullptr)
+	{
+		FCardInstructionTargetInfo NewTargetInfo;
+		NewTargetInfo.ActorPtr = TargetCharacterPawn;
+		NewTargetInfo.TargetType = ECardInstructionTargetType::Actor;
+
+		OnCardTargetInfoAcquired.Broadcast(NewTargetInfo);
+
+		// Let character facing target
+		const FVector AimingDirection = TargetCharacterPawn->GetActorLocation() - CharacterPawn->GetActorLocation();
+		if (AimingDirection.Size() > 0.01f)
+		{
+			CharacterPawn->SetAimingDirection(AimingDirection);
+		}
+
+		return;
+	}
+
 	AController* TargetController = nullptr;
 	AGameModeBase* GameModeBase = GetWorld()->GetAuthGameMode();
 	if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GameModeBase))
@@ -244,6 +441,14 @@ void AStandardModeAIController::OnCharacterPawnDead()
 
 		StandardPlayerState->SetAlive(false);
 		OnAIPlayerDead.Broadcast(StandardPlayerState->GetPlayerId());
+	}
+}
+
+void AStandardModeAIController::OnHealthChanged(int32 NewHealth)
+{
+	if (APlayerState* MyPlayerState = GetPlayerState<APlayerState>())
+	{
+		OnPlayerHealthChanged.Broadcast(MyPlayerState->GetPlayerId(), NewHealth);
 	}
 }
 

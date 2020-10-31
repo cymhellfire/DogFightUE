@@ -170,6 +170,9 @@ void AStandardModePlayerCharacter::OnRep_CurrentHealth()
 		Dead();
 	}
 
+	// Invoke delegate
+	OnCharacterHealthChanged.Broadcast(CurrentHealth);
+
 	// Invoke Blueprint implementation
 	CurrentHealthChanged(CurrentHealth);
 }
