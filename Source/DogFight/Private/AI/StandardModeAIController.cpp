@@ -222,6 +222,15 @@ AStandardModePlayerCharacter* AStandardModeAIController::AcquireTargetPlayerChar
 		FilterForAllyPlayer(PlayerRelationStatisticList);
 	}
 
+	if (TEST_PLAYER_FLAG(TargetFlags, EFindPlayerFlags::EFP_Alive))
+	{
+		FilterForAlivePlayer(PlayerRelationStatisticList);
+	}
+	else if (TEST_PLAYER_FLAG(TargetFlags, EFindPlayerFlags::EFP_Dead))
+	{
+		FilterForDeadPlayer(PlayerRelationStatisticList);
+	}
+
 	if (TEST_PLAYER_FLAG(TargetFlags, EFindPlayerFlags::EFP_Human))
 	{
 		FilterForHumanPlayer(PlayerRelationStatisticList);
@@ -321,6 +330,40 @@ void AStandardModeAIController::FilterForAIPlayer(TArray<FPlayerRelationStatisti
 	for (int32 Index = ResultArray.Num() - 1; Index >= 0; --Index)
 	{
 		if (!ResultArray[Index].IsAIPlayer)
+		{
+			FilterOutIndex.Add(Index);
+		}
+	}
+
+	for (int32 Index : FilterOutIndex)
+	{
+		ResultArray.RemoveAt(Index);
+	}
+}
+
+void AStandardModeAIController::FilterForAlivePlayer(TArray<FPlayerRelationStatistic>& ResultArray)
+{
+	TArray<int32> FilterOutIndex;
+	for (int32 Index = ResultArray.Num() - 1; Index >= 0; --Index)
+	{
+		if (ResultArray[Index].CurrentHealth <= 0)
+		{
+			FilterOutIndex.Add(Index);
+		}
+	}
+
+	for (int32 Index : FilterOutIndex)
+	{
+		ResultArray.RemoveAt(Index);
+	}
+}
+
+void AStandardModeAIController::FilterForDeadPlayer(TArray<FPlayerRelationStatistic>& ResultArray)
+{
+	TArray<int32> FilterOutIndex;
+	for (int32 Index = ResultArray.Num() - 1; Index >= 0; --Index)
+	{
+		if (ResultArray[Index].CurrentHealth > 0)
 		{
 			FilterOutIndex.Add(Index);
 		}

@@ -30,4 +30,6 @@ enum class EFindPlayerFlags
 	EFP_Self			UMETA(DisplayName = "Self"),
 	EFP_Human			UMETA(DisplayName = "HumanPlayer"),
 	EFP_AI				UMETA(DisplayName = "AIPlayer"),
+	EFP_Alive			UMETA(DisplayName = "Alive"),
+	EFP_Dead			UMETA(DisplayName = "Dead")
 };

@@ -692,6 +692,14 @@ void AStandardModePlayerController::ExecSetPhysicalArmor(int32 NewArmor)
 	CmdSetPhysicalArmor(NewArmor);
 }
 
+void AStandardModePlayerController::ExecSetRagdoll(bool bActive)
+{
+	if (CharacterPawn == nullptr)
+		return;
+
+	CharacterPawn->SetPhysicalAnimationActive(bActive);
+}
+
 void AStandardModePlayerController::CmdMoveToMouseCursor_Implementation(FVector Destination)
 {
 	if (CharacterPawn == nullptr)

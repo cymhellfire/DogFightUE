@@ -11,6 +11,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/WidgetComponent.h"
 #include "ReceiveDamageComponent.h"
+#include "PhysicsEngine/PhysicalAnimationComponent.h"
 
 // Sets default values
 AStandardModePlayerCharacter::AStandardModePlayerCharacter()
@@ -53,6 +54,9 @@ AStandardModePlayerCharacter::AStandardModePlayerCharacter()
 	ReceiveDamageComponent = CreateDefaultSubobject<UReceiveDamageComponent>("ReceiveDamageComponent");
 	ReceiveDamageComponent->SetIsReplicated(true);
 
+	// Create PhysicalAnimationComponent
+	PhysicalAnimationComponent = CreateDefaultSubobject<UPhysicalAnimationComponent>("PhysicalAnimationComponent");
+
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
@@ -64,6 +68,12 @@ AStandardModePlayerCharacter::AStandardModePlayerCharacter()
 	AimingApproximateAngle = 1.f;
 	AimingRotateSpeed = 90.f;
 	bAlive = true;
+	PhysicalAnimationBlendSpeed = 0.5f;
+	PhysicalAnimationBlendInterval = 0.05f;
+
+	FollowBoneName = FName(TEXT("pelvis"));
+	RagdollFloorDetectHeight = 100.f;
+	bRagdoll = false;
 }
 
 void AStandardModePlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const
@@ -156,6 +166,11 @@ void AStandardModePlayerCharacter::BeginPlay()
 		CurrentHealth = MaxBaseHealth;
 		OnRep_CurrentHealth();
 	}
+
+	// Setup the physical animation component
+	USkeletalMeshComponent* SkeletalMeshComponent = GetMesh();
+	PhysicalAnimationComponent->SetSkeletalMeshComponent(SkeletalMeshComponent);
+	SkeletalMeshOffset = SkeletalMeshComponent->GetRelativeLocation();
 }
 
 void AStandardModePlayerCharacter::OnRep_UnitName()
@@ -180,6 +195,9 @@ void AStandardModePlayerCharacter::OnRep_CurrentHealth()
 void AStandardModePlayerCharacter::Dead()
 {
 	bAlive = false;
+
+	// Enable physical animation
+	SetPhysicalAnimationActive(true);
 
 	OnCharacterDead.Broadcast();
 }
@@ -239,6 +257,22 @@ void AStandardModePlayerCharacter::Tick(float DeltaTime)
 			AimingState = 0;
 		}
 		SetActorRotation(CurrentRotation);
+	}
+
+	// Synchronize capsule and target bone position
+	if (bRagdoll)
+	{
+		const USkeletalMeshComponent* SkeletalMeshComponent = GetMesh();
+		FVector BonePosition = SkeletalMeshComponent->GetBoneLocation(FollowBoneName);
+		FHitResult TraceResult;
+		FVector FloorDetectOffset(0, 0, RagdollFloorDetectHeight);
+		if (GetWorld()->LineTraceSingleByProfile(TraceResult, BonePosition + FloorDetectOffset,
+			BonePosition - FloorDetectOffset, FName(TEXT("Pawn"))))
+		{
+			GetCapsuleComponent()->SetWorldLocation(TraceResult.Location - SkeletalMeshOffset);
+
+			DrawDebugLine(GetWorld(), BonePosition + FloorDetectOffset, TraceResult.Location, FColor::Yellow);
+		}
 	}
 }
 
@@ -308,6 +342,63 @@ void AStandardModePlayerCharacter::SetAimingDirection(FVector NewDirection)
 	{
 		// Count clockwise
 		AimingState = 2;
+	}
+}
+
+void AStandardModePlayerCharacter::SetPhysicalAnimationActive(bool bActive)
+{
+	if (PhysicalAnimationComponent == nullptr)
+		return;
+
+	if (bActive)
+	{
+		bRagdoll = true;
+		// Disable capsule collision
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		// Enable Physical Animation
+		PhysicalAnimationComponent->SetStrengthMultiplyer(1);
+		USkeletalMeshComponent* MeshComponent = GetMesh();
+		MeshComponent->Stop();
+		MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		MeshComponent->SetAllBodiesSimulatePhysics(true);
+		MeshComponent->SetAllBodiesPhysicsBlendWeight(1.f);
+	}
+	else
+	{
+		if (!PhysicalAnimationBlendingHandle.IsValid())
+		{
+			CurrentPhysicalAnimationStrengthMultiplier = 0;
+			GetWorldTimerManager().SetTimer(PhysicalAnimationBlendingHandle, this,
+				&AStandardModePlayerCharacter::PhysicalAnimationDisableTick, PhysicalAnimationBlendInterval, true);
+
+			// Start play animation
+			GetMesh()->Play(true);
+		}
+	}
+}
+
+void AStandardModePlayerCharacter::PhysicalAnimationDisableTick()
+{
+	const float MultiplierDelta = PhysicalAnimationBlendInterval * PhysicalAnimationBlendSpeed;
+	CurrentPhysicalAnimationStrengthMultiplier = FMath::Clamp(CurrentPhysicalAnimationStrengthMultiplier + MultiplierDelta, 0.f, 1.f);
+	PhysicalAnimationComponent->SetStrengthMultiplyer(CurrentPhysicalAnimationStrengthMultiplier);
+
+	if (CurrentPhysicalAnimationStrengthMultiplier >= 1.f)
+	{
+		GetWorldTimerManager().ClearTimer(PhysicalAnimationBlendingHandle);
+		PhysicalAnimationBlendingHandle.Invalidate();
+
+		// Enable the capsule collision
+		GetCapsuleComponent()->SetCollisionProfileName(FName(TEXT("Pawn")));
+
+		// Disable Physical Animation
+		USkeletalMeshComponent* MeshComponent = GetMesh();
+		MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		MeshComponent->SetAllBodiesSimulatePhysics(false);
+		MeshComponent->SetAllBodiesPhysicsBlendWeight(0);
+
+		bRagdoll = false;
 	}
 }
 

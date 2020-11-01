@@ -46,6 +46,9 @@ protected:
 
 	void Dead();
 
+	UFUNCTION()
+	void PhysicalAnimationDisableTick();
+
 public:
 	/** Set name for this unit. */
 	void SetUnitName(const FString& NewName);
@@ -79,9 +82,28 @@ public:
 
 	int32 GetCurrentHealth() const { return CurrentHealth; }
 
+	void SetPhysicalAnimationActive(bool bActive);
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Unit", meta=(ExposeFunctionCategories = "ReceiveDamageComponent", AllowPrivateAccess = "true"))
 	UReceiveDamageComponent* ReceiveDamageComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Animation")
+	class UPhysicalAnimationComponent* PhysicalAnimationComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Animation")
+	float PhysicalAnimationBlendSpeed;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Animation")
+	float PhysicalAnimationBlendInterval;
+
+	/** The target bone to follow during ragdoll activate. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Animation")
+	FName FollowBoneName;
+
+	/** The maximum height to detect ground when ragdoll activate. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Animation")
+	float RagdollFloorDetectHeight;
 
 private:
 	/** Current unit name. */
@@ -115,4 +137,13 @@ private:
 	/** Rotating speed while aiming. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character", meta=(AllowPrivateAccess="true"))
 	float AimingRotateSpeed;
+
+	FTimerHandle PhysicalAnimationBlendingHandle;
+
+	float CurrentPhysicalAnimationStrengthMultiplier;
+
+	/** The initial local position of SkeletalMesh component. */
+	FVector SkeletalMeshOffset;
+
+	bool bRagdoll;
 };

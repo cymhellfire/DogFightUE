@@ -107,6 +107,10 @@ protected:
 
 	void FilterForAIPlayer(TArray<struct FPlayerRelationStatistic>& ResultArray);
 
+	void FilterForAlivePlayer(TArray<struct FPlayerRelationStatistic>& ResultArray);
+
+	void FilterForDeadPlayer(TArray<struct FPlayerRelationStatistic>& ResultArray);
+
 public:
 	UPROPERTY(Category="AIController", EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<AStandardModePlayerCharacter> CharacterPawnClass;

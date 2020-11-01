@@ -214,5 +214,8 @@ public:
 
 	UFUNCTION(Exec)
 	void ExecSetPhysicalArmor(int32 NewArmor);
+
+	UFUNCTION(Exec)
+	void ExecSetRagdoll(bool bActive);
 #pragma endregion DebugCommand
 };
