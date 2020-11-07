@@ -697,7 +697,7 @@ void AStandardModePlayerController::ExecSetRagdoll(bool bActive)
 	if (CharacterPawn == nullptr)
 		return;
 
-	CharacterPawn->SetPhysicalAnimationActive(bActive);
+	CharacterPawn->SetRagdollActive(bActive);
 }
 
 void AStandardModePlayerController::CmdMoveToMouseCursor_Implementation(FVector Destination)

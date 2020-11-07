@@ -11,7 +11,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/WidgetComponent.h"
 #include "ReceiveDamageComponent.h"
-#include "PhysicsEngine/PhysicalAnimationComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 AStandardModePlayerCharacter::AStandardModePlayerCharacter()
@@ -54,9 +54,6 @@ AStandardModePlayerCharacter::AStandardModePlayerCharacter()
 	ReceiveDamageComponent = CreateDefaultSubobject<UReceiveDamageComponent>("ReceiveDamageComponent");
 	ReceiveDamageComponent->SetIsReplicated(true);
 
-	// Create PhysicalAnimationComponent
-	PhysicalAnimationComponent = CreateDefaultSubobject<UPhysicalAnimationComponent>("PhysicalAnimationComponent");
-
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
@@ -68,12 +65,11 @@ AStandardModePlayerCharacter::AStandardModePlayerCharacter()
 	AimingApproximateAngle = 1.f;
 	AimingRotateSpeed = 90.f;
 	bAlive = true;
-	PhysicalAnimationBlendSpeed = 0.5f;
-	PhysicalAnimationBlendInterval = 0.05f;
 
 	FollowBoneName = FName(TEXT("pelvis"));
 	RagdollFloorDetectHeight = 100.f;
 	bRagdoll = false;
+	PoseSlotName = FName(TEXT("RagdollFinalPose"));
 }
 
 void AStandardModePlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const
@@ -169,7 +165,6 @@ void AStandardModePlayerCharacter::BeginPlay()
 
 	// Setup the physical animation component
 	USkeletalMeshComponent* SkeletalMeshComponent = GetMesh();
-	PhysicalAnimationComponent->SetSkeletalMeshComponent(SkeletalMeshComponent);
 	SkeletalMeshOffset = SkeletalMeshComponent->GetRelativeLocation();
 }
 
@@ -197,7 +192,7 @@ void AStandardModePlayerCharacter::Dead()
 	bAlive = false;
 
 	// Enable physical animation
-	SetPhysicalAnimationActive(true);
+	SetRagdollActive(true);
 
 	OnCharacterDead.Broadcast();
 }
@@ -266,12 +261,16 @@ void AStandardModePlayerCharacter::Tick(float DeltaTime)
 		FVector BonePosition = SkeletalMeshComponent->GetBoneLocation(FollowBoneName);
 		FHitResult TraceResult;
 		FVector FloorDetectOffset(0, 0, RagdollFloorDetectHeight);
-		if (GetWorld()->LineTraceSingleByProfile(TraceResult, BonePosition + FloorDetectOffset,
-			BonePosition - FloorDetectOffset, FName(TEXT("Pawn"))))
+		if (GetWorld()->LineTraceSingleByChannel(TraceResult, BonePosition,
+			BonePosition - FloorDetectOffset, ECollisionChannel::ECC_Visibility))
 		{
 			GetCapsuleComponent()->SetWorldLocation(TraceResult.Location - SkeletalMeshOffset);
 
 			DrawDebugLine(GetWorld(), BonePosition + FloorDetectOffset, TraceResult.Location, FColor::Yellow);
+		}
+		else
+		{
+			GetCapsuleComponent()->SetWorldLocation(BonePosition);
 		}
 	}
 }
@@ -345,11 +344,9 @@ void AStandardModePlayerCharacter::SetAimingDirection(FVector NewDirection)
 	}
 }
 
-void AStandardModePlayerCharacter::SetPhysicalAnimationActive(bool bActive)
+#pragma region Ragdoll
+void AStandardModePlayerCharacter::SetRagdollActive(bool bActive)
 {
-	if (PhysicalAnimationComponent == nullptr)
-		return;
-
 	if (bActive)
 	{
 		bRagdoll = true;
@@ -357,48 +354,69 @@ void AStandardModePlayerCharacter::SetPhysicalAnimationActive(bool bActive)
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 		// Enable Physical Animation
-		PhysicalAnimationComponent->SetStrengthMultiplyer(1);
 		USkeletalMeshComponent* MeshComponent = GetMesh();
-		MeshComponent->Stop();
-		MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		MeshComponent->SetAllBodiesSimulatePhysics(true);
-		MeshComponent->SetAllBodiesPhysicsBlendWeight(1.f);
+		MeshComponent->SetSimulatePhysics(true);
+		MeshComponent->SetConstraintProfileForAll(FName(TEXT("ragdoll")));
+
+		K2_OnRagdollEnabled();
 	}
 	else
 	{
-		if (!PhysicalAnimationBlendingHandle.IsValid())
-		{
-			CurrentPhysicalAnimationStrengthMultiplier = 0;
-			GetWorldTimerManager().SetTimer(PhysicalAnimationBlendingHandle, this,
-				&AStandardModePlayerCharacter::PhysicalAnimationDisableTick, PhysicalAnimationBlendInterval, true);
-
-			// Start play animation
-			GetMesh()->Play(true);
-		}
+		PreCacheRagdollPose();
 	}
 }
 
-void AStandardModePlayerCharacter::PhysicalAnimationDisableTick()
+void AStandardModePlayerCharacter::PreCacheRagdollPose()
 {
-	const float MultiplierDelta = PhysicalAnimationBlendInterval * PhysicalAnimationBlendSpeed;
-	CurrentPhysicalAnimationStrengthMultiplier = FMath::Clamp(CurrentPhysicalAnimationStrengthMultiplier + MultiplierDelta, 0.f, 1.f);
-	PhysicalAnimationComponent->SetStrengthMultiplyer(CurrentPhysicalAnimationStrengthMultiplier);
+	USkeletalMeshComponent* MeshComponent = GetMesh();
+	const FQuat BoneRot = MeshComponent->GetBoneQuaternion(FName(TEXT("pelvis")));
+	const float DirNum = FVector::DotProduct(BoneRot.GetRightVector(), FVector::UpVector);
+	bRagdollFacingUp = DirNum > 0.f;
 
-	if (CurrentPhysicalAnimationStrengthMultiplier >= 1.f)
-	{
-		GetWorldTimerManager().ClearTimer(PhysicalAnimationBlendingHandle);
-		PhysicalAnimationBlendingHandle.Invalidate();
-
-		// Enable the capsule collision
-		GetCapsuleComponent()->SetCollisionProfileName(FName(TEXT("Pawn")));
-
-		// Disable Physical Animation
-		USkeletalMeshComponent* MeshComponent = GetMesh();
-		MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		MeshComponent->SetAllBodiesSimulatePhysics(false);
-		MeshComponent->SetAllBodiesPhysicsBlendWeight(0);
-
-		bRagdoll = false;
-	}
+	SynchronizeOrientationWithRagdoll(bRagdollFacingUp);
+	GetWorldTimerManager().SetTimer(RagdollRecoverTimerHandle, this, &AStandardModePlayerCharacter::DoCacheRagdollPose, 0.03f);
 }
 
+void AStandardModePlayerCharacter::DoCacheRagdollPose()
+{
+	USkeletalMeshComponent* MeshComponent = GetMesh();
+	UAnimInstance* AnimInstance = MeshComponent->GetAnimInstance();
+	if (AnimInstance != nullptr)
+	{
+		AnimInstance->SavePoseSnapshot(PoseSlotName);
+	}
+
+	// Invoke Blueprint event
+	K2_OnCacheRagdollPose();
+
+	GetWorldTimerManager().SetTimer(RagdollRecoverTimerHandle, this, &AStandardModePlayerCharacter::PostCacheRagdollPose, 0.2f);
+}
+
+void AStandardModePlayerCharacter::PostCacheRagdollPose()
+{
+	USkeletalMeshComponent* MeshComponent = GetMesh();
+	MeshComponent->SetSimulatePhysics(false);
+	UAnimInstance* AnimInstance = MeshComponent->GetAnimInstance();
+	float Result = AnimInstance->Montage_Play(bRagdollFacingUp ? GetUpFromFaceMontage : GetUpFromBackMontage);
+	if (Result == 0.f)
+	{
+		UE_LOG(LogActor, Error, TEXT("Failed to play get up animation montage."));
+	}
+
+	GetCapsuleComponent()->SetCollisionProfileName(FName(TEXT("Pawn")));
+	bRagdoll = false;
+
+	// Invoke Blueprint event
+	K2_OnPostCacheRagdollPose();
+}
+
+void AStandardModePlayerCharacter::SynchronizeOrientationWithRagdoll(bool bIsFacingUp)
+{
+	USkeletalMeshComponent* MeshComponent = GetMesh();
+	FVector HeadBoneLoc = MeshComponent->GetBoneLocation(NeckBoneName);
+	FVector PelvisBoneLoc = MeshComponent->GetBoneLocation(PelvisBoneName);
+	FVector Direction = bIsFacingUp ? PelvisBoneLoc - HeadBoneLoc : HeadBoneLoc - PelvisBoneLoc;
+	FRotator NewRotator = UKismetMathLibrary::MakeRotFromZX(FVector::UpVector, Direction);
+	GetCapsuleComponent()->SetWorldRotation(NewRotator);
+}
+#pragma endregion Ragdoll

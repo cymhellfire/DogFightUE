@@ -30,3 +30,19 @@ void AVfxBase::BeginPlay()
 	// Auto play audio clip as default
 	AudioComponent->Play();
 }
+
+void AVfxBase::SetTargetActor(AActor* Target)
+{
+	check(Target);
+
+	// Check attach socket
+	if (SocketName.IsNone())
+	{
+		SetActorLocation(Target->GetActorLocation());
+	}
+	else
+	{
+		AttachToActor(Target, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
+	}
+}
+

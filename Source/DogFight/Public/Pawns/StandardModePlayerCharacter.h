@@ -46,8 +46,23 @@ protected:
 
 	void Dead();
 
-	UFUNCTION()
-	void PhysicalAnimationDisableTick();
+	/** Synchronize capsule component with ragdoll orientation. */
+	void SynchronizeOrientationWithRagdoll(bool bIsFacingUp);
+
+	void PreCacheRagdollPose();
+
+	void DoCacheRagdollPose();
+
+	void PostCacheRagdollPose();
+
+	UFUNCTION(BlueprintImplementableEvent, Category="Animation", meta=(DisplayName = "OnRagdollEnabled"))
+    void K2_OnRagdollEnabled();
+
+	UFUNCTION(BlueprintImplementableEvent, Category="Animation", meta=(DisplayName = "OnCacheRagdollPose"))
+	void K2_OnCacheRagdollPose();
+
+	UFUNCTION(BlueprintImplementableEvent, Category="Animation", meta=(DisplayName = "OnPostCacheRagdollPose"))
+	void K2_OnPostCacheRagdollPose();
 
 public:
 	/** Set name for this unit. */
@@ -82,20 +97,12 @@ public:
 
 	int32 GetCurrentHealth() const { return CurrentHealth; }
 
-	void SetPhysicalAnimationActive(bool bActive);
+	UFUNCTION(BlueprintCallable, Category="Animation")
+	void SetRagdollActive(bool bActive);
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Unit", meta=(ExposeFunctionCategories = "ReceiveDamageComponent", AllowPrivateAccess = "true"))
 	UReceiveDamageComponent* ReceiveDamageComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Animation")
-	class UPhysicalAnimationComponent* PhysicalAnimationComponent;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Animation")
-	float PhysicalAnimationBlendSpeed;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Animation")
-	float PhysicalAnimationBlendInterval;
 
 	/** The target bone to follow during ragdoll activate. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Animation")
@@ -104,6 +111,21 @@ protected:
 	/** The maximum height to detect ground when ragdoll activate. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Animation")
 	float RagdollFloorDetectHeight;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Animation")
+	FName PoseSlotName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Animation")
+	FName NeckBoneName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Animation")
+	FName PelvisBoneName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Animation")
+	UAnimMontage* GetUpFromFaceMontage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Animation")
+	UAnimMontage* GetUpFromBackMontage;
 
 private:
 	/** Current unit name. */
@@ -138,12 +160,12 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character", meta=(AllowPrivateAccess="true"))
 	float AimingRotateSpeed;
 
-	FTimerHandle PhysicalAnimationBlendingHandle;
-
-	float CurrentPhysicalAnimationStrengthMultiplier;
-
 	/** The initial local position of SkeletalMesh component. */
 	FVector SkeletalMeshOffset;
 
+	FTimerHandle RagdollRecoverTimerHandle;
+
 	bool bRagdoll;
+
+	bool bRagdollFacingUp;
 };

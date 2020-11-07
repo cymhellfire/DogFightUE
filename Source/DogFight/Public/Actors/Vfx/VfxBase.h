@@ -17,6 +17,8 @@ public:
 	// Sets default values for this actor's properties
 	AVfxBase();
 
+	void SetTargetActor(AActor* Target);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -28,6 +30,10 @@ public:
 	/** The lifetime of this VFX. (0 means infinite.) */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Vfx")
 	float Lifetime;
+
+	/** The target socket when this vfx attach to actor. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Vfx")
+	FName SocketName;
 
 protected:
 

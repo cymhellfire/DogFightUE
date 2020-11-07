@@ -53,10 +53,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Buff")
 	TSubclassOf<AVfxBase> VfxClass;
 
-	/** The target socket this vfx will attach to. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Buff")
-	FName VfxSocketName;
-
 protected:
 
 	/** Id of source player. */

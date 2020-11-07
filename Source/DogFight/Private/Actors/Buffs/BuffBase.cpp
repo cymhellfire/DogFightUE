@@ -95,15 +95,8 @@ void ABuffBase::ApplyBuff()
 	if (IsValid(VfxClass))
 	{
 		VfxActor = GetWorld()->SpawnActor<AVfxBase>(VfxClass);
-		// Set the vfx position, attach to socket if specified or just move to target actor location
-		if (!VfxSocketName.IsNone())
-		{
-			VfxActor->AttachToActor(TargetActor, FAttachmentTransformRules::SnapToTargetNotIncludingScale, VfxSocketName);
-		}
-		else
-		{
-			VfxActor->SetActorLocation(TargetActor->GetActorLocation());
-		}
+		// Set the vfx target actor
+		VfxActor->SetTargetActor(TargetActor);
 	}
 }
 
