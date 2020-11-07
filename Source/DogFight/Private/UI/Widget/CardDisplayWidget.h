@@ -51,6 +51,18 @@ protected:
 
 	void HandleSelectionChanged();
 
+	UFUNCTION(BlueprintCallable, Category="DogFight|UI")
+	FText GetCardNameTextByInfo(const FCardInstanceDisplayInfo& CardInfo) const
+	{
+		return CardInfo.GetCardNameText();
+	}
+
+	UFUNCTION(BlueprintCallable, Category="DogFight|UI")
+	FText GetCardDescriptionTextByInfo(const FCardInstanceDisplayInfo& CardInfo) const
+	{
+		return CardInfo.GetCardDescriptionText();
+	}
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="DogFight|CardDisplayWidget")
 	ECardSelectionMode CardSelectionMode;

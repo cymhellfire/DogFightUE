@@ -34,6 +34,7 @@ protected:
 
 	APawn* GetOwnerControlledPawn() const;
 
+public:
 	/** The class of projectile to spawn. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Instruction", meta=(MustImplement="GameProjectileInterface"))
 	TSubclassOf<AActor> ProjectileClass;
@@ -50,6 +51,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Instruction")
 	float ProjectileSpawnHeight;
 
+protected:
 	/** List of projectiles launched by this instruction. */
 	TArray<IGameProjectileInterface*> ProjectileInstanceList;
 };

@@ -31,7 +31,7 @@ public:
 	FOnCardCancelled OnCardCancelled;
 
 	// Sets default values for this actor's properties
-	ACardBase();
+	ACardBase(const FObjectInitializer& ObjectInitializer);
 
 	UFUNCTION(BlueprintCallable, Category="CustomizableCard|Card")
 	/** Start using this card. All the phases of this card will be executing in order. */
@@ -76,6 +76,7 @@ public:
 		OwnerPlayerController = PlayerController;
 	}
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="CustomizableCard|Card")
 	FCardInstanceDisplayInfo GetCardDisplayInfo();
 
 	/** Check if this card matches all given category flags. */
@@ -104,13 +105,14 @@ protected:
 	virtual void OnInstructionFinished(UCardInstructionBase* InstructionBase);
 
 public:
+
+protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="CustomizableCard")
 	FString CardName;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="CustomizableCard")
 	FString CardDescription;
 
-protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="CustomizableCard")
 	TArray<UCardInstructionBase*> InstructionQueue;
 

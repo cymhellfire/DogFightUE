@@ -7,7 +7,8 @@
 #include "InstructionWait.h"
 
 // Sets default values
-ACardBase::ACardBase()
+ACardBase::ACardBase(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
 {
  	// Turn off tick
 	PrimaryActorTick.bCanEverTick = false;
@@ -73,9 +74,11 @@ FCardInstructionTargetInfo ACardBase::GetTargetInfo(int32 Index)
 	return TargetInfoList[Index];
 }
 
-FCardInstanceDisplayInfo ACardBase::GetCardDisplayInfo()
+FCardInstanceDisplayInfo ACardBase::GetCardDisplayInfo_Implementation()
 {
-	FCardInstanceDisplayInfo Result {CardName,CardDescription};
+	FCardInstanceDisplayInfo Result;
+	Result.CardName = CardName;
+	Result.CardDescription = CardDescription;
 
 	return Result;
 }

@@ -2,6 +2,10 @@
 
 #include "CustomizableCardTypes.generated.h"
 
+#define ST_CARD_LOC				"/Game/DogFight/Localization/ST_Card.ST_Card"
+#define ST_PROJECTILE_LOC		"/Game/DogFight/Localization/ST_Projectile.ST_Projectile"
+#define ST_BUFF_LOC				"/Game/DogFight/Localization/ST_Buff.ST_Buff"
+
 UENUM(BlueprintType)
 enum class ECardInstructionExecuteType : uint8
 {
@@ -48,16 +52,55 @@ struct FCardInstructionTargetInfo
 	}
 };
 
+UENUM(BlueprintType)
+enum class ECardDisplayInfoLocType : uint8
+{
+	ILT_Card			UMETA(DisplayName="Card", ToolTip="Use localization from ST_Card file."),
+	ILT_Projectile		UMETA(DisplayName="Projectile", ToolTip="Use localization from ST_Projectile file."),
+	ILT_Buff			UMETA(DisplayName="Buff", ToolTip="Use localization from ST_Buff file."),
+	ILT_Raw				UMETA(DisplayName="Raw", ToolTip="Not use any localization."),
+};
+
 USTRUCT(BlueprintType)
 struct FCardDisplayInfoArgument
 {
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="CardDisplayArgument")
-	FColor DisplayColor;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="CardDisplayArgument")
+	FString DisplayStyle;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="CardDisplayArgument")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="CardDisplayArgument")
 	FString StringValue;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="CardDisplayArgument")
+	ECardDisplayInfoLocType LocalizeType;
+
+	FText GetLocalizedText() const
+	{
+		FFormatOrderedArguments FormatArgumentValues;
+		FormatArgumentValues.Add(FFormatArgumentValue(FText::FromString(FString::Printf(TEXT("<%s>"), *DisplayStyle))));
+		switch(LocalizeType)
+		{
+		case ECardDisplayInfoLocType::ILT_Card:
+			FormatArgumentValues.Add(FFormatArgumentValue(FText::FromStringTable(ST_CARD_LOC, StringValue)));
+			break;
+		case ECardDisplayInfoLocType::ILT_Projectile:
+			FormatArgumentValues.Add(FFormatArgumentValue(FText::FromStringTable(ST_PROJECTILE_LOC, StringValue)));
+			break;
+		case ECardDisplayInfoLocType::ILT_Buff:
+			FormatArgumentValues.Add(FFormatArgumentValue(FText::FromStringTable(ST_BUFF_LOC, StringValue)));
+			break;
+		case ECardDisplayInfoLocType::ILT_Raw:
+			FormatArgumentValues.Add(FFormatArgumentValue(FText::FromString(StringValue)));
+			break;
+		default:
+			FormatArgumentValues.Add(FFormatArgumentValue(FText::FromString(TEXT("Invalid Argument"))));
+			break;
+		}
+		FormatArgumentValues.Add(FFormatArgumentValue(FText::FromString(TEXT("</>"))));
+
+		return FText::Format(FText::FromStringTable(ST_CARD_LOC, TEXT("ArgumentFormatString")), FormatArgumentValues);
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -65,14 +108,39 @@ struct FCardInstanceDisplayInfo
 {
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="CardInstanceInfo")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="CardInstanceInfo")
 	FString CardName;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="CardInstanceInfo")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="CardInstanceInfo")
+	TArray<FCardDisplayInfoArgument> NameArguments;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="CardInstanceInfo")
 	FString CardDescription;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="CardInstanceInfo")
-	TArray<FCardDisplayInfoArgument> Arguments;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="CardInstanceInfo")
+	TArray<FCardDisplayInfoArgument> DescArguments;
+
+	FText GetCardNameText() const
+	{
+		FFormatOrderedArguments FormatArgumentValues;
+		for (FCardDisplayInfoArgument Argument : NameArguments)
+		{
+			FormatArgumentValues.Add(Argument.GetLocalizedText());
+		}
+
+		return FText::Format(FText::FromStringTable(ST_CARD_LOC, CardName), FormatArgumentValues);
+	}
+
+	FText GetCardDescriptionText() const
+	{
+		FFormatOrderedArguments FormatArgumentValues;
+		for (FCardDisplayInfoArgument Argument : DescArguments)
+		{
+			FormatArgumentValues.Add(Argument.GetLocalizedText());
+		}
+
+		return FText::Format(FText::FromStringTable(ST_CARD_LOC, CardDescription), FormatArgumentValues);
+	}
 };
 
 /** Test if all desired flags are toggled on. */
