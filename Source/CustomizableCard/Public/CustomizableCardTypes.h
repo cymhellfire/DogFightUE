@@ -59,6 +59,8 @@ enum class ECardDisplayInfoLocType : uint8
 	ILT_Projectile		UMETA(DisplayName="Projectile", ToolTip="Use localization from ST_Projectile file."),
 	ILT_Buff			UMETA(DisplayName="Buff", ToolTip="Use localization from ST_Buff file."),
 	ILT_Raw				UMETA(DisplayName="Raw", ToolTip="Not use any localization."),
+	ILT_RawNoStyle		UMETA(DisplayName="RawNoStyle", ToolTip="No localization and no style."),
+	ILT_Image			UMETA(DisplayName="Image", ToolTip="Use image defined in DT_RichTextImageSet."),
 };
 
 USTRUCT(BlueprintType)
@@ -77,6 +79,15 @@ struct FCardDisplayInfoArgument
 
 	FText GetLocalizedText() const
 	{
+		if (LocalizeType == ECardDisplayInfoLocType::ILT_Image)
+		{
+			return FText::FromString(FString::Printf(TEXT("<img id=\"%s\"/>"), *StringValue));
+		}
+		else if (LocalizeType == ECardDisplayInfoLocType::ILT_RawNoStyle)
+		{
+			return FText::FromString(StringValue);
+		}
+
 		FFormatOrderedArguments FormatArgumentValues;
 		FormatArgumentValues.Add(FFormatArgumentValue(FText::FromString(FString::Printf(TEXT("<%s>"), *DisplayStyle))));
 		switch(LocalizeType)
@@ -104,6 +115,67 @@ struct FCardDisplayInfoArgument
 };
 
 USTRUCT(BlueprintType)
+struct FCardDescriptionItemInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="CardDescriptionItem")
+	FString StringValue;
+
+	/** Arguments will be used by main string formatting. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="CardDescriptionItem")
+	TArray<FCardDisplayInfoArgument> Arguments;
+
+	/** Additional arguments which are not used by main string formatting. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="CardDescriptionItem")
+	TArray<FCardDisplayInfoArgument> ExtraArguments;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="CardDescriptionItem")
+	ECardDisplayInfoLocType LocalizeType;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="CardDescriptionItem")
+	UClass* ItemWidgetClass;
+
+	FText GetLocalizedText() const
+	{
+		FFormatOrderedArguments FormatArgumentValues;
+		for (FCardDisplayInfoArgument Argument : Arguments)
+		{
+			FormatArgumentValues.Add(Argument.GetLocalizedText());
+		}
+
+		switch (LocalizeType)
+		{
+		case ECardDisplayInfoLocType::ILT_Card:
+			return FText::Format(FText::FromStringTable(ST_CARD_LOC, StringValue), FormatArgumentValues);
+		case ECardDisplayInfoLocType::ILT_Projectile:
+			return FText::Format(FText::FromStringTable(ST_PROJECTILE_LOC, StringValue), FormatArgumentValues);
+		case ECardDisplayInfoLocType::ILT_Buff:
+			return FText::Format(FText::FromStringTable(ST_BUFF_LOC, StringValue), FormatArgumentValues);
+		case ECardDisplayInfoLocType::ILT_Raw:
+			return FText::Format(FText::FromString(StringValue), FormatArgumentValues);
+		case ECardDisplayInfoLocType::ILT_RawNoStyle:
+			return FText::FromString(StringValue);
+		case ECardDisplayInfoLocType::ILT_Image:
+			return FText::FromString(FString::Printf(TEXT("<img id=\"%s\"/>"), *StringValue));
+		default: ;
+		}
+
+		return FText();
+	}
+
+	FText GetLocalizedExtraArgumentText(int32 Index) const
+	{
+		if (Index >= 0 && Index < ExtraArguments.Num())
+		{
+			return ExtraArguments[Index].GetLocalizedText();
+		}
+
+		return FText();
+	}
+};
+
+USTRUCT(BlueprintType)
 struct FCardInstanceDisplayInfo
 {
 	GENERATED_BODY()
@@ -119,6 +191,9 @@ struct FCardInstanceDisplayInfo
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="CardInstanceInfo")
 	TArray<FCardDisplayInfoArgument> DescArguments;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="CardInstanceInfo")
+	TArray<FCardDescriptionItemInfo> DescExtraItems;
 
 	FText GetCardNameText() const
 	{
