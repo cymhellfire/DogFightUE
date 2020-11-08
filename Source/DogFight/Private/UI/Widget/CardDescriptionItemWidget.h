@@ -30,6 +30,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="DogFight|UI")
 	FText GetLocalizedExtraArgumentText(int32 Index) const;
 
+	UFUNCTION(BlueprintCallable, Category="DogFight|UI")
+	FUpgradablePropertyDisplayInfo GetPropertyDisplayInfo(FString PropertyName);
+
 protected:
 
 	FCardDescriptionItemInfo OwningItemInfo;

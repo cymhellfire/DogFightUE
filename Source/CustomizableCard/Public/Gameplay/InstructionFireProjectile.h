@@ -51,6 +51,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Instruction")
 	float ProjectileSpawnHeight;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Instruction")
+	FUpgradableIntProperty Damage;
+
 protected:
 	/** List of projectiles launched by this instruction. */
 	TArray<IGameProjectileInterface*> ProjectileInstanceList;

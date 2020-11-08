@@ -173,3 +173,8 @@ void ACardBase::OnInstructionFinished(UCardInstructionBase* InstructionBase)
 	}
 }
 
+FUpgradablePropertyDisplayInfo ACardBase::GetPropertyDisplayInfo(const FUpgradableIntProperty& Property) const
+{
+	return Property.GetDisplayInfo();
+}
+

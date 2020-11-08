@@ -52,6 +52,7 @@ struct FCardInstructionTargetInfo
 	}
 };
 
+#pragma region Card Display Info
 UENUM(BlueprintType)
 enum class ECardDisplayInfoLocType : uint8
 {
@@ -115,6 +116,49 @@ struct FCardDisplayInfoArgument
 };
 
 USTRUCT(BlueprintType)
+struct FUpgradablePropertyDisplayInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="PropertyDisplayInfo")
+	FString StringValue;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="PropertyDisplayInfo")
+	ECardDisplayInfoLocType LocalizeType;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="PropertyDisplayInfo")
+	TArray<FCardDisplayInfoArgument> ValueArray;
+
+	FText GetLocalizedText() const
+	{
+		switch (LocalizeType)
+		{
+		case ECardDisplayInfoLocType::ILT_Card:
+			return FText::FromStringTable(ST_CARD_LOC, StringValue);
+		case ECardDisplayInfoLocType::ILT_Projectile: 
+			return FText::FromStringTable(ST_PROJECTILE_LOC, StringValue);
+		case ECardDisplayInfoLocType::ILT_Buff: 
+			return FText::FromStringTable(ST_BUFF_LOC, StringValue);
+		case ECardDisplayInfoLocType::ILT_Raw: 
+		case ECardDisplayInfoLocType::ILT_RawNoStyle:
+			return FText::FromString(StringValue);
+		case ECardDisplayInfoLocType::ILT_Image:
+		default: ;
+		}
+
+		return FText();
+	}
+
+	FText GetLocalizedArgument(int32 Index) const
+	{
+		if (Index < 0 || Index >= ValueArray.Num())
+			return FText();
+
+		return ValueArray[Index].GetLocalizedText();
+	}
+};
+
+USTRUCT(BlueprintType)
 struct FCardDescriptionItemInfo
 {
 	GENERATED_BODY()
@@ -135,6 +179,9 @@ struct FCardDescriptionItemInfo
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="CardDescriptionItem")
 	UClass* ItemWidgetClass;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="CardInstanceInfo")
+	TMap<FString, FUpgradablePropertyDisplayInfo> PropertyInfoMap;
 
 	FText GetLocalizedText() const
 	{
@@ -172,6 +219,16 @@ struct FCardDescriptionItemInfo
 		}
 
 		return FText();
+	}
+
+	FUpgradablePropertyDisplayInfo GetPropertyDisplayInfo(FString PropertyName)
+	{
+		if (PropertyInfoMap.Contains(PropertyName))
+		{
+			return PropertyInfoMap[PropertyName];
+		}
+
+		return FUpgradablePropertyDisplayInfo();
 	}
 };
 
@@ -217,6 +274,7 @@ struct FCardInstanceDisplayInfo
 		return FText::Format(FText::FromStringTable(ST_CARD_LOC, CardDescription), FormatArgumentValues);
 	}
 };
+#pragma endregion Card Display Info
 
 /** Test if all desired flags are toggled on. */
 #define TEST_MULTI_CARD_CATEGORY(Bitmask, DesiredFlags) (((Bitmask) & (DesiredFlags)) == (DesiredFlags))
@@ -228,3 +286,68 @@ enum class ECardCategoryFlags
 	ECC_Defence			UMETA(DisplayName = "Defence"),
 	ECC_Support			UMETA(DisplayName = "Support")
 };
+
+#pragma region Upgradable Property
+
+USTRUCT(BlueprintType)
+struct FUpgradableIntProperty
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UpgradableProperty")
+	FString LocalizationString;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UpgradableProperty")
+	ECardDisplayInfoLocType LocalizeType;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UpgradableProperty")
+	TArray<int32> ValueArray;
+
+private:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UpgradableProperty", meta=(ClampMin=1, AllowPrivateAccess=true))
+	int32 CurrentLevel;
+
+public:
+
+	FUpgradableIntProperty() : CurrentLevel(1)
+	{
+		LocalizeType = ECardDisplayInfoLocType::ILT_Card;
+		ValueArray.Add(0);
+	}
+
+	int32 GetValue() const
+	{
+		return ValueArray[CurrentLevel - 1];
+	}
+
+	FORCEINLINE int32 GetCurrentLevel() const
+	{
+		return CurrentLevel;
+	}
+
+	void SetLevel(int32 NewLevel)
+	{
+		CurrentLevel = FMath::Clamp(NewLevel, 1, ValueArray.Num() - 1);
+	}
+
+	FUpgradablePropertyDisplayInfo GetDisplayInfo() const
+	{
+		FUpgradablePropertyDisplayInfo DisplayInfo;
+		DisplayInfo.StringValue = LocalizationString;
+		DisplayInfo.LocalizeType = LocalizeType;
+		TArray<FCardDisplayInfoArgument> Arguments;
+		for (int32 Value : ValueArray)
+		{
+			Arguments.Add(FCardDisplayInfoArgument{
+				TEXT("Default"),
+				FString::Printf(TEXT("%d"), Value),
+				ECardDisplayInfoLocType::ILT_RawNoStyle
+			});
+		}
+		DisplayInfo.ValueArray = Arguments;
+
+		return DisplayInfo;
+	}
+};
+
+#pragma endregion Upgradable Property

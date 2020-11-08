@@ -104,6 +104,9 @@ protected:
 	UFUNCTION()
 	virtual void OnInstructionFinished(UCardInstructionBase* InstructionBase);
 
+	UFUNCTION(BlueprintCallable, Category="CustomizableCard", meta=(DisplayName="GetIntPropertyDisplayInfo"))
+	FUpgradablePropertyDisplayInfo GetPropertyDisplayInfo(const FUpgradableIntProperty& Property) const;
+
 public:
 
 protected:
