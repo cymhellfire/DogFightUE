@@ -129,6 +129,9 @@ struct FUpgradablePropertyDisplayInfo
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="PropertyDisplayInfo")
 	TArray<FCardDisplayInfoArgument> ValueArray;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="PropertyDisplayInfo")
+	int32 CurrentLevel;
+
 	FText GetLocalizedText() const
 	{
 		switch (LocalizeType)
@@ -335,6 +338,7 @@ public:
 		FUpgradablePropertyDisplayInfo DisplayInfo;
 		DisplayInfo.StringValue = LocalizationString;
 		DisplayInfo.LocalizeType = LocalizeType;
+		DisplayInfo.CurrentLevel = CurrentLevel;
 		TArray<FCardDisplayInfoArgument> Arguments;
 		for (int32 Value : ValueArray)
 		{
