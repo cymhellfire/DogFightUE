@@ -184,7 +184,7 @@ struct FCardDescriptionItemInfo
 	UClass* ItemWidgetClass;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="CardInstanceInfo")
-	TMap<FString, FUpgradablePropertyDisplayInfo> PropertyInfoMap;
+	TArray<FUpgradablePropertyDisplayInfo> PropertyInfoList;
 
 	FText GetLocalizedText() const
 	{
@@ -224,13 +224,14 @@ struct FCardDescriptionItemInfo
 		return FText();
 	}
 
-	FUpgradablePropertyDisplayInfo GetPropertyDisplayInfo(FString PropertyName)
+	FUpgradablePropertyDisplayInfo GetPropertyDisplayInfo(int32 PropertyIndex)
 	{
-		if (PropertyInfoMap.Contains(PropertyName))
+		if (PropertyIndex >= 0 && PropertyIndex < PropertyInfoList.Num())
 		{
-			return PropertyInfoMap[PropertyName];
+			return PropertyInfoList[PropertyIndex];
 		}
 
+		UE_LOG(LogInit, Error, TEXT("Invalid property index %d given."), PropertyIndex);
 		return FUpgradablePropertyDisplayInfo();
 	}
 };
@@ -316,6 +317,19 @@ public:
 	{
 		LocalizeType = ECardDisplayInfoLocType::ILT_Card;
 		ValueArray.Add(0);
+	}
+
+	FUpgradableIntProperty(int32 DefaultValue) : CurrentLevel(1)
+	{
+		LocalizeType = ECardDisplayInfoLocType::ILT_Card;
+		ValueArray.Add(DefaultValue);
+	}
+
+	FUpgradableIntProperty(int32 DefaultValue, FString LocalizeKey, ECardDisplayInfoLocType LocType) : CurrentLevel(1)
+	{
+		LocalizationString = LocalizeKey;
+		LocalizeType = LocType;
+		ValueArray.Add(DefaultValue);
 	}
 
 	int32 GetValue() const

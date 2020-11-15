@@ -35,13 +35,16 @@ protected:
 	APawn* GetOwnerControlledPawn() const;
 
 public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Instruction")
+	FUpgradableIntProperty Damage;
+
 	/** The class of projectile to spawn. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Instruction", meta=(MustImplement="GameProjectileInterface"))
 	TSubclassOf<AActor> ProjectileClass;
 
 	/** The initial speed of the projectile after launched. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Instruction")
-	float MuzzleSpeed;
+	FUpgradableIntProperty MuzzleSpeed;
 
 	/** How far the projectile will be spawned from user? */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Instruction")
@@ -50,9 +53,6 @@ public:
 	/** The initial height of projectiles spawned. (In local space of character pawn.) */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Instruction")
 	float ProjectileSpawnHeight;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Instruction")
-	FUpgradableIntProperty Damage;
 
 protected:
 	/** List of projectiles launched by this instruction. */

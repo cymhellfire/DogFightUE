@@ -185,6 +185,14 @@ void AProjectileBase::AdjustGravityScale(float NewGravityScale)
 	}
 }
 
+void AProjectileBase::SetDamage(float NewDamage)
+{
+	if (GetNetMode() != NM_Client)
+	{
+		BaseDamage = NewDamage;
+	}
+}
+
 void AProjectileBase::SetInitialSpeed(float NewSpeed)
 {
 	if (GetNetMode() != NM_Client)

@@ -31,7 +31,7 @@ public:
 	FText GetLocalizedExtraArgumentText(int32 Index) const;
 
 	UFUNCTION(BlueprintCallable, Category="DogFight|UI")
-	FUpgradablePropertyDisplayInfo GetPropertyDisplayInfo(FString PropertyName);
+	FUpgradablePropertyDisplayInfo GetPropertyDisplayInfo(int32 PropertyIndex);
 
 protected:
 

@@ -178,3 +178,8 @@ FUpgradablePropertyDisplayInfo ACardBase::GetPropertyDisplayInfo(const FUpgradab
 	return Property.GetDisplayInfo();
 }
 
+int32 ACardBase::GetUpgradablePropertyValue(const FUpgradableIntProperty& Property) const
+{
+	return Property.GetValue();
+}
+

@@ -10,9 +10,10 @@ UInstructionFireProjectile::UInstructionFireProjectile(const FObjectInitializer&
 	: Super(ObjectInitializer)
 {
 	InstructionName = TEXT("FireProjectile");
-	MuzzleSpeed = 1000.f;
 	ProjectileSpawnDistance = 50.f;
 	ProjectileSpawnHeight = 100.f;
+	Damage = FUpgradableIntProperty(5, FString(TEXT("Property_Damage")), ECardDisplayInfoLocType::ILT_Card);
+	MuzzleSpeed = FUpgradableIntProperty(1000, FString(TEXT("Property_MuzzleSpeed")), ECardDisplayInfoLocType::ILT_Card);
 
 	// Turn off the auto finish since we need wait for projectiles dead
 	bAutoFinish = false;
@@ -89,7 +90,8 @@ void UInstructionFireProjectile::SpawnProjectileAndLaunch(FVector Position, FRot
 		Projectile->SetIgnoreCollisionAtStart(!bMayHitSelf);
 		Projectile->SetOwnerController(GetOwnerCard()->GetOwnerPlayerController());
 		Projectile->SetOwnerCharacter(GetOwnerControlledPawn());
-		Projectile->SetInitialSpeed(MuzzleSpeed);
+		Projectile->SetDamage(Damage.GetValue());
+		Projectile->SetInitialSpeed(MuzzleSpeed.GetValue());
 		Projectile->LaunchAtDirection(FireDirection);
 	}
 

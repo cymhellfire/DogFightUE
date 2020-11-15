@@ -40,6 +40,7 @@ public:
 
 #pragma region GameProjectileInterface
 	virtual void AdjustGravityScale(float NewGravityScale) override;
+	virtual void SetDamage(float NewDamage) override;
 	virtual void SetInitialSpeed(float NewSpeed) override;
 	virtual void SetMaxSpeed(float NewSpeed) override;
 	virtual void SetIgnoreCollisionAtStart(bool bIgnore) override;

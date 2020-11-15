@@ -107,6 +107,9 @@ protected:
 	UFUNCTION(BlueprintCallable, Category="CustomizableCard", meta=(DisplayName="GetIntPropertyDisplayInfo"))
 	FUpgradablePropertyDisplayInfo GetPropertyDisplayInfo(const FUpgradableIntProperty& Property) const;
 
+	UFUNCTION(BlueprintCallable, Category="CustomizableCard", meta=(DisplayName="GetIntPropertyCurrentValue"))
+	int32 GetUpgradablePropertyValue(const FUpgradableIntProperty& Property) const;
+
 public:
 
 protected:

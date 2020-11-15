@@ -23,6 +23,8 @@ public:
 
 	virtual void AdjustGravityScale(float NewGravityScale) {};
 
+	virtual void SetDamage(float NewDamage) {};
+
 	virtual void SetInitialSpeed(float NewSpeed) {};
 
 	virtual void SetMaxSpeed(float NewSpeed) {};
