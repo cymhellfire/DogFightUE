@@ -9,6 +9,8 @@
 #include "CustomizableCardTypes.h"
 #include "CardBase.generated.h"
 
+class UCardEnhancement;
+
 /**
  * This is the very basic class for all card classes.
  */
@@ -45,6 +47,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="CustomizableCard|Card")
 	void ClearInstructions();
+
+	UFUNCTION(BlueprintCallable, Category="CustomizableCard|Card")
+	void AddCardEnhancement(UCardEnhancement* NewCardEnhancement);
+
+	UFUNCTION(BlueprintCallable, Category="CustomizableCard|Card")
+	void RemoveCardEnhancement(UCardEnhancement* TargetCardEnhancement);
 
 	/**
 	 * Push a target information to list for other instruction usage.
@@ -121,6 +129,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="CustomizableCard")
 	TArray<UCardInstructionBase*> InstructionQueue;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="CustomizableCard")
+	TArray<UCardEnhancement*> CardEnhancements;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="CustomizableCard")
 	TArray<FCardInstructionTargetInfo> TargetInfoList;

@@ -54,6 +54,26 @@ void ACardBase::ClearInstructions()
 	}
 }
 
+void ACardBase::AddCardEnhancement(UCardEnhancement* NewCardEnhancement)
+{
+	if (CardEnhancements.Contains(NewCardEnhancement))
+	{
+		return;
+	}
+
+	CardEnhancements.Add(NewCardEnhancement);
+}
+
+void ACardBase::RemoveCardEnhancement(UCardEnhancement* TargetCardEnhancement)
+{
+	if (!CardEnhancements.Contains(TargetCardEnhancement))
+	{
+		return;
+	}
+
+	CardEnhancements.Remove(TargetCardEnhancement);
+}
+
 void ACardBase::PushTargetInfo(FCardInstructionTargetInfo TargetInfo)
 {
 	TargetInfoList.Push(TargetInfo);

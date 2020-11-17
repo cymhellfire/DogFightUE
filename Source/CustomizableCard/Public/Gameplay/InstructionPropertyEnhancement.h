@@ -31,6 +31,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category="CardEnhancement")
 	virtual void ApplyEnhancement() override;
 
+	UFUNCTION(BlueprintCallable, Category="CardEnhancement")
+	UCardInstructionBase* GetTargetInstruction() const { return TargetCardInstruction; }
+
+	UFUNCTION(BlueprintCallable, Category="CardEnhancement")
+	FString GetLevelModifierText() const;
+
 protected:
 
 	bool ApplyEnhanceIfTypeMatch(FProperty* TestProperty);

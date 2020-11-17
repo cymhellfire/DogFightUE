@@ -39,6 +39,20 @@ void UInstructionPropertyEnhancement::ApplyEnhancement()
 	ApplyEnhanceIfTypeMatch(TargetProperty);
 }
 
+FString UInstructionPropertyEnhancement::GetLevelModifierText() const
+{
+	if (PropertyLevelModifier > 0)
+	{
+		return FString::Printf(TEXT("+%d"), PropertyLevelModifier);
+	}
+	else if (PropertyLevelModifier < 0)
+	{
+		return FString::Printf(TEXT("-%d"), PropertyLevelModifier);
+	}
+
+	return FString(TEXT("Invalid"));
+}
+
 bool UInstructionPropertyEnhancement::ApplyEnhanceIfTypeMatch(FProperty* TestProperty)
 {
 	if (TestProperty == nullptr)
@@ -46,7 +60,7 @@ bool UInstructionPropertyEnhancement::ApplyEnhanceIfTypeMatch(FProperty* TestPro
 		return false;
 	}
 
-	if (FStructProperty* StructProperty = Cast<FStructProperty>(TestProperty))
+	if (FStructProperty* StructProperty = CastField<FStructProperty>(TestProperty))
 	{
 		switch(TargetPropertyType)
 		{

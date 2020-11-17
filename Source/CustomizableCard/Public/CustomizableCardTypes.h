@@ -5,6 +5,7 @@
 #define ST_CARD_LOC				"/Game/DogFight/Localization/ST_Card.ST_Card"
 #define ST_PROJECTILE_LOC		"/Game/DogFight/Localization/ST_Projectile.ST_Projectile"
 #define ST_BUFF_LOC				"/Game/DogFight/Localization/ST_Buff.ST_Buff"
+#define ST_CARD_ENHANCE_LOC		"/Game/DogFight/Localization/ST_CardEnhance.ST_CardEnhance"
 
 UENUM(BlueprintType)
 enum class ECardInstructionExecuteType : uint8
@@ -62,6 +63,7 @@ enum class ECardDisplayInfoLocType : uint8
 	ILT_Raw				UMETA(DisplayName="Raw", ToolTip="Not use any localization."),
 	ILT_RawNoStyle		UMETA(DisplayName="RawNoStyle", ToolTip="No localization and no style."),
 	ILT_Image			UMETA(DisplayName="Image", ToolTip="Use image defined in DT_RichTextImageSet."),
+	ILT_CardEnhance		UMETA(DisplayName="CardEnhancement", ToolTip="Use localization from ST_CardEnhance."),
 };
 
 USTRUCT(BlueprintType)
@@ -105,6 +107,9 @@ struct FCardDisplayInfoArgument
 		case ECardDisplayInfoLocType::ILT_Raw:
 			FormatArgumentValues.Add(FFormatArgumentValue(FText::FromString(StringValue)));
 			break;
+		case ECardDisplayInfoLocType::ILT_CardEnhance:
+			FormatArgumentValues.Add(FFormatArgumentValue(FText::FromStringTable(ST_CARD_ENHANCE_LOC, StringValue)));
+			break;
 		default:
 			FormatArgumentValues.Add(FFormatArgumentValue(FText::FromString(TEXT("Invalid Argument"))));
 			break;
@@ -145,6 +150,8 @@ struct FUpgradablePropertyDisplayInfo
 		case ECardDisplayInfoLocType::ILT_Raw: 
 		case ECardDisplayInfoLocType::ILT_RawNoStyle:
 			return FText::FromString(StringValue);
+		case ECardDisplayInfoLocType::ILT_CardEnhance:
+			return FText::FromStringTable(ST_CARD_ENHANCE_LOC, StringValue);
 		case ECardDisplayInfoLocType::ILT_Image:
 		default: ;
 		}
@@ -208,6 +215,8 @@ struct FCardDescriptionItemInfo
 			return FText::FromString(StringValue);
 		case ECardDisplayInfoLocType::ILT_Image:
 			return FText::FromString(FString::Printf(TEXT("<img id=\"%s\"/>"), *StringValue));
+		case ECardDisplayInfoLocType::ILT_CardEnhance:
+			return FText::Format(FText::FromStringTable(ST_CARD_ENHANCE_LOC, StringValue), FormatArgumentValues);
 		default: ;
 		}
 

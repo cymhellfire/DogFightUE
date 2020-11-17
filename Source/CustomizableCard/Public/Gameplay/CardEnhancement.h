@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CustomizableCardTypes.h"
 #include "UObject/NoExportTypes.h"
 #include "CardEnhancement.generated.h"
 
@@ -16,7 +17,10 @@ class CUSTOMIZABLECARD_API UCardEnhancement : public UObject
 
 public:
 
-	virtual void ApplyEnhancement();
+	virtual void ApplyEnhancement() {};
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="CardEnhancement")
+	FCardDescriptionItemInfo GetDescriptionItemInfo();
 
 public:
 

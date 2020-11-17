@@ -3,7 +3,7 @@
 
 #include "CardEnhancement.h"
 
-void UCardEnhancement::ApplyEnhancement()
+FCardDescriptionItemInfo UCardEnhancement::GetDescriptionItemInfo_Implementation()
 {
-	
+	return FCardDescriptionItemInfo();
 }
