@@ -344,7 +344,7 @@ public:
 
 	void SetLevel(int32 NewLevel)
 	{
-		CurrentLevel = FMath::Clamp(NewLevel, 1, ValueArray.Num() - 1);
+		CurrentLevel = FMath::Clamp(NewLevel, 1, ValueArray.Num());
 	}
 
 	FUpgradablePropertyDisplayInfo GetDisplayInfo() const
