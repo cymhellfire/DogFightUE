@@ -47,10 +47,32 @@ FString UInstructionPropertyEnhancement::GetLevelModifierText() const
 	}
 	else if (PropertyLevelModifier < 0)
 	{
-		return FString::Printf(TEXT("-%d"), PropertyLevelModifier);
+		return FString::Printf(TEXT("%d"), PropertyLevelModifier);
 	}
 
 	return FString(TEXT("Invalid"));
+}
+
+FCardDescriptionItemInfo UInstructionPropertyEnhancement::GetDescriptionItemInfo_Implementation()
+{
+	UClass* DefaultWidgetClass = LoadObject<UClass>(nullptr, TEXT("/Game/DogFight/UI/InGame/BP_CardDescriptionItemWidget.BP_CardDescriptionItemWidget_C"));
+	if (!DefaultWidgetClass)
+	{
+		UE_LOG(LogInit, Error, TEXT("Failed to load default widget."));
+	}
+	
+	FCardDescriptionItemInfo Result;
+	Result.StringValue = EnhancementDescription;
+	Result.LocalizeType = ECardDisplayInfoLocType::ILT_CardEnhance;
+	Result.ItemWidgetClass = DefaultWidgetClass;
+
+	TArray<FCardDisplayInfoArgument> InfoArguments;
+	InfoArguments.Add(FCardDisplayInfoArgument{FString(TEXT("Default")), TargetCardInstruction->InstructionName, ECardDisplayInfoLocType::ILT_Card});
+	InfoArguments.Add(FCardDisplayInfoArgument{FString(TEXT("Default")), GetLevelModifierText(), ECardDisplayInfoLocType::ILT_RawNoStyle});
+
+	Result.Arguments = InfoArguments;
+
+	return Result;
 }
 
 bool UInstructionPropertyEnhancement::ApplyEnhanceIfTypeMatch(FProperty* TestProperty)

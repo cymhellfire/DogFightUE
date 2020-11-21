@@ -37,6 +37,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category="CardEnhancement")
 	FString GetLevelModifierText() const;
 
+	virtual FCardDescriptionItemInfo GetDescriptionItemInfo_Implementation() override;
 protected:
 
 	bool ApplyEnhanceIfTypeMatch(FProperty* TestProperty);

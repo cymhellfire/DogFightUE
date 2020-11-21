@@ -26,4 +26,11 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="CardEnhancement")
 	int32 EnhancementCost;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="CardEnhancement")
+	FString EnhancementDescription;
+
+	/** The prefix will be appended to card name. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="CardEnhancement")
+	FString EnhancementPrefix;
 };

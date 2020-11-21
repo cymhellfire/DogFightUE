@@ -265,6 +265,9 @@ struct FCardInstanceDisplayInfo
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="CardInstanceInfo")
 	TArray<FCardDescriptionItemInfo> DescExtraItems;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="CardInstanceInfo")
+	TArray<FString> CardEnhancePrefix;
+
 	FText GetCardNameText() const
 	{
 		FFormatOrderedArguments FormatArgumentValues;
@@ -273,7 +276,19 @@ struct FCardInstanceDisplayInfo
 			FormatArgumentValues.Add(Argument.GetLocalizedText());
 		}
 
-		return FText::Format(FText::FromStringTable(ST_CARD_LOC, CardName), FormatArgumentValues);
+		FText LocalizedCardName = FText::Format(FText::FromStringTable(ST_CARD_LOC, CardName), FormatArgumentValues);
+
+		// Append all enhance prefix to card name
+		if (CardEnhancePrefix.Num() > 0)
+		{
+			for (FString Prefix : CardEnhancePrefix)
+			{
+				LocalizedCardName = FText::Format(FText::FromStringTable(ST_CARD_LOC, TEXT("AddPrefixFormatString")),
+					LocalizedCardName, FText::FromStringTable(ST_CARD_ENHANCE_LOC, Prefix));
+			}
+		}
+
+		return LocalizedCardName;
 	}
 
 	FText GetCardDescriptionText() const
