@@ -14,6 +14,7 @@ UInstructionFireProjectile::UInstructionFireProjectile(const FObjectInitializer&
 	ProjectileSpawnHeight = 100.f;
 	Damage = FUpgradableIntProperty(5, FString(TEXT("Property_Damage")), ECardDisplayInfoLocType::ILT_Card);
 	MuzzleSpeed = FUpgradableIntProperty(1000, FString(TEXT("Property_MuzzleSpeed")), ECardDisplayInfoLocType::ILT_Card);
+	DamageRadius = FUpgradableIntProperty(0, FString(TEXT("Property_DamageRadius")), ECardDisplayInfoLocType::ILT_Card);
 
 	// Turn off the auto finish since we need wait for projectiles dead
 	bAutoFinish = false;
@@ -91,21 +92,13 @@ void UInstructionFireProjectile::SpawnProjectileAndLaunch(FVector Position, FRot
 		Projectile->SetOwnerController(GetOwnerCard()->GetOwnerPlayerController());
 		Projectile->SetOwnerCharacter(GetOwnerControlledPawn());
 		Projectile->SetDamage(Damage.GetValue());
+		Projectile->SetDamageRadius(DamageRadius.GetValue());
 		Projectile->SetInitialSpeed(MuzzleSpeed.GetValue());
 		Projectile->LaunchAtDirection(FireDirection);
-	}
 
-	// Record the new instance to list
-	ProjectileInstanceList.Add(Projectile);
+		// Record the new instance to list
+		ProjectileInstanceList.Add(Projectile);
+	}
 }
 
-APawn* UInstructionFireProjectile::GetOwnerControlledPawn() const
-{
-	AController* PlayerController = GetOwnerCard()->GetOwnerPlayerController();
-	if (IGameCardUserPlayerControllerInterface* CardUserController = Cast<IGameCardUserPlayerControllerInterface>(PlayerController))
-	{
-		return CardUserController->GetActualPawn();
-	}
 
-	return nullptr;
-}

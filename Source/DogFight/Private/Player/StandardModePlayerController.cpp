@@ -17,6 +17,7 @@
 #include "StandardHUD.h"
 #include "StandardPlayerState.h"
 #include "CardDisplayWidget.h"
+#include "NavigationSystem.h"
 #include "Blueprint/UserWidget.h"
 
 AStandardModePlayerController::AStandardModePlayerController(const FObjectInitializer& ObjectInitializer)
@@ -144,6 +145,38 @@ void AStandardModePlayerController::OnCardSelectionConfirmed(const TArray<int32>
 	CmdUploadSelectedCardIndex(SelectedIndexList);
 }
 
+APawn* AStandardModePlayerController::GetRandomPlayerPawn(bool bIgnoreSelf)
+{
+	AController* TargetController = nullptr;
+	AGameModeBase* GameModeBase = GetWorld()->GetAuthGameMode();
+	if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GameModeBase))
+	{
+		while(true)
+		{
+			TargetController = StandardGameMode->GetRandomController();
+			if (bIgnoreSelf)
+			{
+				// Check if selected myself
+				if (AStandardPlayerState* TargetPlayerState = TargetController->GetPlayerState<AStandardPlayerState>())
+				{
+					AStandardPlayerState* MyPlayerState = GetPlayerState<AStandardPlayerState>();
+					if (MyPlayerState->GetPlayerId() != TargetPlayerState->GetPlayerId() && TargetPlayerState->IsAlive())
+					{
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	if (IGameCardUserPlayerControllerInterface* PlayerControllerInterface = Cast<IGameCardUserPlayerControllerInterface>(TargetController))
+	{
+		return PlayerControllerInterface->GetActualPawn();
+	}
+
+	return nullptr;
+}
+
 void AStandardModePlayerController::OnCharacterDead()
 {
 	if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
@@ -239,12 +272,60 @@ void AStandardModePlayerController::RequestActorTarget()
 
 void AStandardModePlayerController::RequestPositionTarget()
 {
-	
+	if (GetNetMode() == NM_Client)
+		return;
+
+	RpcRequestPositionTarget();
 }
 
 void AStandardModePlayerController::RequestDirectionTarget()
 {
+	if (GetNetMode() == NM_Client)
+		return;
+
+	RpcRequestDirectionTarget();
+}
+
+FCardInstructionTargetInfo AStandardModePlayerController::RequestRandomActorTarget(bool bIgnoreSelf)
+{
+	// Make TargetInfo
+	FCardInstructionTargetInfo ResultInfo;
+	ResultInfo.ActorPtr = GetRandomPlayerPawn(bIgnoreSelf);
+	ResultInfo.TargetType = ECardInstructionTargetType::Actor;
+
+	return ResultInfo;
+}
+
+FCardInstructionTargetInfo AStandardModePlayerController::RequestRandomPositionTarget()
+{
+	FVector TargetPosition(0, 0, 0);
+	FNavLocation NavLocation;
+	UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+	if (NavSys && NavSys->GetRandomPoint(NavLocation))
+	{
+		TargetPosition = NavLocation.Location;
+	}
+
+	// Make TargetInfo
+	FCardInstructionTargetInfo ResultInfo;
+	ResultInfo.ActorPtr = nullptr;
+	ResultInfo.PositionValue = TargetPosition;
+	ResultInfo.TargetType = ECardInstructionTargetType::Position;
 	
+	return ResultInfo;
+}
+
+FCardInstructionTargetInfo AStandardModePlayerController::RequestRandomDirectionTarget()
+{
+	// Make TargetInfo
+	const float RandomAngle = FMath::RandRange(-3.1415926f, 3.1415926f);
+
+	FCardInstructionTargetInfo ResultInfo;
+	ResultInfo.ActorPtr = nullptr;
+	ResultInfo.DirectionValue = FVector(FMath::Sin(RandomAngle), FMath::Cos(RandomAngle), 0);
+	ResultInfo.TargetType = ECardInstructionTargetType::Direction;
+
+	return ResultInfo;
 }
 
 APawn* AStandardModePlayerController::GetActualPawn()

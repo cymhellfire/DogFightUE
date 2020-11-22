@@ -94,6 +94,10 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 	virtual void RequestPositionTarget() override;
 	virtual void RequestDirectionTarget() override;
 
+	virtual FCardInstructionTargetInfo RequestRandomActorTarget(bool bIgnoreSelf) override;
+	virtual FCardInstructionTargetInfo RequestRandomPositionTarget() override;
+	virtual FCardInstructionTargetInfo RequestRandomDirectionTarget() override;
+
 	virtual APawn* GetActualPawn() override;
 #pragma endregion Interfaces
 protected:
@@ -165,6 +169,8 @@ protected:
 
 	UFUNCTION(Server, Reliable)
 	void CmdUploadDirectionTarget(FVector TargetDirection);
+
+	APawn* GetRandomPlayerPawn(bool bIgnoreSelf);
 #pragma endregion Target Acquire
 
 	UFUNCTION()

@@ -82,6 +82,10 @@ public:
 	virtual void RequestPositionTarget() override;
 	virtual void RequestDirectionTarget() override;
 
+	virtual FCardInstructionTargetInfo RequestRandomActorTarget(bool bIgnoreSelf) override;
+	virtual FCardInstructionTargetInfo RequestRandomPositionTarget() override;
+	virtual FCardInstructionTargetInfo RequestRandomDirectionTarget() override;
+
 	virtual APawn* GetActualPawn() override;
 #pragma endregion Interface
 
@@ -98,6 +102,8 @@ protected:
 
 	UFUNCTION()
 	void OnHealthChanged(int32 NewHealth);
+
+	AController* GetRandomTargetPlayer(bool bIgnoreSelf);
 
 	void FilterForEnemyPlayer(TArray<struct FPlayerRelationStatistic>& ResultArray);
 

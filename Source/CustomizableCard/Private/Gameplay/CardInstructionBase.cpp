@@ -4,6 +4,8 @@
 #include "CardInstructionBase.h"
 
 #include "DelayAction.h"
+#include "GameCardUserPlayerControllerInterface.h"
+#include "CardBase.h"
 
 UCardInstructionBase::UCardInstructionBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -64,4 +66,15 @@ void UCardInstructionBase::Finish()
 
 	// Broadcast the callback
 	OnInstructionFinished.Broadcast(this);
+}
+
+APawn* UCardInstructionBase::GetOwnerControlledPawn() const
+{
+	AController* PlayerController = GetOwnerCard()->GetOwnerPlayerController();
+	if (IGameCardUserPlayerControllerInterface* CardUserController = Cast<IGameCardUserPlayerControllerInterface>(PlayerController))
+	{
+		return CardUserController->GetActualPawn();
+	}
+
+	return nullptr;
 }

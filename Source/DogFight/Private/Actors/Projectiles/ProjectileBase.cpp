@@ -53,10 +53,10 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActo
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Hit on %s"), *OtherActor->GetName()));
 
-	// Damage hit actor on server
+	// Record hit actor on server
 	if (OtherActor != nullptr && GetLocalRole() == ROLE_Authority)
 	{
-		OtherActor->TakeDamage(BaseDamage, FDamageEvent{DamageType}, OwnerController, OwnerCharacter);
+		HitActor = OtherActor;
 	}
 
 	if (DeadOnHit)
@@ -138,6 +138,35 @@ void AProjectileBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 
 void AProjectileBase::Dead()
 {
+	// Damage target
+	if (FMath::Abs(DamageRadius) < 0.01f)
+	{
+		if (HitActor != nullptr)
+		{
+			HitActor->TakeDamage(BaseDamage, FDamageEvent{DamageType}, OwnerController, OwnerCharacter);
+		}
+	}
+	else
+	{
+		TArray<FOverlapResult> OverlapList;
+		GetWorld()->OverlapMultiByChannel(OverlapList, GetActorLocation(), GetActorRotation().Quaternion(),
+			ECollisionChannel::ECC_Camera, FCollisionShape::MakeSphere(DamageRadius));
+
+		TArray<AActor*> DamagedActorList;
+		for (FOverlapResult Result : OverlapList)
+		{
+			if (AActor* TargetActor = Result.GetActor())
+			{
+				// Ensure one actor only be damaged once
+				if (!DamagedActorList.Contains(TargetActor))
+				{
+					TargetActor->TakeDamage(BaseDamage, FDamageEvent{DamageType}, OwnerController, OwnerCharacter);
+					DamagedActorList.Add(TargetActor);
+				}
+			}
+		}
+	}
+
 	// Broadcast the event
 	OnProjectileDead.Broadcast(this);
 
@@ -190,6 +219,14 @@ void AProjectileBase::SetDamage(float NewDamage)
 	if (GetNetMode() != NM_Client)
 	{
 		BaseDamage = NewDamage;
+	}
+}
+
+void AProjectileBase::SetDamageRadius(float NewDamageRadius)
+{
+	if (GetNetMode() != NM_Client)
+	{
+		DamageRadius = NewDamageRadius;
 	}
 }
 

@@ -386,6 +386,33 @@ void AStandardModeAIController::SetState(FName NewState)
 	OnStateChanged(CurrentState);
 }
 
+AController* AStandardModeAIController::GetRandomTargetPlayer(bool bIgnoreSelf = true)
+{
+	AController* TargetController = nullptr;
+	AGameModeBase* GameModeBase = GetWorld()->GetAuthGameMode();
+	if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GameModeBase))
+	{
+		while(true)
+		{
+			TargetController = StandardGameMode->GetRandomController();
+			if (bIgnoreSelf)
+			{
+				// Check if selected myself
+				if (AStandardPlayerState* TargetPlayerState = TargetController->GetPlayerState<AStandardPlayerState>())
+				{
+					AStandardPlayerState* MyPlayerState = GetPlayerState<AStandardPlayerState>();
+					if (MyPlayerState->GetPlayerId() != TargetPlayerState->GetPlayerId() && TargetPlayerState->IsAlive())
+					{
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	return TargetController;
+}
+
 void AStandardModeAIController::RequestActorTarget()
 {
 	// Use target pawn if it's already specified
@@ -407,24 +434,7 @@ void AStandardModeAIController::RequestActorTarget()
 		return;
 	}
 
-	AController* TargetController = nullptr;
-	AGameModeBase* GameModeBase = GetWorld()->GetAuthGameMode();
-	if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GameModeBase))
-	{
-		while(true)
-		{
-			TargetController = StandardGameMode->GetRandomController();
-			// Check if selected myself
-			if (AStandardPlayerState* TargetPlayerState = TargetController->GetPlayerState<AStandardPlayerState>())
-			{
-				AStandardPlayerState* MyPlayerState = GetPlayerState<AStandardPlayerState>();
-				if (MyPlayerState->GetPlayerId() != TargetPlayerState->GetPlayerId())
-				{
-					break;
-				}
-			}
-		}
-	}
+	AController* TargetController = GetRandomTargetPlayer();
 
 	if (IGameCardUserPlayerControllerInterface* CardUserPlayerController = Cast<IGameCardUserPlayerControllerInterface>(TargetController))
 	{
@@ -442,10 +452,123 @@ void AStandardModeAIController::RequestActorTarget()
 
 void AStandardModeAIController::RequestPositionTarget()
 {
+	// Use target pawn if specified 
+	if (TargetCharacterPawn != nullptr)
+	{
+		FCardInstructionTargetInfo NewTargetInfo;
+		NewTargetInfo.PositionValue = TargetCharacterPawn->GetActorLocation();
+		NewTargetInfo.TargetType = ECardInstructionTargetType::Position;
+
+		OnCardTargetInfoAcquired.Broadcast(NewTargetInfo);
+
+		// Let character facing target
+		const FVector AimingDirection = TargetCharacterPawn->GetActorLocation() - CharacterPawn->GetActorLocation();
+		if (AimingDirection.Size() > 0.01f)
+		{
+			CharacterPawn->SetAimingDirection(AimingDirection);
+		}
+
+		return;
+	}
+
+	AController* TargetController = GetRandomTargetPlayer();
+
+	if (IGameCardUserPlayerControllerInterface* CardUserPlayerController = Cast<IGameCardUserPlayerControllerInterface>(TargetController))
+	{
+		FCardInstructionTargetInfo NewTargetInfo;
+		NewTargetInfo.PositionValue = CardUserPlayerController->GetActualPawn()->GetActorLocation();
+		NewTargetInfo.TargetType = ECardInstructionTargetType::Position;
+
+		OnCardTargetInfoAcquired.Broadcast(NewTargetInfo);
+
+		// Let character facing target
+		CharacterPawn->SetAimingDirection(CardUserPlayerController->GetActualPawn()->GetActorLocation() - CharacterPawn->GetActorLocation());
+	}
 }
 
 void AStandardModeAIController::RequestDirectionTarget()
 {
+	// Use target pawn if specified 
+	if (TargetCharacterPawn != nullptr)
+	{
+		FCardInstructionTargetInfo NewTargetInfo;
+		NewTargetInfo.DirectionValue = TargetCharacterPawn->GetActorLocation() - CharacterPawn->GetActorLocation();
+		NewTargetInfo.TargetType = ECardInstructionTargetType::Direction;
+
+		OnCardTargetInfoAcquired.Broadcast(NewTargetInfo);
+
+		// Let character facing target
+		const FVector AimingDirection = TargetCharacterPawn->GetActorLocation() - CharacterPawn->GetActorLocation();
+		if (AimingDirection.Size() > 0.01f)
+		{
+			CharacterPawn->SetAimingDirection(AimingDirection);
+		}
+
+		return;
+	}
+
+	AController* TargetController = GetRandomTargetPlayer();
+
+	if (IGameCardUserPlayerControllerInterface* CardUserPlayerController = Cast<IGameCardUserPlayerControllerInterface>(TargetController))
+	{
+		FCardInstructionTargetInfo NewTargetInfo;
+		NewTargetInfo.PositionValue = CardUserPlayerController->GetActualPawn()->GetActorLocation() - CharacterPawn->GetActorLocation();
+		NewTargetInfo.TargetType = ECardInstructionTargetType::Direction;
+
+		OnCardTargetInfoAcquired.Broadcast(NewTargetInfo);
+
+		// Let character facing target
+		CharacterPawn->SetAimingDirection(CardUserPlayerController->GetActualPawn()->GetActorLocation() - CharacterPawn->GetActorLocation());
+	}
+}
+
+FCardInstructionTargetInfo AStandardModeAIController::RequestRandomActorTarget(bool bIgnoreSelf)
+{
+	AController* TargetController = GetRandomTargetPlayer(bIgnoreSelf);
+
+	if (IGameCardUserPlayerControllerInterface* CardUserPlayerController = Cast<IGameCardUserPlayerControllerInterface>(TargetController))
+	{
+		FCardInstructionTargetInfo NewTargetInfo;
+		NewTargetInfo.ActorPtr = nullptr;
+		NewTargetInfo.PositionValue = CardUserPlayerController->GetActualPawn()->GetActorLocation() - CharacterPawn->GetActorLocation();
+		NewTargetInfo.TargetType = ECardInstructionTargetType::Direction;
+
+		return NewTargetInfo;
+	}
+
+	return FCardInstructionTargetInfo();
+}
+
+FCardInstructionTargetInfo AStandardModeAIController::RequestRandomPositionTarget()
+{
+	FVector TargetPosition(0, 0, 0);
+	FNavLocation NavLocation;
+	UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+	if (NavSys && NavSys->GetRandomPoint(NavLocation))
+	{
+		TargetPosition = NavLocation.Location;
+	}
+
+	// Make TargetInfo
+	FCardInstructionTargetInfo ResultInfo;
+	ResultInfo.ActorPtr = nullptr;
+	ResultInfo.PositionValue = TargetPosition;
+	ResultInfo.TargetType = ECardInstructionTargetType::Position;
+	
+	return ResultInfo;
+}
+
+FCardInstructionTargetInfo AStandardModeAIController::RequestRandomDirectionTarget()
+{
+	// Make TargetInfo
+	const float RandomAngle = FMath::RandRange(-3.1415926f, 3.1415926f);
+
+	FCardInstructionTargetInfo ResultInfo;
+	ResultInfo.ActorPtr = nullptr;
+	ResultInfo.DirectionValue = FVector(FMath::Sin(RandomAngle), FMath::Cos(RandomAngle), 0);
+	ResultInfo.TargetType = ECardInstructionTargetType::Direction;
+
+	return ResultInfo;
 }
 
 APawn* AStandardModeAIController::GetActualPawn()

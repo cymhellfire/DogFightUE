@@ -32,8 +32,6 @@ protected:
 	/** Spawn a projectile and launch it toward specified direction. */
 	void SpawnProjectileAndLaunch(FVector Position, FRotator Rotation, FVector FireDirection, bool bMayHitSelf);
 
-	APawn* GetOwnerControlledPawn() const;
-
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Instruction")
 	FUpgradableIntProperty Damage;
@@ -41,6 +39,9 @@ public:
 	/** The class of projectile to spawn. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Instruction", meta=(MustImplement="GameProjectileInterface"))
 	TSubclassOf<AActor> ProjectileClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Instruction")
+	FUpgradableIntProperty DamageRadius;
 
 	/** The initial speed of the projectile after launched. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Instruction")

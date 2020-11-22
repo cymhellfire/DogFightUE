@@ -28,4 +28,10 @@ public:
 	virtual void RequestPositionTarget() {};
 
 	virtual void RequestDirectionTarget() {};
+
+	virtual FCardInstructionTargetInfo RequestRandomActorTarget(bool bIgnoreSelf) { return FCardInstructionTargetInfo(); };
+
+	virtual FCardInstructionTargetInfo RequestRandomPositionTarget() { return FCardInstructionTargetInfo(); };
+
+	virtual FCardInstructionTargetInfo RequestRandomDirectionTarget() { return FCardInstructionTargetInfo(); };
 };

@@ -84,6 +84,8 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category="CustomizableCard|Instruction", meta=(DisplayName="Begin Execute"))
 	void BeginExecuteBP();
 
+	APawn* GetOwnerControlledPawn() const;
+
 	bool bIsFinished;
 
 	ACardBase* OwnerCard;

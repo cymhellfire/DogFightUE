@@ -41,6 +41,7 @@ public:
 #pragma region GameProjectileInterface
 	virtual void AdjustGravityScale(float NewGravityScale) override;
 	virtual void SetDamage(float NewDamage) override;
+	virtual void SetDamageRadius(float NewDamageRadius) override;
 	virtual void SetInitialSpeed(float NewSpeed) override;
 	virtual void SetMaxSpeed(float NewSpeed) override;
 	virtual void SetIgnoreCollisionAtStart(bool bIgnore) override;
@@ -80,6 +81,10 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
 	TSubclassOf<UDamageType> DamageType;
+
+	/** The radius of damage area. (0 means only damage the hit target.)*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
+	float DamageRadius;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Projectile")
 	bool DeadOnHit;
@@ -127,6 +132,8 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category="Projectile")
 	UAudioComponent* AudioComponent;
+
+	AActor* HitActor;
 
 	FTimerHandle DecayTimerHandle;
 };
