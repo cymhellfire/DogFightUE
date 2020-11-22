@@ -51,6 +51,8 @@ AStandardGameMode::AStandardGameMode(const FObjectInitializer& ObjectInitializer
 	// Enable the primary tick
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
+
+	CurrentRagdollPlayerCount = 0;
 }
 
 void AStandardGameMode::EnablePlayerClickMovement()
@@ -178,10 +180,10 @@ float AStandardGameMode::CalculateDamage(AActor* DamageTaker, float Damage, FDam
 
 	// Record the damage to PlayerState if taker and source are both PlayerCharacter
 	AStandardModePlayerCharacter* PlayerCharacter = Cast<AStandardModePlayerCharacter>(DamageTaker);
-	AStandardModePlayerCharacter* SourceCharacter = Cast<AStandardModePlayerCharacter>(DamageCauser);
-	if (PlayerCharacter && SourceCharacter)
+	AStandardModePlayerController* SourcePlayerController = Cast<AStandardModePlayerController>(EventInstigator);
+	if (PlayerCharacter && SourcePlayerController)
 	{
-		AStandardPlayerState* SourcePlayerState = Cast<AStandardPlayerState>(SourceCharacter->GetPlayerState());
+		AStandardPlayerState* SourcePlayerState = SourcePlayerController->GetPlayerState<AStandardPlayerState>();
 		AStandardPlayerState* StandardPlayerState = Cast<AStandardPlayerState>(PlayerCharacter->GetPlayerState());
 		if (StandardPlayerState && SourcePlayerState)
 		{
@@ -399,6 +401,16 @@ AController* AStandardGameMode::GetRandomController()
 	{
 		return StandardAIControllerList[TargetIndex - StandardPlayerControllerList.Num()];
 	}
+}
+
+void AStandardGameMode::AddPlayerInRagdoll()
+{
+	CurrentRagdollPlayerCount++;
+}
+
+void AStandardGameMode::RemovePlayerInRagdoll()
+{
+	CurrentRagdollPlayerCount--;
 }
 
 void AStandardGameMode::BeginPlay()

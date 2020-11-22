@@ -71,6 +71,26 @@ void AStandardPlayerState::OnCardFinished()
 {
 	ACardBase* UsingCard = CardInstanceList[UsingCardIndex];
 	UsingCard->OnCardFinished.RemoveDynamic(this, &AStandardPlayerState::OnCardFinished);
+	// Register tick for ragdoll check
+	GetWorldTimerManager().SetTimer(RagdollWaitingTimerHandle, this, &AStandardPlayerState::RagdollWaitingTick, 0.1f, true);
+}
+
+void AStandardPlayerState::RagdollWaitingTick()
+{
+	// Check all alive players' character are out of Ragdoll state
+	if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		if (StandardGameMode->IsAllPlayerNotRagdoll())
+		{
+			GetWorldTimerManager().ClearTimer(RagdollWaitingTimerHandle);
+
+			PostCardFinished();
+		}
+	}
+}
+
+void AStandardPlayerState::PostCardFinished()
+{
 	CardInstanceList.RemoveAt(UsingCardIndex);
 	CardInfoList.RemoveAt(UsingCardIndex);
 
@@ -104,6 +124,34 @@ void AStandardPlayerState::SetAlive(bool bIsAlive)
 	}
 
 	bAlive = bIsAlive;
+
+	// Stop the waiting tick timer if player dead
+	if (!bIsAlive && RagdollWaitingTimerHandle.IsValid())
+	{
+		GetWorldTimerManager().ClearTimer(RagdollWaitingTimerHandle);
+
+		PostCardFinished();
+	}
+}
+
+void AStandardPlayerState::SetRagdollActive(bool bActive)
+{
+	if (GetNetMode() == NM_Client)
+	{
+		return;
+	}
+
+	if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		if (bActive)
+		{
+			StandardGameMode->AddPlayerInRagdoll();
+		}
+		else
+		{
+			StandardGameMode->RemovePlayerInRagdoll();
+		}
+	}
 }
 
 void AStandardPlayerState::RegisterPlayersForRelation()

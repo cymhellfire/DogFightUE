@@ -7,4 +7,7 @@ UDogFightDamageType::UDogFightDamageType(const FObjectInitializer& ObjectInitial
 	: Super(ObjectInitializer)
 {
 	DamageCategoryFlag = 0;
+	StrengthCost = 0;
+	BlastForce = 0;
+	BlastForceUpwardRatio = 0;
 }

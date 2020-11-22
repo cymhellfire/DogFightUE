@@ -78,6 +78,8 @@ public:
 
 	FORCEINLINE bool IsAlive() const { return bAlive; }
 
+	void SetRagdollActive(bool bActive);
+
 	/** Get the count of cards this player has. */
 	FORCEINLINE int32 GetCurrentCardCount() const { return CardInstanceList.Num(); }
 
@@ -98,6 +100,10 @@ protected:
 
 	UFUNCTION()
 	void OnCardFinished();
+
+	void PostCardFinished();
+
+	void RagdollWaitingTick();
 
 protected:
 
@@ -124,4 +130,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState", Replicated)
 	TArray<FPlayerRelationStatistic> PlayerStatisticArray;
+
+	FTimerHandle RagdollWaitingTimerHandle;
 };

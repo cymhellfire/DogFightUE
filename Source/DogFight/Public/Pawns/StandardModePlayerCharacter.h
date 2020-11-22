@@ -18,12 +18,10 @@ public:
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterHealthChangedSignature, int32, NewHealth);
 	FCharacterHealthChangedSignature OnCharacterHealthChanged;
+	FCharacterHealthChangedSignature OnCharacterStrengthChanged;
 
 	// Sets default values for this character's properties
 	AStandardModePlayerCharacter();
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Character", Config)
-	int32 MaxBaseHealth;
 
 #pragma region IDamageableActorInterface
 
@@ -44,6 +42,9 @@ protected:
 	UFUNCTION()
 	void OnRep_CurrentHealth();
 
+	UFUNCTION()
+	void OnRep_CurrentStrength();
+
 	void Dead();
 
 	/** Synchronize capsule component with ragdoll orientation. */
@@ -55,8 +56,10 @@ protected:
 
 	void PostCacheRagdollPose();
 
+	void RagdollAutoRecoverTick(); 
+
 	UFUNCTION(BlueprintImplementableEvent, Category="Animation", meta=(DisplayName = "OnRagdollEnabled"))
-    void K2_OnRagdollEnabled();
+	void K2_OnRagdollEnabled();
 
 	UFUNCTION(BlueprintImplementableEvent, Category="Animation", meta=(DisplayName = "OnCacheRagdollPose"))
 	void K2_OnCacheRagdollPose();
@@ -100,6 +103,22 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Animation")
 	void SetRagdollActive(bool bActive);
 
+	void RecoverStrength();
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Character", Config)
+	int32 MaxBaseHealth;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character", Config)
+	int32 MaxStrength;
+
+	/** The duration between ragdoll stop moving and character start to recover. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character", Config)
+	float RagdollAutoRecoverDelay;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character")
+	float RagdollStopThreshold;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Unit", meta=(ExposeFunctionCategories = "ReceiveDamageComponent", AllowPrivateAccess = "true"))
 	UReceiveDamageComponent* ReceiveDamageComponent;
@@ -135,6 +154,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Character", meta = (AllowPrivateAccess = "true"), ReplicatedUsing=OnRep_CurrentHealth)
 	int32 CurrentHealth;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Character", meta = (AllowPrivateAccess = "true"), ReplicatedUsing=OnRep_CurrentStrength)
+	int32 CurrentStrength;
+
 	/** A decal that projects to the cursor location. */
 	UPROPERTY(Category=Camera, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UDecalComponent* CursorToWorld;
@@ -165,7 +187,15 @@ private:
 
 	FTimerHandle RagdollRecoverTimerHandle;
 
+	FTimerHandle RagdollAutoRecoverTimerHandle;
+
+	float RagdollRecoverTimer;
+
 	bool bRagdoll;
 
 	bool bRagdollFacingUp;
+
+	bool bRagdollAutoRecover;
+
+	FVector CacheBlastForce;
 };

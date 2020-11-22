@@ -31,4 +31,15 @@ public:
 	/** The bitmask represents the damage category. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="DamageType", meta=(Bitmask, BitmaskEnum = "EDogFightDamageCategory"))
 	int32 DamageCategoryFlag;
+
+	/** The amount of strength target will lose after hit. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="DamageType")
+	int32 StrengthCost;
+
+	/** The force apply to physical actors. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="DamageType")
+	float BlastForce;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="DamageType")
+	float BlastForceUpwardRatio;
 };

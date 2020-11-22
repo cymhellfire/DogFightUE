@@ -143,7 +143,7 @@ void AProjectileBase::Dead()
 	{
 		if (HitActor != nullptr)
 		{
-			HitActor->TakeDamage(BaseDamage, FDamageEvent{DamageType}, OwnerController, OwnerCharacter);
+			HitActor->TakeDamage(BaseDamage, FDamageEvent{DamageType}, OwnerController, this);
 		}
 	}
 	else
@@ -160,7 +160,7 @@ void AProjectileBase::Dead()
 				// Ensure one actor only be damaged once
 				if (!DamagedActorList.Contains(TargetActor))
 				{
-					TargetActor->TakeDamage(BaseDamage, FDamageEvent{DamageType}, OwnerController, OwnerCharacter);
+					TargetActor->TakeDamage(BaseDamage, FDamageEvent{DamageType}, OwnerController, this);
 					DamagedActorList.Add(TargetActor);
 				}
 			}

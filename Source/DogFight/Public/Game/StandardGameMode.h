@@ -141,6 +141,12 @@ public:
 
 	/** Get a random AController from game. */
 	AController* GetRandomController();
+
+	bool IsAllPlayerNotRagdoll() const { return CurrentRagdollPlayerCount == 0; };
+
+	void AddPlayerInRagdoll();
+
+	void RemovePlayerInRagdoll();
 protected:
 	virtual void BeginPlay() override;
 	
@@ -163,6 +169,9 @@ protected:
 
 	/** Indicate that current player is an AI. */
 	bool bIsCurrentAIPlayer;
+
+	/** Number of players are currently in Ragdoll state. */
+	int32 CurrentRagdollPlayerCount;
 
 	/** Update remaining time. */
 	virtual void DefaultTimer();

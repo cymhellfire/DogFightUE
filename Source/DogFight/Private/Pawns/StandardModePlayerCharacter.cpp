@@ -11,6 +11,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/WidgetComponent.h"
 #include "ReceiveDamageComponent.h"
+#include "StandardPlayerState.h"
 #include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
@@ -60,6 +61,7 @@ AStandardModePlayerCharacter::AStandardModePlayerCharacter()
 
 	// Initial value
 	MaxBaseHealth = 100;
+	MaxStrength = 50;
 	bShowCursorToWorld = false;
 	AimingState = 0;
 	AimingApproximateAngle = 1.f;
@@ -70,6 +72,8 @@ AStandardModePlayerCharacter::AStandardModePlayerCharacter()
 	RagdollFloorDetectHeight = 100.f;
 	bRagdoll = false;
 	PoseSlotName = FName(TEXT("RagdollFinalPose"));
+	RagdollAutoRecoverDelay = 2.f;
+	RagdollStopThreshold = 1.5;
 }
 
 void AStandardModePlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const
@@ -78,6 +82,7 @@ void AStandardModePlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimePr
 
 	DOREPLIFETIME(AStandardModePlayerCharacter, UnitName);
 	DOREPLIFETIME(AStandardModePlayerCharacter, CurrentHealth);
+	DOREPLIFETIME(AStandardModePlayerCharacter, CurrentStrength);
 }
 
 void AStandardModePlayerCharacter::SetUnitName(const FString& NewName)
@@ -161,6 +166,9 @@ void AStandardModePlayerCharacter::BeginPlay()
 	{
 		CurrentHealth = MaxBaseHealth;
 		OnRep_CurrentHealth();
+
+		CurrentStrength = MaxStrength;
+		OnRep_CurrentStrength();
 	}
 
 	// Setup the physical animation component
@@ -187,12 +195,29 @@ void AStandardModePlayerCharacter::OnRep_CurrentHealth()
 	CurrentHealthChanged(CurrentHealth);
 }
 
+void AStandardModePlayerCharacter::OnRep_CurrentStrength()
+{
+	if (CurrentStrength <= 0)
+	{
+		bRagdollAutoRecover = true;
+		SetRagdollActive(true);
+	}
+
+	// Invoke delegate
+	OnCharacterStrengthChanged.Broadcast(CurrentStrength);
+}
+
 void AStandardModePlayerCharacter::Dead()
 {
 	bAlive = false;
 
 	// Enable physical animation
+	bRagdollAutoRecover = false;
 	SetRagdollActive(true);
+	if (RagdollAutoRecoverTimerHandle.IsValid())
+	{
+		GetWorldTimerManager().ClearTimer(RagdollAutoRecoverTimerHandle);
+	}
 
 	OnCharacterDead.Broadcast();
 }
@@ -288,6 +313,25 @@ float AStandardModePlayerCharacter::TakeDamage(float Damage, FDamageEvent const&
 	{
 		return 0.f;
 	}
+	
+	// Calculate strength cost
+	if (UDogFightDamageType* DamageType = Cast<UDogFightDamageType>(DamageEvent.DamageTypeClass->GetDefaultObject()))
+	{
+		CurrentStrength = FMath::Clamp<int32>(CurrentStrength - DamageType->StrengthCost, 0, MaxStrength);
+
+		// Cache blast force value
+		if (CurrentStrength <= 0)
+		{
+			CacheBlastForce = (GetActorLocation() - DamageCauser->GetActorLocation());
+			CacheBlastForce.Normalize();
+			CacheBlastForce += FVector::UpVector * DamageType->BlastForceUpwardRatio;
+			// Calculate the actual force
+			CacheBlastForce *= DamageType->BlastForce;
+		}
+
+		// Invoke OnRep on server
+		OnRep_CurrentStrength();
+	}
 
 	float ActualDamage = 0;
 	// Modify the damage by current GameMode
@@ -344,6 +388,16 @@ void AStandardModePlayerCharacter::SetAimingDirection(FVector NewDirection)
 	}
 }
 
+void AStandardModePlayerCharacter::RecoverStrength()
+{
+	if (GetNetMode() != NM_Client)
+	{
+		CurrentStrength = MaxStrength;
+
+		OnRep_CurrentStrength();
+	}
+}
+
 #pragma region Ragdoll
 void AStandardModePlayerCharacter::SetRagdollActive(bool bActive)
 {
@@ -358,11 +412,30 @@ void AStandardModePlayerCharacter::SetRagdollActive(bool bActive)
 		MeshComponent->SetSimulatePhysics(true);
 		MeshComponent->SetConstraintProfileForAll(FName(TEXT("ragdoll")));
 
+		// Apply cached blast force
+		MeshComponent->AddImpulseToAllBodiesBelow(CacheBlastForce, PelvisBoneName);
+
 		K2_OnRagdollEnabled();
+
+		// Start auto recover tick if necessary
+		if (bRagdollAutoRecover)
+		{
+			RagdollRecoverTimer = 0.f;
+			GetWorldTimerManager().SetTimer(RagdollAutoRecoverTimerHandle, this, &AStandardModePlayerCharacter::RagdollAutoRecoverTick, 0.1f, true);
+		}
+
+		// Synchronize to PlayerState
+		if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
+		{
+			StandardPlayerState->SetRagdollActive(true);
+		}
 	}
 	else
 	{
 		PreCacheRagdollPose();
+
+		// Recover all strength after disable ragdoll
+		RecoverStrength();
 	}
 }
 
@@ -406,8 +479,37 @@ void AStandardModePlayerCharacter::PostCacheRagdollPose()
 	GetCapsuleComponent()->SetCollisionProfileName(FName(TEXT("Pawn")));
 	bRagdoll = false;
 
+	// Synchronize to PlayerState
+	if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
+	{
+		StandardPlayerState->SetRagdollActive(false);
+	}
+
 	// Invoke Blueprint event
 	K2_OnPostCacheRagdollPose();
+}
+
+void AStandardModePlayerCharacter::RagdollAutoRecoverTick()
+{
+	float CurrentSpeed = GetMesh()->GetPhysicsLinearVelocity(PelvisBoneName).Size();
+
+	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Yellow, FString::Printf(TEXT("Ragdoll speed: %f"), CurrentSpeed));
+
+	if (CurrentSpeed <= RagdollStopThreshold)
+	{
+		RagdollRecoverTimer += 0.1f;
+	}
+	else
+	{
+		RagdollRecoverTimer = 0.f;
+	}
+
+	// Disable ragdoll if timer is expired
+	if (RagdollRecoverTimer >= RagdollAutoRecoverDelay)
+	{
+		GetWorldTimerManager().ClearTimer(RagdollAutoRecoverTimerHandle);
+		SetRagdollActive(false);
+	}
 }
 
 void AStandardModePlayerCharacter::SynchronizeOrientationWithRagdoll(bool bIsFacingUp)
