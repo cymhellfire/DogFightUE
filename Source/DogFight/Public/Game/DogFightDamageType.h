@@ -16,6 +16,14 @@ enum class EDogFightDamageCategory : uint8
 	Damage_Magical		UMETA(DisplayName = "Magical")
 };
 
+UENUM(BlueprintType)
+enum class EBlastForceFalloffType : uint8
+{
+	Constant,
+	Linear,
+	Curve,
+};
+
 /**
  * Base class for all DamageType of DogFight game.
  */
@@ -26,6 +34,8 @@ class DOGFIGHT_API UDogFightDamageType : public UDamageType
 
 public:
 	UDogFightDamageType(const FObjectInitializer& ObjectInitializer);
+
+	virtual float CalculateBlastForceSize(FVector Origin, FVector TargetLocation, float Range) const;
 
 public:
 	/** The bitmask represents the damage category. */
@@ -42,4 +52,11 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="DamageType")
 	float BlastForceUpwardRatio;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="DamageType")
+	EBlastForceFalloffType BlastForceFalloff;
+
+	/** The falloff curve to calculate the actual blast force. (Only works with Curve type.) */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="DamageType")
+	UCurveFloat* BlastForceFalloffCurve;
 };

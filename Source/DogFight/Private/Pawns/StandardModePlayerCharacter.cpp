@@ -6,6 +6,7 @@
 #include "DogFight.h"
 #include "DogFightGameModeBase.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
+#include "ProjectileBase.h"
 #include "StandardGameState.h"
 #include "StandardModePlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -326,7 +327,14 @@ float AStandardModePlayerCharacter::TakeDamage(float Damage, FDamageEvent const&
 			CacheBlastForce.Normalize();
 			CacheBlastForce += FVector::UpVector * DamageType->BlastForceUpwardRatio;
 			// Calculate the actual force
-			CacheBlastForce *= DamageType->BlastForce;
+			if (AProjectileBase* Projectile = Cast<AProjectileBase>(DamageCauser))
+			{
+				CacheBlastForce *= DamageType->CalculateBlastForceSize(DamageCauser->GetActorLocation(), GetActorLocation(), Projectile->DamageRadius);
+			}
+			else
+			{
+				CacheBlastForce *= DamageType->BlastForce;
+			}
 		}
 
 		// Invoke OnRep on server
