@@ -131,5 +131,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState", Replicated)
 	TArray<FPlayerRelationStatistic> PlayerStatisticArray;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState", Replicated)
+	bool bIsRagdoll;
+
 	FTimerHandle RagdollWaitingTimerHandle;
 };

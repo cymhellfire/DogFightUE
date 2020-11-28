@@ -5,11 +5,13 @@
 
 #include "CustomizableCard.h"
 #include "CardBase.h"
+#include "GameCardUserPlayerControllerInterface.h"
 
 UHandleTargetInstructionBase::UHandleTargetInstructionBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	bAutoFinish = true;
+	bSkipOneBroadcast = false;
 }
 
 bool UHandleTargetInstructionBase::ProcessTarget()
@@ -76,5 +78,64 @@ int32 UHandleTargetInstructionBase::ParseTargetInfo(FCardInstructionTargetInfo T
 	}
 	
 	return 0;
+}
+
+void UHandleTargetInstructionBase::HandleActorTarget(AActor* Target)
+{
+	if (bSkipOneBroadcast)
+	{
+		bSkipOneBroadcast = false;
+		return;
+	}
+
+	// Broadcast game message
+	if (IGameCardUserPlayerControllerInterface* UserPlayerController = Cast<IGameCardUserPlayerControllerInterface>(OwnerCard->GetOwnerPlayerController()))
+	{
+		FString TargetName = Target->GetName();
+
+		// Get owner player name if possible
+		if (APawn* TargetPawn = Cast<APawn>(Target))
+		{
+			if (APlayerState* PlayerState = TargetPawn->GetPlayerState())
+			{
+				TargetName = PlayerState->GetPlayerName();
+			}
+		}
+
+		UserPlayerController->BroadcastCardTargetingResult(OwnerCard->GetCardDisplayInfo().GetCardNameText(),
+			FText::FromString(TargetName), ECardInstructionTargetType::Actor);
+	}
+}
+
+void UHandleTargetInstructionBase::HandlePositionTarget(FVector Position)
+{
+	if (bSkipOneBroadcast)
+	{
+		bSkipOneBroadcast = false;
+		return;
+	}
+
+	// Broadcast game message
+	if (IGameCardUserPlayerControllerInterface* UserPlayerController = Cast<IGameCardUserPlayerControllerInterface>(OwnerCard->GetOwnerPlayerController()))
+	{
+		UserPlayerController->BroadcastCardTargetingResult(OwnerCard->GetCardDisplayInfo().GetCardNameText(),
+			FText::FromString(Position.ToString()), ECardInstructionTargetType::Position);
+	}
+}
+
+void UHandleTargetInstructionBase::HandleDirectionTarget(FVector Direction)
+{
+	if (bSkipOneBroadcast)
+	{
+		bSkipOneBroadcast = false;
+		return;
+	}
+
+	// Broadcast game message
+	if (IGameCardUserPlayerControllerInterface* UserPlayerController = Cast<IGameCardUserPlayerControllerInterface>(OwnerCard->GetOwnerPlayerController()))
+	{
+		UserPlayerController->BroadcastCardTargetingResult(OwnerCard->GetCardDisplayInfo().GetCardNameText(),
+			FText::FromString(Direction.ToString()), ECardInstructionTargetType::Direction);
+	}
 }
 

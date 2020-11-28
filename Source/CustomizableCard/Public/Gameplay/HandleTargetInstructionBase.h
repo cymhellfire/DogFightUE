@@ -38,14 +38,17 @@ protected:
 	 */
 	int32 ParseTargetInfo(FCardInstructionTargetInfo TargetInfo, AActor** ActorPtr, FVector& PositionValue, FVector& DirectionValue);
 
-	virtual void HandleActorTarget(AActor* Target) {};
+	virtual void HandleActorTarget(AActor* Target);
 
-	virtual void HandlePositionTarget(FVector Position) {};
+	virtual void HandlePositionTarget(FVector Position);
 
-	virtual void HandleDirectionTarget(FVector Direction) {};
+	virtual void HandleDirectionTarget(FVector Direction);
 
 	int32 CurrentTargetIndex;
 
 	/** Does this instruction invoke Finish() automatically at the end of Execute()? (True as default)*/
 	bool bAutoFinish;
+
+	/** Skip next broadcast game message. (Use this to suppress redundant message once.) */
+	bool bSkipOneBroadcast;
 };

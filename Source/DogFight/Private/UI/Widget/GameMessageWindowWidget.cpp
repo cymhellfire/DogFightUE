@@ -7,9 +7,9 @@
 void UGameMessageWindowWidget::AddGameMessage(FGameMessage Message)
 {
 	FFormatOrderedArguments FormatArgumentValues;
-	for (FString Argument : Message.Arguments)
+	for (FText Argument : Message.Arguments)
 	{
-		FormatArgumentValues.Add(FFormatArgumentValue(FText::FromString(Argument)));
+		FormatArgumentValues.Add(FFormatArgumentValue(Argument));
 	}
 	
 	FText NewMessage = FText::Format(FText::FromStringTable(ST_INGAME_UI_LOC, Message.MessageString), FormatArgumentValues);

@@ -22,6 +22,11 @@ UInstructionFireProjectile::UInstructionFireProjectile(const FObjectInitializer&
 
 void UInstructionFireProjectile::HandleActorTarget(AActor* Target)
 {
+	Super::HandleActorTarget(Target);
+
+	// Skip once broadcast since the jump invoke below
+	bSkipOneBroadcast = true;
+
 	if (IsValid(Target))
 	{
 		HandlePositionTarget(Target->GetActorLocation());
@@ -30,6 +35,8 @@ void UInstructionFireProjectile::HandleActorTarget(AActor* Target)
 
 void UInstructionFireProjectile::HandlePositionTarget(FVector Position)
 {
+	Super::HandlePositionTarget(Position);
+
 	if (IsValid(ProjectileClass))
 	{
 		FVector SpawnDirection = (Position - GetOwnerControlledPawn()->GetActorLocation());
@@ -50,6 +57,8 @@ void UInstructionFireProjectile::HandlePositionTarget(FVector Position)
 
 void UInstructionFireProjectile::HandleDirectionTarget(FVector Direction)
 {
+	Super::HandleDirectionTarget(Direction);
+
 	if (IsValid(ProjectileClass))
 	{
 		FVector FireDirection = Direction.GetSafeNormal();

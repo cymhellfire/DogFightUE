@@ -15,6 +15,8 @@ UInstructionAddBuff::UInstructionAddBuff(const FObjectInitializer& ObjectInitial
 
 void UInstructionAddBuff::HandleActorTarget(AActor* Target)
 {
+	Super::HandleActorTarget(Target);
+
 	if (IsValid(Target))
 	{
 		if (IsValid(BuffClass))

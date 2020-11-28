@@ -576,6 +576,31 @@ APawn* AStandardModeAIController::GetActualPawn()
 	return Cast<APawn>(CharacterPawn);
 }
 
+void AStandardModeAIController::BroadcastCardTargetingResult(FText CardName, FText TargetText, ECardInstructionTargetType TargetType)
+{
+	if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		FGameMessage NewMessage;
+		NewMessage.Type = EGameMessageType::GMT_Player;
+		NewMessage.Source = PlayerState->GetPlayerName();
+		switch(TargetType)
+		{
+		case ECardInstructionTargetType::Actor:
+			NewMessage.MessageString = TEXT("GameMsg_UseCard_Actor");
+			break;
+		case ECardInstructionTargetType::Position:
+			NewMessage.MessageString = TEXT("GameMsg_UseCard_Position");
+			break;
+		case ECardInstructionTargetType::Direction:
+			NewMessage.MessageString = TEXT("GameMsg_UseCard_Direction");
+			break;
+		default: ;
+		}
+		NewMessage.Arguments = {CardName, TargetText};
+		StandardGameMode->BroadcastGameMessageToAllPlayers(NewMessage);
+	}
+}
+
 void AStandardModeAIController::BeginPlay()
 {
 	Super::BeginPlay();

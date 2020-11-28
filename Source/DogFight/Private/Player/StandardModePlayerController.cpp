@@ -108,7 +108,7 @@ void AStandardModePlayerController::RpcReceivedGameTitleMessage_Implementation(F
 	}
 }
 
-void AStandardModePlayerController::CmdBroadcastGameMessageToAll_Implementation(const FString& GameMessage, const TArray<FString>& Arguments)
+void AStandardModePlayerController::CmdBroadcastGameMessageToAll_Implementation(const FString& GameMessage, const TArray<FText>& Arguments)
 {
 	if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
 	{
@@ -331,6 +331,36 @@ FCardInstructionTargetInfo AStandardModePlayerController::RequestRandomDirection
 APawn* AStandardModePlayerController::GetActualPawn()
 {
 	return Cast<APawn>(CharacterPawn);
+}
+
+void AStandardModePlayerController::BroadcastCardTargetingResult(FText CardName, FText TargetText, ECardInstructionTargetType TargetType)
+{
+	if (GetNetMode() == NM_Client)
+	{
+		return;
+	}
+
+	if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		FGameMessage NewMessage;
+		NewMessage.Type = EGameMessageType::GMT_Player;
+		NewMessage.Source = PlayerState->GetPlayerName();
+		switch(TargetType)
+		{
+		case ECardInstructionTargetType::Actor:
+			NewMessage.MessageString = TEXT("GameMsg_UseCard_Actor");
+			break;
+		case ECardInstructionTargetType::Position:
+			NewMessage.MessageString = TEXT("GameMsg_UseCard_Position");
+			break;
+		case ECardInstructionTargetType::Direction:
+			NewMessage.MessageString = TEXT("GameMsg_UseCard_Direction");
+			break;
+		default: ;
+		}
+		NewMessage.Arguments = {CardName, TargetText};
+		StandardGameMode->BroadcastGameMessageToAllPlayers(NewMessage);
+	}
 }
 
 void AStandardModePlayerController::BeginPlay()

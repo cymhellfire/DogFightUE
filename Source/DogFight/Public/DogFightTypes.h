@@ -36,7 +36,7 @@ struct FGameMessage
 	FString MessageString;
 
 	UPROPERTY(BlueprintReadOnly)
-	TArray<FString> Arguments;
+	TArray<FText> Arguments;
 };
 
 USTRUCT(BlueprintType)

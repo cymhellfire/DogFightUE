@@ -17,6 +17,8 @@ UInstructionSpawnProjectileAt::UInstructionSpawnProjectileAt(const FObjectInitia
 
 void UInstructionSpawnProjectileAt::HandlePositionTarget(FVector Position)
 {
+	Super::HandlePositionTarget(Position);
+
 	if (IsValid(ProjectileClass))
 	{
 		FVector SpawnPosition = Position + SpawnPositionOffset;
@@ -28,6 +30,11 @@ void UInstructionSpawnProjectileAt::HandlePositionTarget(FVector Position)
 
 void UInstructionSpawnProjectileAt::HandleActorTarget(AActor* Target)
 {
+	Super::HandleActorTarget(Target);
+
+	// Skip once broadcast since the jump invoke below
+	bSkipOneBroadcast = true;
+
 	HandlePositionTarget(Target->GetActorLocation());
 }
 

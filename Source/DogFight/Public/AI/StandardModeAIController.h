@@ -87,6 +87,7 @@ public:
 	virtual FCardInstructionTargetInfo RequestRandomDirectionTarget() override;
 
 	virtual APawn* GetActualPawn() override;
+	virtual void BroadcastCardTargetingResult(FText CardName, FText TargetText, ECardInstructionTargetType TargetType) override;
 #pragma endregion Interface
 
 protected:

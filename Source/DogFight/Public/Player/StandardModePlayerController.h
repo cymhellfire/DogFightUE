@@ -58,7 +58,7 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 
 	/** Send a message to all other players in current game. */
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category="DogFight|PlayerController")
-	void CmdBroadcastGameMessageToAll(const FString& GameMessage, const TArray<FString>& Arguments);
+	void CmdBroadcastGameMessageToAll(const FString& GameMessage, const TArray<FText>& Arguments);
 
 	UFUNCTION(Client, Reliable)
 	void RpcReceivedGameMessage(FGameMessage Message);
@@ -99,6 +99,7 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 	virtual FCardInstructionTargetInfo RequestRandomDirectionTarget() override;
 
 	virtual APawn* GetActualPawn() override;
+	virtual void BroadcastCardTargetingResult(FText CardName, FText TargetText, ECardInstructionTargetType TargetType) override;
 #pragma endregion Interfaces
 protected:
 	virtual void BeginPlay() override;

@@ -88,6 +88,17 @@ void AStandardModePlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimePr
 	DOREPLIFETIME(AStandardModePlayerCharacter, CacheBlastForce);
 }
 
+void AStandardModePlayerCharacter::OnRep_SyncRagdollRotation()
+{
+	if (bRagdoll)
+	{
+		if (USkeletalMeshComponent* MeshComponent = GetMesh())
+		{
+			MeshComponent->SetRelativeRotation(SyncRagdollRotation);
+		}
+	}
+}
+
 void AStandardModePlayerCharacter::SetUnitName(const FString& NewName)
 {
 	// Check if it's necessary to change name
@@ -302,6 +313,9 @@ void AStandardModePlayerCharacter::Tick(float DeltaTime)
 			{
 				GetCapsuleComponent()->SetWorldLocation(BonePosition);
 			}
+
+			// Synchronize rotation
+			SyncRagdollRotation = SkeletalMeshComponent->GetRelativeRotation().Quaternion();
 		}
 		else
 		{

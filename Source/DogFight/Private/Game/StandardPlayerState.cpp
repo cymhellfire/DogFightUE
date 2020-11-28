@@ -28,6 +28,7 @@ void AStandardPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 	DOREPLIFETIME(AStandardPlayerState, CardGainPerRounds);
 	DOREPLIFETIME(AStandardPlayerState, bAlive);
 	DOREPLIFETIME(AStandardPlayerState, PlayerStatisticArray);
+	DOREPLIFETIME(AStandardPlayerState, bIsRagdoll);
 }
 
 void AStandardPlayerState::OnRep_PlayerName()
@@ -125,12 +126,24 @@ void AStandardPlayerState::SetAlive(bool bIsAlive)
 
 	bAlive = bIsAlive;
 
-	// Stop the waiting tick timer if player dead
-	if (!bIsAlive && RagdollWaitingTimerHandle.IsValid())
+	if (!bIsAlive)
 	{
-		GetWorldTimerManager().ClearTimer(RagdollWaitingTimerHandle);
+		// Dead player should be removed from Ragdoll list
+		if (bIsRagdoll)
+		{
+			if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
+			{
+				StandardGameMode->RemovePlayerInRagdoll(GetPlayerId());
+			}
+		}
 
-		PostCardFinished();
+		// Stop the waiting tick timer if player dead
+		if (RagdollWaitingTimerHandle.IsValid())
+		{
+			GetWorldTimerManager().ClearTimer(RagdollWaitingTimerHandle);
+
+			PostCardFinished();
+		}
 	}
 }
 
@@ -141,15 +154,21 @@ void AStandardPlayerState::SetRagdollActive(bool bActive)
 		return;
 	}
 
+	bIsRagdoll = bActive;
+
 	if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
 	{
 		if (bActive)
 		{
-			StandardGameMode->AddPlayerInRagdoll();
+			// No need to record dead player to list
+			if (bAlive)
+			{
+				StandardGameMode->AddPlayerInRagdoll(GetPlayerId());
+			}
 		}
 		else
 		{
-			StandardGameMode->RemovePlayerInRagdoll();
+			StandardGameMode->RemovePlayerInRagdoll(GetPlayerId());
 		}
 	}
 }

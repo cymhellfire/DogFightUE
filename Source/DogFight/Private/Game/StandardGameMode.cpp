@@ -51,8 +51,6 @@ AStandardGameMode::AStandardGameMode(const FObjectInitializer& ObjectInitializer
 	// Enable the primary tick
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
-
-	CurrentRagdollPlayerCount = 0;
 }
 
 void AStandardGameMode::EnablePlayerClickMovement()
@@ -197,8 +195,8 @@ float AStandardGameMode::CalculateDamage(AActor* DamageTaker, float Damage, FDam
 void AStandardGameMode::PlayerReadyForGame(const FString& PlayerName)
 {
 	// Broadcast player joined message
-	TArray<FString> Arguments;
-	Arguments.Add(FString::Printf(TEXT("<PlayerName>%s</>"),*PlayerName));
+	TArray<FText> Arguments;
+	Arguments.Add(FText::FromString(FString::Printf(TEXT("<PlayerName>%s</>"),*PlayerName)));
 
 	const FGameMessage NewMessage{TEXT("System"), EGameMessageType::GMT_System, TEXT("GameMsg_PlayerJoined"), Arguments};
 	BroadcastGameMessageToAllPlayers(NewMessage);
@@ -403,14 +401,20 @@ AController* AStandardGameMode::GetRandomController()
 	}
 }
 
-void AStandardGameMode::AddPlayerInRagdoll()
+void AStandardGameMode::AddPlayerInRagdoll(int32 PlayerId)
 {
-	CurrentRagdollPlayerCount++;
+	if (!CurrentRagdollPlayerId.Contains(PlayerId))
+	{
+		CurrentRagdollPlayerId.Add(PlayerId);
+	}
 }
 
-void AStandardGameMode::RemovePlayerInRagdoll()
+void AStandardGameMode::RemovePlayerInRagdoll(int32 PlayerId)
 {
-	CurrentRagdollPlayerCount--;
+	if (CurrentRagdollPlayerId.Contains(PlayerId))
+	{
+		CurrentRagdollPlayerId.Remove(PlayerId);
+	}
 }
 
 void AStandardGameMode::BeginPlay()
@@ -561,10 +565,10 @@ void AStandardGameMode::HandlePhaseGameSummary()
 		}
 	}
 	// Broadcast winner message
-	TArray<FString> Arguments;
+	TArray<FText> Arguments;
 	if (WinnerState != nullptr)
 	{
-		Arguments.Add(FString::Printf(TEXT("<PlayerName>%s</>"),*WinnerState->GetPlayerName()));
+		Arguments.Add(FText::FromString(FString::Printf(TEXT("<PlayerName>%s</>"),*WinnerState->GetPlayerName())));
 		const FGameMessage WinnerMessage{TEXT("System"), EGameMessageType::GMT_System, TEXT("GameMsg_Winner"), Arguments};
 		BroadcastGameMessageToAllPlayers(WinnerMessage);
 	}

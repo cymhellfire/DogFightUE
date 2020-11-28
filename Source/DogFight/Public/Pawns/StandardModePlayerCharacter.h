@@ -67,6 +67,9 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category="Animation", meta=(DisplayName = "OnPostCacheRagdollPose"))
 	void K2_OnPostCacheRagdollPose();
 
+	UFUNCTION()
+	void OnRep_SyncRagdollRotation();
+
 public:
 	/** Set name for this unit. */
 	void SetUnitName(const FString& NewName);
@@ -201,4 +204,7 @@ private:
 
 	UPROPERTY(Replicated)
 	FVector CacheBlastForce;
+
+	UPROPERTY(ReplicatedUsing=OnRep_SyncRagdollRotation)
+	FQuat SyncRagdollRotation;
 };

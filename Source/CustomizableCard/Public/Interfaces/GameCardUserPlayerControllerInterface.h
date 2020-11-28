@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "CustomizableCardTypes.h"
 #include "GameCardUserPlayerControllerInterface.generated.h"
 
 UINTERFACE(MinimalAPI, Blueprintable)
@@ -19,4 +20,7 @@ class IGameCardUserPlayerControllerInterface
 public:
 	/** Get the actual pawn controlling by this PlayerController. */
 	virtual APawn* GetActualPawn() = 0;
+
+	/** Broadcast card using message with target information. */
+	virtual void BroadcastCardTargetingResult(FText CardName, FText TargetText, ECardInstructionTargetType TargetType) = 0;
 };
