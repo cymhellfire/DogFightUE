@@ -100,7 +100,9 @@ public:
 
 	int32 GetCurrentHealth() const { return CurrentHealth; }
 
-	UFUNCTION(BlueprintCallable, Category="Animation")
+	UFUNCTION(BlueprintCallable, Category="Animation", NetMulticast, Reliable)
+	void MulticastSetRagdollActive(bool bActive);
+
 	void SetRagdollActive(bool bActive);
 
 	void RecoverStrength();
@@ -197,5 +199,6 @@ private:
 
 	bool bRagdollAutoRecover;
 
+	UPROPERTY(Replicated)
 	FVector CacheBlastForce;
 };

@@ -14,6 +14,7 @@
 #include "ReceiveDamageComponent.h"
 #include "StandardPlayerState.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Components/SkeletalMeshComponent.h"
 
 // Sets default values
 AStandardModePlayerCharacter::AStandardModePlayerCharacter()
@@ -84,6 +85,7 @@ void AStandardModePlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimePr
 	DOREPLIFETIME(AStandardModePlayerCharacter, UnitName);
 	DOREPLIFETIME(AStandardModePlayerCharacter, CurrentHealth);
 	DOREPLIFETIME(AStandardModePlayerCharacter, CurrentStrength);
+	DOREPLIFETIME(AStandardModePlayerCharacter, CacheBlastForce);
 }
 
 void AStandardModePlayerCharacter::SetUnitName(const FString& NewName)
@@ -214,7 +216,7 @@ void AStandardModePlayerCharacter::Dead()
 
 	// Enable physical animation
 	bRagdollAutoRecover = false;
-	SetRagdollActive(true);
+	MulticastSetRagdollActive(true);
 	if (RagdollAutoRecoverTimerHandle.IsValid())
 	{
 		GetWorldTimerManager().ClearTimer(RagdollAutoRecoverTimerHandle);
@@ -283,20 +285,28 @@ void AStandardModePlayerCharacter::Tick(float DeltaTime)
 	// Synchronize capsule and target bone position
 	if (bRagdoll)
 	{
-		const USkeletalMeshComponent* SkeletalMeshComponent = GetMesh();
+		USkeletalMeshComponent* SkeletalMeshComponent = GetMesh();
 		FVector BonePosition = SkeletalMeshComponent->GetBoneLocation(FollowBoneName);
-		FHitResult TraceResult;
-		FVector FloorDetectOffset(0, 0, RagdollFloorDetectHeight);
-		if (GetWorld()->LineTraceSingleByChannel(TraceResult, BonePosition,
-			BonePosition - FloorDetectOffset, ECollisionChannel::ECC_Visibility))
+		if (GetNetMode() != NM_Client)
 		{
-			GetCapsuleComponent()->SetWorldLocation(TraceResult.Location - SkeletalMeshOffset);
+			FHitResult TraceResult;
+			FVector FloorDetectOffset(0, 0, RagdollFloorDetectHeight);
+			if (GetWorld()->LineTraceSingleByChannel(TraceResult, BonePosition,
+				BonePosition - FloorDetectOffset, ECollisionChannel::ECC_Visibility))
+			{
+				GetCapsuleComponent()->SetWorldLocation(TraceResult.Location - SkeletalMeshOffset);
 
-			DrawDebugLine(GetWorld(), BonePosition + FloorDetectOffset, TraceResult.Location, FColor::Yellow);
+				DrawDebugLine(GetWorld(), BonePosition + FloorDetectOffset, TraceResult.Location, FColor::Yellow);
+			}
+			else
+			{
+				GetCapsuleComponent()->SetWorldLocation(BonePosition);
+			}
 		}
 		else
 		{
-			GetCapsuleComponent()->SetWorldLocation(BonePosition);
+			// Synchronize ragdoll to capsule on client side
+			SkeletalMeshComponent->SetRelativeLocation(SkeletalMeshOffset);
 		}
 	}
 }
@@ -336,6 +346,8 @@ float AStandardModePlayerCharacter::TakeDamage(float Damage, FDamageEvent const&
 				CacheBlastForce *= DamageType->BlastForce;
 			}
 		}
+
+		UE_LOG(LogInit, Log, TEXT("Calculated CacheBlastForce: %s"), *CacheBlastForce.ToString());
 
 		// Invoke OnRep on server
 		OnRep_CurrentStrength();
@@ -407,6 +419,11 @@ void AStandardModePlayerCharacter::RecoverStrength()
 }
 
 #pragma region Ragdoll
+void AStandardModePlayerCharacter::MulticastSetRagdollActive_Implementation(bool bActive)
+{
+	SetRagdollActive(bActive);
+}
+
 void AStandardModePlayerCharacter::SetRagdollActive(bool bActive)
 {
 	if (bActive)
@@ -425,17 +442,21 @@ void AStandardModePlayerCharacter::SetRagdollActive(bool bActive)
 
 		K2_OnRagdollEnabled();
 
-		// Start auto recover tick if necessary
-		if (bRagdollAutoRecover)
+		// Server only logic
+		if (GetNetMode() != NM_Client)
 		{
-			RagdollRecoverTimer = 0.f;
-			GetWorldTimerManager().SetTimer(RagdollAutoRecoverTimerHandle, this, &AStandardModePlayerCharacter::RagdollAutoRecoverTick, 0.1f, true);
-		}
+			// Start auto recover tick if necessary
+			if (bRagdollAutoRecover)
+			{
+				RagdollRecoverTimer = 0.f;
+				GetWorldTimerManager().SetTimer(RagdollAutoRecoverTimerHandle, this, &AStandardModePlayerCharacter::RagdollAutoRecoverTick, 0.1f, true);
+			}
 
-		// Synchronize to PlayerState
-		if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
-		{
-			StandardPlayerState->SetRagdollActive(true);
+			// Synchronize to PlayerState
+			if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
+			{
+				StandardPlayerState->SetRagdollActive(true);
+			}
 		}
 	}
 	else
@@ -516,7 +537,7 @@ void AStandardModePlayerCharacter::RagdollAutoRecoverTick()
 	if (RagdollRecoverTimer >= RagdollAutoRecoverDelay)
 	{
 		GetWorldTimerManager().ClearTimer(RagdollAutoRecoverTimerHandle);
-		SetRagdollActive(false);
+		MulticastSetRagdollActive(false);
 	}
 }
 
