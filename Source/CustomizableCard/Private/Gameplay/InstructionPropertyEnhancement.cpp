@@ -68,7 +68,7 @@ FCardDescriptionItemInfo UInstructionPropertyEnhancement::GetDescriptionItemInfo
 
 	TArray<FCardDisplayInfoArgument> InfoArguments;
 	InfoArguments.Add(FCardDisplayInfoArgument{FString(TEXT("Default")), TargetCardInstruction->InstructionName, ECardDisplayInfoLocType::ILT_Card});
-	InfoArguments.Add(FCardDisplayInfoArgument{FString(TEXT("Default")), GetLevelModifierText(), ECardDisplayInfoLocType::ILT_RawNoStyle});
+	InfoArguments.Add(FCardDisplayInfoArgument{FString(TEXT("Default")), GetLevelModifierText(), ECardDisplayInfoLocType::ILT_Raw, true});
 
 	Result.Arguments = InfoArguments;
 

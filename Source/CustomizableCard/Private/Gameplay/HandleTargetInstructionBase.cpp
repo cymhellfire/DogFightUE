@@ -98,7 +98,7 @@ void UHandleTargetInstructionBase::HandleActorTarget(AActor* Target)
 		{
 			if (APlayerState* PlayerState = TargetPawn->GetPlayerState())
 			{
-				TargetName = PlayerState->GetPlayerName();
+				TargetName = FString::Printf(TEXT("<PlayerName>%s</>"), *PlayerState->GetPlayerName());
 			}
 		}
 

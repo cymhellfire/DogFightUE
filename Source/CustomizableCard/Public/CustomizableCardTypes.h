@@ -61,7 +61,6 @@ enum class ECardDisplayInfoLocType : uint8
 	ILT_Projectile		UMETA(DisplayName="Projectile", ToolTip="Use localization from ST_Projectile file."),
 	ILT_Buff			UMETA(DisplayName="Buff", ToolTip="Use localization from ST_Buff file."),
 	ILT_Raw				UMETA(DisplayName="Raw", ToolTip="Not use any localization."),
-	ILT_RawNoStyle		UMETA(DisplayName="RawNoStyle", ToolTip="No localization and no style."),
 	ILT_Image			UMETA(DisplayName="Image", ToolTip="Use image defined in DT_RichTextImageSet."),
 	ILT_CardEnhance		UMETA(DisplayName="CardEnhancement", ToolTip="Use localization from ST_CardEnhance."),
 };
@@ -80,40 +79,49 @@ struct FCardDisplayInfoArgument
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="CardDisplayArgument")
 	ECardDisplayInfoLocType LocalizeType;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="CardDisplayArgument")
+	bool DisableRichTextStyle;
+
 	FText GetLocalizedText() const
 	{
 		if (LocalizeType == ECardDisplayInfoLocType::ILT_Image)
 		{
 			return FText::FromString(FString::Printf(TEXT("<img id=\"%s\"/>"), *StringValue));
 		}
-		else if (LocalizeType == ECardDisplayInfoLocType::ILT_RawNoStyle)
-		{
-			return FText::FromString(StringValue);
-		}
 
-		FFormatOrderedArguments FormatArgumentValues;
-		FormatArgumentValues.Add(FFormatArgumentValue(FText::FromString(FString::Printf(TEXT("<%s>"), *DisplayStyle))));
+		// Get localized text based on type
+		FText LocalizedText;
 		switch(LocalizeType)
 		{
 		case ECardDisplayInfoLocType::ILT_Card:
-			FormatArgumentValues.Add(FFormatArgumentValue(FText::FromStringTable(ST_CARD_LOC, StringValue)));
+			LocalizedText = FText::FromStringTable(ST_CARD_LOC, StringValue);
 			break;
 		case ECardDisplayInfoLocType::ILT_Projectile:
-			FormatArgumentValues.Add(FFormatArgumentValue(FText::FromStringTable(ST_PROJECTILE_LOC, StringValue)));
+			LocalizedText = FText::FromStringTable(ST_PROJECTILE_LOC, StringValue);
 			break;
 		case ECardDisplayInfoLocType::ILT_Buff:
-			FormatArgumentValues.Add(FFormatArgumentValue(FText::FromStringTable(ST_BUFF_LOC, StringValue)));
+			LocalizedText = FText::FromStringTable(ST_BUFF_LOC, StringValue);
 			break;
 		case ECardDisplayInfoLocType::ILT_Raw:
-			FormatArgumentValues.Add(FFormatArgumentValue(FText::FromString(StringValue)));
+			LocalizedText = FText::FromString(StringValue);
 			break;
 		case ECardDisplayInfoLocType::ILT_CardEnhance:
-			FormatArgumentValues.Add(FFormatArgumentValue(FText::FromStringTable(ST_CARD_ENHANCE_LOC, StringValue)));
+			LocalizedText = FText::FromStringTable(ST_CARD_ENHANCE_LOC, StringValue);
 			break;
 		default:
-			FormatArgumentValues.Add(FFormatArgumentValue(FText::FromString(TEXT("Invalid Argument"))));
+			LocalizedText = FText::FromString(TEXT("Invalid Argument"));
 			break;
 		}
+
+		if (DisableRichTextStyle)
+		{
+			return LocalizedText;
+		}
+
+		// Surround by style
+		FFormatOrderedArguments FormatArgumentValues;
+		FormatArgumentValues.Add(FFormatArgumentValue(FText::FromString(FString::Printf(TEXT("<%s>"), *DisplayStyle))));
+		FormatArgumentValues.Add(FFormatArgumentValue(LocalizedText));
 		FormatArgumentValues.Add(FFormatArgumentValue(FText::FromString(TEXT("</>"))));
 
 		return FText::Format(FText::FromStringTable(ST_CARD_LOC, TEXT("ArgumentFormatString")), FormatArgumentValues);
@@ -148,7 +156,6 @@ struct FUpgradablePropertyDisplayInfo
 		case ECardDisplayInfoLocType::ILT_Buff: 
 			return FText::FromStringTable(ST_BUFF_LOC, StringValue);
 		case ECardDisplayInfoLocType::ILT_Raw: 
-		case ECardDisplayInfoLocType::ILT_RawNoStyle:
 			return FText::FromString(StringValue);
 		case ECardDisplayInfoLocType::ILT_CardEnhance:
 			return FText::FromStringTable(ST_CARD_ENHANCE_LOC, StringValue);
@@ -211,8 +218,6 @@ struct FCardDescriptionItemInfo
 			return FText::Format(FText::FromStringTable(ST_BUFF_LOC, StringValue), FormatArgumentValues);
 		case ECardDisplayInfoLocType::ILT_Raw:
 			return FText::Format(FText::FromString(StringValue), FormatArgumentValues);
-		case ECardDisplayInfoLocType::ILT_RawNoStyle:
-			return FText::FromString(StringValue);
 		case ECardDisplayInfoLocType::ILT_Image:
 			return FText::FromString(FString::Printf(TEXT("<img id=\"%s\"/>"), *StringValue));
 		case ECardDisplayInfoLocType::ILT_CardEnhance:
@@ -383,7 +388,8 @@ public:
 			Arguments.Add(FCardDisplayInfoArgument{
 				TEXT("Default"),
 				FString::Printf(TEXT("%d"), Value),
-				ECardDisplayInfoLocType::ILT_RawNoStyle
+				ECardDisplayInfoLocType::ILT_Raw,
+				true
 			});
 		}
 		DisplayInfo.ValueArray = Arguments;
