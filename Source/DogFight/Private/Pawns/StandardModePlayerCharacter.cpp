@@ -225,6 +225,8 @@ void AStandardModePlayerCharacter::Dead()
 {
 	bAlive = false;
 
+	OnCharacterDead.Broadcast();
+
 	// Enable physical animation
 	bRagdollAutoRecover = false;
 	MulticastSetRagdollActive(true);
@@ -232,8 +234,6 @@ void AStandardModePlayerCharacter::Dead()
 	{
 		GetWorldTimerManager().ClearTimer(RagdollAutoRecoverTimerHandle);
 	}
-
-	OnCharacterDead.Broadcast();
 }
 
 // Called every frame
