@@ -52,6 +52,16 @@ void ACardBase::ClearInstructions()
 			Instruction->ConditionalBeginDestroy();
 		}
 	}
+
+	if (ExtraInstructions.Num() > 0)
+	{
+		for (int i = ExtraInstructions.Num() - 1; i >= 0; --i)
+		{
+			UCardInstructionBase* Instruction = ExtraInstructions[i];
+			ExtraInstructions.Remove(Instruction);
+			Instruction->ConditionalBeginDestroy();
+		}
+	}
 }
 
 void ACardBase::AddCardEnhancement(UCardEnhancement* NewCardEnhancement)
@@ -103,6 +113,26 @@ FCardInstanceDisplayInfo ACardBase::GetCardDisplayInfo_Implementation()
 	return Result;
 }
 
+void ACardBase::IncreaseExecutingInstructionCounter()
+{
+	ExecutingInstructionCount++;
+}
+
+void ACardBase::DecreaseExecutingInstructionCounter()
+{
+	ExecutingInstructionCount--;
+
+	OnInstructionFinished();
+}
+
+void ACardBase::AddExtraCardInstruction(UCardInstructionBase* NewInstruction)
+{
+	if (!ExtraInstructions.Contains(NewInstruction))
+	{
+		ExtraInstructions.Add(NewInstruction);
+	}
+}
+
 void ACardBase::Execute()
 {
 	// Broadcast delegate
@@ -146,17 +176,11 @@ bool ACardBase::ExecuteNextInstruction()
 		UCardInstructionBase* CardInstruction = InstructionQueue[CurrentInstructionIndex];
 		if (IsValid(CardInstruction))
 		{
-			// Register callback for instruction
-			CardInstruction->OnInstructionFinished.AddDynamic(this, &ACardBase::OnInstructionFinished);
-
 			// Check if this instruction is asynchronous type
 			bAsynchronousFlag = CardInstruction->ExecuteType == ECardInstructionExecuteType::Asynchronous;
 
 			// Execute the instruction
 			CardInstruction->BeginExecute();
-
-			// Increase counter
-			ExecutingInstructionCount++;
 		}
 		else
 		{
@@ -170,14 +194,8 @@ bool ACardBase::ExecuteNextInstruction()
 	return bAsynchronousFlag;
 }
 
-void ACardBase::OnInstructionFinished(UCardInstructionBase* InstructionBase)
+void ACardBase::OnInstructionFinished()
 {
-	// Remove the delegate callback after triggered
-	InstructionBase->OnInstructionFinished.RemoveDynamic(this, &ACardBase::OnInstructionFinished);
-
-	// Decrease executing instruction counter
-	ExecutingInstructionCount--;
-
 	// Try to execute next instruction when all instruction are finished
 	if (ExecutingInstructionCount == 0)
 	{

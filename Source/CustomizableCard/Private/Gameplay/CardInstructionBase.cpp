@@ -46,6 +46,9 @@ void UCardInstructionBase::BeginExecute()
 	// Register tick for execution
 	TickDelegate = FTickerDelegate::CreateUObject(this, &UCardInstructionBase::Tick);
 	TickDelegateHandle = FTicker::GetCoreTicker().AddTicker(TickDelegate);
+
+	// Increase counter of owner card
+	OwnerCard->IncreaseExecutingInstructionCounter();
 }
 
 void UCardInstructionBase::Execute()
@@ -64,8 +67,8 @@ void UCardInstructionBase::Finish()
 
 	bIsFinished = true;
 
-	// Broadcast the callback
-	OnInstructionFinished.Broadcast(this);
+	// Decrease counter of owner card
+	OwnerCard->DecreaseExecutingInstructionCounter();
 }
 
 APawn* UCardInstructionBase::GetOwnerControlledPawn() const

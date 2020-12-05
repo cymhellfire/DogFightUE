@@ -93,6 +93,15 @@ public:
 		return TEST_MULTI_CARD_CATEGORY(CardCategories, CategoryFlags);
 	}
 
+	/** Increase the ExecutingInstructionCount by 1. */
+	void IncreaseExecutingInstructionCounter();
+
+	/** Decrease the ExecutingInstructionCount by 1. */
+	void DecreaseExecutingInstructionCounter();
+
+	/** Add a new instruction which is not directly used by card. */
+	void AddExtraCardInstruction(UCardInstructionBase* NewInstruction);
+
 protected:
 	/** Do prepare operations before card executing phase. */
 	virtual void Prepare() {};
@@ -110,7 +119,7 @@ protected:
 	virtual bool ExecuteNextInstruction();
 
 	UFUNCTION()
-	virtual void OnInstructionFinished(UCardInstructionBase* InstructionBase);
+	virtual void OnInstructionFinished();
 
 	UFUNCTION(BlueprintCallable, Category="CustomizableCard", meta=(DisplayName="GetIntPropertyDisplayInfo"))
 	FUpgradablePropertyDisplayInfo GetPropertyDisplayInfo(const FUpgradableIntProperty& Property) const;
@@ -145,4 +154,8 @@ protected:
 	int32 ExecutingInstructionCount;
 
 	AController* OwnerPlayerController;
+
+	/** Array of instruction are not directly executed by card. (AnimNotify_Delegate owning instruction and etc.) */
+	UPROPERTY()
+	TArray<UCardInstructionBase*> ExtraInstructions;
 };

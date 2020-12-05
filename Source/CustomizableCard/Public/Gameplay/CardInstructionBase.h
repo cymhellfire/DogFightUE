@@ -39,12 +39,6 @@ class CUSTOMIZABLECARD_API UCardInstructionBase : public UObject
 	GENERATED_BODY()
 
 public:
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInstructionFinishedSignature, UCardInstructionBase*, Instruction);
-
-	/** Fired when all operations of this instruction are finished. */
-	FInstructionFinishedSignature OnInstructionFinished;
-
-public:
 	UCardInstructionBase(const FObjectInitializer& ObjectInitializer);
 
 	UFUNCTION(BlueprintCallable, Category="CustomizableCard|Instruction")
