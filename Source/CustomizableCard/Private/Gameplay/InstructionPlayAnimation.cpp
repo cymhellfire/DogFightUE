@@ -8,6 +8,7 @@
 #include "GameFramework/Character.h"
 #include "AnimNotify_Delegate.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "GameAnimatedCharacterInterface.h"
 
 UInstructionPlayAnimation::UInstructionPlayAnimation(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -21,16 +22,15 @@ void UInstructionPlayAnimation::Execute()
 	{
 		if (ACharacter* UserCharacter = Cast<ACharacter>(CardUserPlayerController->GetActualPawn()))
 		{
-			USkeletalMeshComponent* SkeletalMeshComponent = UserCharacter->GetMesh();
+			//USkeletalMeshComponent* SkeletalMeshComponent = UserCharacter->GetMesh();
 
 			// Bind all actions
 			BindAllDelegateActions();
 
 			// Play montage
-			if (SkeletalMeshComponent)
+			if (IGameAnimatedCharacterInterface* AnimatedCharacter = Cast<IGameAnimatedCharacterInterface>(UserCharacter))
 			{
-				UAnimInstance* AnimInstance = SkeletalMeshComponent->GetAnimInstance();
-				float Duration = AnimInstance->Montage_Play(MontageToPlay);
+				const float Duration = AnimatedCharacter->PlayMontage(MontageToPlay);
 				if (Duration == 0.f)
 				{
 					UE_LOG(LogCustomizableCard, Error, TEXT("Failed to play montage: %s"), *MontageToPlay->GetPathName());
@@ -43,6 +43,23 @@ void UInstructionPlayAnimation::Execute()
 					World->GetTimerManager().SetTimer(AnimationWaitingTimerHandle, this, &UInstructionPlayAnimation::OnAnimationFinished, Duration);
 				}
 			}
+
+			// if (SkeletalMeshComponent)
+			// {
+			// 	UAnimInstance* AnimInstance = SkeletalMeshComponent->GetAnimInstance();
+			// 	float Duration = AnimInstance->Montage_Play(MontageToPlay);
+			// 	if (Duration == 0.f)
+			// 	{
+			// 		UE_LOG(LogCustomizableCard, Error, TEXT("Failed to play montage: %s"), *MontageToPlay->GetPathName());
+			//
+			// 		Finish();
+			// 	}
+			// 	else
+			// 	{
+			// 		UWorld* World = GetWorld();
+			// 		World->GetTimerManager().SetTimer(AnimationWaitingTimerHandle, this, &UInstructionPlayAnimation::OnAnimationFinished, Duration);
+			// 	}
+			// }
 		}
 	}
 }

@@ -170,6 +170,26 @@ int32 AStandardModePlayerCharacter::GetMagicalArmor() const
 	return 0;
 }
 
+float AStandardModePlayerCharacter::PlayMontage(UAnimMontage* MontageToPlay)
+{
+	// Play montage across network
+	MulticastPlayMontage(MontageToPlay);
+
+	return IsValid(MontageToPlay) ? MontageToPlay->GetPlayLength() : 0.f;
+}
+
+void AStandardModePlayerCharacter::MulticastPlayMontage_Implementation(UAnimMontage* MontageToPlay)
+{
+	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
+	{
+		const float Result = AnimInstance->Montage_Play(MontageToPlay);
+		if (Result == 0)
+		{
+			UE_LOG(LogAnimation, Error, TEXT("Failed to play montage."));
+		}
+	}
+}
+
 // Called when the game starts or when spawned
 void AStandardModePlayerCharacter::BeginPlay()
 {

@@ -4,11 +4,12 @@
 
 #include "DogFight.h"
 #include "ActorInterfaces.h"
+#include "GameAnimatedCharacterInterface.h"
 #include "GameFramework/Character.h"
 #include "StandardModePlayerCharacter.generated.h"
 
 UCLASS(Config=Game)
-class DOGFIGHT_API AStandardModePlayerCharacter : public ACharacter, public IDamageableActorInterface
+class DOGFIGHT_API AStandardModePlayerCharacter : public ACharacter, public IDamageableActorInterface, public IGameAnimatedCharacterInterface
 {
 	GENERATED_BODY()
 
@@ -31,6 +32,10 @@ public:
 	virtual void SetMagicalArmor(int32 NewArmor) override;
 	virtual int32 GetMagicalArmor() const override;
 #pragma endregion IDamageableActorInterface
+
+#pragma region IGameAnimatedCharacterInterface
+	virtual float PlayMontage(UAnimMontage* MontageToPlay) override;
+#pragma endregion IGameAnimatedCharacterInterface
 
 protected:
 	// Called when the game starts or when spawned
@@ -69,6 +74,9 @@ protected:
 
 	UFUNCTION()
 	void OnRep_SyncRagdollRotation();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastPlayMontage(UAnimMontage* MontageToPlay);
 
 public:
 	/** Set name for this unit. */
