@@ -5,6 +5,7 @@
 #include "CardBase.h"
 #include "GameCardUserPlayerControllerInterface.h"
 #include "GameProjectileInterface.h"
+#include "GameFramework/Character.h"
 
 UInstructionFireProjectile::UInstructionFireProjectile(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -44,8 +45,21 @@ void UInstructionFireProjectile::HandlePositionTarget(FVector Position)
 
 		const FRotator SpawnRotation = SpawnDirection.Rotation();
 		// Calculate the spawn position
-		FVector SpawnPosition = GetOwnerControlledPawn()->GetActorLocation();
-		SpawnPosition += SpawnRotation.RotateVector(FVector(ProjectileSpawnDistance, 0, ProjectileSpawnHeight));
+		FVector SpawnPosition;
+		if (SpawnLocationType == ESpawnLocationType::SLT_Offset)
+		{
+			SpawnPosition = GetOwnerControlledPawn()->GetActorLocation();
+			SpawnPosition += SpawnRotation.RotateVector(FVector(ProjectileSpawnDistance, 0, ProjectileSpawnHeight));
+		}
+		else if (SpawnLocationType == ESpawnLocationType::SLT_Socket)
+		{
+			APawn* OwnerPawn = GetOwnerControlledPawn();
+			if (ACharacter* OwnerCharacter = Cast<ACharacter>(OwnerPawn))
+			{
+				USkeletalMeshComponent* MeshComponent = OwnerCharacter->GetMesh();
+				SpawnPosition = MeshComponent->GetSocketLocation(SocketName);
+			}
+		}
 
 		// Calculate launch direction
 		FVector FireDirection = Position - SpawnPosition;
@@ -65,8 +79,21 @@ void UInstructionFireProjectile::HandleDirectionTarget(FVector Direction)
 
 		const FRotator SpawnRotation = FireDirection.Rotation();
 		// Calculate spawn position
-		FVector SpawnPosition = GetOwnerControlledPawn()->GetActorLocation();
-		SpawnPosition += SpawnRotation.RotateVector(FVector(ProjectileSpawnDistance, 0, ProjectileSpawnHeight));
+		FVector SpawnPosition;
+		if (SpawnLocationType == ESpawnLocationType::SLT_Offset)
+		{
+			SpawnPosition= GetOwnerControlledPawn()->GetActorLocation();
+			SpawnPosition += SpawnRotation.RotateVector(FVector(ProjectileSpawnDistance, 0, ProjectileSpawnHeight));
+		}
+		else if (SpawnLocationType == ESpawnLocationType::SLT_Socket)
+		{
+			APawn* OwnerPawn = GetOwnerControlledPawn();
+			if (ACharacter* OwnerCharacter = Cast<ACharacter>(OwnerPawn))
+			{
+				USkeletalMeshComponent* MeshComponent = OwnerCharacter->GetMesh();
+				SpawnPosition = MeshComponent->GetSocketLocation(SocketName);
+			}
+		}
 
 		SpawnProjectileAndLaunch(SpawnPosition, SpawnRotation, FireDirection, false);
 	}

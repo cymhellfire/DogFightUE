@@ -9,6 +9,13 @@
 
 class IGameProjectileInterface;
 
+UENUM(BlueprintType)
+enum class ESpawnLocationType : uint8
+{
+	SLT_Offset			UMETA(DisplayName="Offset", Tooltip="Offset based on user pawn location."),
+	SLT_Socket			UMETA(DisplayName="Socket", Tooltip="At the specified socket location of user pawn."),
+};
+
 /**
  * Instruction that is able to shoot projectiles.
  */
@@ -47,13 +54,19 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Instruction")
 	FUpgradableIntProperty MuzzleSpeed;
 
-	/** How far the projectile will be spawned from user? */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Instruction")
+	ESpawnLocationType SpawnLocationType;
+
+	/** How far the projectile will be spawned from user? */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Instruction", meta=(EditCondition="SpawnLocationType==ESpawnLocationType::SLT_Offset"))
 	float ProjectileSpawnDistance;
 
 	/** The initial height of projectiles spawned. (In local space of character pawn.) */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Instruction")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Instruction", meta=(EditCondition="SpawnLocationType==ESpawnLocationType::SLT_Offset"))
 	float ProjectileSpawnHeight;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Instruction", meta=(EditCondition="SpawnLocationType==ESpawnLocationType::SLT_Socket"))
+	FName SocketName;
 
 protected:
 	/** List of projectiles launched by this instruction. */

@@ -44,6 +44,8 @@ protected:
 
 	virtual void HandleDirectionTarget(FVector Direction);
 
+	virtual void OnHandledAllTarget() {};
+
 	int32 CurrentTargetIndex;
 
 	/** Does this instruction invoke Finish() automatically at the end of Execute()? (True as default)*/

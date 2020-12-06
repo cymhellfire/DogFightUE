@@ -11,6 +11,7 @@ enum class EAnimNotifyDelegateType : uint8
 {
 	DT_Default,
 	DT_LaunchProjectile,
+	DT_SpawnActor,
 	DT_ActionFinished,
 };
 

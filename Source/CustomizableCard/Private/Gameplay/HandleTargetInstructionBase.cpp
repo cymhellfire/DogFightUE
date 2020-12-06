@@ -55,6 +55,8 @@ void UHandleTargetInstructionBase::Execute()
 
 	while(!ProcessTarget()) { }
 
+	OnHandledAllTarget();
+
 	if (bAutoFinish)
 	{
 		Finish();
