@@ -22,8 +22,6 @@ void UInstructionPlayAnimation::Execute()
 	{
 		if (ACharacter* UserCharacter = Cast<ACharacter>(CardUserPlayerController->GetActualPawn()))
 		{
-			//USkeletalMeshComponent* SkeletalMeshComponent = UserCharacter->GetMesh();
-
 			// Bind all actions
 			BindAllDelegateActions();
 
@@ -43,23 +41,6 @@ void UInstructionPlayAnimation::Execute()
 					World->GetTimerManager().SetTimer(AnimationWaitingTimerHandle, this, &UInstructionPlayAnimation::OnAnimationFinished, Duration);
 				}
 			}
-
-			// if (SkeletalMeshComponent)
-			// {
-			// 	UAnimInstance* AnimInstance = SkeletalMeshComponent->GetAnimInstance();
-			// 	float Duration = AnimInstance->Montage_Play(MontageToPlay);
-			// 	if (Duration == 0.f)
-			// 	{
-			// 		UE_LOG(LogCustomizableCard, Error, TEXT("Failed to play montage: %s"), *MontageToPlay->GetPathName());
-			//
-			// 		Finish();
-			// 	}
-			// 	else
-			// 	{
-			// 		UWorld* World = GetWorld();
-			// 		World->GetTimerManager().SetTimer(AnimationWaitingTimerHandle, this, &UInstructionPlayAnimation::OnAnimationFinished, Duration);
-			// 	}
-			// }
 		}
 	}
 }
