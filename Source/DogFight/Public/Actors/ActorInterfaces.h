@@ -20,6 +20,9 @@ public:
 	/** Get the damage receive component of this actor. */
 	virtual UReceiveDamageComponent* GetDamageReceiveComponent() { return nullptr; }
 
+	/** Change target invincible state. */
+	virtual void SetInvincible(bool bActive) {}
+
 	/** Set Physical Armor value. */
 	virtual void SetPhysicalArmor(int32 NewArmor) {}
 

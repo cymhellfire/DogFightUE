@@ -27,6 +27,7 @@ public:
 #pragma region IDamageableActorInterface
 
 	virtual UReceiveDamageComponent* GetDamageReceiveComponent() override;
+	virtual void SetInvincible(bool bActive) override;
 	virtual void SetPhysicalArmor(int32 NewArmor) override;
 	virtual int32 GetPhysicalArmor() const override;
 	virtual void SetMagicalArmor(int32 NewArmor) override;

@@ -14,6 +14,10 @@ float UStandardModeDamageCalculator::CalculateActualDamage(AActor* DamageTaker, 
 	{
 		if (UReceiveDamageComponent* ReceiveDamageComponent = DamageableActor->GetDamageReceiveComponent())
 		{
+			// Erase damage if target is invincible
+			if (ReceiveDamageComponent->bInvincible)
+				return 0;
+
 			// Check the damage type
 			UDogFightDamageType* DogFightDamageType = Cast<UDogFightDamageType>(DamageEvent.DamageTypeClass->GetDefaultObject());
 			if (DogFightDamageType != nullptr)

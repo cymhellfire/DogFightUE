@@ -23,6 +23,8 @@ public:
 	TArray<FActorArmor> GetExtraArmors() const { return ExtraArmorList; }
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="ReceiveDamageComponent", Replicated)
+	bool bInvincible;
 
 	/** The armor to reduce any physical type damage. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="ReceiveDamageComponent", Replicated)

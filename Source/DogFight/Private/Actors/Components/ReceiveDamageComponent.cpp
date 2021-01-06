@@ -15,6 +15,7 @@ void UReceiveDamageComponent::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME(UReceiveDamageComponent, bInvincible);
 	DOREPLIFETIME(UReceiveDamageComponent, PhysicalArmor);
 	DOREPLIFETIME(UReceiveDamageComponent, MagicalArmor);
 	DOREPLIFETIME(UReceiveDamageComponent, ExtraArmorList);

@@ -19,7 +19,11 @@ ABuffBase::ABuffBase()
 
 void ABuffBase::SetLifetime(float NewLifetime)
 {
-	
+	AStandardGameState* StandardGameState = GetWorld()->GetGameState<AStandardGameState>();
+	if (StandardGameState != nullptr)
+	{
+		LifetimeQueue = StandardGameState->GetGameRoundsTimeline()->GetLifetime(NewLifetime);
+	}
 }
 
 void ABuffBase::SetSourcePlayerController(AController* PlayerController)
@@ -97,6 +101,8 @@ void ABuffBase::ApplyBuff()
 		VfxActor = GetWorld()->SpawnActor<AVfxBase>(VfxClass);
 		// Set the vfx target actor
 		VfxActor->SetTargetActor(TargetActor);
+		// Set owner
+		VfxActor->OwnerController = SourcePlayerController;
 	}
 }
 

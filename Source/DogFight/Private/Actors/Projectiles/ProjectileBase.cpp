@@ -4,10 +4,13 @@
 #include "ProjectileBase.h"
 
 #include "CustomizableCard.h"
+#include "DogFightGameModeBase.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/AudioComponent.h"
 #include "VfxBase.h"
+#include "ShieldBase.h"
+#include "ShieldManager.h"
 
 // Sets default values
 AProjectileBase::AProjectileBase()
@@ -22,6 +25,7 @@ AProjectileBase::AProjectileBase()
 	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
 	CollisionComponent->InitSphereRadius(15.0f);
 	CollisionComponent->OnComponentHit.AddDynamic(this, &AProjectileBase::OnHit);
+	CollisionComponent->SetCollisionProfileName(FName(TEXT("Projectile")));
 	RootComponent = CollisionComponent;
 
 	// Create Projectile Movement Component
@@ -48,8 +52,39 @@ void AProjectileBase::BeginPlay()
 	AudioComponent->Play();
 }
 
-void AProjectileBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-	FVector NormalImpulse, const FHitResult& Hit)
+void AProjectileBase::SetupShield()
+{
+	if (GetNetMode() == NM_Client)
+		return;
+
+	if (ADogFightGameModeBase* GameModeBase = Cast<ADogFightGameModeBase>(GetWorld()->GetAuthGameMode()))
+	{
+		if (AShieldManager* ShieldManager = GameModeBase->GetShieldManager())
+		{
+			TArray<AShieldBase*> ShieldList = ShieldManager->GetAllShield();
+			for (AShieldBase* Shield : ShieldList)
+			{
+				// Ignore the shield collision based on shield type
+				if (!Shield->CheckShouldBlockProjectile(this))
+				{
+					MulticastIgnoreActorWhileMoving(Shield, true);
+				}
+			}
+
+			// Register callback
+			ShieldManager->OnShieldRegistered.AddDynamic(this, &AProjectileBase::OnShieldRegistered);
+			ShieldManager->OnShieldUnregistered.AddDynamic(this, &AProjectileBase::OnShieldUnregistered);
+		}
+	}
+}
+
+void AProjectileBase::MulticastIgnoreActorWhileMoving_Implementation(AActor* Target, bool bShouldIgnore)
+{
+	// Update collision
+	CollisionComponent->IgnoreActorWhenMoving(Target, bShouldIgnore);
+}
+
+void AProjectileBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Hit on %s"), *OtherActor->GetName()));
 
@@ -105,6 +140,28 @@ void AProjectileBase::OnDecayTimerFinished()
 	// Destroy this projectile
 	// TODO: Pool projectiles in the future
 	Destroy();
+}
+
+void AProjectileBase::OnShieldRegistered(AShieldBase* NewShield)
+{
+	if (ADogFightGameModeBase* GameModeBase = Cast<ADogFightGameModeBase>(GetWorld()->GetAuthGameMode()))
+	{
+		if (GameModeBase->GetPlayersRelation(OwnerController, NewShield->OwnerController) == EPlayerRelation::PR_Ally)
+		{
+			MulticastIgnoreActorWhileMoving(NewShield, true);
+		}
+	}
+}
+
+void AProjectileBase::OnShieldUnregistered(AShieldBase* Shield)
+{
+	if (ADogFightGameModeBase* GameModeBase = Cast<ADogFightGameModeBase>(GetWorld()->GetAuthGameMode()))
+	{
+		if (GameModeBase->GetPlayersRelation(OwnerController, Shield->OwnerController) == EPlayerRelation::PR_Ally)
+		{
+			MulticastIgnoreActorWhileMoving(Shield, false);
+		}
+	}
 }
 
 // Called every frame
@@ -183,6 +240,8 @@ void AProjectileBase::Dead()
 	if (IsValid(VfxOnDead))
 	{
 		AVfxBase* Vfx = GetWorld()->SpawnActor<AVfxBase>(VfxOnDead);
+		// Set owner
+		Vfx->OwnerController = OwnerController;
 
 		// Synchronize Vfx location with projectile
 		Vfx->SetActorLocation(GetActorLocation());
@@ -201,6 +260,27 @@ void AProjectileBase::Dead()
 		// Destroy this projectile
 		// TODO: Pool projectiles in the future
 		Destroy();
+	}
+}
+
+void AProjectileBase::BeginDestroy()
+{
+	Super::BeginDestroy();
+
+	// Unregister callback
+	if (GetNetMode() != NM_Client)
+	{
+		if (UWorld* MyWorld = GetWorld())
+		{
+			if (ADogFightGameModeBase* GameModeBase = Cast<ADogFightGameModeBase>(MyWorld->GetAuthGameMode()))
+			{
+				if (AShieldManager* ShieldManager = GameModeBase->GetShieldManager())
+				{
+					ShieldManager->OnShieldRegistered.RemoveDynamic(this, &AProjectileBase::OnShieldRegistered);
+					ShieldManager->OnShieldUnregistered.RemoveDynamic(this, &AProjectileBase::OnShieldUnregistered);
+				}
+			}
+		}
 	}
 }
 
@@ -268,6 +348,9 @@ void AProjectileBase::LaunchAtDirection(const FVector& Direction)
 void AProjectileBase::SetOwnerController(AController* NewController)
 {
 	OwnerController = NewController;
+
+	// Check all shield
+	SetupShield();
 }
 
 void AProjectileBase::SetOwnerCharacter(AActor* NewActor)

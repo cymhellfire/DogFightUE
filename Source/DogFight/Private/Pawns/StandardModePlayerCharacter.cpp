@@ -134,6 +134,14 @@ UReceiveDamageComponent* AStandardModePlayerCharacter::GetDamageReceiveComponent
 	return ReceiveDamageComponent;
 }
 
+void AStandardModePlayerCharacter::SetInvincible(bool bActive)
+{
+	if (ReceiveDamageComponent != nullptr)
+	{
+		ReceiveDamageComponent->bInvincible = bActive;
+	}
+}
+
 void AStandardModePlayerCharacter::SetPhysicalArmor(int32 NewArmor)
 {
 	if (ReceiveDamageComponent != nullptr)
@@ -425,6 +433,12 @@ void AStandardModePlayerCharacter::SetAimingDirection(FVector NewDirection)
 	// Decide rotating clockwise or not
 	DesireFacingRotation = NewDirection.Rotation();
 	float YawDelta = DesireFacingRotation.Yaw - GetActorRotation().Yaw;
+
+	// Filter little direction changes
+	if (FMath::Abs(YawDelta) < 1.f)
+	{
+		return;
+	}
 
 	// Keep the angle in range [0,360)
 	if (YawDelta < 0)

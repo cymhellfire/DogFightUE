@@ -13,6 +13,7 @@
 class USphereComponent;
 class UProjectileMovementComponent;
 class AVfxBase;
+class AShieldBase;
 class UAudioComponent;
 
 UCLASS()
@@ -38,6 +39,8 @@ public:
 	 */
 	virtual void Dead();
 
+	virtual void BeginDestroy() override;
+
 #pragma region GameProjectileInterface
 	virtual void AdjustGravityScale(float NewGravityScale) override;
 	virtual void SetDamage(float NewDamage) override;
@@ -54,6 +57,11 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	virtual void SetupShield();
+
+	UFUNCTION(NetMulticast, Reliable)
+	virtual void MulticastIgnoreActorWhileMoving(AActor* Target, bool bShouldIgnore);
 
 	UFUNCTION()
 	/** Handle the collision of projectiles */
@@ -73,6 +81,12 @@ protected:
 
 	UFUNCTION()
 	void OnDecayTimerFinished();
+
+	UFUNCTION()
+	void OnShieldRegistered(AShieldBase* NewShield);
+
+	UFUNCTION()
+	void OnShieldUnregistered(AShieldBase* Shield);
 
 public:
 

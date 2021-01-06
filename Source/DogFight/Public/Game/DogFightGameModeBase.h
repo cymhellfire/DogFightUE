@@ -8,6 +8,14 @@
 #include "DogFightGameModeBase.generated.h"
 
 class UDamageCalculatorBase;
+class AShieldManager;
+
+UENUM(BlueprintType)
+enum class EPlayerRelation : uint8
+{
+	PR_Enemy,
+	PR_Ally,
+};
 
 /**
  * 
@@ -24,6 +32,8 @@ public:
 
 	virtual void Logout(AController* Exiting) override;
 
+	virtual void PostInitializeComponents() override;
+
 	/** Finish current game and pump all players to main menu. */
 	virtual void RequestFinishAndExitToMainMenu();
 
@@ -32,9 +42,14 @@ public:
 
 	virtual float CalculateDamage(AActor* DamageTaker, float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 
+	virtual EPlayerRelation GetPlayersRelation(AController* PlayerA, AController* PlayerB);
+
+	virtual AShieldManager* GetShieldManager() const { return ShieldManager; }
+
 protected:
 
 	virtual void BeginPlay() override;
+
 protected:
 	
 	/** List of all player controller in current game. */
@@ -46,4 +61,7 @@ protected:
 
 	UPROPERTY()
 	UDamageCalculatorBase* DamageCalculator;
+
+	UPROPERTY()
+	AShieldManager* ShieldManager;
 };

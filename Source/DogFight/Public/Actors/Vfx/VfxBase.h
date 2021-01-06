@@ -17,7 +17,7 @@ public:
 	// Sets default values for this actor's properties
 	AVfxBase();
 
-	void SetTargetActor(AActor* Target);
+	virtual void SetTargetActor(AActor* Target);
 
 protected:
 	// Called when the game starts or when spawned
@@ -34,6 +34,9 @@ public:
 	/** The target socket when this vfx attach to actor. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Vfx")
 	FName SocketName;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Vfx")
+	AController* OwnerController;
 
 protected:
 

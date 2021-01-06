@@ -505,8 +505,9 @@ void AStandardModePlayerController::OnSetDestinationPressed()
 		}
 		break;
 	case EStandardModePlayerControllerInputMode::IM_TargetingActor:
-		GetHitResultUnderCursor(ECC_Camera, false, HitResult);
-		
+		/** Use customized trace channel 'SelectActor' here. */
+		GetHitResultUnderCursor(ECC_GameTraceChannel1, false, HitResult);
+
 		// Get the actor clicked
 		if (HitResult.bBlockingHit)
 		{

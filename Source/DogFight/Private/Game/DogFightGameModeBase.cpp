@@ -5,6 +5,7 @@
 
 #include "DogFightPlayerController.h"
 #include "DamageCalculatorBase.h"
+#include "ShieldManager.h"
 
 void ADogFightGameModeBase::RequestFinishAndExitToMainMenu()
 {
@@ -46,6 +47,11 @@ float ADogFightGameModeBase::CalculateDamage(AActor* DamageTaker, float Damage, 
 	}
 
 	return Damage;
+}
+
+EPlayerRelation ADogFightGameModeBase::GetPlayersRelation(AController* PlayerA, AController* PlayerB)
+{
+	return PlayerA == PlayerB ? EPlayerRelation::PR_Ally : EPlayerRelation::PR_Enemy;
 }
 
 void ADogFightGameModeBase::BeginPlay()
@@ -97,4 +103,19 @@ void ADogFightGameModeBase::Logout(AController* Exiting)
 	}
 
 	Super::Logout(Exiting);
+}
+
+void ADogFightGameModeBase::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	if (UWorld* MyWorld = GetWorld())
+	{
+		// Create Shield Manager
+		ShieldManager = MyWorld->SpawnActor<AShieldManager>(AShieldManager::StaticClass());
+		if (ShieldManager)
+		{
+			ShieldManager->Rename(TEXT("ShieldManager"));
+		}
+	}
 }
