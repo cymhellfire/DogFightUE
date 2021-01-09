@@ -28,10 +28,8 @@ public:
 
 	virtual UReceiveDamageComponent* GetDamageReceiveComponent() override;
 	virtual void SetInvincible(bool bActive) override;
-	virtual void SetPhysicalArmor(int32 NewArmor) override;
-	virtual int32 GetPhysicalArmor() const override;
-	virtual void SetMagicalArmor(int32 NewArmor) override;
-	virtual int32 GetMagicalArmor() const override;
+	virtual bool AddExtraArmor(FActorArmor& NewArmor) override;
+	virtual bool RemoveExtraArmor(FActorArmor& TargetArmor) override;
 #pragma endregion IDamageableActorInterface
 
 #pragma region IGameAnimatedCharacterInterface

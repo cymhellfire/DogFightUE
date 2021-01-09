@@ -11,6 +11,31 @@ UReceiveDamageComponent::UReceiveDamageComponent()
 
 }
 
+bool UReceiveDamageComponent::AddExtraArmor(FActorArmor& NewArmor)
+{
+	if (!ExtraArmorList.Contains(NewArmor))
+	{
+		ExtraArmorList.Add(NewArmor);
+		return true;
+	}
+
+	UE_LOG(LogDogFight, Warning, TEXT("Failed to add duplicated armor to actor [%s]."), *GetOwner()->GetName());
+	return false;
+}
+
+
+bool UReceiveDamageComponent::RemoveExtraArmor(FActorArmor& TargetArmor)
+{
+	if (ExtraArmorList.Contains(TargetArmor))
+	{
+		ExtraArmorList.Remove(TargetArmor);
+		return true;
+	}
+
+	UE_LOG(LogDogFight, Warning, TEXT("Target armor not found."));
+	return false;
+}
+
 void UReceiveDamageComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

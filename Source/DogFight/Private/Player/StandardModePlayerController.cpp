@@ -250,17 +250,6 @@ void AStandardModePlayerController::StopCharacterMovementImmediately()
 	}
 }
 
-void AStandardModePlayerController::CmdSetPhysicalArmor_Implementation(int32 NewArmor)
-{
-	if (CharacterPawn != nullptr)
-	{
-		if (IDamageableActorInterface* DamageableActor = Cast<IDamageableActorInterface>(CharacterPawn))
-		{
-			DamageableActor->SetPhysicalArmor(NewArmor);
-		}
-	}
-}
-
 void AStandardModePlayerController::RequestActorTarget()
 {
 	// Only server can dispatch the request
@@ -797,11 +786,6 @@ void AStandardModePlayerController::ExecToggleCardDisplayWidget(bool bVisible)
 	{
 		StandardHUD->ToggleCardDisplayWidgetVisibility(bVisible);
 	}
-}
-
-void AStandardModePlayerController::ExecSetPhysicalArmor(int32 NewArmor)
-{
-	CmdSetPhysicalArmor(NewArmor);
 }
 
 void AStandardModePlayerController::ExecSetRagdoll(bool bActive)

@@ -20,6 +20,8 @@ public:
 protected:
 	virtual void HandleActorTarget(AActor* Target) override;
 
+	virtual void OnBuffCreated(class IGameBuffInterface* BuffActor) {}
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Instruction", meta=(MustImplement="GameBuffInterface"))
 	TSubclassOf<AActor> BuffClass;

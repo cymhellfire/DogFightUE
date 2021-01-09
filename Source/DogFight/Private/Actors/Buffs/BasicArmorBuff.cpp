@@ -11,8 +11,7 @@ void ABasicArmorBuff::ApplyBuff()
 
 	if (IDamageableActorInterface* DamageableActor = Cast<IDamageableActorInterface>(TargetActor))
 	{
-		DamageableActor->SetPhysicalArmor(DamageableActor->GetPhysicalArmor() + PhysicalArmor);
-		DamageableActor->SetMagicalArmor(DamageableActor->GetMagicalArmor() + MagicalArmor);
+		DamageableActor->AddExtraArmor(ExtraArmor);
 	}
 }
 
@@ -22,7 +21,11 @@ void ABasicArmorBuff::RemoveBuff()
 
 	if (IDamageableActorInterface* DamageableActor = Cast<IDamageableActorInterface>(TargetActor))
 	{
-		DamageableActor->SetPhysicalArmor(DamageableActor->GetPhysicalArmor() - PhysicalArmor);
-		DamageableActor->SetMagicalArmor(DamageableActor->GetMagicalArmor() - MagicalArmor);
+		DamageableActor->RemoveExtraArmor(ExtraArmor);
 	}
+}
+
+void ABasicArmorBuff::InitializeArmor(int32 ArmorValue, int32 DamageCategories, TArray<TSubclassOf<UDamageType>> DesiredTypes)
+{
+	ExtraArmor = FActorArmor{ArmorValue, DamageCategories, DesiredTypes, this};
 }

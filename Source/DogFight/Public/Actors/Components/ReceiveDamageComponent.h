@@ -22,6 +22,10 @@ public:
 	/** Get all extra armors. */
 	TArray<FActorArmor> GetExtraArmors() const { return ExtraArmorList; }
 
+	bool AddExtraArmor(FActorArmor& NewArmor);
+
+	bool RemoveExtraArmor(FActorArmor& TargetArmor);
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="ReceiveDamageComponent", Replicated)
 	bool bInvincible;

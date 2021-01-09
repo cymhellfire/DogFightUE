@@ -84,9 +84,6 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 	/** Stop the character movement immediately. */
 	void StopCharacterMovementImmediately();
 
-	UFUNCTION(Server, Reliable)
-	void CmdSetPhysicalArmor(int32 NewArmor);
-
 #pragma region Interfaces
 	virtual FCardTargetInfoAcquiredSignature& GetTargetInfoAcquiredDelegate() override { return OnCardTargetInfoAcquired; }
 
@@ -218,9 +215,6 @@ public:
 
 	UFUNCTION(Exec)
 	void ExecToggleCardDisplayWidget(bool bVisible);
-
-	UFUNCTION(Exec)
-	void ExecSetPhysicalArmor(int32 NewArmor);
 
 	UFUNCTION(Exec)
 	void ExecSetRagdoll(bool bActive);

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Actors/Buffs/BuffBase.h"
+#include "DamageStructures.h"
 #include "BasicArmorBuff.generated.h"
 
 /**
@@ -18,12 +19,10 @@ public:
 	virtual void ApplyBuff() override;
 	virtual void RemoveBuff() override;
 
-public:
-	/** The physical armor changed amount. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Buff")
-	int32 PhysicalArmor;
+	/** Initialize the extra armor add to target actor. Do this before ApplyBuff(). */
+	virtual void InitializeArmor(int32 ArmorValue, int32 DamageCategories, TArray<TSubclassOf<UDamageType>> DesiredTypes);
 
-	/** The magical armor changed amount. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Buff")
-	int32 MagicalArmor;
+protected:
+	/** The extra armor add to target actor. */
+	FActorArmor ExtraArmor;
 };

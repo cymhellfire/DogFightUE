@@ -238,7 +238,7 @@ struct FCardDescriptionItemInfo
 		return FText();
 	}
 
-	FUpgradablePropertyDisplayInfo GetPropertyDisplayInfo(int32 PropertyIndex)
+	FUpgradablePropertyDisplayInfo GetPropertyDisplayInfo(int32 PropertyIndex) const
 	{
 		if (PropertyIndex >= 0 && PropertyIndex < PropertyInfoList.Num())
 		{

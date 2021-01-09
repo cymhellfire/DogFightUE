@@ -20,6 +20,9 @@ struct FActorArmor
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="ActorArmor")
 	TArray<TSubclassOf<UDamageType>> DesiredDamageType;
 
+	/** The instigator of this armor. */
+	AActor* Instigator;
+
 	/** Check if this armor can reduce specified damage value. */
 	bool IsAgainstDamageType(TSubclassOf<UDamageType> TestDamageType) const
 	{
@@ -47,5 +50,18 @@ struct FActorArmor
 
 		// If no DamageType is desired, all DamageType is acceptable
 		return true;
+	}
+
+	friend bool operator==(const FActorArmor& Lhs, const FActorArmor& RHS)
+	{
+		return Lhs.ArmorValue == RHS.ArmorValue
+			&& Lhs.AntiDamageCategories == RHS.AntiDamageCategories
+			&& Lhs.DesiredDamageType == RHS.DesiredDamageType
+			&& Lhs.Instigator == RHS.Instigator;
+	}
+
+	friend bool operator!=(const FActorArmor& Lhs, const FActorArmor& RHS)
+	{
+		return !(Lhs == RHS);
 	}
 };

@@ -21,7 +21,7 @@ FText UCardDescriptionItemWidget::GetLocalizedExtraArgumentText(int32 Index) con
 	return OwningItemInfo.GetLocalizedExtraArgumentText(Index);
 }
 
-FUpgradablePropertyDisplayInfo UCardDescriptionItemWidget::GetPropertyDisplayInfo(int32 PropertyIndex)
+FUpgradablePropertyDisplayInfo UCardDescriptionItemWidget::GetPropertyDisplayInfo(int32 PropertyIndex) const
 {
 	return OwningItemInfo.GetPropertyDisplayInfo(PropertyIndex);
 }

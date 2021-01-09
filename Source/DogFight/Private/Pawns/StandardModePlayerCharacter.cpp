@@ -142,40 +142,24 @@ void AStandardModePlayerCharacter::SetInvincible(bool bActive)
 	}
 }
 
-void AStandardModePlayerCharacter::SetPhysicalArmor(int32 NewArmor)
+bool AStandardModePlayerCharacter::AddExtraArmor(FActorArmor& NewArmor)
 {
 	if (ReceiveDamageComponent != nullptr)
 	{
-		ReceiveDamageComponent->PhysicalArmor = NewArmor;
+		return ReceiveDamageComponent->AddExtraArmor(NewArmor);
 	}
+
+	return false;
 }
 
-int32 AStandardModePlayerCharacter::GetPhysicalArmor() const
+bool AStandardModePlayerCharacter::RemoveExtraArmor(FActorArmor& TargetArmor)
 {
 	if (ReceiveDamageComponent != nullptr)
 	{
-		return ReceiveDamageComponent->PhysicalArmor;
+		return ReceiveDamageComponent->RemoveExtraArmor(TargetArmor);
 	}
 
-	return 0;
-}
-
-void AStandardModePlayerCharacter::SetMagicalArmor(int32 NewArmor)
-{
-	if (ReceiveDamageComponent != nullptr)
-	{
-		ReceiveDamageComponent->MagicalArmor = NewArmor;
-	}
-}
-
-int32 AStandardModePlayerCharacter::GetMagicalArmor() const
-{
-	if (ReceiveDamageComponent != nullptr)
-	{
-		return ReceiveDamageComponent->MagicalArmor;
-	}
-
-	return 0;
+	return false;
 }
 
 float AStandardModePlayerCharacter::PlayMontage(UAnimMontage* MontageToPlay)

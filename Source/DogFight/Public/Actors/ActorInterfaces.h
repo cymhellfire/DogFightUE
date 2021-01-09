@@ -23,15 +23,9 @@ public:
 	/** Change target invincible state. */
 	virtual void SetInvincible(bool bActive) {}
 
-	/** Set Physical Armor value. */
-	virtual void SetPhysicalArmor(int32 NewArmor) {}
+	/** Add a new armor to this actor. */
+	virtual bool AddExtraArmor(struct FActorArmor& NewArmor) { return true; }
 
-	/** Get Physical Armor value. */
-	virtual int32 GetPhysicalArmor() const { return 0; }
-
-	/** Set Magical Armor value. */
-	virtual void SetMagicalArmor(int32 NewArmor) {}
-
-	/** Get Magical Armor value. */
-	virtual int32 GetMagicalArmor() const { return 0; }
+	/** Remove specified armor from this actor. */
+	virtual bool RemoveExtraArmor(struct FActorArmor& TargetArmor) { return true; }
 };

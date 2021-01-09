@@ -24,6 +24,8 @@ void UInstructionAddBuff::HandleActorTarget(AActor* Target)
 			IGameBuffInterface* BuffActor = GetWorld()->SpawnActor<IGameBuffInterface>(BuffClass);
 			if (BuffActor != nullptr)
 			{
+				OnBuffCreated(BuffActor);
+
 				BuffActor->SetSourcePlayerController(GetOwnerCard()->GetOwnerPlayerController());
 				BuffActor->SetTargetActor(Target);
 				BuffActor->SetLifetime(BuffLifetime);
