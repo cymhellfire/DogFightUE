@@ -31,7 +31,7 @@ AStandardModePlayerController::AStandardModePlayerController(const FObjectInitia
 	bInGameMenuShown = false;
 }
 
-void AStandardModePlayerController::RpcSetClickMovementEnabled_Implementation(bool bEnabled)
+void AStandardModePlayerController::ClientSetClickMovementEnabled_Implementation(bool bEnabled)
 {
 	InputMode = bEnabled ? EStandardModePlayerControllerInputMode::IM_ClickMove : EStandardModePlayerControllerInputMode::IM_Disable;
 
@@ -97,10 +97,10 @@ void AStandardModePlayerController::OnRep_PlayerState()
 void AStandardModePlayerController::GameStart()
 {
 	// Spawn the character pawn once game started
-	CmdSpawnCharacterPawn();
+	ServerSpawnCharacterPawn();
 }
 
-void AStandardModePlayerController::RpcReceivedGameTitleMessage_Implementation(FGameTitleMessage Message)
+void AStandardModePlayerController::ClientReceivedGameTitleMessage_Implementation(FGameTitleMessage Message)
 {
 	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
 	{
@@ -108,7 +108,7 @@ void AStandardModePlayerController::RpcReceivedGameTitleMessage_Implementation(F
 	}
 }
 
-void AStandardModePlayerController::CmdBroadcastGameMessageToAll_Implementation(const FString& GameMessage, const TArray<FText>& Arguments)
+void AStandardModePlayerController::ServerBroadcastGameMessageToAll_Implementation(const FString& GameMessage, const TArray<FText>& Arguments)
 {
 	if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
 	{
@@ -123,7 +123,7 @@ void AStandardModePlayerController::CmdBroadcastGameMessageToAll_Implementation(
 	}
 }
 
-void AStandardModePlayerController::RpcReceivedGameMessage_Implementation(FGameMessage Message)
+void AStandardModePlayerController::ClientReceivedGameMessage_Implementation(FGameMessage Message)
 {
 	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
 	{
@@ -131,7 +131,7 @@ void AStandardModePlayerController::RpcReceivedGameMessage_Implementation(FGameM
 	}
 }
 
-void AStandardModePlayerController::RpcShowCardDisplayWidgetWithSelectMode_Implementation(ECardSelectionMode SelectionMode)
+void AStandardModePlayerController::ClientShowCardDisplayWidgetWithSelectMode_Implementation(ECardSelectionMode SelectionMode)
 {
 	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
 	{
@@ -142,7 +142,7 @@ void AStandardModePlayerController::RpcShowCardDisplayWidgetWithSelectMode_Imple
 
 void AStandardModePlayerController::OnCardSelectionConfirmed(const TArray<int32>& SelectedIndexList)
 {
-	CmdUploadSelectedCardIndex(SelectedIndexList);
+	ServerUploadSelectedCardIndex(SelectedIndexList);
 }
 
 APawn* AStandardModePlayerController::GetRandomPlayerPawn(bool bIgnoreSelf)
@@ -195,18 +195,18 @@ void AStandardModePlayerController::OnHealthChanged(int32 NewHealth)
 	}
 }
 
-void AStandardModePlayerController::CmdUploadSelectedCardIndex_Implementation(const TArray<int32>& SelectedIndexList)
+void AStandardModePlayerController::ServerUploadSelectedCardIndex_Implementation(const TArray<int32>& SelectedIndexList)
 {
 	if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
 	{
 		for (int32 Index : SelectedIndexList)
 		{
-			StandardPlayerState->CmdUseCardByIndex(Index);
+			StandardPlayerState->ServerUseCardByIndex(Index);
 		}
 	}
 }
 
-void AStandardModePlayerController::RpcHideCardDisplayWidget_Implementation()
+void AStandardModePlayerController::ClientHideCardDisplayWidget_Implementation()
 {
 	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
 	{
@@ -214,7 +214,7 @@ void AStandardModePlayerController::RpcHideCardDisplayWidget_Implementation()
 	}
 }
 
-void AStandardModePlayerController::RpcSetCardDisplayWidgetSelectable_Implementation(bool bSelectable)
+void AStandardModePlayerController::ClientSetCardDisplayWidgetSelectable_Implementation(bool bSelectable)
 {
 	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
 	{
@@ -256,7 +256,7 @@ void AStandardModePlayerController::RequestActorTarget()
 	if (GetNetMode() == NM_Client)
 		return;
 
-	RpcRequestActorTarget();
+	ClientSelectActorTarget();
 }
 
 void AStandardModePlayerController::RequestPositionTarget()
@@ -264,7 +264,7 @@ void AStandardModePlayerController::RequestPositionTarget()
 	if (GetNetMode() == NM_Client)
 		return;
 
-	RpcRequestPositionTarget();
+	ClientSelectPositionTarget();
 }
 
 void AStandardModePlayerController::RequestDirectionTarget()
@@ -272,7 +272,7 @@ void AStandardModePlayerController::RequestDirectionTarget()
 	if (GetNetMode() == NM_Client)
 		return;
 
-	RpcRequestDirectionTarget();
+	ClientSelectDirectionTarget();
 }
 
 FCardInstructionTargetInfo AStandardModePlayerController::RequestRandomActorTarget(bool bIgnoreSelf)
@@ -379,12 +379,12 @@ void AStandardModePlayerController::BeginPlay()
 				return;
 			}
 			
-			CmdReadyForGame(SaveGameInstance->PlayerName);
+			ServerReadyForGame(SaveGameInstance->PlayerName);
 		}
 		// Host register to Timeline here
 		else
 		{
-			CmdRegisterToGameTimeline();
+			ServerRegisterToGameTimeline();
 		}
 	}
 }
@@ -454,7 +454,7 @@ void AStandardModePlayerController::OnPlayerNameChanged(const FString& NewName)
 	}
 
 	// Clients register to Timeline after they uploaded name
-	CmdRegisterToGameTimeline();
+	ServerRegisterToGameTimeline();
 }
 
 void AStandardModePlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps ) const
@@ -489,7 +489,7 @@ void AStandardModePlayerController::OnSetDestinationPressed()
 			if (Distance > 120.f)
 			{
 				// Call RPC function on server side
-				CmdMoveToMouseCursor(HitResult.Location);
+				ServerMoveToMouseCursor(HitResult.Location);
 			}
 		}
 		break;
@@ -502,7 +502,7 @@ void AStandardModePlayerController::OnSetDestinationPressed()
 		{
 			if (AActor* TargetActor = HitResult.GetActor())
 			{
-				CmdUploadActorTarget(TargetActor);
+				ServerSyncActorTarget(TargetActor);
 
 				// Disable selection after acquire one
 				DisableInputMode();
@@ -514,7 +514,7 @@ void AStandardModePlayerController::OnSetDestinationPressed()
 		// Get the point clicked
 		if (HitResult.bBlockingHit)
 		{
-			CmdUploadPositionTarget(HitResult.Location);
+			ServerSyncPositionTarget(HitResult.Location);
 
 			// Disable selection after acquire one
 			DisableInputMode();
@@ -532,7 +532,7 @@ void AStandardModePlayerController::OnSetDestinationPressed()
 			FVector TargetDirection = HitResult.Location - CharacterPawn->GetActorLocation();
 			TargetDirection.Normalize();
 
-			CmdUploadDirectionTarget(TargetDirection);
+			ServerSyncDirectionTarget(TargetDirection);
 
 			// Disable selection after acquire one
 			DisableInputMode();
@@ -554,7 +554,7 @@ void AStandardModePlayerController::OnOpenInGameMenuPressed()
 	}
 }
 
-void AStandardModePlayerController::CmdSetCharacterName_Implementation(const FString& NewName)
+void AStandardModePlayerController::ServerSetCharacterName_Implementation(const FString& NewName)
 {
 	if (CharacterPawn != nullptr)
 	{
@@ -562,7 +562,7 @@ void AStandardModePlayerController::CmdSetCharacterName_Implementation(const FSt
 	}
 }
 
-void AStandardModePlayerController::CmdReadyForGame_Implementation(const FString& PlayerName)
+void AStandardModePlayerController::ServerReadyForGame_Implementation(const FString& PlayerName)
 {
 	if (AStandardGameMode* GameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
 	{
@@ -570,7 +570,7 @@ void AStandardModePlayerController::CmdReadyForGame_Implementation(const FString
 	}
 }
 
-void AStandardModePlayerController::CmdSetCharacterHealth_Implementation(int32 NewHealth)
+void AStandardModePlayerController::ServerSetCharacterHealth_Implementation(int32 NewHealth)
 {
 	if (CharacterPawn != nullptr)
 	{
@@ -578,7 +578,7 @@ void AStandardModePlayerController::CmdSetCharacterHealth_Implementation(int32 N
 	}
 }
 
-void AStandardModePlayerController::CmdRegisterToGameTimeline_Implementation()
+void AStandardModePlayerController::ServerRegisterToGameTimeline_Implementation()
 {
 	if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
 	{
@@ -589,7 +589,7 @@ void AStandardModePlayerController::CmdRegisterToGameTimeline_Implementation()
 	}
 }
 
-void AStandardModePlayerController::RpcSetupTimelineDisplay_Implementation()
+void AStandardModePlayerController::ClientSetupTimelineDisplay_Implementation()
 {
 	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
 	{
@@ -600,7 +600,7 @@ void AStandardModePlayerController::RpcSetupTimelineDisplay_Implementation()
 	}
 }
 
-void AStandardModePlayerController::CmdFinishMyRound_Implementation()
+void AStandardModePlayerController::ServerFinishMyRound_Implementation()
 {
 	if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
 	{
@@ -619,7 +619,7 @@ void AStandardModePlayerController::OnRep_CharacterPawn()
 	// Set the buffed name to new spawned character
 	if (!PendingUnitName.IsEmpty())
 	{
-		CmdSetCharacterName(PendingUnitName);
+		ServerSetCharacterName(PendingUnitName);
 		// Clear buffer after use
 		PendingUnitName = "";
 	}
@@ -639,7 +639,7 @@ void AStandardModePlayerController::OnCardInfoListChanged()
 	}
 }
 
-void AStandardModePlayerController::CmdUploadDirectionTarget_Implementation(FVector TargetDirection)
+void AStandardModePlayerController::ServerSyncDirectionTarget_Implementation(FVector TargetDirection)
 {
 	// Package the target info struct
 	FCardInstructionTargetInfo NewTargetInfo;
@@ -654,7 +654,7 @@ void AStandardModePlayerController::CmdUploadDirectionTarget_Implementation(FVec
 	CharacterPawn->SetAimingDirection(TargetDirection);
 }
 
-void AStandardModePlayerController::RpcRequestDirectionTarget_Implementation()
+void AStandardModePlayerController::ClientSelectDirectionTarget_Implementation()
 {
 	// Setup direction select mode
 	InputMode = EStandardModePlayerControllerInputMode::IM_TargetingDirection;
@@ -666,7 +666,7 @@ void AStandardModePlayerController::RpcRequestDirectionTarget_Implementation()
 	}
 }
 
-void AStandardModePlayerController::CmdUploadPositionTarget_Implementation(FVector TargetPosition)
+void AStandardModePlayerController::ServerSyncPositionTarget_Implementation(FVector TargetPosition)
 {
 	// Package the target info struct
 	FCardInstructionTargetInfo NewTargetInfo;
@@ -685,7 +685,7 @@ void AStandardModePlayerController::CmdUploadPositionTarget_Implementation(FVect
 	}
 }
 
-void AStandardModePlayerController::RpcRequestPositionTarget_Implementation()
+void AStandardModePlayerController::ClientSelectPositionTarget_Implementation()
 {
 	// Setup position select mode
 	InputMode = EStandardModePlayerControllerInputMode::IM_TargetingPosition;
@@ -697,7 +697,7 @@ void AStandardModePlayerController::RpcRequestPositionTarget_Implementation()
 	}
 }
 
-void AStandardModePlayerController::CmdUploadActorTarget_Implementation(AActor* TargetActor)
+void AStandardModePlayerController::ServerSyncActorTarget_Implementation(AActor* TargetActor)
 {
 	// Package the target info struct
 	FCardInstructionTargetInfo NewTargetInfo;
@@ -716,7 +716,7 @@ void AStandardModePlayerController::CmdUploadActorTarget_Implementation(AActor* 
 	}
 }
 
-void AStandardModePlayerController::RpcRequestActorTarget_Implementation()
+void AStandardModePlayerController::ClientSelectActorTarget_Implementation()
 {
 	// Setup actor select mode
 	InputMode = EStandardModePlayerControllerInputMode::IM_TargetingActor;
@@ -732,7 +732,7 @@ void AStandardModePlayerController::ExecSetCharacterName(FString NewName)
 {
 	if (IsLocalController())
 	{
-		CmdSetCharacterName(NewName);
+		ServerSetCharacterName(NewName);
 	}
 }
 
@@ -740,7 +740,7 @@ void AStandardModePlayerController::ExecSetCurrentHealth(int32 NewHealth)
 {
 	if (IsLocalController())
 	{
-		CmdSetCharacterHealth(NewHealth);
+		ServerSetCharacterHealth(NewHealth);
 	}
 }
 
@@ -748,11 +748,11 @@ void AStandardModePlayerController::ExecRequireActorTarget()
 {
 	if (GetNetMode() != NM_Client)
 	{
-		RpcRequestActorTarget();
+		ClientSelectActorTarget();
 	}
 	else
 	{
-		RpcRequestActorTarget_Implementation();
+		ClientSelectActorTarget_Implementation();
 	}
 }
 
@@ -760,11 +760,11 @@ void AStandardModePlayerController::ExecRequirePositionTarget()
 {
 	if (GetNetMode() != NM_Client)
 	{
-		RpcRequestPositionTarget();
+		ClientSelectPositionTarget();
 	}
 	else
 	{
-		RpcRequestPositionTarget_Implementation();
+		ClientSelectPositionTarget_Implementation();
 	}
 }
 
@@ -772,11 +772,11 @@ void AStandardModePlayerController::ExecRequireDirectionTarget()
 {
 	if (GetNetMode() != NM_Client)
 	{
-		RpcRequestDirectionTarget();
+		ClientSelectDirectionTarget();
 	}
 	else
 	{
-		RpcRequestDirectionTarget_Implementation();
+		ClientSelectDirectionTarget_Implementation();
 	}
 }
 
@@ -796,7 +796,7 @@ void AStandardModePlayerController::ExecSetRagdoll(bool bActive)
 	CharacterPawn->MulticastSetRagdollActive(bActive);
 }
 
-void AStandardModePlayerController::CmdMoveToMouseCursor_Implementation(FVector Destination)
+void AStandardModePlayerController::ServerMoveToMouseCursor_Implementation(FVector Destination)
 {
 	if (CharacterPawn == nullptr)
 		return;
@@ -804,7 +804,7 @@ void AStandardModePlayerController::CmdMoveToMouseCursor_Implementation(FVector 
 	UAIBlueprintHelperLibrary::SimpleMoveToLocation(CharacterPawn->GetController(), Destination);
 }
 
-void AStandardModePlayerController::CmdSpawnCharacterPawn_Implementation()
+void AStandardModePlayerController::ServerSpawnCharacterPawn_Implementation()
 {
 	// Only do spawn on server side
 	if (GetLocalRole() != ROLE_Authority)

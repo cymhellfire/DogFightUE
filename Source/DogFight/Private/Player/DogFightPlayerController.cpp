@@ -7,7 +7,7 @@
 
 #define ST_UI_LOC		"/Game/DogFight/Localization/ST_UserInterface.ST_UserInterface"
 
-void ADogFightPlayerController::RpcReturnToMainMenuWithReason_Implementation(EReturnToMainMenuReason::Type Reason)
+void ADogFightPlayerController::ClientReturnToMainMenuWithReason_Implementation(EReturnToMainMenuReason::Type Reason)
 {
 	if (UGameInstance* const GameInstance = GetGameInstance())
 	{
@@ -45,7 +45,7 @@ void ADogFightPlayerController::HandleReturnToMainMenu()
 	CleanupSessionOnReturnMain();
 }
 
-void ADogFightPlayerController::RpcPreStartGame_Implementation()
+void ADogFightPlayerController::ClientPreStartGame_Implementation()
 {
 	// Let every client show the loading screen
 	if (UDogFightGameInstance* GameInstance = Cast<UDogFightGameInstance>(GetGameInstance()))
@@ -54,7 +54,7 @@ void ADogFightPlayerController::RpcPreStartGame_Implementation()
 	}
 }
 
-void ADogFightPlayerController::RpcHostUploadPlayerInfo_Implementation()
+void ADogFightPlayerController::ClientHostUploadPlayerInfo_Implementation()
 {
 	if (GetNetMode() == NM_ListenServer || GetNetMode() == NM_Standalone)
 	{

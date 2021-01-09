@@ -63,7 +63,7 @@ public:
 	void SetLobbyStatus(EPlayerLobbyStatus NewStatus);
 
 	UFUNCTION(Server, Reliable)
-	void CmdSetLobbyStatus(EPlayerLobbyStatus NewStatus);
+	void ServerSetLobbyStatus(EPlayerLobbyStatus NewStatus);
 
 protected:
 	/** Current player status in lobby. */

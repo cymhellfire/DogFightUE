@@ -24,7 +24,7 @@ public:
 
 protected:
 	UFUNCTION(Server, Reliable)
-	void CmdSendPlayerInfo(FLobbyPlayerInfo PlayerInfo);
+	void ServerSendPlayerInfo(FLobbyPlayerInfo PlayerInfo);
 
 	virtual void GatherPlayerInfo() override;
 };

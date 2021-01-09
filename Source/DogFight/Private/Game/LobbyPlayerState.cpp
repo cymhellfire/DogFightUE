@@ -15,7 +15,7 @@ void ALobbyPlayerState::SetLobbyStatus(EPlayerLobbyStatus NewStatus)
 {
 	if (GetNetMode() == NM_Client || GetNetMode() == NM_ListenServer)
 	{
-		CmdSetLobbyStatus(NewStatus);
+		ServerSetLobbyStatus(NewStatus);
 	}
 }
 
@@ -25,7 +25,7 @@ void ALobbyPlayerState::OnRep_PlayerLobbyStatus()
 	OnLobbyPlayerStateChanged.Broadcast();
 }
 
-void ALobbyPlayerState::CmdSetLobbyStatus_Implementation(EPlayerLobbyStatus NewStatus)
+void ALobbyPlayerState::ServerSetLobbyStatus_Implementation(EPlayerLobbyStatus NewStatus)
 {
 	if (NewStatus == PlayerLobbyStatus)
 	{

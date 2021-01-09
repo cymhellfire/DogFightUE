@@ -20,20 +20,20 @@ public:
 
 	/** Return the client to main menu gracefully. */
 	UFUNCTION(Client, Reliable)
-	virtual void RpcReturnToMainMenuWithReason(EReturnToMainMenuReason::Type Reason);
+	virtual void ClientReturnToMainMenuWithReason(EReturnToMainMenuReason::Type Reason);
 
 	virtual void HandleReturnToMainMenu();
  
 	/** Send just before the host start game. */
 	UFUNCTION(Client, Reliable)
-	virtual void RpcPreStartGame();
+	virtual void ClientPreStartGame();
 
 	/**
 	 * Gather all information and send to server (only for host).
 	 * Client use OnRep_PlayerState to send player info.
 	 */
 	UFUNCTION(Client, Reliable)
-	virtual void RpcHostUploadPlayerInfo();
+	virtual void ClientHostUploadPlayerInfo();
 
 protected:
 

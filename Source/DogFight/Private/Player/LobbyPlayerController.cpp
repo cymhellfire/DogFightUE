@@ -37,10 +37,10 @@ void ALobbyPlayerController::GatherPlayerInfo()
 	UE_LOG(LogDogFight, Log, TEXT("Send Player Info: Name[%s] Status[%d]"), *PlayerInfo.PlayerName, PlayerInfo.PlayerStatus);
 	
 	// Send info to server
-	CmdSendPlayerInfo(PlayerInfo);
+	ServerSendPlayerInfo(PlayerInfo);
 }
 
-void ALobbyPlayerController::CmdSendPlayerInfo_Implementation(FLobbyPlayerInfo PlayerInfo)
+void ALobbyPlayerController::ServerSendPlayerInfo_Implementation(FLobbyPlayerInfo PlayerInfo)
 {
 	// Change player name
 	ServerChangeName(PlayerInfo.PlayerName);

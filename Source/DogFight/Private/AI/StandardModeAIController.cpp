@@ -157,7 +157,7 @@ void AStandardModeAIController::UseRandomCard()
 		if (CardCount > 0)
 		{
 			const int32 TargetIndex = FMath::RandRange(0, CardCount - 1);
-			MyPlayerState->CmdUseCardByIndex(TargetIndex);
+			MyPlayerState->ServerUseCardByIndex(TargetIndex);
 
 			SetState(EStandardModeAIControllerState::UsingCard);
 		}
@@ -177,7 +177,7 @@ bool AStandardModeAIController::UseCardByCategoryFlags(int32 CategoryFlags)
 			{
 				if (CardInstanceList[Index]->IsCardMatchCategoryFlags(CategoryFlags))
 				{
-					StandardPlayerState->CmdUseCardByIndex(Index);
+					StandardPlayerState->ServerUseCardByIndex(Index);
 					bFound = true;
 					break;
 				}

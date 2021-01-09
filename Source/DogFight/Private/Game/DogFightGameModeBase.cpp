@@ -16,7 +16,7 @@ void ADogFightGameModeBase::RequestFinishAndExitToMainMenu()
 	{
 		if (!PlayerController->IsLocalController())
 		{
-			PlayerController->RpcReturnToMainMenuWithReason(EReturnToMainMenuReason::HostLeft);
+			PlayerController->ClientReturnToMainMenuWithReason(EReturnToMainMenuReason::HostLeft);
 		}
 		else
 		{
@@ -35,7 +35,7 @@ void ADogFightGameModeBase::NotifyClientGameWillStart()
 	// Tell every client game will start
 	for (ADogFightPlayerController* PlayerController : PlayerControllerList)
 	{
-		PlayerController->RpcPreStartGame();
+		PlayerController->ClientPreStartGame();
 	}
 }
 
@@ -88,7 +88,7 @@ void ADogFightGameModeBase::PostLogin(APlayerController* NewPlayer)
 		}
 
 		// Request Player Info
-		DogFightPlayerController->RpcHostUploadPlayerInfo();
+		DogFightPlayerController->ClientHostUploadPlayerInfo();
 	}
 }
 

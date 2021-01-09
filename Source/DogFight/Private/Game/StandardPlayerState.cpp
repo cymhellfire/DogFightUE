@@ -51,7 +51,7 @@ void AStandardPlayerState::AddCard(ACardBase* Card)
 	OnRep_CardInfoList();
 }
 
-void AStandardPlayerState::CmdUseCardByIndex_Implementation(int32 Index)
+void AStandardPlayerState::ServerUseCardByIndex_Implementation(int32 Index)
 {
 	if (Index >= CardInstanceList.Num())
 	{

@@ -38,7 +38,7 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 	FPlayerHealthChangedSignature OnPlayerHealthChanged;
 
 	UFUNCTION(Client, Reliable)
-	void RpcSetClickMovementEnabled(bool bEnabled);
+	void ClientSetClickMovementEnabled(bool bEnabled);
 
 	UPROPERTY(Category=PlayerController, EditAnywhere, BlueprintReadOnly, Replicated)
 	TSubclassOf<AStandardModePlayerCharacter> CharacterPawnClass;
@@ -58,28 +58,28 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 
 	/** Send a message to all other players in current game. */
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category="DogFight|PlayerController")
-	void CmdBroadcastGameMessageToAll(const FString& GameMessage, const TArray<FText>& Arguments);
+	void ServerBroadcastGameMessageToAll(const FString& GameMessage, const TArray<FText>& Arguments);
 
 	UFUNCTION(Client, Reliable)
-	void RpcReceivedGameMessage(FGameMessage Message);
+	void ClientReceivedGameMessage(FGameMessage Message);
 
 	UFUNCTION(Client, Reliable)
-	void RpcReceivedGameTitleMessage(FGameTitleMessage Message);
+	void ClientReceivedGameTitleMessage(FGameTitleMessage Message);
 
 	UFUNCTION(Client, Reliable)
-	void RpcSetupTimelineDisplay();
+	void ClientSetupTimelineDisplay();
 
 	UFUNCTION(Client, Reliable)
-	void RpcShowCardDisplayWidgetWithSelectMode(ECardSelectionMode SelectionMode);
+	void ClientShowCardDisplayWidgetWithSelectMode(ECardSelectionMode SelectionMode);
 
 	UFUNCTION(Client, Reliable)
-	void RpcHideCardDisplayWidget();
+	void ClientHideCardDisplayWidget();
 
 	UFUNCTION(Client, Reliable)
-	void RpcSetCardDisplayWidgetSelectable(bool bSelectable);
+	void ClientSetCardDisplayWidgetSelectable(bool bSelectable);
 
 	UFUNCTION(Server, Reliable)
-	void CmdUploadSelectedCardIndex(const TArray<int32>& SelectedIndexList);
+	void ServerUploadSelectedCardIndex(const TArray<int32>& SelectedIndexList);
 
 	/** Stop the character movement immediately. */
 	void StopCharacterMovementImmediately();
@@ -118,27 +118,27 @@ protected:
 	void OnOpenInGameMenuPressed();
 
 	UFUNCTION(Server, Reliable)
-	void CmdMoveToMouseCursor(FVector Destination);
+	void ServerMoveToMouseCursor(FVector Destination);
 
 	UFUNCTION(Server, Reliable)
-	void CmdSpawnCharacterPawn();
+	void ServerSpawnCharacterPawn();
 
 	UFUNCTION(Server, Reliable)
-	void CmdSetCharacterName(const FString& NewName);
+	void ServerSetCharacterName(const FString& NewName);
 
 	UFUNCTION(Server, Reliable)
-	void CmdSetCharacterHealth(int32 NewHealth);
+	void ServerSetCharacterHealth(int32 NewHealth);
 
 	/** Tell server that local player is ready for game. */
 	UFUNCTION(Server, Reliable)
-	void CmdReadyForGame(const FString& PlayerName);
+	void ServerReadyForGame(const FString& PlayerName);
 
 	UFUNCTION(Server, Reliable)
-	void CmdRegisterToGameTimeline();
+	void ServerRegisterToGameTimeline();
 
 	/** Forcibly finish current round of this player. */
 	UFUNCTION(Server, Reliable, BlueprintCallable, Category="DogFight|Game")
-	void CmdFinishMyRound();
+	void ServerFinishMyRound();
 
 	UFUNCTION()
 	void OnRep_CharacterPawn();
@@ -151,22 +151,22 @@ protected:
 
 #pragma region Target Acquire
 	UFUNCTION(Client, Reliable)
-	void RpcRequestActorTarget();
+	void ClientSelectActorTarget();
 
 	UFUNCTION(Server, Reliable)
-	void CmdUploadActorTarget(AActor* TargetActor);
+	void ServerSyncActorTarget(AActor* TargetActor);
 
 	UFUNCTION(Client, Reliable)
-	void RpcRequestPositionTarget();
+	void ClientSelectPositionTarget();
 
 	UFUNCTION(Server, Reliable)
-	void CmdUploadPositionTarget(FVector TargetPosition);
+	void ServerSyncPositionTarget(FVector TargetPosition);
 
 	UFUNCTION(Client, Reliable)
-	void RpcRequestDirectionTarget();
+	void ClientSelectDirectionTarget();
 
 	UFUNCTION(Server, Reliable)
-	void CmdUploadDirectionTarget(FVector TargetDirection);
+	void ServerSyncDirectionTarget(FVector TargetDirection);
 
 	APawn* GetRandomPlayerPawn(bool bIgnoreSelf);
 #pragma endregion Target Acquire

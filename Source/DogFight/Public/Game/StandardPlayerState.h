@@ -59,7 +59,7 @@ public:
 	void AddCard(ACardBase* Card);
 
 	UFUNCTION(Server, Reliable)
-	void CmdUseCardByIndex(int32 Index);
+	void ServerUseCardByIndex(int32 Index);
 
 	FORCEINLINE bool CanUseCard() const { return UsedCardNum < MaxUseNum; }
 
@@ -115,6 +115,10 @@ protected:
 	/** The list of card instances. (Server Only) */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState")
 	TArray<ACardBase*> CardInstanceList;
+
+	/** The maximum count of cards in player hand. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState", Replicated)
+	int32 MaxCardCount;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState", Replicated)
 	int32 MaxUseNum;

@@ -27,6 +27,7 @@ namespace GamePhase
 	const FName DecideOrder = FName(TEXT("DecideOrder"));
 	const FName PlayerRoundBegin = FName(TEXT("PlayerRoundBegin"));
 	const FName PlayerRound = FName(TEXT("PlayerRound"));
+	const FName DiscardCards = FName(TEXT("DiscardCards"));
 	const FName PlayerRoundEnd = FName(TEXT("PlayerRoundEnd"));
 	const FName CheckGameEnd = FName(TEXT("CheckGameEnd"));
 	const FName GameSummary = FName(TEXT("GameSummary"));
@@ -57,7 +58,7 @@ void AStandardGameMode::EnablePlayerClickMovement()
 {
 	for (AStandardModePlayerController* PlayerController : StandardPlayerControllerList)
 	{
-		PlayerController->RpcSetClickMovementEnabled(true);
+		PlayerController->ClientSetClickMovementEnabled(true);
 	}
 
 	for (AStandardModeAIController* AIController : StandardAIControllerList)
@@ -70,7 +71,7 @@ void AStandardGameMode::DisablePlayerClickMovement()
 {
 	for (AStandardModePlayerController* PlayerController : StandardPlayerControllerList)
 	{
-		PlayerController->RpcSetClickMovementEnabled(false);
+		PlayerController->ClientSetClickMovementEnabled(false);
 		// Also stop current movement
 		PlayerController->StopCharacterMovementImmediately();
 	}
@@ -357,7 +358,7 @@ void AStandardGameMode::BroadcastGameMessageToAllPlayers(FGameMessage Message)
 {
 	for (AStandardModePlayerController* PlayerController : StandardPlayerControllerList)
 	{
-		PlayerController->RpcReceivedGameMessage(Message);
+		PlayerController->ClientReceivedGameMessage(Message);
 	}
 }
 
@@ -365,7 +366,7 @@ void AStandardGameMode::BroadcastGameTitleMessageToAllPlayers(FGameTitleMessage 
 {
 	for (AStandardModePlayerController* PlayerController : StandardPlayerControllerList)
 	{
-		PlayerController->RpcReceivedGameTitleMessage(TitleMessage);
+		PlayerController->ClientReceivedGameTitleMessage(TitleMessage);
 	}
 }
 
@@ -544,7 +545,7 @@ void AStandardGameMode::HandlePhaseGameSummary()
 	// Let all player hide the card display widget
 	for (AStandardModePlayerController* StandardModePlayerController : StandardPlayerControllerList)
 	{
-		StandardModePlayerController->RpcHideCardDisplayWidget();
+		StandardModePlayerController->ClientHideCardDisplayWidget();
 	}
 
 	// Get the winner
@@ -614,7 +615,7 @@ void AStandardGameMode::HandlePhaseDecideOrder()
 		// Let all clients setup their Timeline widget
 		for (AStandardModePlayerController* PlayerController : StandardPlayerControllerList)
 		{
-			PlayerController->RpcSetupTimelineDisplay();
+			PlayerController->ClientSetupTimelineDisplay();
 
 			// Register players statistic
 			if (AStandardPlayerState* StandardPlayerState = PlayerController->GetPlayerState<AStandardPlayerState>())
@@ -651,7 +652,7 @@ void AStandardGameMode::HandlePhasePlayerRoundBegin()
 		}
 
 		// Enable card selection for new player
-		StandardModePlayerController->RpcSetCardDisplayWidgetSelectable(true);
+		StandardModePlayerController->ClientSetCardDisplayWidgetSelectable(true);
 
 		if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
 		{
@@ -706,7 +707,7 @@ void AStandardGameMode::HandlePhasePlayerRound()
 			AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(StandardGameState->GetGameRoundsTimeline()->GetCurrentPlayerId());
 			if (StandardModePlayerController != nullptr)
 			{
-				StandardModePlayerController->RpcShowCardDisplayWidgetWithSelectMode(ECardSelectionMode::CSM_SingleNoConfirm);
+				StandardModePlayerController->ClientShowCardDisplayWidgetWithSelectMode(ECardSelectionMode::CSM_SingleNoConfirm);
 			}
 		}
 		else
@@ -718,6 +719,26 @@ void AStandardGameMode::HandlePhasePlayerRound()
 				StandardModeAIController->StartAIRound();
 			}
 		}
+	}
+}
+
+void AStandardGameMode::HandlePhaseDiscardCards()
+{
+	if (!bIsCurrentAIPlayer)
+	{
+		// Handle human player
+		AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(GetCurrentPlayerId());
+		if (StandardModePlayerController == nullptr)
+		{
+			UE_LOG(LogDogFight, Error, TEXT("Failed to get PlayerController with Id %d"), GetCurrentPlayerId());
+			return;
+		}
+
+		
+	}
+	else
+	{
+		
 	}
 }
 
@@ -736,7 +757,7 @@ void AStandardGameMode::HandlePhasePlayerRoundEnd()
 		}
 
 		// Disable card selection for ended player
-		StandardModePlayerController->RpcSetCardDisplayWidgetSelectable(false);
+		StandardModePlayerController->ClientSetCardDisplayWidgetSelectable(false);
 
 		// Broadcast event
 		OnPlayerRoundEnd.Broadcast(GetCurrentPlayerId());
@@ -936,7 +957,7 @@ void AStandardGameMode::OnPlayerUsingCardFinished(bool bShouldEndRound)
 			// Re-enable the card display widget using functionality
 			if (AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(GetCurrentPlayerId()))
 			{
-				StandardModePlayerController->RpcSetCardDisplayWidgetSelectable(true);
+				StandardModePlayerController->ClientSetCardDisplayWidgetSelectable(true);
 			}
 		}
 	}
