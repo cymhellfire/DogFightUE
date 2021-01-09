@@ -179,7 +179,7 @@ void AProjectileBase::NotifyActorEndOverlap(AActor* OtherActor)
 	// Recover collision of owner character after end overlap
 	if (OtherActor == OwnerCharacter && bIgnoreOwnerCollisionAtStart)
 	{
-		CollisionComponent->IgnoreActorWhenMoving(OtherActor, false);
+		MulticastIgnoreActorWhileMoving(OtherActor, false);
 	}
 }
 
@@ -358,7 +358,7 @@ void AProjectileBase::SetOwnerCharacter(AActor* NewActor)
 	if (bIgnoreOwnerCollisionAtStart)
 	{
 		// Ignore the owner collision at start to avoid hit self
-		CollisionComponent->IgnoreActorWhenMoving(NewActor, true);
+		MulticastIgnoreActorWhileMoving(NewActor, true);
 	}
 
 	OwnerCharacter = Cast<AStandardModePlayerCharacter>(NewActor);
