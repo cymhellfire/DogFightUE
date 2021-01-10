@@ -374,7 +374,8 @@ void AStandardGameMode::EndCurrentPlayerRound()
 {
 	if (CurrentGamePhase == GamePhase::PlayerRound)
 	{
-		SetGamePhase(GamePhase::PlayerRoundEnd);
+		//SetGamePhase(GamePhase::PlayerRoundEnd);
+		SetGamePhase(GamePhase::DiscardCards);
 	}
 }
 
@@ -517,6 +518,10 @@ void AStandardGameMode::OnGamePhaseChanged()
 	else if (CurrentGamePhase == GamePhase::PlayerRound)
 	{
 		HandlePhasePlayerRound();
+	}
+	else if (CurrentGamePhase == GamePhase::DiscardCards)
+	{
+		HandlePhaseDiscardCards();
 	}
 	else if (CurrentGamePhase == GamePhase::PlayerRoundEnd)
 	{
@@ -707,6 +712,11 @@ void AStandardGameMode::HandlePhasePlayerRound()
 			AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(StandardGameState->GetGameRoundsTimeline()->GetCurrentPlayerId());
 			if (StandardModePlayerController != nullptr)
 			{
+				if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
+				{
+					StandardPlayerState->SetCardSelectionPurpose(ECardSelectionPurpose::CSP_Use);
+				}
+
 				StandardModePlayerController->ClientShowCardDisplayWidgetWithSelectMode(ECardSelectionMode::CSM_SingleNoConfirm);
 			}
 		}
@@ -734,11 +744,26 @@ void AStandardGameMode::HandlePhaseDiscardCards()
 			return;
 		}
 
-		
+		if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
+		{
+			// Check whether to discard cards
+			const int32 DiscardCount = StandardPlayerState->CardCountToDiscard();
+			if (DiscardCount > 0)
+			{
+				StandardPlayerState->SetCardSelectionPurpose(ECardSelectionPurpose::CSP_Discard);
+				StandardModePlayerController->ClientStartDiscardCards(DiscardCount);
+
+				StandardPlayerState->OnDiscardCardFinished.AddDynamic(this, &AStandardGameMode::AStandardGameMode::OnPlayerDiscardCardFinished);
+			}
+			else
+			{
+				SetGamePhase(GamePhase::PlayerRoundEnd);
+			}
+		}
 	}
 	else
 	{
-		
+		SetGamePhase(GamePhase::PlayerRoundEnd);
 	}
 }
 
@@ -961,6 +986,23 @@ void AStandardGameMode::OnPlayerUsingCardFinished(bool bShouldEndRound)
 			}
 		}
 	}
+}
+
+void AStandardGameMode::OnPlayerDiscardCardFinished()
+{
+	if (!bIsCurrentAIPlayer)
+	{
+		if (AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(GetCurrentPlayerId()))
+		{
+			StandardModePlayerController->ClientStopDiscardCards();
+			if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
+			{
+				StandardPlayerState->OnDiscardCardFinished.RemoveDynamic(this, &AStandardGameMode::AStandardGameMode::OnPlayerDiscardCardFinished);
+			}
+		}
+	}
+
+	SetGamePhase(GamePhase::PlayerRoundEnd);
 }
 
 void AStandardGameMode::OnPlayerDeadCallback(int32 PlayerId)

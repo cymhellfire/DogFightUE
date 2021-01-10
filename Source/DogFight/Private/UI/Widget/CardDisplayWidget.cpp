@@ -80,6 +80,11 @@ void UCardDisplayWidget::SetCardItemsSelectable(bool bSelectable)
 	}
 }
 
+void UCardDisplayWidget::SetDesireSelectCount(int32 DesireCount)
+{
+	DesiredSelectCount = DesireCount;
+}
+
 void UCardDisplayWidget::HandleSelectionChanged()
 {
 	switch(CardSelectionMode)
@@ -94,6 +99,8 @@ void UCardDisplayWidget::HandleSelectionChanged()
 		}
 		break;
 	case ECardSelectionMode::CSM_MultiWithConfirm:
+		// Trigger BP function
+		OnSelectedCountChanged(SelectedCardIndexList.Num());
 		break;
 	default: ;
 	}

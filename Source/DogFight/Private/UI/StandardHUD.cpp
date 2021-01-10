@@ -141,6 +141,28 @@ void AStandardHUD::ShowGameTitleMessage(FGameTitleMessage Message)
 	}
 }
 
+void AStandardHUD::StartDiscardCards(int32 CountToDiscard)
+{
+	if (CardDisplayWidget != nullptr)
+	{
+		if (!CardDisplayWidget->IsInViewport())
+		{
+			CardDisplayWidget->AddToViewport();
+		}
+
+		CardDisplayWidget->SetDesireSelectCount(CountToDiscard);
+		CardDisplayWidget->SetSelectMode(ECardSelectionMode::CSM_MultiWithConfirm);
+	}
+}
+
+void AStandardHUD::StopDiscardCards()
+{
+	if (CardDisplayWidget != nullptr)
+	{
+		CardDisplayWidget->SetSelectMode(ECardSelectionMode::CSM_SingleNoConfirm);
+	}
+}
+
 void AStandardHUD::BeginPlay()
 {
 	Super::BeginPlay();

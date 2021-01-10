@@ -81,6 +81,12 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 	UFUNCTION(Server, Reliable)
 	void ServerUploadSelectedCardIndex(const TArray<int32>& SelectedIndexList);
 
+	UFUNCTION(Client, Reliable)
+	void ClientStartDiscardCards(int32 CountToDiscard);
+
+	UFUNCTION(Client, Reliable)
+	void ClientStopDiscardCards();
+
 	/** Stop the character movement immediately. */
 	void StopCharacterMovementImmediately();
 
@@ -147,7 +153,7 @@ protected:
 	void OnCardInfoListChanged();
 
 	UFUNCTION()
-	void OnCardSelectionConfirmed(const TArray<int32>& SelectedIndexList);
+	void OnCardSelectionConfirmed(TArray<int32>& SelectedIndexList);
 
 #pragma region Target Acquire
 	UFUNCTION(Client, Reliable)

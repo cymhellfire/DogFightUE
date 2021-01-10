@@ -140,8 +140,14 @@ void AStandardModePlayerController::ClientShowCardDisplayWidgetWithSelectMode_Im
 	}
 }
 
-void AStandardModePlayerController::OnCardSelectionConfirmed(const TArray<int32>& SelectedIndexList)
+void AStandardModePlayerController::OnCardSelectionConfirmed(TArray<int32>& SelectedIndexList)
 {
+	// Sort index descending for loop handling
+	if (SelectedIndexList.Num() > 1)
+	{
+		SelectedIndexList.Sort([](const int32& A, const int32& B) { return A > B; });
+	}
+
 	ServerUploadSelectedCardIndex(SelectedIndexList);
 }
 
@@ -201,7 +207,7 @@ void AStandardModePlayerController::ServerUploadSelectedCardIndex_Implementation
 	{
 		for (int32 Index : SelectedIndexList)
 		{
-			StandardPlayerState->ServerUseCardByIndex(Index);
+			StandardPlayerState->ServerHandleSelectedCard(Index);
 		}
 	}
 }
@@ -236,6 +242,24 @@ void AStandardModePlayerController::ClientSetCardDisplayWidgetSelectable_Impleme
 				StandardHUD->GetCardDisplayWidget()->OnCardSelectionConfirmed.RemoveDynamic(this, &AStandardModePlayerController::OnCardSelectionConfirmed);
 			}
 		}
+	}
+}
+
+void AStandardModePlayerController::ClientStartDiscardCards_Implementation(int32 CountToDiscard)
+{
+	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
+	{
+		StandardHUD->StartDiscardCards(CountToDiscard);
+		StandardHUD->DisplayHintMessage(EOperationHintMessageContent::DiscardCard);
+	}
+}
+
+void AStandardModePlayerController::ClientStopDiscardCards_Implementation()
+{
+	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
+	{
+		StandardHUD->StopDiscardCards();
+		StandardHUD->HideOperationHintMessageWidget();
 	}
 }
 

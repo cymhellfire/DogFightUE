@@ -217,6 +217,9 @@ protected:
 	void OnPlayerUsingCardFinished(bool bShouldEndRound);
 
 	UFUNCTION()
+	void OnPlayerDiscardCardFinished();
+
+	UFUNCTION()
 	void OnPlayerDeadCallback(int32 PlayerId);
 
 	UFUNCTION()

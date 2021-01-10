@@ -10,6 +10,7 @@ namespace EOperationHintMessageContent
 	const FName SelectActorTarget = FName(TEXT("OpHintMsg_SelectActorTarget"));
 	const FName SelectPositionTarget = FName(TEXT("OpHintMsg_SelectPositionTarget"));
 	const FName SelectDirectionTarget = FName(TEXT("OpHintMsg_SelectDirectionTarget"));
+	const FName DiscardCard = FName(TEXT("OpHintMsg_DiscardCard"));
 }
 
 void UOperationHintMessageWidget::SetHintMessage(FName& NewMessage)

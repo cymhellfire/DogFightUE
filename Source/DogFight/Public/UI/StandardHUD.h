@@ -53,6 +53,10 @@ public:
 
 	void ShowGameTitleMessage(FGameTitleMessage Message);
 
+	void StartDiscardCards(int32 CountToDiscard);
+
+	void StopDiscardCards();
+
 protected:
 	virtual void BeginPlay() override;
 

@@ -15,6 +15,7 @@ AStandardPlayerState::AStandardPlayerState(const FObjectInitializer& ObjectIniti
 	// Initial value
 	CardGainPerRounds = 2;
 	MaxUseNum = 2;
+	MaxCardCount = 2;
 	bAlive = true;
 }
 
@@ -26,6 +27,7 @@ void AStandardPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 	DOREPLIFETIME(AStandardPlayerState, MaxUseNum);
 	DOREPLIFETIME(AStandardPlayerState, UsedCardNum);
 	DOREPLIFETIME(AStandardPlayerState, CardGainPerRounds);
+	DOREPLIFETIME(AStandardPlayerState, CardSelectionPurpose);
 	DOREPLIFETIME(AStandardPlayerState, bAlive);
 	DOREPLIFETIME(AStandardPlayerState, PlayerStatisticArray);
 	DOREPLIFETIME(AStandardPlayerState, bIsRagdoll);
@@ -51,7 +53,24 @@ void AStandardPlayerState::AddCard(ACardBase* Card)
 	OnRep_CardInfoList();
 }
 
-void AStandardPlayerState::ServerUseCardByIndex_Implementation(int32 Index)
+void AStandardPlayerState::RemoveCard(int32 CardIndex)
+{
+	if (GetNetMode() == NM_Client)
+		return;
+
+	if (CardIndex >= CardInstanceList.Num() || CardIndex < 0)
+	{
+		return;
+	}
+
+	CardInfoList.RemoveAt(CardIndex);
+	CardInstanceList.RemoveAt(CardIndex);
+
+	// Invoke OnRep function on server side
+	OnRep_CardInfoList();
+}
+
+void AStandardPlayerState::ServerHandleSelectedCard_Implementation(int32 Index)
 {
 	if (Index >= CardInstanceList.Num())
 	{
@@ -59,13 +78,33 @@ void AStandardPlayerState::ServerUseCardByIndex_Implementation(int32 Index)
 		return;
 	}
 
-	// Begin using specified card
-	ACardBase* UsingCard = CardInstanceList[Index];
-	UsingCard->Use();
-	UsingCardIndex = Index;
+	switch(CardSelectionPurpose)
+	{
+	case ECardSelectionPurpose::CSP_Use:
+		{
+			// Begin using specified card
+			ACardBase* UsingCard = CardInstanceList[Index];
+			UsingCard->Use();
+			UsingCardIndex = Index;
 
-	// Register to card's delegate
-	UsingCard->OnCardFinished.AddDynamic(this, &AStandardPlayerState::OnCardFinished);
+			// Register to card's delegate
+			UsingCard->OnCardFinished.AddDynamic(this, &AStandardPlayerState::OnCardFinished);
+		}
+		break;
+	case ECardSelectionPurpose::CSP_Discard:
+		{
+			// Discard specified card from list
+			RemoveCard(Index);
+
+			// Callback
+			if (CardInstanceList.Num() == MaxCardCount)
+			{
+				OnDiscardCardFinished.Broadcast();
+			}
+		}
+		break;
+	default: ;
+	}
 }
 
 void AStandardPlayerState::OnCardFinished()

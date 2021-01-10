@@ -20,7 +20,7 @@ public:
 
 	UCardDisplayWidget(const FObjectInitializer& ObjectInitializer);
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCardSelectionConfirmSignature, const TArray<int32>&, SelectionIndexList);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCardSelectionConfirmSignature, TArray<int32>&, SelectionIndexList);
 	FCardSelectionConfirmSignature OnCardSelectionConfirmed;
 
 	UFUNCTION(BlueprintImplementableEvent, Category="DogFight|UI")
@@ -47,6 +47,9 @@ public:
 
 	void SetCardItemsSelectable(bool bSelectable);
 
+	/** Set the desired select count for MultiSelection mode. */
+	void SetDesireSelectCount(int32 DesireCount);
+
 protected:
 
 	void HandleSelectionChanged();
@@ -63,6 +66,10 @@ protected:
 		return CardInfo.GetCardDescriptionText();
 	}
 
+	/** Triggered when selected count changed. */
+	UFUNCTION(BlueprintImplementableEvent, Category="DogFight|UI")
+	void OnSelectedCountChanged(int32 CurrentSelected);
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="DogFight|CardDisplayWidget")
 	ECardSelectionMode CardSelectionMode;
@@ -72,5 +79,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="DogFight|CardDisplayWidget")
 	TArray<FCardInstanceDisplayInfo> CardDisplayInfoList;
 
-	bool bCardItemSelectable;
+	/** Are all cards selectable? */
+	uint8 bCardItemSelectable : 1;
+
+	/** The desired selection count for MultiSelection mode. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="DogFight|CardDisplayWidget")
+	int32 DesiredSelectCount;
 };

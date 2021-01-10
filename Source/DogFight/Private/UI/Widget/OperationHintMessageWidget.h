@@ -11,6 +11,7 @@ namespace EOperationHintMessageContent
 	extern const FName SelectActorTarget;
 	extern const FName SelectPositionTarget;
 	extern const FName SelectDirectionTarget;
+	extern const FName DiscardCard;
 }
 
 /**

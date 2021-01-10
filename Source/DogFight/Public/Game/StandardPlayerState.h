@@ -34,6 +34,13 @@ struct FPlayerRelationStatistic
 	int32 CurrentHealth;
 };
 
+UENUM(BlueprintType)
+enum class ECardSelectionPurpose : uint8
+{
+	CSP_Use			UMETA(DisplayName="Use"),
+	CSP_Discard		UMETA(DisplayName="Discard"),
+};
+
 /**
  * 
  */
@@ -52,14 +59,24 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUsingCardFinsishedSignature, bool, bPlayerRoundFinished);
 	FUsingCardFinsishedSignature OnUsingCardFinished;
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDiscardCardFinishedSignature);
+	FDiscardCardFinishedSignature OnDiscardCardFinished;
+
 	AStandardPlayerState(const FObjectInitializer& ObjectInitializer);
 
 	virtual void OnRep_PlayerName() override;
 
 	void AddCard(ACardBase* Card);
 
+	void RemoveCard(int32 CardIndex);
+
+	void SetCardSelectionPurpose(ECardSelectionPurpose NewPurpose)
+	{
+		CardSelectionPurpose = NewPurpose;
+	}
+
 	UFUNCTION(Server, Reliable)
-	void ServerUseCardByIndex(int32 Index);
+	void ServerHandleSelectedCard(int32 Index);
 
 	FORCEINLINE bool CanUseCard() const { return UsedCardNum < MaxUseNum; }
 
@@ -82,6 +99,12 @@ public:
 
 	/** Get the count of cards this player has. */
 	FORCEINLINE int32 GetCurrentCardCount() const { return CardInstanceList.Num(); }
+
+	/** Whether this player should discard cards before end this round. */
+	int32 CardCountToDiscard() const
+	{
+		return FMath::Max(0, CardInstanceList.Num() - MaxCardCount);
+	}
 
 	void RegisterPlayersForRelation();
 
@@ -128,6 +151,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="StandardPlayerState", Replicated)
 	int32 CardGainPerRounds;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState", Replicated)
+	ECardSelectionPurpose CardSelectionPurpose;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState", Replicated)
 	bool bAlive;
