@@ -1,9 +1,9 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "Buff_Invincible.h"
+#include "Actors/Buffs/Buff_Invincible.h"
 
-#include "ActorInterfaces.h"
+#include "Actors/ActorInterfaces.h"
 
 void ABuff_Invincible::ApplyBuff()
 {

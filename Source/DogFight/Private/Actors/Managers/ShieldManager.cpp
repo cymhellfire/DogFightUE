@@ -1,8 +1,8 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "ShieldManager.h"
-#include "ShieldBase.h"
+#include "Actors/Managers/ShieldManager.h"
+#include "Actors/Shield/ShieldBase.h"
 
 // Sets default values
 AShieldManager::AShieldManager()

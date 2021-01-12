@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DogFightDamageType.h"
+#include "Game/DogFightDamageType.h"
 #include "DamageStructures.generated.h"
 
 USTRUCT(BlueprintType)

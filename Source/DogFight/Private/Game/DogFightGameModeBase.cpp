@@ -1,11 +1,11 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "DogFightGameModeBase.h"
+#include "Game/DogFightGameModeBase.h"
 
-#include "DogFightPlayerController.h"
-#include "DamageCalculatorBase.h"
-#include "ShieldManager.h"
+#include "Player/DogFightPlayerController.h"
+#include "Game/DamageCalculatorBase.h"
+#include "Actors/Managers/ShieldManager.h"
 
 void ADogFightGameModeBase::RequestFinishAndExitToMainMenu()
 {

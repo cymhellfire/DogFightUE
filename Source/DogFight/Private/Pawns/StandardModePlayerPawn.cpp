@@ -1,10 +1,10 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "StandardModePlayerPawn.h"
+#include "Pawns/StandardModePlayerPawn.h"
 
-#include "StandardModePlayerPawnMovement.h"
-#include "StandardModeCameraComponent.h"
+#include "Pawns/StandardModePlayerPawnMovement.h"
+#include "Pawns/StandardModeCameraComponent.h"
 #include "DogFight/DogFight.h"
 
 AStandardModePlayerPawn::AStandardModePlayerPawn(const FObjectInitializer& ObjectInitializer)

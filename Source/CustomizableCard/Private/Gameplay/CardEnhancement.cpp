@@ -1,7 +1,7 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "CardEnhancement.h"
+#include "Gameplay/CardEnhancement.h"
 
 FCardDescriptionItemInfo UCardEnhancement::GetDescriptionItemInfo_Implementation()
 {

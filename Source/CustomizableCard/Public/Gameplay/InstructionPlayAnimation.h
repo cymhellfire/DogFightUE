@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Gameplay/CardInstructionBase.h"
-#include "AnimNotifyDelegateAction.h"
+#include "Animation/AnimNotifyDelegateAction.h"
 #include "InstructionPlayAnimation.generated.h"
 
 /**

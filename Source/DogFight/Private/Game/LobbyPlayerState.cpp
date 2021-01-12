@@ -1,7 +1,7 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "LobbyPlayerState.h"
+#include "Game/LobbyPlayerState.h"
 
 void ALobbyPlayerState::SetPlayerInfo(FLobbyPlayerInfo& PlayerState)
 {

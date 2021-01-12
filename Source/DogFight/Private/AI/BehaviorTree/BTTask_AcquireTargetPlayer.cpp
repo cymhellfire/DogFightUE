@@ -1,9 +1,9 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "BTTask_AcquireTargetPlayer.h"
-#include "StandardModePlayerCharacter.h"
-#include "StandardModeAIController.h"
+#include "AI/BehaviorTree/BTTask_AcquireTargetPlayer.h"
+#include "Pawns/StandardModePlayerCharacter.h"
+#include "AI/StandardModeAIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
 

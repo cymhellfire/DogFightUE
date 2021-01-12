@@ -1,13 +1,13 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "StandardPlayerState.h"
-#include "CardBase.h"
-#include "StandardGameState.h"
-#include "StandardGameMode.h"
-#include "StandardModePlayerController.h"
-#include "StandardModePlayerCharacter.h"
-#include "StandardModeAIController.h"
+#include "Game/StandardPlayerState.h"
+#include "Gameplay/CardBase.h"
+#include "Game/StandardGameState.h"
+#include "Game/StandardGameMode.h"
+#include "Player/StandardModePlayerController.h"
+#include "Pawns/StandardModePlayerCharacter.h"
+#include "AI/StandardModeAIController.h"
 
 AStandardPlayerState::AStandardPlayerState(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

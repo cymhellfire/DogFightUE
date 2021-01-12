@@ -1,9 +1,9 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "TargetingInstructionBase.h"
-#include "CardBase.h"
-#include "GameTargetProviderInterface.h"
+#include "Gameplay/TargetingInstructionBase.h"
+#include "Gameplay/CardBase.h"
+#include "Interfaces/GameTargetProviderInterface.h"
 
 UTargetingInstructionBase::UTargetingInstructionBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

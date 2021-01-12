@@ -4,7 +4,7 @@
 
 #include "DogFight.h"
 
-#include "StandardModePlayerCharacter.h"
+#include "Pawns/StandardModePlayerCharacter.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/GameProjectileInterface.h"
 

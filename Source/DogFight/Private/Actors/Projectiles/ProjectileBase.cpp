@@ -1,16 +1,16 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "ProjectileBase.h"
+#include "Actors/Projectiles/ProjectileBase.h"
 
 #include "CustomizableCard.h"
-#include "DogFightGameModeBase.h"
+#include "Game/DogFightGameModeBase.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/AudioComponent.h"
-#include "VfxBase.h"
-#include "ShieldBase.h"
-#include "ShieldManager.h"
+#include "Actors/Vfx/VfxBase.h"
+#include "Actors/Shield/ShieldBase.h"
+#include "Actors/Managers/ShieldManager.h"
 
 // Sets default values
 AProjectileBase::AProjectileBase()

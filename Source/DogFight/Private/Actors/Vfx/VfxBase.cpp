@@ -1,7 +1,7 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "VfxBase.h"
+#include "Actors/Vfx/VfxBase.h"
 #include "Components/AudioComponent.h"
 
 // Sets default values

@@ -3,8 +3,8 @@
 
 #include "GameRoundsTimelineWidget.h"
 
-#include "StandardGameState.h"
-#include "GameRoundsTimeline.h"
+#include "Game/StandardGameState.h"
+#include "Game/GameRoundsTimeline.h"
 
 void UGameRoundsTimelineWidget::SetupTimelineDisplay()
 {

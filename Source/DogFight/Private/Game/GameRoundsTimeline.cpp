@@ -1,10 +1,10 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "GameRoundsTimeline.h"
-#include "StandardModePlayerController.h"
-#include "StandardModeAIController.h"
-#include "StandardPlayerState.h"
+#include "Game/GameRoundsTimeline.h"
+#include "Player/StandardModePlayerController.h"
+#include "AI/StandardModeAIController.h"
+#include "Game/StandardPlayerState.h"
 
 AGameRoundsTimeline::AGameRoundsTimeline(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

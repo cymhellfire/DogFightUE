@@ -1,21 +1,20 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "StandardGameMode.h"
+#include "Game/StandardGameMode.h"
 
-
-#include "CardBase.h"
+#include "Gameplay/CardBase.h"
 #include "DogFight.h"
-#include "DogFightGameInstance.h"
-#include "StandardGameState.h"
-#include "StandardHUD.h"
-#include "StandardModePlayerController.h"
-#include "StandardModePlayerCharacter.h"
-#include "StandardModePlayerPawn.h"
-#include "StandardPlayerState.h"
-#include "GameplayCardPool.h"
-#include "GameRoundsTimeline.h"
-#include "StandardModeAIController.h"
+#include "Game/DogFightGameInstance.h"
+#include "Game/StandardGameState.h"
+#include "UI/StandardHUD.h"
+#include "Player/StandardModePlayerController.h"
+#include "Pawns/StandardModePlayerCharacter.h"
+#include "Pawns/StandardModePlayerPawn.h"
+#include "Game/StandardPlayerState.h"
+#include "Game/GameplayCardPool.h"
+#include "Game/GameRoundsTimeline.h"
+#include "AI/StandardModeAIController.h"
 
 namespace GamePhase
 {

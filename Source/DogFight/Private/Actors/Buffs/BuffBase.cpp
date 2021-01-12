@@ -1,12 +1,12 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "BuffBase.h"
-#include "StandardGameState.h"
-#include "StandardGameMode.h"
-#include "GameRoundsTimeline.h"
-#include "VfxBase.h"
-#include "StandardModePlayerCharacter.h"
+#include "Actors/Buffs/BuffBase.h"
+#include "Game/StandardGameState.h"
+#include "Game/StandardGameMode.h"
+#include "Game/GameRoundsTimeline.h"
+#include "Actors/Vfx/VfxBase.h"
+#include "Pawns/StandardModePlayerCharacter.h"
 
 // Sets default values
 ABuffBase::ABuffBase()

@@ -1,14 +1,14 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "ShieldBase.h"
+#include "Actors/Shield/ShieldBase.h"
 
-#include "DogFightGameModeBase.h"
-#include "GameRoundsTimeline.h"
-#include "ProjectileBase.h"
-#include "ShieldManager.h"
-#include "StandardGameMode.h"
-#include "StandardGameState.h"
+#include "Game/DogFightGameModeBase.h"
+#include "Game/GameRoundsTimeline.h"
+#include "Actors/Projectiles/ProjectileBase.h"
+#include "Actors/Managers/ShieldManager.h"
+#include "Game/StandardGameMode.h"
+#include "Game/StandardGameState.h"
 
 AShieldBase::AShieldBase()
 {

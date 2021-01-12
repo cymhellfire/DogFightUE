@@ -1,7 +1,7 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "MenuModePawn.h"
+#include "Pawns/MenuModePawn.h"
 
 // Sets default values
 AMenuModePawn::AMenuModePawn()

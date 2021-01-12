@@ -1,11 +1,11 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "InstructionAddBuff.h"
+#include "Gameplay/InstructionAddBuff.h"
 
 #include "CustomizableCard.h"
-#include "CardBase.h"
-#include "GameBuffInterface.h"
+#include "Gameplay/CardBase.h"
+#include "Interfaces/GameBuffInterface.h"
 
 UInstructionAddBuff::UInstructionAddBuff(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

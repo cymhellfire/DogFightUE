@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "CustomizableCardTypes.h"
-#include "UIType.h"
+#include "UI/UIType.h"
 #include "CardDisplayWidget.generated.h"
 
 /**

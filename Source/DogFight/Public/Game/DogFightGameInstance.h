@@ -3,7 +3,7 @@
 #pragma once
 
 #include "DogFight.h"
-#include "FMainMenuMessage.h"
+#include "Common/MainMenuMessage.h"
 #include "Engine/GameInstance.h"
 #include "DogFightGameInstance.generated.h"
 

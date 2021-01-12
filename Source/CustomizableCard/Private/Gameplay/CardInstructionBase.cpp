@@ -1,11 +1,10 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "CardInstructionBase.h"
+#include "Gameplay/CardInstructionBase.h"
 
-#include "DelayAction.h"
-#include "GameCardUserPlayerControllerInterface.h"
-#include "CardBase.h"
+#include "Interfaces/GameCardUserPlayerControllerInterface.h"
+#include "Gameplay/CardBase.h"
 
 UCardInstructionBase::UCardInstructionBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

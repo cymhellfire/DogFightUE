@@ -5,9 +5,9 @@
 #include "CoreMinimal.h"
 #include "DogFightPlayerController.h"
 #include "DogFightTypes.h"
-#include "UIType.h"
-#include "GameCardUserPlayerControllerInterface.h"
-#include "GameTargetProviderInterface.h"
+#include "UI/UIType.h"
+#include "Interfaces/GameCardUserPlayerControllerInterface.h"
+#include "Interfaces/GameTargetProviderInterface.h"
 
 #include "StandardModePlayerController.generated.h"
 

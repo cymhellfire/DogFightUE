@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Actors/Vfx/VfxBase.h"
-#include "GameShieldInterface.h"
+#include "Interfaces/GameShieldInterface.h"
 #include "ShieldBase.generated.h"
 
 class AProjectileBase;

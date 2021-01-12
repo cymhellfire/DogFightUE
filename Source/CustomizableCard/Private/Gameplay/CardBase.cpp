@@ -1,10 +1,9 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "CardBase.h"
-#include "CardInstructionBase.h"
+#include "Gameplay/CardBase.h"
+#include "Gameplay/CardInstructionBase.h"
 #include "CustomizableCard.h"
-#include "InstructionWait.h"
 
 // Sets default values
 ACardBase::ACardBase(const FObjectInitializer& ObjectInitializer)

@@ -1,8 +1,8 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "GameplayCardPool.h"
-#include "CardBase.h"
+#include "Game/GameplayCardPool.h"
+#include "Gameplay/CardBase.h"
 #include "DogFight.h"
 
 ACardBase* UGameplayCardPool::GetRandomCard()

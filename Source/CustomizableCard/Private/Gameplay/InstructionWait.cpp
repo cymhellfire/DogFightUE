@@ -1,7 +1,7 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "InstructionWait.h"
+#include "Gameplay/InstructionWait.h"
 
 UInstructionWait::UInstructionWait(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

@@ -5,7 +5,7 @@
 #include "DogFight.h"
 
 #include "DogFightGameStateBase.h"
-#include "StandardMiniMapCapture.h"
+#include "Common/StandardMiniMapCapture.h"
 #include "StandardGameState.generated.h"
 
 class AGameRoundsTimeline;

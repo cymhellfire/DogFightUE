@@ -2,7 +2,7 @@
 
 
 #include "Card/Instructions/InstructionAddArmor.h"
-#include "BasicArmorBuff.h"
+#include "Actors/Buffs/BasicArmorBuff.h"
 
 void UInstructionAddArmor::OnBuffCreated(IGameBuffInterface* BuffActor)
 {

@@ -1,9 +1,9 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "FrameworkLibrary.h"
+#include "BlueprintLibrary/FrameworkLibrary.h"
 
-#include "DogFightGameInstance.h"
+#include "Game/DogFightGameInstance.h"
 
 USaveGameManager* UFrameworkLibrary::GetSaveGameManager(const UObject* WorldContextObject)
 {

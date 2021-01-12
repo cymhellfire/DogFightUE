@@ -1,7 +1,7 @@
 ﻿// Dog Fight Game Code By CYM.
 
-#include "InstructionPlaceShield.h"
-#include "CardBase.h"
+#include "Gameplay/InstructionPlaceShield.h"
+#include "Gameplay/CardBase.h"
 #include "CustomizableCard.h"
 
 UInstructionPlaceShield::UInstructionPlaceShield(const FObjectInitializer& ObjectInitializer)

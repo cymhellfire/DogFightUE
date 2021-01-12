@@ -1,10 +1,10 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "BTTask_UseCardByCategory.h"
+#include "AI/BehaviorTree/BTTask_UseCardByCategory.h"
 
-#include "StandardModeAIController.h"
-#include "StandardModePlayerCharacter.h"
+#include "AI/StandardModeAIController.h"
+#include "Pawns/StandardModePlayerCharacter.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Int.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"

@@ -1,11 +1,11 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "StandardModeDamageCalculator.h"
-#include "ActorInterfaces.h"
+#include "Game/StandardModeDamageCalculator.h"
+#include "Actors/ActorInterfaces.h"
 #include "DogFight.h"
-#include "ReceiveDamageComponent.h"
-#include "DogFightDamageType.h"
+#include "Actors/Components/ReceiveDamageComponent.h"
+#include "Game/DogFightDamageType.h"
 
 float UStandardModeDamageCalculator::CalculateActualDamage(AActor* DamageTaker, float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {

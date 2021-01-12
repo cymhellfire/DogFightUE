@@ -1,12 +1,11 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "LobbyGameMode.h"
+#include "Game/LobbyGameMode.h"
 
-
-#include "LobbyGameState.h"
-#include "LobbyPlayerController.h"
-#include "MenuModePawn.h"
+#include "Game/LobbyGameState.h"
+#include "Player/LobbyPlayerController.h"
+#include "Pawns/MenuModePawn.h"
 #include "GameFramework/GameStateBase.h"
 
 ALobbyGameMode::ALobbyGameMode(const FObjectInitializer& ObjectInitializer)

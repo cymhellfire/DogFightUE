@@ -1,9 +1,9 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "StandardMiniMapCapture.h"
+#include "Common/StandardMiniMapCapture.h"
 
-#include "StandardGameState.h"
+#include "Game/StandardGameState.h"
 #include "DogFight/DogFight.h"
 
 AStandardMiniMapCapture::AStandardMiniMapCapture(const FObjectInitializer& ObjectInitializer)

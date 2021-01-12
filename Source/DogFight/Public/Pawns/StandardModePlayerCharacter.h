@@ -3,8 +3,8 @@
 #pragma once
 
 #include "DogFight.h"
-#include "ActorInterfaces.h"
-#include "GameAnimatedCharacterInterface.h"
+#include "Actors/ActorInterfaces.h"
+#include "Interfaces/GameAnimatedCharacterInterface.h"
 #include "GameFramework/Character.h"
 #include "StandardModePlayerCharacter.generated.h"
 

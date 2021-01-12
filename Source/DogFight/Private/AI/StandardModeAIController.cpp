@@ -1,21 +1,20 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "StandardModeAIController.h"
+#include "AI/StandardModeAIController.h"
 
-#include "AIType.h"
+#include "AI/AIType.h"
 #include "DogFight.h"
-#include "StandardGameMode.h"
+#include "Game/StandardGameMode.h"
 #include "GameFramework/PlayerState.h"
-#include "StandardGameMode.h"
-#include "StandardPlayerState.h"
-#include "StandardModePlayerController.h"
-#include "StandardModePlayerCharacter.h"
+#include "Game/StandardPlayerState.h"
+#include "Player/StandardModePlayerController.h"
+#include "Pawns/StandardModePlayerCharacter.h"
 #include "NavigationSystem.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BrainComponent.h"
-#include "CardBase.h"
+#include "Gameplay/CardBase.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
 
 namespace EStandardModeAIControllerState

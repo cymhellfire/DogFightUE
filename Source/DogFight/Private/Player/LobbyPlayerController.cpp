@@ -1,15 +1,14 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "LobbyPlayerController.h"
-
+#include "Player/LobbyPlayerController.h"
 
 #include "DogFight.h"
-#include "DogFightGameInstance.h"
-#include "LobbyPlayerState.h"
-#include "SaveGameManager.h"
-#include "DogFightSaveGame.h"
-#include "LobbyGameMode.h"
+#include "Game/DogFightGameInstance.h"
+#include "Game/LobbyPlayerState.h"
+#include "Game/SaveGameManager.h"
+#include "Game/DogFightSaveGame.h"
+#include "Game/LobbyGameMode.h"
 
 void ALobbyPlayerController::GatherPlayerInfo()
 {

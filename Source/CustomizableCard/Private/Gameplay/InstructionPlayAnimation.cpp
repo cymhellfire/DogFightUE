@@ -1,14 +1,13 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "InstructionPlayAnimation.h"
-#include "CardBase.h"
+#include "Gameplay/InstructionPlayAnimation.h"
+#include "Gameplay/CardBase.h"
 #include "CustomizableCard.h"
-#include "GameCardUserPlayerControllerInterface.h"
+#include "Interfaces/GameCardUserPlayerControllerInterface.h"
 #include "GameFramework/Character.h"
-#include "AnimNotify_Delegate.h"
-#include "Components/SkeletalMeshComponent.h"
-#include "GameAnimatedCharacterInterface.h"
+#include "Animation/AnimNotify_Delegate.h"
+#include "Interfaces/GameAnimatedCharacterInterface.h"
 
 UInstructionPlayAnimation::UInstructionPlayAnimation(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

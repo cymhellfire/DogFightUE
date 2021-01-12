@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "AI/DogFightAIController.h"
-#include "GameCardUserPlayerControllerInterface.h"
-#include "GameTargetProviderInterface.h"
+#include "Interfaces/GameCardUserPlayerControllerInterface.h"
+#include "Interfaces/GameTargetProviderInterface.h"
 
 #include "StandardModeAIController.generated.h"
 

@@ -1,18 +1,17 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "StandardModePlayerCharacter.h"
+#include "Pawns/StandardModePlayerCharacter.h"
 
 #include "DogFight.h"
-#include "DogFightGameModeBase.h"
+#include "Game/DogFightGameModeBase.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
-#include "ProjectileBase.h"
-#include "StandardGameState.h"
-#include "StandardModePlayerController.h"
+#include "Actors/Projectiles/ProjectileBase.h"
+#include "Player/StandardModePlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/WidgetComponent.h"
-#include "ReceiveDamageComponent.h"
-#include "StandardPlayerState.h"
+#include "Actors/Components/ReceiveDamageComponent.h"
+#include "Game/StandardPlayerState.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/SkeletalMeshComponent.h"
 

@@ -1,10 +1,9 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "InstructionFireProjectile.h"
-#include "CardBase.h"
-#include "GameCardUserPlayerControllerInterface.h"
-#include "GameProjectileInterface.h"
+#include "Gameplay/InstructionFireProjectile.h"
+#include "Gameplay/CardBase.h"
+#include "Interfaces/GameProjectileInterface.h"
 #include "GameFramework/Character.h"
 
 UInstructionFireProjectile::UInstructionFireProjectile(const FObjectInitializer& ObjectInitializer)

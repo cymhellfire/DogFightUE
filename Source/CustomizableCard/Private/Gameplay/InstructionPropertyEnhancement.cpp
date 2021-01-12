@@ -1,10 +1,10 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "InstructionPropertyEnhancement.h"
+#include "Gameplay/InstructionPropertyEnhancement.h"
 
 #include "CustomizableCard.h"
-#include "CardInstructionBase.h"
+#include "Gameplay/CardInstructionBase.h"
 
 void UInstructionPropertyEnhancement::SetTargetInstruction(UCardInstructionBase* NewInstruction)
 {

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 
-#include "GameProjectileInterface.h"
+#include "Interfaces/GameProjectileInterface.h"
 #include "Gameplay/HandleTargetInstructionBase.h"
 #include "InstructionSpawnProjectileAt.generated.h"
 

@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 
 #include "DogFightPlayerController.h"
-#include "LobbyPlayerState.h"
+#include "Game/LobbyPlayerState.h"
 #include "LobbyPlayerController.generated.h"
 
 /**

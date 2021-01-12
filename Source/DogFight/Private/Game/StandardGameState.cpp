@@ -1,10 +1,10 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "StandardGameState.h"
+#include "Game/StandardGameState.h"
 
-#include "StandardGameMode.h"
-#include "GameRoundsTimeline.h"
+#include "Game/StandardGameMode.h"
+#include "Game/GameRoundsTimeline.h"
 
 AStandardGameState::AStandardGameState(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

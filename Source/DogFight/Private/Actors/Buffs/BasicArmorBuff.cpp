@@ -1,9 +1,9 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "BasicArmorBuff.h"
-#include "ReceiveDamageComponent.h"
-#include "ActorInterfaces.h"
+#include "Actors/Buffs/BasicArmorBuff.h"
+#include "Actors/Components/ReceiveDamageComponent.h"
+#include "Actors/ActorInterfaces.h"
 
 void ABasicArmorBuff::ApplyBuff()
 {

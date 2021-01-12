@@ -1,7 +1,7 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "DogFightDamageType.h"
+#include "Game/DogFightDamageType.h"
 
 UDogFightDamageType::UDogFightDamageType(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "HandleTargetInstructionBase.h"
-#include "GameShieldInterface.h"
+#include "Interfaces/GameShieldInterface.h"
 #include "InstructionPlaceShield.generated.h"
 
 /**

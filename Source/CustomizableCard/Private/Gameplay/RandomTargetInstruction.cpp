@@ -1,9 +1,9 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "RandomTargetInstruction.h"
-#include "CardBase.h"
-#include "GameTargetProviderInterface.h"
+#include "Gameplay/RandomTargetInstruction.h"
+#include "Gameplay/CardBase.h"
+#include "Interfaces/GameTargetProviderInterface.h"
 
 URandomTargetInstruction::URandomTargetInstruction(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

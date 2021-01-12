@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "FMainMenuMessage.generated.h"
+#include "MainMenuMessage.generated.h"
 
 USTRUCT(BlueprintType)
 struct FMainMenuMessage

@@ -1,8 +1,8 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "InstructionSpawnProjectileAt.h"
-#include "CardBase.h"
+#include "Gameplay/InstructionSpawnProjectileAt.h"
+#include "Gameplay/CardBase.h"
 
 UInstructionSpawnProjectileAt::UInstructionSpawnProjectileAt(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

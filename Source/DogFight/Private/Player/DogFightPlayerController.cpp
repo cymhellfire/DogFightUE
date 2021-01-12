@@ -1,9 +1,9 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "DogFightPlayerController.h"
+#include "Player/DogFightPlayerController.h"
 
-#include "DogFightGameInstance.h"
+#include "Game/DogFightGameInstance.h"
 
 #define ST_UI_LOC		"/Game/DogFight/Localization/ST_UserInterface.ST_UserInterface"
 

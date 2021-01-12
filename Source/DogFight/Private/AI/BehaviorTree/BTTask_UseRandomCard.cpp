@@ -1,8 +1,8 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "BTTask_UseRandomCard.h"
-#include "StandardModeAIController.h"
+#include "AI/BehaviorTree/BTTask_UseRandomCard.h"
+#include "AI/StandardModeAIController.h"
 
 UBTTask_UseRandomCard::UBTTask_UseRandomCard(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

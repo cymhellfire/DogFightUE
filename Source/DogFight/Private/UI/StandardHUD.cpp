@@ -1,19 +1,19 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "StandardHUD.h"
+#include "UI/StandardHUD.h"
 
-#include "StandardGameState.h"
-#include "StandardModePlayerController.h"
+#include "Game/StandardGameState.h"
+#include "Player/StandardModePlayerController.h"
 #include "MathHelper.h"
 #include "DogFight.h"
-#include "GamePhaseMessageWidget.h"
-#include "OperationHintMessageWidget.h"
-#include "GameMessageWindowWidget.h"
-#include "GameRoundsTimelineWidget.h"
-#include "CardDisplayWidget.h"
-#include "StandardGameMode.h"
-#include "GameTitleMessageWidget.h"
+#include "UI/Widget/GamePhaseMessageWidget.h"
+#include "UI/Widget/OperationHintMessageWidget.h"
+#include "UI/Widget/GameMessageWindowWidget.h"
+#include "UI/Widget/GameRoundsTimelineWidget.h"
+#include "UI/Widget/CardDisplayWidget.h"
+#include "Game/StandardGameMode.h"
+#include "UI/Widget/GameTitleMessageWidget.h"
 
 AStandardHUD::AStandardHUD(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
