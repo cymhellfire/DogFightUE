@@ -8,6 +8,7 @@
 #include "StandardPlayerState.generated.h"
 
 class ACardBase;
+class UBuffQueue;
 
 /**
  * Struct that handles the data describe relationship between players.
@@ -117,7 +118,12 @@ public:
 	/** Get all player relation statistic. */
 	TArray<FPlayerRelationStatistic> GetPlayerRelationStatisticList() const { return TArray<FPlayerRelationStatistic>(PlayerStatisticArray); }
 
+	/** Get the Buff Queue of this player. */
+	UBuffQueue* GetBuffQueue() const { return PlayerBuffQueue; }
+
 protected:
+	virtual void BeginPlay() override;
+
 	UFUNCTION()
 	void OnRep_CardInfoList();
 
@@ -165,4 +171,7 @@ protected:
 	bool bIsRagdoll;
 
 	FTimerHandle RagdollWaitingTimerHandle;
+
+	UPROPERTY(Transient)
+	UBuffQueue* PlayerBuffQueue;
 };

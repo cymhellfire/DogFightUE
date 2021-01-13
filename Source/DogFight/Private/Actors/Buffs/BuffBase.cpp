@@ -6,7 +6,11 @@
 #include "Game/StandardGameMode.h"
 #include "Game/GameRoundsTimeline.h"
 #include "Actors/Vfx/VfxBase.h"
+#include "Game/StandardPlayerState.h"
 #include "Pawns/StandardModePlayerCharacter.h"
+#include "Player/StandardModePlayerController.h"
+#include "AI/StandardModeAIController.h"
+#include "Actors/Managers/BuffQueue.h"
 
 // Sets default values
 ABuffBase::ABuffBase()
@@ -15,6 +19,9 @@ ABuffBase::ABuffBase()
 	PrimaryActorTick.bCanEverTick = false;
 
 	Lifetime = 1;
+	BuffEndingDuration = 1.f;
+	bAppliedToTarget = false;
+	bPendingEnd = false;
 }
 
 void ABuffBase::SetLifetime(float NewLifetime)
@@ -76,7 +83,7 @@ void ABuffBase::BeginPlay()
 	}
 }
 
-void ABuffBase::BuffEnd()
+void ABuffBase::EndBuff()
 {
 	// Remove buff
 	RemoveBuff();
@@ -88,6 +95,16 @@ void ABuffBase::BuffEnd()
 		StandardGameMode->OnPlayerRoundEnd.RemoveDynamic(this, &ABuffBase::OnPlayerRoundEnd);
 		StandardGameMode->OnPlayerDead.RemoveDynamic(this, &ABuffBase::OnPlayerDead);
 	}
+
+	// Start ending timer
+	GetWorldTimerManager().SetTimer(BuffEndTimerHandle, this, &ABuffBase::OnBuffEnded, BuffEndingDuration);
+}
+
+void ABuffBase::OnBuffEnded()
+{
+	GetWorldTimerManager().ClearTimer(BuffEndTimerHandle);
+
+	OnBuffEndedEvent.Broadcast(this);
 
 	// Destroy this actor
 	Destroy();
@@ -104,6 +121,31 @@ void ABuffBase::ApplyBuff()
 		// Set owner
 		VfxActor->OwnerController = SourcePlayerController;
 	}
+
+	// Register buff to target player
+	if (APawn* TargetPawn = Cast<APawn>(TargetActor))
+	{
+		if (AStandardModePlayerController* StandardModePlayerController = Cast<AStandardModePlayerController>(TargetPawn->GetOwner()))
+		{
+			if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
+			{
+				if (UBuffQueue* BuffQueue = StandardPlayerState->GetBuffQueue())
+				{
+					BuffQueue->RegisterBuff(this);
+				}
+			}
+		}
+		else if (AStandardModeAIController* StandardModeAIController = Cast<AStandardModeAIController>(TargetPawn->GetOwner()))
+		{
+			if (AStandardPlayerState* StandardPlayerState = StandardModeAIController->GetPlayerState<AStandardPlayerState>())
+			{
+				if (UBuffQueue* BuffQueue = StandardPlayerState->GetBuffQueue())
+				{
+					BuffQueue->RegisterBuff(this);
+				}
+			}
+		}
+	}
 }
 
 void ABuffBase::RemoveBuff()
@@ -112,6 +154,31 @@ void ABuffBase::RemoveBuff()
 	if (VfxActor != nullptr)
 	{
 		VfxActor->Destroy();
+	}
+
+	// Unregister buff from target player
+	if (APawn* TargetPawn = Cast<APawn>(TargetActor))
+	{
+		if (AStandardModePlayerController* StandardModePlayerController = Cast<AStandardModePlayerController>(TargetPawn->GetOwner()))
+		{
+			if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
+			{
+				if (UBuffQueue* BuffQueue = StandardPlayerState->GetBuffQueue())
+				{
+					BuffQueue->UnregisterBuff(this);
+				}
+			}
+		}
+		else if (AStandardModeAIController* StandardModeAIController = Cast<AStandardModeAIController>(TargetPawn->GetOwner()))
+		{
+			if (AStandardPlayerState* StandardPlayerState = StandardModeAIController->GetPlayerState<AStandardPlayerState>())
+			{
+				if (UBuffQueue* BuffQueue = StandardPlayerState->GetBuffQueue())
+				{
+					BuffQueue->UnregisterBuff(this);
+				}
+			}
+		}
 	}
 }
 
@@ -122,7 +189,7 @@ void ABuffBase::OnPlayerRoundEnd(int32 PlayerId)
 
 	if (LifetimeQueue.Num() == 0)
 	{
-		BuffEnd();
+		bPendingEnd = true;
 	}
 }
 
@@ -139,5 +206,5 @@ void ABuffBase::OnTargetActorDead()
 		StandardModePlayerCharacter->OnCharacterDead.RemoveDynamic(this, &ABuffBase::OnTargetActorDead);
 	}
 
-	BuffEnd();
+	EndBuff();
 }

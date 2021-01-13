@@ -8,6 +8,7 @@
 #include "Player/StandardModePlayerController.h"
 #include "Pawns/StandardModePlayerCharacter.h"
 #include "AI/StandardModeAIController.h"
+#include "Actors/Managers/BuffQueue.h"
 
 AStandardPlayerState::AStandardPlayerState(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -301,6 +302,17 @@ void AStandardPlayerState::ModifyPlayerHealth(int32 TargetPlayerId, int32 NewHea
 	if (GetPlayerRelationStatistic(TargetPlayerId, &TargetStatistic))
 	{
 		TargetStatistic->CurrentHealth = NewHealth;
+	}
+}
+
+void AStandardPlayerState::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (GetNetMode() != NM_Client)
+	{
+		// Create Buff Queue on server side
+		PlayerBuffQueue = NewObject<UBuffQueue>(this, UBuffQueue::StaticClass());
 	}
 }
 

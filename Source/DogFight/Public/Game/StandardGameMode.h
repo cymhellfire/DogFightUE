@@ -195,6 +195,9 @@ protected:
 
 	virtual void HandlePhasePlayerRoundBegin();
 
+	UFUNCTION()
+	virtual void OnPlayerBuffQueueFinished();
+
 	virtual void HandlePhasePlayerRound();
 
 	virtual void HandlePhaseDiscardCards();

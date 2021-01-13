@@ -5,6 +5,7 @@
 
 #include "Gameplay/CardBase.h"
 #include "DogFight.h"
+#include "Actors/Managers/BuffQueue.h"
 #include "Game/DogFightGameInstance.h"
 #include "Game/StandardGameState.h"
 #include "UI/StandardHUD.h"
@@ -643,6 +644,63 @@ void AStandardGameMode::HandlePhaseDecideOrder()
 
 void AStandardGameMode::HandlePhasePlayerRoundBegin()
 {
+	// Start Buff Queue process
+	if (!bIsCurrentAIPlayer)
+	{
+		// Handle human player
+		AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(GetCurrentPlayerId());
+		if (StandardModePlayerController == nullptr)
+		{
+			UE_LOG(LogDogFight, Error, TEXT("Failed to get PlayerController with Id %d"), GetCurrentPlayerId());
+			return;
+		}
+
+		if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
+		{
+			if (UBuffQueue* BuffQueue = StandardPlayerState->GetBuffQueue())
+			{
+				if (BuffQueue->GetBuffCount() > 0)
+				{
+					BuffQueue->OnBuffQueueProcessFinished.AddDynamic(this, &AStandardGameMode::OnPlayerBuffQueueFinished);
+					BuffQueue->StartBuffCheckProcess();
+				}
+				else
+				{
+					OnPlayerBuffQueueFinished();
+				}
+			}
+		}
+	}
+	else
+	{
+		// Handle AI player
+		AStandardModeAIController* StandardModeAIController = GetAIControllerById(GetCurrentPlayerId());
+		if (StandardModeAIController == nullptr)
+		{
+			UE_LOG(LogDogFight, Error, TEXT("Failed to get AIController with Id %d"), GetCurrentPlayerId());
+			return;
+		}
+
+		if (AStandardPlayerState* StandardPlayerState = StandardModeAIController->GetPlayerState<AStandardPlayerState>())
+		{
+			if (UBuffQueue* BuffQueue = StandardPlayerState->GetBuffQueue())
+			{
+				if (BuffQueue->GetBuffCount() > 0)
+				{
+					BuffQueue->OnBuffQueueProcessFinished.AddDynamic(this, &AStandardGameMode::OnPlayerBuffQueueFinished);
+					BuffQueue->StartBuffCheckProcess();
+				}
+				else
+				{
+					OnPlayerBuffQueueFinished();
+				}
+			}
+		}
+	}
+}
+
+void AStandardGameMode::OnPlayerBuffQueueFinished()
+{
 	TArray<FString> NewRoundMessageArgument;
 
 	if (!bIsCurrentAIPlayer)
@@ -660,6 +718,14 @@ void AStandardGameMode::HandlePhasePlayerRoundBegin()
 
 		if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
 		{
+			if (UBuffQueue* BuffQueue = StandardPlayerState->GetBuffQueue())
+			{
+				if (BuffQueue->OnBuffQueueProcessFinished.IsBound())
+				{
+					BuffQueue->OnBuffQueueProcessFinished.RemoveDynamic(this, &AStandardGameMode::OnPlayerBuffQueueFinished);
+				}
+			}
+
 			// Reset player state for new round
 			StandardPlayerState->InitializePlayerForNewRound();
 			// Give current player random cards
@@ -683,6 +749,14 @@ void AStandardGameMode::HandlePhasePlayerRoundBegin()
 
 		if (AStandardPlayerState* StandardPlayerState = StandardModeAIController->GetPlayerState<AStandardPlayerState>())
 		{
+			if (UBuffQueue* BuffQueue = StandardPlayerState->GetBuffQueue())
+			{
+				if (BuffQueue->OnBuffQueueProcessFinished.IsBound())
+				{
+					BuffQueue->OnBuffQueueProcessFinished.RemoveDynamic(this, &AStandardGameMode::AStandardGameMode::OnPlayerBuffQueueFinished);
+				}
+			}
+
 			// Reset player state for new round
 			StandardPlayerState->InitializePlayerForNewRound();
 			// Give current player random cards

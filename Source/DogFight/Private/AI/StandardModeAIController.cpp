@@ -76,6 +76,7 @@ void AStandardModeAIController::InitPlayerState()
 		
 		CharacterPawn = World->SpawnActor<AStandardModePlayerCharacter>(CharacterPawnClass, StartPoint, RootComponent->GetComponentRotation());
 		UE_LOG(LogDogFight, Display, TEXT("Spawn AI pawn at %s"), *StartPoint.ToString());
+		CharacterPawn->SetOwner(this);
 		CharacterPawn->SetPlayerState(PlayerState);
 		CharacterPawn->SetUnitName(MyPlayerState->GetPlayerName());
 		CharacterPawn->OnCharacterDead.AddDynamic(this, &AStandardModeAIController::OnCharacterPawnDead);

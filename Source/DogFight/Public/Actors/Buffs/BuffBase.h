@@ -16,8 +16,13 @@ class DOGFIGHT_API ABuffBase : public AActor, public IGameBuffInterface
 	GENERATED_BODY()
 	
 public:
+	friend class UBuffQueue;
+
 	// Sets default values for this actor's properties
 	ABuffBase();
+
+	/** Whether this buff should be ended in this round. */
+	bool IsBuffEnding() const { return bPendingEnd; }
 
 #pragma region Interface
 	virtual void SetLifetime(float NewLifetime) override;
@@ -27,11 +32,17 @@ public:
 	virtual void SetTargetActor(AActor* Target) override;
 #pragma endregion Interface
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBuffEndedSignature, ABuffBase*, Buff);
+	FOnBuffEndedSignature OnBuffEndedEvent;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	virtual void BuffEnd();
+	virtual void EndBuff();
+
+	UFUNCTION()
+	virtual void OnBuffEnded();
 
 	virtual void ApplyBuff();
 
@@ -54,6 +65,8 @@ public:
 	TSubclassOf<AVfxBase> VfxClass;
 
 protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Buff")
+	float BuffEndingDuration;
 
 	/** Id of source player. */
 	AController* SourcePlayerController;
@@ -68,5 +81,10 @@ protected:
 	AVfxBase* VfxActor;
 
 	/** Whether this buff is applied to target. */
-	bool bAppliedToTarget;
+	uint8 bAppliedToTarget : 1;
+
+	/** Whether this buff should be ended in this round. */
+	uint8 bPendingEnd : 1;
+
+	FTimerHandle BuffEndTimerHandle;
 };
