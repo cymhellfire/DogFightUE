@@ -59,4 +59,8 @@ public:
 	/** The falloff curve to calculate the actual blast force. (Only works with Curve type.) */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="DamageType")
 	UCurveFloat* BlastForceFalloffCurve;
+
+	/** The style apply to the damage number in floating text. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="DamageType")
+	FString DamageStyleName;
 };

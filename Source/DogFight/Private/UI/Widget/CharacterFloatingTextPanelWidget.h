@@ -19,7 +19,7 @@ public:
 
 	void AddFloatText(FText NewText);
 
-	void AddDamageText(float Damage);
+	void AddDamageText(float Damage, UDamageType* DamageType);
 
 protected:
 	UFUNCTION(BlueprintImplementableEvent, Category="DogFight|UI", meta = (DisplayName = "OnNewFloatingTextAdded"))

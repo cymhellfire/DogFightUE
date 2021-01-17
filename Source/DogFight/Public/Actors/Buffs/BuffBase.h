@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/GameBuffInterface.h"
+#include "Common/LocalizedString.h"
 
 #include "BuffBase.generated.h"
 
@@ -67,6 +68,12 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Buff")
 	float BuffEndingDuration;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Buff")
+	FLocalizedString BuffStartText;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Buff")
+	FLocalizedString BuffEndText;
 
 	/** Id of source player. */
 	AController* SourcePlayerController;

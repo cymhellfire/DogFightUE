@@ -411,7 +411,7 @@ float AStandardModePlayerCharacter::TakeDamage(float Damage, FDamageEvent const&
 		OnRep_CurrentHealth();
 
 		// Show damage
-		FloatingTextPanelWidget->AddDamageText(ActualDamage);
+		FloatingTextPanelWidget->AddDamageText(ActualDamage, DamageEvent.DamageTypeClass.GetDefaultObject());
 	}
 
 	return ActualDamage;
@@ -464,6 +464,19 @@ void AStandardModePlayerCharacter::RecoverStrength()
 		CurrentStrength = MaxStrength;
 
 		OnRep_CurrentStrength();
+	}
+}
+
+void AStandardModePlayerCharacter::MulticastAddFloatingText_Implementation(const FText& NewText)
+{
+	ShowFloatingText(NewText);
+}
+
+void AStandardModePlayerCharacter::ShowFloatingText(FText NewText)
+{
+	if (FloatingTextPanelWidget != nullptr)
+	{
+		FloatingTextPanelWidget->AddFloatText(NewText);
 	}
 }
 

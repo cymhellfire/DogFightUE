@@ -11,6 +11,7 @@ UDogFightDamageType::UDogFightDamageType(const FObjectInitializer& ObjectInitial
 	BlastForce = 0;
 	BlastForceUpwardRatio = 0;
 	BlastForceFalloff = EBlastForceFalloffType::Constant;
+	DamageStyleName = TEXT("Default");
 }
 
 float UDogFightDamageType::CalculateBlastForceSize(FVector Origin, FVector TargetLocation, float Range) const

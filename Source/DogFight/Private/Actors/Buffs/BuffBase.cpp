@@ -145,6 +145,12 @@ void ABuffBase::ApplyBuff()
 				}
 			}
 		}
+
+		// Show floating text
+		if (AStandardModePlayerCharacter* PlayerCharacter = Cast<AStandardModePlayerCharacter>(TargetPawn))
+		{
+			PlayerCharacter->MulticastAddFloatingText(BuffStartText.GetLocalizeText());
+		}
 	}
 }
 
@@ -178,6 +184,12 @@ void ABuffBase::RemoveBuff()
 					BuffQueue->UnregisterBuff(this);
 				}
 			}
+		}
+
+		// Show floating text
+		if (AStandardModePlayerCharacter* PlayerCharacter = Cast<AStandardModePlayerCharacter>(TargetPawn))
+		{
+			PlayerCharacter->MulticastAddFloatingText(BuffEndText.GetLocalizeText());
 		}
 	}
 }

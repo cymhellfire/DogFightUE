@@ -117,6 +117,13 @@ public:
 
 	void RecoverStrength();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastAddFloatingText(const FText& NewText);
+
+protected:
+
+	void ShowFloatingText(FText NewText);
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Character", Config)
 	int32 MaxBaseHealth;
