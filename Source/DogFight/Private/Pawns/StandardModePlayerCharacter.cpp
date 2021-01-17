@@ -14,6 +14,7 @@
 #include "Game/StandardPlayerState.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "UI/Widget/CharacterFloatingTextPanelWidget.h"
 
 // Sets default values
 AStandardModePlayerCharacter::AStandardModePlayerCharacter()
@@ -46,11 +47,18 @@ AStandardModePlayerCharacter::AStandardModePlayerCharacter()
 	CursorToWorld->SetVisibility(false);
 
 	// Create the Widget component for status UI display
-	WidgetComponent = CreateDefaultSubobject<UWidgetComponent>("WidgetComponent");
-	WidgetComponent->SetupAttachment(RootComponent);
-	WidgetComponent->SetDrawSize(FVector2D(150.f, 30.f));
-	WidgetComponent->SetRelativeLocation(FVector(0.f, 0.f, 150.f));
-	WidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	CharacterStatusWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("CharacterStatusWidgetComponent");
+	CharacterStatusWidgetComponent->SetupAttachment(RootComponent);
+	CharacterStatusWidgetComponent->SetDrawSize(FVector2D(150.f, 30.f));
+	CharacterStatusWidgetComponent->SetRelativeLocation(FVector(0.f, 0.f, 150.f));
+	CharacterStatusWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+
+	// Create floating text component
+	FloatingTextWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("FloatingTextWidgetComponent");
+	FloatingTextWidgetComponent->SetupAttachment(RootComponent);
+	FloatingTextWidgetComponent->SetDrawSize(FVector2D(500.f, 250.f));
+	FloatingTextWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	FloatingTextWidgetComponent->SetPivot(FVector2D(0.5f, 1.f));
 
 	// Create ReceiveDamageComponent
 	ReceiveDamageComponent = CreateDefaultSubobject<UReceiveDamageComponent>("ReceiveDamageComponent");
@@ -199,6 +207,13 @@ void AStandardModePlayerCharacter::BeginPlay()
 	// Setup the physical animation component
 	USkeletalMeshComponent* SkeletalMeshComponent = GetMesh();
 	SkeletalMeshOffset = SkeletalMeshComponent->GetRelativeLocation();
+
+	// Check the floating text widget
+	FloatingTextPanelWidget = Cast<UCharacterFloatingTextPanelWidget>(FloatingTextWidgetComponent->GetWidget());
+	if (!FloatingTextPanelWidget)
+	{
+		UE_LOG(LogInit, Log, TEXT("No widget available"));
+	}
 }
 
 void AStandardModePlayerCharacter::OnRep_UnitName()
@@ -394,6 +409,9 @@ float AStandardModePlayerCharacter::TakeDamage(float Damage, FDamageEvent const&
 
 		// Invoke OnRep on server side manually
 		OnRep_CurrentHealth();
+
+		// Show damage
+		FloatingTextPanelWidget->AddDamageText(ActualDamage);
 	}
 
 	return ActualDamage;

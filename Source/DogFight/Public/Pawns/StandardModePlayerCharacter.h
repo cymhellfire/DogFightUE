@@ -174,7 +174,10 @@ private:
 	class UDecalComponent* CursorToWorld;
 
 	UPROPERTY(Category=UI, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess="true"))
-	class UWidgetComponent* WidgetComponent;
+	class UWidgetComponent* CharacterStatusWidgetComponent;
+
+	UPROPERTY(Category=UI, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPRivateAccess="true"))
+	class UWidgetComponent* FloatingTextWidgetComponent;
 
 	bool bShowCursorToWorld;
 
@@ -214,4 +217,6 @@ private:
 
 	UPROPERTY(ReplicatedUsing=OnRep_SyncRagdollRotation)
 	FQuat SyncRagdollRotation;
+
+	class UCharacterFloatingTextPanelWidget* FloatingTextPanelWidget;
 };
