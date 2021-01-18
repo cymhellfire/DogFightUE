@@ -23,6 +23,9 @@ public:
 	virtual void InitializeArmor(int32 ArmorValue, int32 DamageCategories, TArray<TSubclassOf<UDamageType>> DesiredTypes);
 
 protected:
+	virtual FText GetBuffStartText() const override;
+	virtual FText GetBuffEndText() const override;
+
 	/** The extra armor add to target actor. */
 	FActorArmor ExtraArmor;
 };

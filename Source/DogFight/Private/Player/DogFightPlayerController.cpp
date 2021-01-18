@@ -4,8 +4,7 @@
 #include "Player/DogFightPlayerController.h"
 
 #include "Game/DogFightGameInstance.h"
-
-#define ST_UI_LOC		"/Game/DogFight/Localization/ST_UserInterface.ST_UserInterface"
+#include "Common/Localization.h"
 
 void ADogFightPlayerController::ClientReturnToMainMenuWithReason_Implementation(EReturnToMainMenuReason::Type Reason)
 {

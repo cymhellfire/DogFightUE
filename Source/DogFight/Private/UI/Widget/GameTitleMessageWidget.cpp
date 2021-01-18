@@ -2,8 +2,7 @@
 
 
 #include "GameTitleMessageWidget.h"
-
-#define ST_INGAME_UI_LOC		"/Game/DogFight/Localization/ST_InGameUI.ST_InGameUI"
+#include "Common/Localization.h"
 
 void UGameTitleMessageWidget::DisplayTitleMessage(FGameTitleMessage TitleMessage)
 {

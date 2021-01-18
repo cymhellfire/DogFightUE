@@ -149,7 +149,7 @@ void ABuffBase::ApplyBuff()
 		// Show floating text
 		if (AStandardModePlayerCharacter* PlayerCharacter = Cast<AStandardModePlayerCharacter>(TargetPawn))
 		{
-			PlayerCharacter->MulticastAddFloatingText(BuffStartText.GetLocalizeText());
+			PlayerCharacter->MulticastAddFloatingText(GetBuffStartText());
 		}
 	}
 }
@@ -189,9 +189,19 @@ void ABuffBase::RemoveBuff()
 		// Show floating text
 		if (AStandardModePlayerCharacter* PlayerCharacter = Cast<AStandardModePlayerCharacter>(TargetPawn))
 		{
-			PlayerCharacter->MulticastAddFloatingText(BuffEndText.GetLocalizeText());
+			PlayerCharacter->MulticastAddFloatingText(GetBuffEndText());
 		}
 	}
+}
+
+FText ABuffBase::GetBuffStartText() const
+{
+	return BuffStartText.GetLocalizeText();
+}
+
+FText ABuffBase::GetBuffEndText() const
+{
+	return BuffEndText.GetLocalizeText();
 }
 
 void ABuffBase::OnPlayerRoundEnd(int32 PlayerId)

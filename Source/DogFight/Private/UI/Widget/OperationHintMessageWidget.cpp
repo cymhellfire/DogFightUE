@@ -2,8 +2,7 @@
 
 
 #include "OperationHintMessageWidget.h"
-
-#define ST_INGAME_UI_LOC		"/Game/DogFight/Localization/ST_InGameUI.ST_InGameUI"
+#include "Common/Localization.h"
 
 namespace EOperationHintMessageContent
 {

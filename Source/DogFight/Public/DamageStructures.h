@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Common/Localization.h"
 #include "Game/DogFightDamageType.h"
 #include "DamageStructures.generated.h"
 
@@ -50,6 +51,42 @@ struct FActorArmor
 
 		// If no DamageType is desired, all DamageType is acceptable
 		return true;
+	}
+
+	FText GetArmorEffectText() const
+	{
+		FFormatOrderedArguments FinalArguments;
+		FinalArguments.Add(FText::FromString(FString::FromInt(ArmorValue)));
+
+		// If desired damage type is specified, use the damage type string
+		if (DesiredDamageType.Num() > 0)
+		{
+			FFormatOrderedArguments DesiredDamageTypeArguments;
+			FString FormatString;
+			for (int32 Index = 0; Index < DesiredDamageType.Num(); ++Index)
+			{
+				if (UDogFightDamageType* DogFightDamage = Cast<UDogFightDamageType>(DesiredDamageType[Index]))
+				{
+					if (DesiredDamageTypeArguments.Num() > 0)
+					{
+						FormatString.Append(TEXT(" / "));
+					}
+
+					DesiredDamageTypeArguments.Add(DogFightDamage->DamageTypeName.GetLocalizeText());
+					FormatString.Append(TEXT("%s"));
+				}
+			}
+			// damage type string
+			FinalArguments.Add(FText::Format(FTextFormat::FromString(FormatString), DesiredDamageTypeArguments));
+		}
+		// Use damage category string then
+		else
+		{
+			// Construct damage categories string
+			FinalArguments.Add(UDogFightDamageType::GetFormattedDamageCategoryName(AntiDamageCategories));
+		}
+
+		return FText::Format(FText::FromStringTable(ST_BUFF_LOC, TEXT("FloatText_ArmorDescFormat")), FinalArguments);
 	}
 
 	friend bool operator==(const FActorArmor& Lhs, const FActorArmor& RHS)

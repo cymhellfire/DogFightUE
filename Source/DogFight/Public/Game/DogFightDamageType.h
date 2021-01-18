@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "Common/LocalizedString.h"
 #include "GameFramework/DamageType.h"
 #include "DogFightDamageType.generated.h"
 
@@ -37,6 +39,10 @@ public:
 
 	virtual float CalculateBlastForceSize(FVector Origin, FVector TargetLocation, float Range) const;
 
+	static FString GetDogFightDamageCategoryName(EDogFightDamageCategory Category);
+
+	static FText GetFormattedDamageCategoryName(int32 CategoryFlag);
+
 public:
 	/** The bitmask represents the damage category. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="DamageType", meta=(Bitmask, BitmaskEnum = "EDogFightDamageCategory"))
@@ -59,6 +65,10 @@ public:
 	/** The falloff curve to calculate the actual blast force. (Only works with Curve type.) */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="DamageType")
 	UCurveFloat* BlastForceFalloffCurve;
+
+	/** The damage type localized name. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="DamageType")
+	FLocalizedString DamageTypeName;
 
 	/** The style apply to the damage number in floating text. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="DamageType")

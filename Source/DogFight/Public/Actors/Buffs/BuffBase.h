@@ -49,6 +49,10 @@ protected:
 
 	virtual void RemoveBuff();
 
+	virtual FText GetBuffStartText() const;
+
+	virtual FText GetBuffEndText() const;
+
 	UFUNCTION()
 	virtual void OnPlayerRoundEnd(int32 PlayerId);
 

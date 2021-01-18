@@ -8,8 +8,7 @@
 #include "DogFightTypes.h"
 #include "Game/SaveGameManager.h"
 #include "Blueprint/UserWidget.h"
-
-#define ST_UI_LOC		"/Game/DogFight/Localization/ST_UserInterface.ST_UserInterface"
+#include "Common/Localization.h"
 
 namespace DogFightGameInstanceState
 {
