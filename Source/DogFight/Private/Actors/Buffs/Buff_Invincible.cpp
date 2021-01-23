@@ -3,7 +3,7 @@
 
 #include "Actors/Buffs/Buff_Invincible.h"
 
-#include "Actors/ActorInterfaces.h"
+#include "Actors/Interfaces/DamageableActorInterface.h"
 
 void ABuff_Invincible::ApplyBuff()
 {

@@ -11,6 +11,7 @@
 #include "Player/StandardModePlayerController.h"
 #include "AI/StandardModeAIController.h"
 #include "Actors/Managers/BuffQueue.h"
+#include "Actors/Interfaces/BuffableActorInterface.h"
 
 // Sets default values
 ABuffBase::ABuffBase()
@@ -20,6 +21,7 @@ ABuffBase::ABuffBase()
 
 	Lifetime = 1;
 	BuffEndingDuration = 1.f;
+	MaxCountPerTarget = 0;
 	bAppliedToTarget = false;
 	bPendingEnd = false;
 }
@@ -48,7 +50,7 @@ void ABuffBase::SetTargetActor(AActor* Target)
 	}
 
 	// Apply buff if not yet (Ensure the target is non-null when apply buff)
-	if (!bAppliedToTarget)
+	if (!bAppliedToTarget && CheckBuffCompatibility(TargetActor))
 	{
 		ApplyBuff();
 		bAppliedToTarget = true;
@@ -75,8 +77,8 @@ void ABuffBase::BeginPlay()
 		StandardGameMode->OnPlayerDead.AddDynamic(this, &ABuffBase::OnPlayerDead);
 	}
 
-	// Apply buff if target is set
-	if (TargetActor != nullptr)
+	// Apply buff if target is set and able to add
+	if (TargetActor != nullptr && CheckBuffCompatibility(TargetActor))
 	{
 		ApplyBuff();
 		bAppliedToTarget = true;
@@ -125,25 +127,9 @@ void ABuffBase::ApplyBuff()
 	// Register buff to target player
 	if (APawn* TargetPawn = Cast<APawn>(TargetActor))
 	{
-		if (AStandardModePlayerController* StandardModePlayerController = Cast<AStandardModePlayerController>(TargetPawn->GetOwner()))
+		if (IBuffableActorInterface* BuffableActor = Cast<IBuffableActorInterface>(TargetPawn))
 		{
-			if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
-			{
-				if (UBuffQueue* BuffQueue = StandardPlayerState->GetBuffQueue())
-				{
-					BuffQueue->RegisterBuff(this);
-				}
-			}
-		}
-		else if (AStandardModeAIController* StandardModeAIController = Cast<AStandardModeAIController>(TargetPawn->GetOwner()))
-		{
-			if (AStandardPlayerState* StandardPlayerState = StandardModeAIController->GetPlayerState<AStandardPlayerState>())
-			{
-				if (UBuffQueue* BuffQueue = StandardPlayerState->GetBuffQueue())
-				{
-					BuffQueue->RegisterBuff(this);
-				}
-			}
+			BuffableActor->GetBuffQueue()->RegisterBuff(this);
 		}
 
 		// Show floating text
@@ -165,25 +151,9 @@ void ABuffBase::RemoveBuff()
 	// Unregister buff from target player
 	if (APawn* TargetPawn = Cast<APawn>(TargetActor))
 	{
-		if (AStandardModePlayerController* StandardModePlayerController = Cast<AStandardModePlayerController>(TargetPawn->GetOwner()))
+		if (IBuffableActorInterface* BuffableActor = Cast<IBuffableActorInterface>(TargetPawn))
 		{
-			if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
-			{
-				if (UBuffQueue* BuffQueue = StandardPlayerState->GetBuffQueue())
-				{
-					BuffQueue->UnregisterBuff(this);
-				}
-			}
-		}
-		else if (AStandardModeAIController* StandardModeAIController = Cast<AStandardModeAIController>(TargetPawn->GetOwner()))
-		{
-			if (AStandardPlayerState* StandardPlayerState = StandardModeAIController->GetPlayerState<AStandardPlayerState>())
-			{
-				if (UBuffQueue* BuffQueue = StandardPlayerState->GetBuffQueue())
-				{
-					BuffQueue->UnregisterBuff(this);
-				}
-			}
+			BuffableActor->GetBuffQueue()->UnregisterBuff(this);
 		}
 
 		// Show floating text
@@ -191,6 +161,43 @@ void ABuffBase::RemoveBuff()
 		{
 			PlayerCharacter->MulticastAddFloatingText(GetBuffEndText());
 		}
+	}
+}
+
+bool ABuffBase::CheckBuffCompatibility(AActor* TestActor)
+{
+	if (IBuffableActorInterface* BuffableActor = Cast<IBuffableActorInterface>(TestActor))
+	{
+		if (UBuffQueue* BuffQueue = BuffableActor->GetBuffQueue())
+		{
+			if (MaxCountPerTarget == 0)
+				return true;
+
+			const int32 CurrentCount = BuffQueue->GetBuffCountOfType(GetClass()->GetFName());
+			if (CurrentCount < MaxCountPerTarget)
+			{
+				return true;
+			}
+		}
+	}
+
+	OnCompatibilityCheckFailed();
+	return false;
+}
+
+void ABuffBase::OnCompatibilityCheckFailed()
+{
+	// Unregister delegate
+	AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode());
+	if (StandardGameMode != nullptr)
+	{
+		StandardGameMode->OnPlayerRoundEnd.RemoveDynamic(this, &ABuffBase::OnPlayerRoundEnd);
+		StandardGameMode->OnPlayerDead.RemoveDynamic(this, &ABuffBase::OnPlayerDead);
+	}
+
+	if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(TargetActor))
+	{
+		StandardModePlayerCharacter->OnCharacterDead.RemoveDynamic(this, &ABuffBase::OnTargetActorDead);
 	}
 }
 

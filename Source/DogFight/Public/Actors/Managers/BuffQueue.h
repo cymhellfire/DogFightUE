@@ -32,6 +32,9 @@ public:
 
 	int32 GetBuffCount() const { return AttachedBuffList.Num(); }
 
+	/** Get total count of buff with given class. */
+	int32 GetBuffCountOfType(FName BuffClassName) const;
+
 protected:
 
 	void ProcessCurrentBuff();
@@ -42,6 +45,9 @@ protected:
 protected:
 	/** All buff instance attached to this actor. */
 	TArray<ABuffBase*> AttachedBuffList;
+
+	/** Map records count of different types of buff. */
+	TMap<FName, int32> BuffCountMap;
 
 	int32 CurrentBuffIndex;
 };

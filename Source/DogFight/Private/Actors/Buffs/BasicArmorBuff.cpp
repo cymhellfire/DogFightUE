@@ -3,7 +3,7 @@
 
 #include "Actors/Buffs/BasicArmorBuff.h"
 #include "Actors/Components/ReceiveDamageComponent.h"
-#include "Actors/ActorInterfaces.h"
+#include "Actors/Interfaces/DamageableActorInterface.h"
 #include "Common/Localization.h"
 
 void ABasicArmorBuff::ApplyBuff()

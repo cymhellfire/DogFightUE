@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "ActorInterfaces.generated.h"
+#include "DamageableActorInterface.generated.h"
 
 class UReceiveDamageComponent;
 

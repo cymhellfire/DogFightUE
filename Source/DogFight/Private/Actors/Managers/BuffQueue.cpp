@@ -9,6 +9,8 @@ void UBuffQueue::RegisterBuff(ABuffBase* NewBuff)
 	if (!AttachedBuffList.Contains(NewBuff))
 	{
 		AttachedBuffList.Add(NewBuff);
+
+		++BuffCountMap.FindOrAdd(NewBuff->GetClass()->GetFName());
 	}
 }
 
@@ -17,6 +19,14 @@ void UBuffQueue::UnregisterBuff(ABuffBase* TargetBuff)
 	if (AttachedBuffList.Contains(TargetBuff))
 	{
 		AttachedBuffList.Remove(TargetBuff);
+
+		const FName BuffName = TargetBuff->GetClass()->GetFName();
+		if (BuffCountMap.Contains(BuffName))
+		{
+			BuffCountMap[BuffName]--;
+
+			checkf(BuffCountMap[BuffName] >= 0, TEXT("Invalid buff count %d (class %s)"), BuffCountMap[BuffName], *BuffName.ToString());
+		}
 	}
 }
 
@@ -24,6 +34,16 @@ void UBuffQueue::StartBuffCheckProcess()
 {
 	CurrentBuffIndex = AttachedBuffList.Num() - 1;
 	ProcessCurrentBuff();
+}
+
+int32 UBuffQueue::GetBuffCountOfType(FName BuffClassName) const
+{
+	if (BuffCountMap.Contains(BuffClassName))
+	{
+		return BuffCountMap[BuffClassName];
+	}
+
+	return 0;
 }
 
 void UBuffQueue::ProcessCurrentBuff()

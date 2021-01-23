@@ -49,6 +49,11 @@ protected:
 
 	virtual void RemoveBuff();
 
+	virtual bool CheckBuffCompatibility(AActor* TestActor);
+
+	/** Handle this buff when compatibility check failed. */
+	virtual void OnCompatibilityCheckFailed();
+
 	virtual FText GetBuffStartText() const;
 
 	virtual FText GetBuffEndText() const;
@@ -72,6 +77,10 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Buff")
 	float BuffEndingDuration;
+
+	/** How many same buffs can be added to same target? (0 means no limitation.) */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Buff", meta=(ClampMin="0"))
+	int32 MaxCountPerTarget;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Buff")
 	FLocalizedString BuffStartText;

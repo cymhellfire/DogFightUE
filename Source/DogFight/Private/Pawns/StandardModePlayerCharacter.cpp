@@ -177,6 +177,16 @@ float AStandardModePlayerCharacter::PlayMontage(UAnimMontage* MontageToPlay)
 	return IsValid(MontageToPlay) ? MontageToPlay->GetPlayLength() : 0.f;
 }
 
+UBuffQueue* AStandardModePlayerCharacter::GetBuffQueue()
+{
+	if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
+	{
+		return StandardPlayerState->GetBuffQueue();
+	}
+
+	return nullptr;
+}
+
 void AStandardModePlayerCharacter::MulticastPlayMontage_Implementation(UAnimMontage* MontageToPlay)
 {
 	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())

@@ -3,13 +3,14 @@
 #pragma once
 
 #include "DogFight.h"
-#include "Actors/ActorInterfaces.h"
+#include "Actors/Interfaces/DamageableActorInterface.h"
+#include "Actors/Interfaces/BuffableActorInterface.h"
 #include "Interfaces/GameAnimatedCharacterInterface.h"
 #include "GameFramework/Character.h"
 #include "StandardModePlayerCharacter.generated.h"
 
 UCLASS(Config=Game)
-class DOGFIGHT_API AStandardModePlayerCharacter : public ACharacter, public IDamageableActorInterface, public IGameAnimatedCharacterInterface
+class DOGFIGHT_API AStandardModePlayerCharacter : public ACharacter, public IDamageableActorInterface, public IGameAnimatedCharacterInterface, public IBuffableActorInterface
 {
 	GENERATED_BODY()
 
@@ -35,6 +36,10 @@ public:
 #pragma region IGameAnimatedCharacterInterface
 	virtual float PlayMontage(UAnimMontage* MontageToPlay) override;
 #pragma endregion IGameAnimatedCharacterInterface
+
+#pragma region IBuffableActorInterface
+	virtual UBuffQueue* GetBuffQueue() override;
+#pragma endregion
 
 protected:
 	// Called when the game starts or when spawned
@@ -119,6 +124,9 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastAddFloatingText(const FText& NewText);
+
+	/** Get BuffQueue of this character. */
+	class UBuffQueue* GetBuffQueue() const;
 
 protected:
 

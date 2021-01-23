@@ -2,7 +2,7 @@
 
 
 #include "Game/StandardModeDamageCalculator.h"
-#include "Actors/ActorInterfaces.h"
+#include "Actors/Interfaces/DamageableActorInterface.h"
 #include "DogFight.h"
 #include "Actors/Components/ReceiveDamageComponent.h"
 #include "Game/DogFightDamageType.h"
