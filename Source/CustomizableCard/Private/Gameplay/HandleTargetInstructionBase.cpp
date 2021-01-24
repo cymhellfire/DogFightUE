@@ -82,12 +82,12 @@ int32 UHandleTargetInstructionBase::ParseTargetInfo(FCardInstructionTargetInfo T
 	return 0;
 }
 
-void UHandleTargetInstructionBase::HandleActorTarget(AActor* Target)
+bool UHandleTargetInstructionBase::HandleActorTarget(AActor* Target)
 {
 	if (bSkipOneBroadcast)
 	{
 		bSkipOneBroadcast = false;
-		return;
+		return true;
 	}
 
 	// Broadcast game message
@@ -107,6 +107,8 @@ void UHandleTargetInstructionBase::HandleActorTarget(AActor* Target)
 		UserPlayerController->BroadcastCardTargetingResult(OwnerCard->GetCardDisplayInfo().GetCardNameText(),
 			FText::FromString(TargetName), ECardInstructionTargetType::Actor);
 	}
+
+	return true;
 }
 
 void UHandleTargetInstructionBase::HandlePositionTarget(FVector Position)

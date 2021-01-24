@@ -13,26 +13,40 @@ UInstructionAddBuff::UInstructionAddBuff(const FObjectInitializer& ObjectInitial
 	BuffLifetime = 1.f;
 }
 
-void UInstructionAddBuff::HandleActorTarget(AActor* Target)
+bool UInstructionAddBuff::HandleActorTarget(AActor* Target)
 {
-	Super::HandleActorTarget(Target);
+	const bool Result = Super::HandleActorTarget(Target);
 
-	if (IsValid(Target))
+	if (Result && IsValid(Target))
 	{
 		if (IsValid(BuffClass))
 		{
-			IGameBuffInterface* BuffActor = GetWorld()->SpawnActor<IGameBuffInterface>(BuffClass);
-			if (BuffActor != nullptr)
+			// Check compatibility before spawn buff
+			if (IGameBuffInterface* BuffCDO = Cast<IGameBuffInterface>(BuffClass->GetDefaultObject()))
 			{
-				OnBuffCreated(BuffActor);
+				if (BuffCDO->IsCompatibleWith(Target))
+				{
+					IGameBuffInterface* BuffActor = GetWorld()->SpawnActor<IGameBuffInterface>(BuffClass);
+					if (BuffActor != nullptr)
+					{
+						OnBuffCreated(BuffActor);
 
-				BuffActor->SetSourcePlayerController(GetOwnerCard()->GetOwnerPlayerController());
-				BuffActor->SetTargetActor(Target);
-				BuffActor->SetLifetime(BuffLifetime);
+						BuffActor->SetSourcePlayerController(GetOwnerCard()->GetOwnerPlayerController());
+						BuffActor->SetTargetActor(Target);
+						BuffActor->SetLifetime(BuffLifetime);
+
+						// Return true only when buff is created and applied
+						return true;
+					}
+					else
+					{
+						UE_LOG(LogCustomizableCard, Error, TEXT("Failed to spawn buff actor with class %s"), *BuffClass->GetName());
+					}
+				}
 			}
 			else
 			{
-				UE_LOG(LogCustomizableCard, Error, TEXT("Failed to spawn buff actor with class %s"), *BuffClass->GetName());
+				UE_LOG(LogCustomizableCard, Error, TEXT("Invalid Buff class %s. (IGameBuffInterface is not implemented.)"), *BuffClass->GetName());
 			}
 		}
 		else
@@ -40,4 +54,6 @@ void UInstructionAddBuff::HandleActorTarget(AActor* Target)
 			UE_LOG(LogCustomizableCard, Error, TEXT("No valid buff class specified."));
 		}
 	}
+
+	return false;
 }

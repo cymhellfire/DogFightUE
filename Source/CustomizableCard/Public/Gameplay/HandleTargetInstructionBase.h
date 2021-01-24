@@ -38,7 +38,12 @@ protected:
 	 */
 	int32 ParseTargetInfo(FCardInstructionTargetInfo TargetInfo, AActor** ActorPtr, FVector& PositionValue, FVector& DirectionValue);
 
-	virtual void HandleActorTarget(AActor* Target);
+	/**
+	 * Handle a Actor type target.
+	 * @param Target			The target actor.
+	 * @return Whether the given target is handled successfully
+	 */
+	virtual bool HandleActorTarget(AActor* Target);
 
 	virtual void HandlePositionTarget(FVector Position);
 

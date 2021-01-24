@@ -11,11 +11,11 @@ UInstructionPlaceShield::UInstructionPlaceShield(const FObjectInitializer& Objec
 	ShieldLifetime = 1;
 }
 
-void UInstructionPlaceShield::HandleActorTarget(AActor* Target)
+bool UInstructionPlaceShield::HandleActorTarget(AActor* Target)
 {
-	Super::HandleActorTarget(Target);
+	const bool Result = Super::HandleActorTarget(Target);
 
-	if (IsValid(Target))
+	if (Result && IsValid(Target))
 	{
 		if (IsValid(ShieldClass))
 		{
@@ -27,6 +27,8 @@ void UInstructionPlaceShield::HandleActorTarget(AActor* Target)
 				ShieldActor->SetShieldBlockType(ShieldBlockType);
 				ShieldActor->SetAttachActor(Target);
 				ShieldActor->SetLifetime(ShieldLifetime);
+
+				return true;
 			}
 			else
 			{
@@ -38,5 +40,7 @@ void UInstructionPlaceShield::HandleActorTarget(AActor* Target)
 			UE_LOG(LogCustomizableCard, Error, TEXT("No valid shield class specified."));
 		}
 	}
+
+	return false;
 }
 

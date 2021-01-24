@@ -50,11 +50,16 @@ void ABuffBase::SetTargetActor(AActor* Target)
 	}
 
 	// Apply buff if not yet (Ensure the target is non-null when apply buff)
-	if (!bAppliedToTarget && CheckBuffCompatibility(TargetActor))
+	if (!bAppliedToTarget)
 	{
 		ApplyBuff();
 		bAppliedToTarget = true;
 	}
+}
+
+bool ABuffBase::IsCompatibleWith(AActor* Target)
+{
+	return CheckBuffCompatibility(Target);
 }
 
 // Called when the game starts or when spawned
@@ -77,8 +82,8 @@ void ABuffBase::BeginPlay()
 		StandardGameMode->OnPlayerDead.AddDynamic(this, &ABuffBase::OnPlayerDead);
 	}
 
-	// Apply buff if target is set and able to add
-	if (TargetActor != nullptr && CheckBuffCompatibility(TargetActor))
+	// Apply buff if target is set
+	if (TargetActor != nullptr)
 	{
 		ApplyBuff();
 		bAppliedToTarget = true;
@@ -181,24 +186,7 @@ bool ABuffBase::CheckBuffCompatibility(AActor* TestActor)
 		}
 	}
 
-	OnCompatibilityCheckFailed();
 	return false;
-}
-
-void ABuffBase::OnCompatibilityCheckFailed()
-{
-	// Unregister delegate
-	AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode());
-	if (StandardGameMode != nullptr)
-	{
-		StandardGameMode->OnPlayerRoundEnd.RemoveDynamic(this, &ABuffBase::OnPlayerRoundEnd);
-		StandardGameMode->OnPlayerDead.RemoveDynamic(this, &ABuffBase::OnPlayerDead);
-	}
-
-	if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(TargetActor))
-	{
-		StandardModePlayerCharacter->OnCharacterDead.RemoveDynamic(this, &ABuffBase::OnTargetActorDead);
-	}
 }
 
 FText ABuffBase::GetBuffStartText() const

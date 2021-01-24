@@ -28,14 +28,19 @@ void UInstructionSpawnProjectileAt::HandlePositionTarget(FVector Position)
 	}
 }
 
-void UInstructionSpawnProjectileAt::HandleActorTarget(AActor* Target)
+bool UInstructionSpawnProjectileAt::HandleActorTarget(AActor* Target)
 {
-	Super::HandleActorTarget(Target);
+	const bool Result = Super::HandleActorTarget(Target);
+	if (!Result)
+	{
+		return false;
+	}
 
 	// Skip once broadcast since the jump invoke below
 	bSkipOneBroadcast = true;
 
 	HandlePositionTarget(Target->GetActorLocation());
+	return true;
 }
 
 void UInstructionSpawnProjectileAt::HandleDirectionTarget(FVector Direction)

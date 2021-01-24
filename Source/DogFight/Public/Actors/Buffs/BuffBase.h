@@ -31,6 +31,8 @@ public:
 	virtual void SetSourcePlayerController(AController* PlayerController) override;
 
 	virtual void SetTargetActor(AActor* Target) override;
+
+	virtual bool IsCompatibleWith(AActor* Target) override;
 #pragma endregion Interface
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBuffEndedSignature, ABuffBase*, Buff);
@@ -50,9 +52,6 @@ protected:
 	virtual void RemoveBuff();
 
 	virtual bool CheckBuffCompatibility(AActor* TestActor);
-
-	/** Handle this buff when compatibility check failed. */
-	virtual void OnCompatibilityCheckFailed();
 
 	virtual FText GetBuffStartText() const;
 

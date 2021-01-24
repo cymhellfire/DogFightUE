@@ -19,7 +19,7 @@ class CUSTOMIZABLECARD_API UInstructionSpawnProjectileAt : public UHandleTargetI
 
 protected:
 	virtual void HandlePositionTarget(FVector Position) override;
-	virtual void HandleActorTarget(AActor* Target) override;
+	virtual bool HandleActorTarget(AActor* Target) override;
 	virtual void HandleDirectionTarget(FVector Direction) override;
 	
 	void SpawnProjectile(FVector Position, FRotator Rotation);

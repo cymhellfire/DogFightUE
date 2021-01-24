@@ -18,7 +18,7 @@ public:
 	UInstructionAddBuff(const FObjectInitializer& ObjectInitializer);
 
 protected:
-	virtual void HandleActorTarget(AActor* Target) override;
+	virtual bool HandleActorTarget(AActor* Target) override;
 
 	virtual void OnBuffCreated(class IGameBuffInterface* BuffActor) {}
 
@@ -27,5 +27,5 @@ protected:
 	TSubclassOf<AActor> BuffClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Instruction")
-	float BuffLifetime;
+	int32 BuffLifetime;
 };

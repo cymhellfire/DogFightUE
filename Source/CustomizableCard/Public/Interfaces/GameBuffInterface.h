@@ -26,4 +26,7 @@ public:
 
 	/** Set the target actor of this buff. */
 	virtual void SetTargetActor(AActor* TargetActor) {};
+
+	/** Check whether this buff is compatible with target. */
+	virtual bool IsCompatibleWith(AActor* TargetActor) { return false; }
 };

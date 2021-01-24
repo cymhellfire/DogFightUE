@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "HandleTargetInstructionBase.h"
+#include "InstructionAddBuff.h"
 #include "Interfaces/GameShieldInterface.h"
 #include "InstructionPlaceShield.generated.h"
 
@@ -11,14 +11,14 @@
  * 
  */
 UCLASS()
-class CUSTOMIZABLECARD_API UInstructionPlaceShield : public UHandleTargetInstructionBase
+class CUSTOMIZABLECARD_API UInstructionPlaceShield : public UInstructionAddBuff
 {
 	GENERATED_BODY()
 public:
 	UInstructionPlaceShield(const FObjectInitializer& ObjectInitializer);
 
 protected:
-	virtual void HandleActorTarget(AActor* Target) override;
+	virtual bool HandleActorTarget(AActor* Target) override;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Instruction", meta=(MustImplement="GameShieldInterface"))

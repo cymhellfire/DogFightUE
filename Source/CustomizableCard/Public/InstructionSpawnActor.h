@@ -35,7 +35,7 @@ public:
 
 	virtual void BeginDestroy() override;
 protected:
-	virtual void HandleActorTarget(AActor* Target) override;
+	virtual bool HandleActorTarget(AActor* Target) override;
 	virtual void HandlePositionTarget(FVector Position) override;
 	virtual void HandleDirectionTarget(FVector Direction) override;
 
