@@ -83,6 +83,8 @@ AStandardModePlayerCharacter::AStandardModePlayerCharacter()
 	PoseSlotName = FName(TEXT("RagdollFinalPose"));
 	RagdollAutoRecoverDelay = 2.f;
 	RagdollStopThreshold = 1.5;
+
+	GameplayTags.AddTag(FGameplayTag::RequestGameplayTag(FName(TEXT("Actor.Character"))));
 }
 
 void AStandardModePlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const
@@ -185,6 +187,11 @@ UBuffQueue* AStandardModePlayerCharacter::GetBuffQueue()
 	}
 
 	return nullptr;
+}
+
+void AStandardModePlayerCharacter::GetGameplayTags(FGameplayTagContainer& OutGameplayTags)
+{
+	OutGameplayTags = GameplayTags;
 }
 
 void AStandardModePlayerCharacter::MulticastPlayMontage_Implementation(UAnimMontage* MontageToPlay)

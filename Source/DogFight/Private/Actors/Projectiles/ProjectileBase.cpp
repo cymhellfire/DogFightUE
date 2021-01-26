@@ -39,8 +39,16 @@ AProjectileBase::AProjectileBase()
 
 	DeadOnHit = true;
 	DecayDuration = 0;
+	Lifetime = 5.f;
 	AlignVfxWithHitNormal = false;
 	bIgnoreOwnerCollisionAtStart = true;
+
+	GameplayTags.AddTag(FGameplayTag::RequestGameplayTag(FName(TEXT("Actor.Projectile"))));
+}
+
+void AProjectileBase::GetGameplayTags(FGameplayTagContainer& OutGameplayTags)
+{
+	OutGameplayTags = GameplayTags;
 }
 
 // Called when the game starts or when spawned
@@ -50,6 +58,8 @@ void AProjectileBase::BeginPlay()
 
 	// Play the audio clip as default
 	AudioComponent->Play();
+
+	GetWorldTimerManager().SetTimer(LifeTimerHandle, this, &AProjectileBase::OnLifeTimerExpired, Lifetime);
 }
 
 void AProjectileBase::SetupShield()
@@ -78,6 +88,30 @@ void AProjectileBase::SetupShield()
 	}
 }
 
+bool AProjectileBase::CheckDeadOnHitCondition(AActor* OtherActor)
+{
+	if (!DeadOnHit)
+	{
+		return false;
+	}
+
+	// Dead if tag query is empty
+	if (HitDeadTagQuery.IsEmpty())
+	{
+		return true;
+	}
+
+	if (IGameplayTagsActorInterface* GameplayTagsActor = Cast<IGameplayTagsActorInterface>(OtherActor))
+	{
+		FGameplayTagContainer OtherActorGameplayTags;
+		GameplayTagsActor->GetGameplayTags(OtherActorGameplayTags);
+
+		return HitDeadTagQuery.Matches(OtherActorGameplayTags);
+	}
+
+	return true;
+}
+
 void AProjectileBase::MulticastIgnoreActorWhileMoving_Implementation(AActor* Target, bool bShouldIgnore)
 {
 	// Update collision
@@ -94,7 +128,7 @@ void AProjectileBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActo
 		HitActor = OtherActor;
 	}
 
-	if (DeadOnHit)
+	if (CheckDeadOnHitCondition(OtherActor))
 	{
 		Dead();
 	}
@@ -130,6 +164,13 @@ void AProjectileBase::OnRep_LaunchVelocity()
 	{
 		MovementComponent->Velocity = LaunchVelocity;
 	}
+}
+
+void AProjectileBase::OnLifeTimerExpired()
+{
+	GetWorldTimerManager().ClearTimer(LifeTimerHandle);
+
+	Dead();
 }
 
 void AProjectileBase::OnDecayTimerFinished()
@@ -195,6 +236,18 @@ void AProjectileBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 
 void AProjectileBase::Dead()
 {
+	// Clear timer
+	if (LifeTimerHandle.IsValid())
+	{
+		GetWorldTimerManager().ClearTimer(LifeTimerHandle);
+	}
+
+	// Stop movement
+	if (MovementComponent != nullptr)
+	{
+		MovementComponent->StopMovementImmediately();
+	}
+
 	// Damage target
 	if (FMath::Abs(DamageRadius) < 0.01f)
 	{

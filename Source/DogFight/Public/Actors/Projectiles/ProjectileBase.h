@@ -3,10 +3,12 @@
 #pragma once
 
 #include "DogFight.h"
+#include "GameplayTagContainer.h"
 
 #include "Pawns/StandardModePlayerCharacter.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/GameProjectileInterface.h"
+#include "Actors/Interfaces/GameplayTagsActorInterface.h"
 
 #include "ProjectileBase.generated.h"
 
@@ -17,7 +19,7 @@ class AShieldBase;
 class UAudioComponent;
 
 UCLASS()
-class DOGFIGHT_API AProjectileBase : public AActor, public IGameProjectileInterface
+class DOGFIGHT_API AProjectileBase : public AActor, public IGameProjectileInterface, public IGameplayTagsActorInterface
 {
 	GENERATED_BODY()
 	
@@ -54,11 +56,17 @@ public:
 	virtual FProjectileDeadSignature& GetProjectileDeadDelegate() override { return OnProjectileDead; }
 #pragma endregion GameProjectileInterface
 
+#pragma region GameplayTagsActorInterface
+	virtual void GetGameplayTags(FGameplayTagContainer& OutGameplayTags) override;
+#pragma endregion
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	virtual void SetupShield();
+
+	virtual bool CheckDeadOnHitCondition(AActor* OtherActor);
 
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastIgnoreActorWhileMoving(AActor* Target, bool bShouldIgnore);
@@ -78,6 +86,9 @@ protected:
 
 	UFUNCTION()
 	void OnRep_LaunchVelocity();
+
+	UFUNCTION()
+	void OnLifeTimerExpired();
 
 	UFUNCTION()
 	void OnDecayTimerFinished();
@@ -102,6 +113,14 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Projectile")
 	bool DeadOnHit;
+
+	/** Only dead when hit target match this query. (None means any actor is match.) */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile", meta=(EditCondition="DeadOnHit"))
+	FGameplayTagQuery HitDeadTagQuery;
+
+	/** How long this projectile stay before self-destruction. (0 means permanent.) */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile", meta=(ClampMin="0"))
+	float Lifetime;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
 	TSubclassOf<AVfxBase> VfxOnDead;
@@ -149,5 +168,10 @@ protected:
 
 	AActor* HitActor;
 
+	FTimerHandle LifeTimerHandle;
+
 	FTimerHandle DecayTimerHandle;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
+	FGameplayTagContainer GameplayTags;
 };

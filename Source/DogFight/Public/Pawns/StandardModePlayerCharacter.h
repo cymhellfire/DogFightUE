@@ -5,12 +5,14 @@
 #include "DogFight.h"
 #include "Actors/Interfaces/DamageableActorInterface.h"
 #include "Actors/Interfaces/BuffableActorInterface.h"
+#include "Actors/Interfaces/GameplayTagsActorInterface.h"
 #include "Interfaces/GameAnimatedCharacterInterface.h"
 #include "GameFramework/Character.h"
 #include "StandardModePlayerCharacter.generated.h"
 
 UCLASS(Config=Game)
-class DOGFIGHT_API AStandardModePlayerCharacter : public ACharacter, public IDamageableActorInterface, public IGameAnimatedCharacterInterface, public IBuffableActorInterface
+class DOGFIGHT_API AStandardModePlayerCharacter : public ACharacter, public IDamageableActorInterface, public IGameAnimatedCharacterInterface,
+	public IBuffableActorInterface, public IGameplayTagsActorInterface
 {
 	GENERATED_BODY()
 
@@ -39,6 +41,10 @@ public:
 
 #pragma region IBuffableActorInterface
 	virtual UBuffQueue* GetBuffQueue() override;
+#pragma endregion
+
+#pragma region GameplayTagsActorInterface
+	virtual void GetGameplayTags(FGameplayTagContainer& OutGameplayTags) override;
 #pragma endregion
 
 protected:
@@ -172,6 +178,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Animation")
 	UAnimMontage* GetUpFromBackMontage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character")
+	FGameplayTagContainer GameplayTags;
 
 private:
 	/** Current unit name. */

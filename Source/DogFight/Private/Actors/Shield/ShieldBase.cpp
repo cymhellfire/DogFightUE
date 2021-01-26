@@ -20,6 +20,7 @@ AShieldBase::AShieldBase()
 	RootComponent = ShieldMesh;
 
 	BlockType = EShieldBlockType::SBT_NotMine;
+	GameplayTags.AddTag(FGameplayTag::RequestGameplayTag(FName(TEXT("Actor.Shield"))));
 }
 
 bool AShieldBase::CheckShouldBlockProjectile(AProjectileBase* TestProjectile)
@@ -78,6 +79,11 @@ void AShieldBase::SetLifetime(int32 Lifetime)
 	{
 		LifetimeQueue = StandardGameState->GetGameRoundsTimeline()->GetLifetime(Lifetime);
 	}
+}
+
+void AShieldBase::GetGameplayTags(FGameplayTagContainer& OutGameplayTags)
+{
+	OutGameplayTags = GameplayTags;
 }
 
 void AShieldBase::SetSourcePlayerController(AController* NewController)
