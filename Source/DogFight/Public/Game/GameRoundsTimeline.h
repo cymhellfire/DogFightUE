@@ -93,4 +93,6 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_TimelinePlayerInfoList)
 	TArray<FTimelinePlayerInfo> TimelinePlayerInfoList;
+
+	uint8 bShouldSkipNextStepForward : 1;
 };

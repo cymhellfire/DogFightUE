@@ -16,7 +16,7 @@ void ABuff_FollowCurrentPlayer::OnTargetPlayerRoundEnd()
 {
 	Super::OnTargetPlayerRoundEnd();
 
-	if (!bPendingEnd)
+	if (!bPendingEnd && !bEnded)
 	{
 		MoveToNextPlayer();
 	}

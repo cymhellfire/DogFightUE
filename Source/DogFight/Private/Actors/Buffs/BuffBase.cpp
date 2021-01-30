@@ -96,6 +96,15 @@ void ABuffBase::BeginPlay()
 
 void ABuffBase::EndBuff()
 {
+	if (bEnded)
+	{
+		return;
+	}
+	else
+	{
+		bEnded = true;
+	}
+
 	// Remove buff
 	RemoveBuff();
 

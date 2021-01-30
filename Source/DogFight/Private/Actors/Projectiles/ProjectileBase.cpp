@@ -37,6 +37,7 @@ AProjectileBase::AProjectileBase()
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>("AudioComponent");
 	AudioComponent->SetupAttachment(RootComponent);
 
+	bIsAlive = true;
 	DeadOnHit = true;
 	DecayDuration = 0;
 	Lifetime = 5.f;
@@ -120,8 +121,6 @@ void AProjectileBase::MulticastIgnoreActorWhileMoving_Implementation(AActor* Tar
 
 void AProjectileBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	UE_LOG(LogDogFight, Log, TEXT("Hit on %s"), *OtherActor->GetName());
-
 	// Record hit actor on server
 	if (OtherActor != nullptr && GetLocalRole() == ROLE_Authority)
 	{
@@ -236,6 +235,12 @@ void AProjectileBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 
 void AProjectileBase::Dead()
 {
+	if (!bIsAlive)
+	{
+		return;
+	}
+
+	bIsAlive = false;
 	// Clear timer
 	if (LifeTimerHandle.IsValid())
 	{

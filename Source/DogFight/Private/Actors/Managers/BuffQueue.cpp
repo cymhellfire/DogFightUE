@@ -54,24 +54,54 @@ int32 UBuffQueue::GetBuffCountOfType(FName BuffClassName) const
 	return 0;
 }
 
+void UBuffQueue::StopCurrentProcessingBuff()
+{
+	if (CurrentProcessingBuff != nullptr)
+	{
+		CurrentProcessingBuff->OnBuffProcessEndedEvent.RemoveDynamic(this, &UBuffQueue::OnBuffProcessEnded);
+		CurrentProcessingBuff->OnBuffEndedEvent.RemoveDynamic(this, &UBuffQueue::OnBuffEnded);
+
+		if (OnBuffQueueProcessFinished.IsBound())
+		{
+			OnBuffQueueProcessFinished.Clear();
+		}
+		CurrentProcessingBuff = nullptr;
+	}
+}
+
+void UBuffQueue::ClearQueue()
+{
+	if (AttachedBuffList.Num() > 0)
+	{
+		for(int i = AttachedBuffList.Num() - 1; i >= 0; --i)
+		{
+			AttachedBuffList[i]->EndBuff();
+		}
+
+		AttachedBuffList.Empty();
+	}
+
+	BuffCountMap.Empty();
+}
+
 void UBuffQueue::ProcessCurrentBuff()
 {
-	ABuffBase* CurrentBuff = AttachedBuffList[CurrentBuffIndex];
-	if (CurrentBuff->IsBuffEnding())
+	CurrentProcessingBuff = AttachedBuffList[CurrentBuffIndex];
+	if (CurrentProcessingBuff->IsBuffEnding())
 	{
-		CurrentBuff->OnBuffEndedEvent.AddDynamic(this, &UBuffQueue::OnBuffEnded);
-		CurrentBuff->EndBuff();
+		CurrentProcessingBuff->OnBuffEndedEvent.AddDynamic(this, &UBuffQueue::OnBuffEnded);
+		CurrentProcessingBuff->EndBuff();
 	}
 	else
 	{
-		CurrentBuff->OnBuffProcessEndedEvent.AddDynamic(this, &UBuffQueue::OnBuffProcessEnded);
+		CurrentProcessingBuff->OnBuffProcessEndedEvent.AddDynamic(this, &UBuffQueue::OnBuffProcessEnded);
 		if (CurrentProcessPhase == EQP_RoundBegin)
 		{
-			CurrentBuff->OnTargetPlayerRoundBegin();
+			CurrentProcessingBuff->OnTargetPlayerRoundBegin();
 		}
 		else if (CurrentProcessPhase == EQP_RoundEnd)
 		{
-			CurrentBuff->OnTargetPlayerRoundEnd();
+			CurrentProcessingBuff->OnTargetPlayerRoundEnd();
 		}
 	}
 }
@@ -79,6 +109,7 @@ void UBuffQueue::ProcessCurrentBuff()
 void UBuffQueue::OnBuffEnded(ABuffBase* Buff)
 {
 	Buff->OnBuffEndedEvent.RemoveDynamic(this, &UBuffQueue::OnBuffEnded);
+	CurrentProcessingBuff = nullptr;
 
 	// Process to next buff
 	CurrentBuffIndex--;
@@ -95,6 +126,7 @@ void UBuffQueue::OnBuffEnded(ABuffBase* Buff)
 void UBuffQueue::OnBuffProcessEnded(ABuffBase* Buff)
 {
 	Buff->OnBuffProcessEndedEvent.RemoveDynamic(this, &UBuffQueue::OnBuffProcessEnded);
+	CurrentProcessingBuff = nullptr;
 
 	// Process to next buff
 	CurrentBuffIndex--;

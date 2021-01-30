@@ -210,6 +210,12 @@ TArray<int32> AGameRoundsTimeline::GetLifetime(int32 RoundCount)
 
 void AGameRoundsTimeline::StepForward()
 {
+	if (bShouldSkipNextStepForward)
+	{
+		bShouldSkipNextStepForward = false;
+		return;
+	}
+
 	// Move the first Player to the trail
 	FTimelinePlayerInfo PlayerInfo = TimelinePlayerInfoList[0];
 	PlayerInfo.FinishedRounds += 1;				// Increase the Game Rounds counter
@@ -244,6 +250,10 @@ void AGameRoundsTimeline::OnPlayerDead(int32 PlayerId)
 
 	// Remove item at target index
 	TimelinePlayerInfoList.RemoveAt(TargetIndex);
+
+	// If the first player is removed, we should skip next step forward
+	// since it's already done. Or the second player will be skipped.
+	bShouldSkipNextStepForward = true;
 
 	// Invoke OnRep on server side
 	if (GetNetMode() != NM_Client)

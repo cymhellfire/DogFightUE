@@ -168,6 +168,8 @@ protected:
 
 	AActor* HitActor;
 
+	uint8 bIsAlive : 1;
+
 	FTimerHandle LifeTimerHandle;
 
 	FTimerHandle DecayTimerHandle;

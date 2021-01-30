@@ -44,6 +44,11 @@ public:
 	/** Get total count of buff with given class. */
 	int32 GetBuffCountOfType(FName BuffClassName) const;
 
+	void StopCurrentProcessingBuff();
+
+	/** Clear out and remove all buffs in queue. */
+	void ClearQueue();
+
 protected:
 
 	void ProcessCurrentBuff();
@@ -62,6 +67,8 @@ protected:
 	TMap<FName, int32> BuffCountMap;
 
 	int32 CurrentBuffIndex;
+
+	ABuffBase* CurrentProcessingBuff;
 
 	EQueueProcessPhase CurrentProcessPhase;
 };

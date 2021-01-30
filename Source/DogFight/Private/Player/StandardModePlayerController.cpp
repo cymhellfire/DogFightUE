@@ -18,6 +18,7 @@
 #include "Game/StandardPlayerState.h"
 #include "UI/Widget/CardDisplayWidget.h"
 #include "NavigationSystem.h"
+#include "Actors/Managers/BuffQueue.h"
 #include "Blueprint/UserWidget.h"
 
 AStandardModePlayerController::AStandardModePlayerController(const FObjectInitializer& ObjectInitializer)
@@ -188,6 +189,11 @@ void AStandardModePlayerController::OnCharacterDead()
 	if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
 	{
 		StandardPlayerState->SetAlive(false);
+		if (UBuffQueue* BuffQueue = StandardPlayerState->GetBuffQueue())
+		{
+			BuffQueue->StopCurrentProcessingBuff();
+			BuffQueue->ClearQueue();
+		}
 		OnPlayerDead.Broadcast(StandardPlayerState->GetPlayerId());
 	}
 }

@@ -14,6 +14,7 @@
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BrainComponent.h"
+#include "Actors/Managers/BuffQueue.h"
 #include "Gameplay/CardBase.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
 
@@ -631,6 +632,11 @@ void AStandardModeAIController::OnCharacterPawnDead()
 		SetState(EStandardModeAIControllerState::Dead);
 
 		StandardPlayerState->SetAlive(false);
+		if (UBuffQueue* BuffQueue = StandardPlayerState->GetBuffQueue())
+		{
+			BuffQueue->StopCurrentProcessingBuff();
+			BuffQueue->ClearQueue();
+		}
 		OnAIPlayerDead.Broadcast(StandardPlayerState->GetPlayerId());
 	}
 }

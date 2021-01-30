@@ -33,7 +33,7 @@ void ABuff_LuckyTester::RemoveBuff()
 		{
 			Projectile->GetProjectileDeadDelegate().RemoveDynamic(this, &ABuff_LuckyTester::OnTesterActorDead);
 		}
-		TesterActor->SetTriggered(true);
+		TesterActor->Dead();
 	}
 
 	Super::RemoveBuff();

@@ -127,6 +127,8 @@ protected:
 	/** Whether this buff should be ended in this round. */
 	uint8 bPendingEnd : 1;
 
+	uint8 bEnded : 1;
+
 	/** Whether this buff has infinite life time. */
 	uint8 bPermanentBuff : 1;
 

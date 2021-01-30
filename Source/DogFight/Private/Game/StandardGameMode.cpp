@@ -377,6 +377,10 @@ void AStandardGameMode::EndCurrentPlayerRound()
 		//SetGamePhase(GamePhase::PlayerRoundEnd);
 		SetGamePhase(GamePhase::DiscardCards);
 	}
+	else if (CurrentGamePhase == GamePhase::PlayerRoundBegin)
+	{
+		SetGamePhase(GamePhase::PlayerRoundEnd);
+	}
 }
 
 int32 AStandardGameMode::GetCurrentPlayerId() const
@@ -835,7 +839,7 @@ void AStandardGameMode::HandlePhaseDiscardCards()
 		{
 			// Check whether to discard cards
 			const int32 DiscardCount = StandardPlayerState->CardCountToDiscard();
-			if (DiscardCount > 0)
+			if (DiscardCount > 0 && StandardPlayerState->IsAlive())
 			{
 				StandardPlayerState->SetCardSelectionPurpose(ECardSelectionPurpose::CSP_Discard);
 				StandardModePlayerController->ClientStartDiscardCards(DiscardCount);
