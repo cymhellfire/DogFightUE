@@ -24,10 +24,14 @@ ABuffBase::ABuffBase()
 	MaxCountPerTarget = 0;
 	bAppliedToTarget = false;
 	bPendingEnd = false;
+	BuffDurationOnRoundBegin = 0.01f;
+	BuffDurationOnRoundEnd = 0.01f;
 }
 
 void ABuffBase::SetLifetime(float NewLifetime)
 {
+	bPermanentBuff = NewLifetime == 0;
+
 	AStandardGameState* StandardGameState = GetWorld()->GetGameState<AStandardGameState>();
 	if (StandardGameState != nullptr)
 	{
@@ -105,6 +109,23 @@ void ABuffBase::EndBuff()
 
 	// Start ending timer
 	GetWorldTimerManager().SetTimer(BuffEndTimerHandle, this, &ABuffBase::OnBuffEnded, BuffEndingDuration);
+}
+
+void ABuffBase::OnTargetPlayerRoundBegin()
+{
+	GetWorldTimerManager().SetTimer(BuffProcessTimerHandle, this, &ABuffBase::OnBuffProcessEnd, BuffDurationOnRoundBegin);
+}
+
+void ABuffBase::OnTargetPlayerRoundEnd()
+{
+	GetWorldTimerManager().SetTimer(BuffProcessTimerHandle, this, &ABuffBase::OnBuffProcessEnd, BuffDurationOnRoundEnd);
+}
+
+void ABuffBase::OnBuffProcessEnd()
+{
+	GetWorldTimerManager().ClearTimer(BuffProcessTimerHandle);
+
+	OnBuffProcessEndedEvent.Broadcast(this);
 }
 
 void ABuffBase::OnBuffEnded()
@@ -199,12 +220,36 @@ FText ABuffBase::GetBuffEndText() const
 	return BuffEndText.GetLocalizeText();
 }
 
+void ABuffBase::RegisterCallbackToCharacter(AActor* InActor)
+{
+	if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(InActor))
+	{
+		StandardModePlayerCharacter->OnCharacterDead.AddDynamic(this, &ABuffBase::OnTargetActorDead);
+		if (UBuffQueue* BuffQueue = StandardModePlayerCharacter->GetBuffQueue())
+		{
+			BuffQueue->RegisterBuff(this);
+		}
+	}
+}
+
+void ABuffBase::UnregisterCallbackFromCharacter()
+{
+	if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(TargetActor))
+	{
+		StandardModePlayerCharacter->OnCharacterDead.RemoveDynamic(this, &ABuffBase::OnTargetActorDead);
+		if (UBuffQueue* BuffQueue = StandardModePlayerCharacter->GetBuffQueue())
+		{
+			BuffQueue->UnregisterBuff(this);
+		}
+	}
+}
+
 void ABuffBase::OnPlayerRoundEnd(int32 PlayerId)
 {
 	// Shorten lifetime
 	LifetimeQueue.RemoveSingle(PlayerId);
 
-	if (LifetimeQueue.Num() == 0)
+	if (LifetimeQueue.Num() == 0 && !bPermanentBuff)
 	{
 		bPendingEnd = true;
 	}

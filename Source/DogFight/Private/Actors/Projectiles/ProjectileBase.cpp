@@ -120,7 +120,7 @@ void AProjectileBase::MulticastIgnoreActorWhileMoving_Implementation(AActor* Tar
 
 void AProjectileBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Hit on %s"), *OtherActor->GetName()));
+	UE_LOG(LogDogFight, Log, TEXT("Hit on %s"), *OtherActor->GetName());
 
 	// Record hit actor on server
 	if (OtherActor != nullptr && GetLocalRole() == ROLE_Authority)

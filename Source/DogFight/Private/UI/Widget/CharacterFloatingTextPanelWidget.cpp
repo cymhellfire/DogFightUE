@@ -5,10 +5,26 @@
 
 #include "Game/DogFightDamageType.h"
 
+UCharacterFloatingTextPanelWidget::UCharacterFloatingTextPanelWidget(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	MinIntervalBetweenText = 0.2f;
+}
+
 void UCharacterFloatingTextPanelWidget::AddFloatText(FText NewText)
 {
-	// Invoke Blueprint function
-	K2_OnNewFloatingTextAdded(NewText);
+	if (FloatingTextIntervalTimerHandle.IsValid())
+	{
+		FloatingTextQueue.Add(NewText);
+	}
+	else
+	{
+		// Invoke Blueprint function
+		K2_OnNewFloatingTextAdded(NewText);
+
+		GetWorld()->GetTimerManager().SetTimer(FloatingTextIntervalTimerHandle, this,
+			&UCharacterFloatingTextPanelWidget::OnIntervalTimerExpired, MinIntervalBetweenText, true);
+	}
 }
 
 void UCharacterFloatingTextPanelWidget::AddDamageText(float Damage, UDamageType* DamageType)
@@ -20,9 +36,34 @@ void UCharacterFloatingTextPanelWidget::AddDamageText(float Damage, UDamageType*
 		const FString StyleName = DogFightDamage->DamageStyleName;
 		if (!StyleName.IsEmpty())
 		{
-			DamageText = FString::Printf(TEXT("<%s>%s</>"), *StyleName, *DamageText);
+			DamageText = FString::Printf(TEXT("<img id=\"%s\"/><%s>%s</>"), *DogFightDamage->DamageTypeName.LocalizeKey, *StyleName, *DamageText);
 		}
 	}
 
-	K2_OnNewFloatingTextAdded(FText::FromString(DamageText));
+	if (FloatingTextIntervalTimerHandle.IsValid())
+	{
+		FloatingTextQueue.Add(FText::FromString(DamageText));
+	}
+	else
+	{
+		K2_OnNewFloatingTextAdded(FText::FromString(DamageText));
+
+		GetWorld()->GetTimerManager().SetTimer(FloatingTextIntervalTimerHandle, this,
+			&UCharacterFloatingTextPanelWidget::OnIntervalTimerExpired, MinIntervalBetweenText, true);
+	}
+}
+
+void UCharacterFloatingTextPanelWidget::OnIntervalTimerExpired()
+{
+	if (FloatingTextQueue.Num() > 0)
+	{
+		K2_OnNewFloatingTextAdded(FloatingTextQueue[0]);
+
+		FloatingTextQueue.RemoveAt(0);
+	}
+
+	if (FloatingTextQueue.Num() == 0)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(FloatingTextIntervalTimerHandle);
+	}
 }

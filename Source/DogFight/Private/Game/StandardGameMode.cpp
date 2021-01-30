@@ -419,6 +419,20 @@ void AStandardGameMode::RemovePlayerInRagdoll(int32 PlayerId)
 	}
 }
 
+AStandardModePlayerCharacter* AStandardGameMode::GetPlayerCharacterById(int32 PlayerId)
+{
+	if (AStandardModePlayerController* PlayerController = GetPlayerControllerById(PlayerId))
+	{
+		return PlayerController->GetCharacterPawn();
+	}
+	else if (AStandardModeAIController* AIController = GetAIControllerById(PlayerId))
+	{
+		return AIController->GetCharacterPawn();
+	}
+
+	return nullptr;
+}
+
 void AStandardGameMode::BeginPlay()
 {
 	Super::BeginPlay();
@@ -661,12 +675,12 @@ void AStandardGameMode::HandlePhasePlayerRoundBegin()
 			{
 				if (BuffQueue->GetBuffCount() > 0)
 				{
-					BuffQueue->OnBuffQueueProcessFinished.AddDynamic(this, &AStandardGameMode::OnPlayerBuffQueueFinished);
-					BuffQueue->StartBuffCheckProcess();
+					BuffQueue->OnBuffQueueProcessFinished.AddDynamic(this, &AStandardGameMode::OnPlayerBuffQueueBeginRoundFinished);
+					BuffQueue->StartRoundBeginBuffCheckProcess();
 				}
 				else
 				{
-					OnPlayerBuffQueueFinished();
+					OnPlayerBuffQueueBeginRoundFinished();
 				}
 			}
 		}
@@ -687,19 +701,19 @@ void AStandardGameMode::HandlePhasePlayerRoundBegin()
 			{
 				if (BuffQueue->GetBuffCount() > 0)
 				{
-					BuffQueue->OnBuffQueueProcessFinished.AddDynamic(this, &AStandardGameMode::OnPlayerBuffQueueFinished);
-					BuffQueue->StartBuffCheckProcess();
+					BuffQueue->OnBuffQueueProcessFinished.AddDynamic(this, &AStandardGameMode::OnPlayerBuffQueueBeginRoundFinished);
+					BuffQueue->StartRoundBeginBuffCheckProcess();
 				}
 				else
 				{
-					OnPlayerBuffQueueFinished();
+					OnPlayerBuffQueueBeginRoundFinished();
 				}
 			}
 		}
 	}
 }
 
-void AStandardGameMode::OnPlayerBuffQueueFinished()
+void AStandardGameMode::OnPlayerBuffQueueBeginRoundFinished()
 {
 	TArray<FString> NewRoundMessageArgument;
 
@@ -722,7 +736,7 @@ void AStandardGameMode::OnPlayerBuffQueueFinished()
 			{
 				if (BuffQueue->OnBuffQueueProcessFinished.IsBound())
 				{
-					BuffQueue->OnBuffQueueProcessFinished.RemoveDynamic(this, &AStandardGameMode::OnPlayerBuffQueueFinished);
+					BuffQueue->OnBuffQueueProcessFinished.RemoveDynamic(this, &AStandardGameMode::OnPlayerBuffQueueBeginRoundFinished);
 				}
 			}
 
@@ -753,7 +767,7 @@ void AStandardGameMode::OnPlayerBuffQueueFinished()
 			{
 				if (BuffQueue->OnBuffQueueProcessFinished.IsBound())
 				{
-					BuffQueue->OnBuffQueueProcessFinished.RemoveDynamic(this, &AStandardGameMode::AStandardGameMode::OnPlayerBuffQueueFinished);
+					BuffQueue->OnBuffQueueProcessFinished.RemoveDynamic(this, &AStandardGameMode::OnPlayerBuffQueueBeginRoundFinished);
 				}
 			}
 
@@ -866,6 +880,20 @@ void AStandardGameMode::HandlePhasePlayerRoundEnd()
 			StandardPlayerState->OnUsingCardFinished.RemoveDynamic(this, &AStandardGameMode::OnPlayerUsingCardFinished);
 
 			NewRoundEndArguments.Add(StandardPlayerState->GetPlayerName());
+
+			// Process buff queue
+			if (UBuffQueue* BuffQueue = StandardPlayerState->GetBuffQueue())
+			{
+				if (BuffQueue->GetBuffCount() > 0)
+				{
+					BuffQueue->OnBuffQueueProcessFinished.AddDynamic(this, &AStandardGameMode::AStandardGameMode::OnPlayerBuffQueueEndRoundFinished);
+					BuffQueue->StartRoundEndBuffCheckProcess();
+				}
+				else
+				{
+					OnPlayerBuffQueueEndRoundFinished();
+				}
+			}
 		}
 	}
 	else
@@ -890,11 +918,71 @@ void AStandardGameMode::HandlePhasePlayerRoundEnd()
 			StandardPlayerState->OnUsingCardFinished.RemoveDynamic(this, &AStandardGameMode::OnPlayerUsingCardFinished);
 
 			NewRoundEndArguments.Add(StandardPlayerState->GetPlayerName());
+
+			// Process buff queue
+			if (UBuffQueue* BuffQueue = StandardPlayerState->GetBuffQueue())
+			{
+				if (BuffQueue->GetBuffCount() > 0)
+				{
+					BuffQueue->OnBuffQueueProcessFinished.AddDynamic(this, &AStandardGameMode::AStandardGameMode::OnPlayerBuffQueueEndRoundFinished);
+					BuffQueue->StartRoundEndBuffCheckProcess();
+				}
+				else
+				{
+					OnPlayerBuffQueueEndRoundFinished();
+				}
+			}
 		}
 	}
 
 	// Broadcast round end message
 	BroadcastGameTitleMessageToAllPlayers(FGameTitleMessage {FString(TEXT("TitleMsg_PlayerRoundEnd")), NewRoundEndArguments});
+}
+
+void AStandardGameMode::OnPlayerBuffQueueEndRoundFinished()
+{
+	if (!bIsCurrentAIPlayer)
+	{
+		// Handle human player
+		AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(GetCurrentPlayerId());
+		if (StandardModePlayerController == nullptr)
+		{
+			UE_LOG(LogDogFight, Error, TEXT("Failed to get PlayerController with Id %d"), GetCurrentPlayerId());
+			return;
+		}
+
+		if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
+		{
+			if (UBuffQueue* BuffQueue = StandardPlayerState->GetBuffQueue())
+			{
+				if (BuffQueue->OnBuffQueueProcessFinished.IsBound())
+				{
+					BuffQueue->OnBuffQueueProcessFinished.RemoveDynamic(this, &AStandardGameMode::OnPlayerBuffQueueEndRoundFinished);
+				}
+			}
+		}
+	}
+	else
+	{
+		// Handle AI player
+		AStandardModeAIController* StandardModeAIController = GetAIControllerById(GetCurrentPlayerId());
+		if (StandardModeAIController == nullptr)
+		{
+			UE_LOG(LogDogFight, Error, TEXT("Failed to get AIController with Id %d"), GetCurrentPlayerId());
+			return;
+		}
+
+		if (AStandardPlayerState* StandardPlayerState = StandardModeAIController->GetPlayerState<AStandardPlayerState>())
+		{
+			if (UBuffQueue* BuffQueue = StandardPlayerState->GetBuffQueue())
+			{
+				if (BuffQueue->OnBuffQueueProcessFinished.IsBound())
+				{
+					BuffQueue->OnBuffQueueProcessFinished.RemoveDynamic(this, &AStandardGameMode::OnPlayerBuffQueueEndRoundFinished);
+				}
+			}
+		}
+	}
 
 	// Goto check phase
 	SetGamePhase(GamePhase::CheckGameEnd);

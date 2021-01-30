@@ -30,7 +30,8 @@ public class DogFight : ModuleRules
 				"CustomizableCard",
 				"Slate",
 				"SlateCore",
-				"GameplayTasks"
+				"GameplayTasks",
+				"GameplayTags"
 			}
 		);
 		

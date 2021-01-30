@@ -38,11 +38,21 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBuffEndedSignature, ABuffBase*, Buff);
 	FOnBuffEndedSignature OnBuffEndedEvent;
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBuffProcessEndedSignature, ABuffBase*, Buff);
+	FOnBuffProcessEndedSignature OnBuffProcessEndedEvent;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	virtual void EndBuff();
+
+	virtual void OnTargetPlayerRoundBegin();
+
+	virtual void OnTargetPlayerRoundEnd();
+
+	UFUNCTION()
+	virtual void OnBuffProcessEnd();
 
 	UFUNCTION()
 	virtual void OnBuffEnded();
@@ -56,6 +66,10 @@ protected:
 	virtual FText GetBuffStartText() const;
 
 	virtual FText GetBuffEndText() const;
+
+	void RegisterCallbackToCharacter(AActor* InActor);
+
+	void UnregisterCallbackFromCharacter();
 
 	UFUNCTION()
 	virtual void OnPlayerRoundEnd(int32 PlayerId);
@@ -87,6 +101,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Buff")
 	FLocalizedString BuffEndText;
 
+	/** The time cost of this buff when processed during round begin. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Buff", meta=(ClampMin="0.01"))
+	float BuffDurationOnRoundBegin;
+
+	/** The time cost of this buff when processed during round end. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Buff", meta=(ClampMin="0.01"))
+	float BuffDurationOnRoundEnd;
+
 	/** Id of source player. */
 	AController* SourcePlayerController;
 
@@ -105,5 +127,10 @@ protected:
 	/** Whether this buff should be ended in this round. */
 	uint8 bPendingEnd : 1;
 
+	/** Whether this buff has infinite life time. */
+	uint8 bPermanentBuff : 1;
+
 	FTimerHandle BuffEndTimerHandle;
+
+	FTimerHandle BuffProcessTimerHandle;
 };

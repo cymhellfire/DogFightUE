@@ -148,6 +148,8 @@ public:
 	void AddPlayerInRagdoll(int32 PlayerId);
 
 	void RemovePlayerInRagdoll(int32 PlayerId);
+
+	class AStandardModePlayerCharacter* GetPlayerCharacterById(int32 PlayerId);
 protected:
 	virtual void BeginPlay() override;
 	
@@ -196,13 +198,16 @@ protected:
 	virtual void HandlePhasePlayerRoundBegin();
 
 	UFUNCTION()
-	virtual void OnPlayerBuffQueueFinished();
+	virtual void OnPlayerBuffQueueBeginRoundFinished();
 
 	virtual void HandlePhasePlayerRound();
 
 	virtual void HandlePhaseDiscardCards();
 
 	virtual void HandlePhasePlayerRoundEnd();
+
+	UFUNCTION()
+	virtual void OnPlayerBuffQueueEndRoundFinished();
 
 	virtual void HandlePhaseCheckGameEnd();
 

@@ -16,6 +16,7 @@ class UCharacterFloatingTextPanelWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	UCharacterFloatingTextPanelWidget(const FObjectInitializer& ObjectInitializer);
 
 	void AddFloatText(FText NewText);
 
@@ -24,4 +25,15 @@ public:
 protected:
 	UFUNCTION(BlueprintImplementableEvent, Category="DogFight|UI", meta = (DisplayName = "OnNewFloatingTextAdded"))
 	void K2_OnNewFloatingTextAdded(const FText& NewText);
+
+	UFUNCTION()
+	void OnIntervalTimerExpired();
+
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="FloatingTextPanel")
+	float MinIntervalBetweenText;
+
+	FTimerHandle FloatingTextIntervalTimerHandle;
+
+	TArray<FText> FloatingTextQueue;
 };

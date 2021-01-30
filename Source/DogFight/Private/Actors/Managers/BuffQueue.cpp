@@ -30,9 +30,17 @@ void UBuffQueue::UnregisterBuff(ABuffBase* TargetBuff)
 	}
 }
 
-void UBuffQueue::StartBuffCheckProcess()
+void UBuffQueue::StartRoundBeginBuffCheckProcess()
 {
 	CurrentBuffIndex = AttachedBuffList.Num() - 1;
+	CurrentProcessPhase = EQP_RoundBegin;
+	ProcessCurrentBuff();
+}
+
+void UBuffQueue::StartRoundEndBuffCheckProcess()
+{
+	CurrentBuffIndex = AttachedBuffList.Num() - 1;
+	CurrentProcessPhase = EQP_RoundEnd;
 	ProcessCurrentBuff();
 }
 
@@ -54,11 +62,39 @@ void UBuffQueue::ProcessCurrentBuff()
 		CurrentBuff->OnBuffEndedEvent.AddDynamic(this, &UBuffQueue::OnBuffEnded);
 		CurrentBuff->EndBuff();
 	}
+	else
+	{
+		CurrentBuff->OnBuffProcessEndedEvent.AddDynamic(this, &UBuffQueue::OnBuffProcessEnded);
+		if (CurrentProcessPhase == EQP_RoundBegin)
+		{
+			CurrentBuff->OnTargetPlayerRoundBegin();
+		}
+		else if (CurrentProcessPhase == EQP_RoundEnd)
+		{
+			CurrentBuff->OnTargetPlayerRoundEnd();
+		}
+	}
 }
 
 void UBuffQueue::OnBuffEnded(ABuffBase* Buff)
 {
 	Buff->OnBuffEndedEvent.RemoveDynamic(this, &UBuffQueue::OnBuffEnded);
+
+	// Process to next buff
+	CurrentBuffIndex--;
+	if (CurrentBuffIndex >= 0)
+	{
+		ProcessCurrentBuff();
+	}
+	else
+	{
+		OnBuffQueueProcessFinished.Broadcast();
+	}
+}
+
+void UBuffQueue::OnBuffProcessEnded(ABuffBase* Buff)
+{
+	Buff->OnBuffProcessEndedEvent.RemoveDynamic(this, &UBuffQueue::OnBuffProcessEnded);
 
 	// Process to next buff
 	CurrentBuffIndex--;

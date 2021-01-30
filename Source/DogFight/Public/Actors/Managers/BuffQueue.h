@@ -8,6 +8,12 @@
 
 class ABuffBase;
 
+enum EQueueProcessPhase
+{
+	EQP_RoundBegin,
+	EQP_RoundEnd,
+};
+
 /**
  * Queue of buff on owner actor.
  */
@@ -27,8 +33,11 @@ public:
 	/** Remove a buff from queue. */
 	void UnregisterBuff(ABuffBase* TargetBuff);
 
-	/** Start process to handle buff list and end buffs. */
-	void StartBuffCheckProcess();
+	/** Start process to handle buff list and end buffs. (At owning player round begin) */
+	void StartRoundBeginBuffCheckProcess();
+
+	/** Start process to handle buff list and end buffs. (At owning player round end) */
+	void StartRoundEndBuffCheckProcess();
 
 	int32 GetBuffCount() const { return AttachedBuffList.Num(); }
 
@@ -42,6 +51,9 @@ protected:
 	UFUNCTION()
 	void OnBuffEnded(ABuffBase* Buff);
 
+	UFUNCTION()
+	void OnBuffProcessEnded(ABuffBase* Buff);
+
 protected:
 	/** All buff instance attached to this actor. */
 	TArray<ABuffBase*> AttachedBuffList;
@@ -50,4 +62,6 @@ protected:
 	TMap<FName, int32> BuffCountMap;
 
 	int32 CurrentBuffIndex;
+
+	EQueueProcessPhase CurrentProcessPhase;
 };

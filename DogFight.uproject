@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "4.25",
+	"EngineAssociation": "{86986BCD-4185-36C9-24BD-228359493820}",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -29,10 +29,6 @@
 		}
 	],
 	"Plugins": [
-		{
-			"Name": "RiderLink",
-			"Enabled": true
-		},
 		{
 			"Name": "PythonScriptPlugin",
 			"Enabled": true

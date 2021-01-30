@@ -67,6 +67,12 @@ public:
 	/** Get the Id of player is currently active. */
 	FORCEINLINE int32 GetCurrentPlayerId() const { return TimelinePlayerInfoList[0].PlayerId; }
 
+	/** Get the Id of next player. */
+	FORCEINLINE int32 GetNextPlayerId() const
+	{
+		return TimelinePlayerInfoList.Num() > 1 ? TimelinePlayerInfoList[1].PlayerId : GetCurrentPlayerId();
+	}
+
 	/** Get if current player is AI controlled. */
 	FORCEINLINE bool IsCurrentAIPlayer() const
 	{
