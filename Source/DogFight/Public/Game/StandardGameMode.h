@@ -138,7 +138,7 @@ public:
 	/** End current player round. */
 	void EndCurrentPlayerRound();
 
-	int32 GetCurrentPlayerId() const;
+	int32 GetCurrentPlayerId() const { return CachedCurrentPlayerId; }
 
 	/** Get a random AController from game. */
 	AController* GetRandomController();
@@ -172,6 +172,9 @@ protected:
 
 	/** Indicate that current player is an AI. */
 	bool bIsCurrentAIPlayer;
+
+	/** Cached PlayerId for current round. */
+	int32 CachedCurrentPlayerId;
 
 	/** List of players are currently in Ragdoll state. */
 	TArray<int32> CurrentRagdollPlayerId;

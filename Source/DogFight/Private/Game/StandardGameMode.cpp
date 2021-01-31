@@ -383,17 +383,6 @@ void AStandardGameMode::EndCurrentPlayerRound()
 	}
 }
 
-int32 AStandardGameMode::GetCurrentPlayerId() const
-{
-	if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())
-	{
-		return StandardGameState->GetGameRoundsTimeline()->GetCurrentPlayerId();
-	}
-
-	UE_LOG(LogDogFight, Error, TEXT("Failed to get the StandardGameState."));
-	return -1;
-}
-
 AController* AStandardGameMode::GetRandomController()
 {
 	const int32 TargetIndex = FMath::RandRange(0, StandardPlayerControllerList.Num() + StandardAIControllerList.Num() - 1);
@@ -486,7 +475,7 @@ void AStandardGameMode::SetGamePhase(FName NewPhase)
 		return;
 	}
 
-	UE_LOG(LogDogFight, Log, TEXT("GameMode: Changed to phase [%s]"), *NewPhase.ToString());
+	UE_LOG(LogDogFight, Log, TEXT("GameMode [Player %d]: Changed to phase [%s]"), GetCurrentPlayerId(), *NewPhase.ToString());
 
 	CurrentGamePhase = NewPhase;
 
@@ -634,6 +623,7 @@ void AStandardGameMode::HandlePhaseDecideOrder()
 
 		// Check if current is AI player
 		bIsCurrentAIPlayer = StandardGameState->GetGameRoundsTimeline()->IsCurrentAIPlayer();
+		CachedCurrentPlayerId = StandardGameState->GetGameRoundsTimeline()->GetCurrentPlayerId();
 
 		// Let all clients setup their Timeline widget
 		for (AStandardModePlayerController* PlayerController : StandardPlayerControllerList)
@@ -1022,6 +1012,7 @@ void AStandardGameMode::CheckGameEndAction()
 			StandardGameState->GetGameRoundsTimeline()->StepForward();
 			// Check AI
 			bIsCurrentAIPlayer = StandardGameState->GetGameRoundsTimeline()->IsCurrentAIPlayer();
+			CachedCurrentPlayerId = StandardGameState->GetGameRoundsTimeline()->GetCurrentPlayerId();
 
 			SetGamePhase(GamePhase::PlayerRoundBegin);
 		}
