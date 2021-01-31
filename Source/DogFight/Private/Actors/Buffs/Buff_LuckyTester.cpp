@@ -5,6 +5,12 @@
 #include "Actors/Projectiles/TriggerableProjectile.h"
 #include "Interfaces/GameCardUserPlayerControllerInterface.h"
 
+ABuff_LuckyTester::ABuff_LuckyTester()
+{
+	TesterDamage = 5.f;
+	TesterDamageRadius = 100.f;
+}
+
 void ABuff_LuckyTester::ApplyBuff()
 {
 	Super::ApplyBuff();
@@ -17,6 +23,8 @@ void ABuff_LuckyTester::ApplyBuff()
 		{
 			Projectile->GetProjectileDeadDelegate().AddDynamic(this, &ABuff_LuckyTester::OnTesterActorDead);
 			Projectile->SetOwnerController(SourcePlayerController);
+			Projectile->SetDamage(TesterDamage);
+			Projectile->SetDamageRadius(TesterDamageRadius);
 			if (IGameCardUserPlayerControllerInterface* PlayerController = Cast<IGameCardUserPlayerControllerInterface>(Projectile))
 			{
 				Projectile->SetOwnerCharacter(PlayerController->GetActualPawn());

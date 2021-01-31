@@ -121,11 +121,17 @@ protected:
 	UFUNCTION()
 	virtual void OnInstructionFinished();
 
-	UFUNCTION(BlueprintCallable, Category="CustomizableCard", meta=(DisplayName="GetIntPropertyDisplayInfo"))
-	FUpgradablePropertyDisplayInfo GetPropertyDisplayInfo(const FUpgradableIntProperty& Property) const;
+	UFUNCTION(BlueprintCallable, Category="CustomizableCard")
+	FUpgradablePropertyDisplayInfo GetIntPropertyDisplayInfo(const FUpgradableIntProperty& Property) const;
 
-	UFUNCTION(BlueprintCallable, Category="CustomizableCard", meta=(DisplayName="GetIntPropertyCurrentValue"))
-	int32 GetUpgradablePropertyValue(const FUpgradableIntProperty& Property) const;
+	UFUNCTION(BlueprintCallable, Category="CustomizableCard")
+	FUpgradablePropertyDisplayInfo GetFloatPropertyDisplayInfo(const FUpgradableFloatProperty& Property) const;
+
+	UFUNCTION(BlueprintCallable, Category="CustomizableCard")
+	int32 GetUpgradableIntPropertyValue(const FUpgradableIntProperty& Property) const;
+
+	UFUNCTION(BlueprintCallable, Category="CustomizableCard")
+	FString GetUpgradableFloatPropertyValue(const FUpgradableFloatProperty& Property) const;
 
 public:
 

@@ -20,6 +20,7 @@ public:
 protected:
 	virtual bool HandleActorTarget(AActor* Target) override;
 
+	/** Triggered every time a buff created. Use this to initialize new buff instance. */
 	virtual void OnBuffCreated(class IGameBuffInterface* BuffActor) {}
 
 protected:

@@ -210,13 +210,23 @@ void ACardBase::OnInstructionFinished()
 	}
 }
 
-FUpgradablePropertyDisplayInfo ACardBase::GetPropertyDisplayInfo(const FUpgradableIntProperty& Property) const
+FUpgradablePropertyDisplayInfo ACardBase::GetIntPropertyDisplayInfo(const FUpgradableIntProperty& Property) const
 {
 	return Property.GetDisplayInfo();
 }
 
-int32 ACardBase::GetUpgradablePropertyValue(const FUpgradableIntProperty& Property) const
+FUpgradablePropertyDisplayInfo ACardBase::GetFloatPropertyDisplayInfo(const FUpgradableFloatProperty& Property) const
+{
+	return Property.GetDisplayInfo();
+}
+
+int32 ACardBase::GetUpgradableIntPropertyValue(const FUpgradableIntProperty& Property) const
 {
 	return Property.GetValue();
+}
+
+FString ACardBase::GetUpgradableFloatPropertyValue(const FUpgradableFloatProperty& Property) const
+{
+	return Property.ConvertValueToString(Property.GetValue());
 }
 

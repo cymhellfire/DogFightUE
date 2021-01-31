@@ -16,6 +16,9 @@ class DOGFIGHT_API ABuff_LuckyTester : public ABuff_FollowCurrentPlayer
 {
 	GENERATED_BODY()
 
+public:
+	ABuff_LuckyTester();
+
 protected:
 	virtual void ApplyBuff() override;
 
@@ -30,13 +33,19 @@ protected:
 	UFUNCTION()
 	void OnTesterActorDead(AActor* Tester);
 
-protected:
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="LuckyTester")
+	float TesterDamage;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="LuckyTester")
-	TSubclassOf<ATriggerableProjectile> TesterActorClass;
+	float TesterDamageRadius;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="LuckyTester", meta=(ClampMin="0", ClampMax="1"))
 	float FailureRatio;
+
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="LuckyTester")
+	TSubclassOf<ATriggerableProjectile> TesterActorClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="LuckyTester")
 	FLocalizedString TestPassedText;

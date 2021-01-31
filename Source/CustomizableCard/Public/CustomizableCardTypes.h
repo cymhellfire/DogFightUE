@@ -22,6 +22,13 @@ enum class ECardInstructionTargetType : uint8
 	Direction
 };
 
+UENUM(BlueprintType)
+enum class EUpgradableFloatConvertType : uint8
+{
+	Default,
+	Percentage,
+};
+
 USTRUCT(BlueprintType)
 struct FCardInstructionTargetInfo
 {
@@ -395,6 +402,100 @@ public:
 		DisplayInfo.ValueArray = Arguments;
 
 		return DisplayInfo;
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FUpgradableFloatProperty
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UpgradableProperty")
+	FString LocalizationString;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UpgradableProperty")
+	ECardDisplayInfoLocType LocalizeType;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UpgradableProperty")
+	EUpgradableFloatConvertType ValueConvertType;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UpgradableProperty")
+	TArray<float> ValueArray;
+
+private:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UpgradableProperty", meta=(ClampMin="1", AllowPrivateAccess=true))
+	int32 CurrentLevel;
+
+public:
+
+	FUpgradableFloatProperty() : CurrentLevel(1)
+	{
+		LocalizeType = ECardDisplayInfoLocType::ILT_Card;
+		ValueConvertType = EUpgradableFloatConvertType::Default;
+		ValueArray.Add(0);
+	}
+
+	FUpgradableFloatProperty(float DefaultValue) : CurrentLevel(1)
+	{
+		LocalizeType = ECardDisplayInfoLocType::ILT_Card;
+		ValueConvertType = EUpgradableFloatConvertType::Default;
+		ValueArray.Add(DefaultValue);
+	}
+
+	FUpgradableFloatProperty(float DefaultValue, FString LocalizeKey, ECardDisplayInfoLocType LocType) : CurrentLevel(1)
+	{
+		LocalizationString = LocalizeKey;
+		ValueConvertType = EUpgradableFloatConvertType::Default;
+		LocalizeType = LocType;
+		ValueArray.Add(DefaultValue);
+	}
+
+	float GetValue() const
+	{
+		return ValueArray[CurrentLevel - 1];
+	}
+
+	FORCEINLINE int32 GetCurrentLevel() const
+	{
+		return CurrentLevel;
+	}
+
+	void SetLevel(int32 NewLevel)
+	{
+		CurrentLevel = FMath::Clamp(NewLevel, 1, ValueArray.Num());
+	}
+
+	FUpgradablePropertyDisplayInfo GetDisplayInfo() const
+	{
+		FUpgradablePropertyDisplayInfo DisplayInfo;
+		DisplayInfo.StringValue = LocalizationString;
+		DisplayInfo.LocalizeType = LocalizeType;
+		DisplayInfo.CurrentLevel = CurrentLevel;
+		TArray<FCardDisplayInfoArgument> Arguments;
+		for (float Value : ValueArray)
+		{
+			Arguments.Add(FCardDisplayInfoArgument{
+				TEXT("Default"),
+				ConvertValueToString(Value),
+				ECardDisplayInfoLocType::ILT_Raw,
+				true
+			});
+		}
+		DisplayInfo.ValueArray = Arguments;
+
+		return DisplayInfo;
+	}
+
+	FString ConvertValueToString(float Value) const
+	{
+		const float Percentage = Value * 100.f;
+		switch(ValueConvertType)
+		{
+			case EUpgradableFloatConvertType::Percentage:
+				return FString::Printf(TEXT("%.0f%%"), Percentage);
+			default:
+				return FString::Printf(TEXT("%.2f"), Value);
+		}
 	}
 };
 

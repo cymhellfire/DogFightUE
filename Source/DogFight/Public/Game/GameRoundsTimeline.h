@@ -65,7 +65,10 @@ public:
 	FORCEINLINE TArray<FTimelinePlayerInfo> GetPlayerInfos() const { return TimelinePlayerInfoList; }
 
 	/** Get the Id of player is currently active. */
-	FORCEINLINE int32 GetCurrentPlayerId() const { return TimelinePlayerInfoList[0].PlayerId; }
+	FORCEINLINE int32 GetCurrentPlayerId() const
+	{
+		return TimelinePlayerInfoList.Num() > 0 ? TimelinePlayerInfoList[0].PlayerId : -1;
+	}
 
 	/** Get the Id of next player. */
 	FORCEINLINE int32 GetNextPlayerId() const
