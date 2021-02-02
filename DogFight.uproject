@@ -14,17 +14,7 @@
 				"CoreUObject",
 				"Slate",
 				"SlateCore",
-				"CustomizableCard",
 				"AIModule"
-			]
-		},
-		{
-			"Name": "CustomizableCard",
-			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"AdditionalDependencies": [
-				"Engine",
-				"CoreUObject"
 			]
 		}
 	],

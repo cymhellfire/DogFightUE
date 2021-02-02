@@ -10,6 +10,5 @@ public class DogFightEditorTarget : TargetRules
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 		ExtraModuleNames.Add("DogFight");
-		ExtraModuleNames.Add("CustomizableCard");
 	}
 }

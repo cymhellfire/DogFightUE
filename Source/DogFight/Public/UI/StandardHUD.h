@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 
-#include "CustomizableCardTypes.h"
+#include "Card/GameCardTypes.h"
 #include "DogFightTypes.h"
 #include "UIType.h"
 #include "GameFramework/HUD.h"

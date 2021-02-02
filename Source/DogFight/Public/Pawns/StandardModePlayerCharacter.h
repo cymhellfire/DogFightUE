@@ -6,7 +6,7 @@
 #include "Actors/Interfaces/DamageableActorInterface.h"
 #include "Actors/Interfaces/BuffableActorInterface.h"
 #include "Actors/Interfaces/GameplayTagsActorInterface.h"
-#include "Interfaces/GameAnimatedCharacterInterface.h"
+#include "Actors/Interfaces/GameAnimatedCharacterInterface.h"
 #include "GameFramework/Character.h"
 #include "StandardModePlayerCharacter.generated.h"
 

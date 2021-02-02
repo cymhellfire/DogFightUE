@@ -3,7 +3,7 @@
 
 #include "Actors/Projectiles/ProjectileBase.h"
 
-#include "CustomizableCard.h"
+#include "Card/GameCardTypes.h"
 #include "Game/DogFightGameModeBase.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"

@@ -2,7 +2,7 @@
 
 
 #include "Game/GameplayCardPool.h"
-#include "Gameplay/CardBase.h"
+#include "Card/CardBase.h"
 #include "DogFight.h"
 
 ACardBase* UGameplayCardPool::GetRandomCard()

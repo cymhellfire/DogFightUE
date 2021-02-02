@@ -15,7 +15,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BrainComponent.h"
 #include "Actors/Managers/BuffQueue.h"
-#include "Gameplay/CardBase.h"
+#include "Card/CardBase.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
 
 namespace EStandardModeAIControllerState

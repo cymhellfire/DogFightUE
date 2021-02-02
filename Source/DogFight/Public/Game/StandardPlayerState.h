@@ -4,7 +4,7 @@
 
 #include "DogFight.h"
 #include "GameFramework/PlayerState.h"
-#include "CustomizableCardTypes.h"
+#include "Card/GameCardTypes.h"
 #include "StandardPlayerState.generated.h"
 
 class ACardBase;

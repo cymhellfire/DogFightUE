@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Gameplay/InstructionAddBuff.h"
+#include "Card/Instructions/InstructionAddBuff.h"
 #include "InstructionAddLuckyTester.generated.h"
 
 /**

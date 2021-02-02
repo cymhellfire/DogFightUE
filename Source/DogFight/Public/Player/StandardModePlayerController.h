@@ -6,8 +6,8 @@
 #include "DogFightPlayerController.h"
 #include "DogFightTypes.h"
 #include "UI/UIType.h"
-#include "Interfaces/GameCardUserPlayerControllerInterface.h"
-#include "Interfaces/GameTargetProviderInterface.h"
+#include "Actors/Interfaces/GameCardUserPlayerControllerInterface.h"
+#include "Actors/Interfaces/GameTargetProviderInterface.h"
 
 #include "StandardModePlayerController.generated.h"
 

@@ -2,7 +2,7 @@
 
 
 #include "Game/StandardPlayerState.h"
-#include "Gameplay/CardBase.h"
+#include "Card/CardBase.h"
 #include "Game/StandardGameState.h"
 #include "Game/StandardGameMode.h"
 #include "Player/StandardModePlayerController.h"

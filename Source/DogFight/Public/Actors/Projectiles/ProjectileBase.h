@@ -7,7 +7,7 @@
 
 #include "Pawns/StandardModePlayerCharacter.h"
 #include "GameFramework/Actor.h"
-#include "Interfaces/GameProjectileInterface.h"
+#include "Actors/Interfaces/GameProjectileInterface.h"
 #include "Actors/Interfaces/GameplayTagsActorInterface.h"
 
 #include "ProjectileBase.generated.h"

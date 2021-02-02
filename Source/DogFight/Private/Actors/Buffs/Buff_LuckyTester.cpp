@@ -3,7 +3,7 @@
 
 #include "Actors/Buffs/Buff_LuckyTester.h"
 #include "Actors/Projectiles/TriggerableProjectile.h"
-#include "Interfaces/GameCardUserPlayerControllerInterface.h"
+#include "Actors/Interfaces/GameCardUserPlayerControllerInterface.h"
 
 ABuff_LuckyTester::ABuff_LuckyTester()
 {

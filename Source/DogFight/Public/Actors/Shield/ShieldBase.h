@@ -6,7 +6,7 @@
 
 #include "Actors/Interfaces/GameplayTagsActorInterface.h"
 #include "Actors/Vfx/VfxBase.h"
-#include "Interfaces/GameShieldInterface.h"
+#include "Actors/Interfaces/GameShieldInterface.h"
 #include "ShieldBase.generated.h"
 
 class AProjectileBase;

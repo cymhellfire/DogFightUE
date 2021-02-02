@@ -3,9 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "AI/DogFightAIController.h"
-#include "Interfaces/GameCardUserPlayerControllerInterface.h"
-#include "Interfaces/GameTargetProviderInterface.h"
+#include "Actors/Interfaces/GameCardUserPlayerControllerInterface.h"
+#include "Actors/Interfaces/GameTargetProviderInterface.h"
+#include "Card/GameCardTypes.h"
+#include "Card/Instructions/HandleTargetInstructionBase.h"
 
 #include "StandardModeAIController.generated.h"
 

@@ -3,7 +3,7 @@
 
 #include "Game/StandardGameMode.h"
 
-#include "Gameplay/CardBase.h"
+#include "Card/CardBase.h"
 #include "DogFight.h"
 #include "Actors/Managers/BuffQueue.h"
 #include "Game/DogFightGameInstance.h"

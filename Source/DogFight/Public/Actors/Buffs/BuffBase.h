@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Interfaces/GameBuffInterface.h"
+#include "Actors/Interfaces/GameBuffInterface.h"
 #include "Common/LocalizedString.h"
 
 #include "BuffBase.generated.h"

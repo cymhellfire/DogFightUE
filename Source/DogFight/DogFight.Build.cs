@@ -27,7 +27,6 @@ public class DogFight : ModuleRules
 				"AIModule",
 				"OnlineSubsystem",
 				"OnlineSubsystemUtils",
-				"CustomizableCard",
 				"Slate",
 				"SlateCore",
 				"GameplayTasks",
@@ -36,15 +35,5 @@ public class DogFight : ModuleRules
 		);
 		
 		DynamicallyLoadedModuleNames.Add("OnlineSubsystemNull");
-	}
-
-	private void GetSubFolders(string RootFolder, ref List<string> SubFolderList)
-	{
-		var SubFolders = Directory.GetDirectories(RootFolder);
-		foreach (var SubFolder in SubFolders)
-		{
-			SubFolderList.Add(SubFolder);
-			GetSubFolders(SubFolder, ref SubFolderList);
-		}
 	}
 }
