@@ -1,6 +1,10 @@
 ﻿// Dog Fight Game Code By CYM.
 
 #include "Card/Instructions/InstructionPlaceShield.h"
+
+
+#include "Actors/Buffs/Buff_Shield.h"
+#include "Actors/Shield/ShieldBase.h"
 #include "Card/CardBase.h"
 
 UInstructionPlaceShield::UInstructionPlaceShield(const FObjectInitializer& ObjectInitializer)
@@ -12,39 +16,39 @@ UInstructionPlaceShield::UInstructionPlaceShield(const FObjectInitializer& Objec
 
 bool UInstructionPlaceShield::HandleActorTarget(AActor* Target)
 {
-	const bool Result = Super::HandleActorTarget(Target);
+	CurrentTargetActor = Target;
 
-	if (Result && IsValid(Target))
-	{
-		if (IsValid(ShieldClass))
-		{
-			IGameShieldInterface* ShieldActor = GetWorld()->SpawnActor<IGameShieldInterface>(ShieldClass);
-
-			if (ShieldActor != nullptr)
-			{
-				ShieldActor->SetSourcePlayerController(GetOwnerCard()->GetOwnerPlayerController());
-				ShieldActor->SetShieldBlockType(ShieldBlockType);
-				ShieldActor->SetAttachActor(Target);
-				ShieldActor->SetLifetime(ShieldLifetime);
-
-				return true;
-			}
-			else
-			{
-				UE_LOG(LogGameCards, Error, TEXT("Failed to spawn shield actor with class %s"), *ShieldClass->GetName());
-			}
-		}
-		else
-		{
-			UE_LOG(LogGameCards, Error, TEXT("No valid shield class specified."));
-		}
-	}
-
-	return false;
+	return Super::HandleActorTarget(Target);
 }
 
 void UInstructionPlaceShield::OnBuffCreated(IGameBuffInterface* BuffActor)
 {
-	
+	if (!IsValid(CurrentTargetActor))
+		return;
+
+	if (IsValid(ShieldClass))
+	{
+		AActor* NewActor = GetWorld()->SpawnActor<AActor>(ShieldClass);
+		ABuff_Shield* ShieldBuff = Cast<ABuff_Shield>(BuffActor);
+
+		if (AShieldBase* ShieldActor = Cast<AShieldBase>(NewActor))
+		{
+			ShieldActor->SetSourcePlayerController(GetOwnerCard()->GetOwnerPlayerController());
+			ShieldActor->SetShieldBlockType(ShieldBlockType);
+			ShieldActor->SetAttachActor(CurrentTargetActor);
+			ShieldActor->SetLifetime(ShieldLifetime);
+
+			ShieldBuff->SetShieldActor(ShieldActor);
+		}
+		else
+		{
+			NewActor->Destroy();
+			UE_LOG(LogGameCards, Error, TEXT("Failed to spawn shield actor with class %s"), *ShieldClass->GetName());
+		}
+	}
+	else
+	{
+		UE_LOG(LogGameCards, Error, TEXT("No valid shield class specified."));
+	}
 }
 

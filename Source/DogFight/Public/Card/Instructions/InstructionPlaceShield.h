@@ -31,4 +31,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Instruction")
 	int32 ShieldLifetime;
+
+	AActor* CurrentTargetActor;
 };

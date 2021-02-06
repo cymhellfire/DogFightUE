@@ -72,4 +72,6 @@ protected:
 	TArray<int32> LifetimeQueue;
 
 	AActor* TargetActor;
+
+	uint8 bPermanent : 1;
 };

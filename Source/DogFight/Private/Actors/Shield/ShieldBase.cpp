@@ -73,6 +73,9 @@ void AShieldBase::SetAttachActor(AActor* NewParent)
 
 void AShieldBase::SetLifetime(int32 Lifetime)
 {
+	if (Lifetime == 0)
+		bPermanent = true;
+
 	// Get the lifetime
 	AStandardGameState* StandardGameState = GetWorld()->GetGameState<AStandardGameState>();
 	if (StandardGameState != nullptr)
@@ -157,6 +160,9 @@ void AShieldBase::OnTargetActorDead()
 
 void AShieldBase::OnPlayerRoundEnd(int32 PlayerId)
 {
+	if(bPermanent)
+		return;
+
 	// Shorten lifetime
 	LifetimeQueue.RemoveSingle(PlayerId);
 
@@ -168,6 +174,9 @@ void AShieldBase::OnPlayerRoundEnd(int32 PlayerId)
 
 void AShieldBase::OnPlayerDead(int32 PlayerId)
 {
+	if(bPermanent)
+		return;
+
 	// Remove the dead player from timeline
 	LifetimeQueue.RemoveAll([PlayerId] (const int32 Item) {return Item == PlayerId;});
 }
