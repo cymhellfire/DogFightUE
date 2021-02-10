@@ -6,6 +6,7 @@
 #include "Card/GameCardTypes.h"
 #include "Card/CardBase.h"
 #include "Actors/Interfaces/GameCardUserPlayerControllerInterface.h"
+#include "Common/Localization.h"
 #include "GameFramework/PlayerState.h"
 
 UHandleTargetInstructionBase::UHandleTargetInstructionBase(const FObjectInitializer& ObjectInitializer)
@@ -94,19 +95,28 @@ bool UHandleTargetInstructionBase::HandleActorTarget(AActor* Target)
 	// Broadcast game message
 	if (IGameCardUserPlayerControllerInterface* UserPlayerController = Cast<IGameCardUserPlayerControllerInterface>(OwnerCard->GetOwnerPlayerController()))
 	{
-		FString TargetName = Target->GetName();
-
-		// Get owner player name if possible
-		if (APawn* TargetPawn = Cast<APawn>(Target))
+		// Check if it's self-selected
+		if (GetOwnerControlledPawn() == Target)
 		{
-			if (APlayerState* PlayerState = TargetPawn->GetPlayerState())
-			{
-				TargetName = FString::Printf(TEXT("<PlayerName>%s</>"), *PlayerState->GetPlayerName());
-			}
+			UserPlayerController->BroadcastCardTargetingResult(OwnerCard->GetCardDisplayInfo().GetCardNameText(),
+				FText::FromStringTable(ST_INGAME_UI_LOC, TEXT("GameMsg_Self")), ECardInstructionTargetType::Actor);
 		}
+		else
+		{
+			FString TargetName = Target->GetName();
 
-		UserPlayerController->BroadcastCardTargetingResult(OwnerCard->GetCardDisplayInfo().GetCardNameText(),
-			FText::FromString(TargetName), ECardInstructionTargetType::Actor);
+			// Get owner player name if possible
+			if (APawn* TargetPawn = Cast<APawn>(Target))
+			{
+				if (APlayerState* PlayerState = TargetPawn->GetPlayerState())
+				{
+					TargetName = FString::Printf(TEXT("<PlayerName>%s</>"), *PlayerState->GetPlayerName());
+				}
+			}
+
+			UserPlayerController->BroadcastCardTargetingResult(OwnerCard->GetCardDisplayInfo().GetCardNameText(),
+				FText::FromString(TargetName), ECardInstructionTargetType::Actor);
+		}
 	}
 
 	return true;
