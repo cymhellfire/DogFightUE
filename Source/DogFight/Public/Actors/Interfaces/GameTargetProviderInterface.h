@@ -11,7 +11,7 @@ class UGameTargetProviderInterface : public UInterface
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCardTargetInfoAcquiredSignature, FCardInstructionTargetInfo&, TargetInfo);
-
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnTargetActorSelectedSignature, AActor**);
 /**
  * Implement this interface to provide target information to customizable cards.
  */
@@ -22,6 +22,8 @@ class IGameTargetProviderInterface
 public:
 
 	virtual FCardTargetInfoAcquiredSignature& GetTargetInfoAcquiredDelegate() = 0;
+
+	virtual FOnTargetActorSelectedSignature& GetOnTargetActorSelectedDelegate() = 0;
 
 	virtual void RequestActorTarget() {};
 

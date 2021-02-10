@@ -17,6 +17,10 @@ class DOGFIGHT_API AStandardModePlayerCharacter : public ACharacter, public IDam
 	GENERATED_BODY()
 
 public:
+
+	friend class AStandardModePlayerController;
+	friend class AStandardModeAIController;
+
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCharacterDeadSignature);
 	FCharacterDeadSignature OnCharacterDead;
 
@@ -26,6 +30,8 @@ public:
 
 	// Sets default values for this character's properties
 	AStandardModePlayerCharacter();
+
+	AController* GetSupremeController() const { return SupremeController; }
 
 #pragma region IDamageableActorInterface
 
@@ -243,4 +249,6 @@ private:
 	FQuat SyncRagdollRotation;
 
 	class UCharacterFloatingTextPanelWidget* FloatingTextPanelWidget;
+
+	AController* SupremeController;
 };

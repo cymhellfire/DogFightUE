@@ -80,6 +80,7 @@ void AStandardModeAIController::InitPlayerState()
 		CharacterPawn->SetOwner(this);
 		CharacterPawn->SetPlayerState(PlayerState);
 		CharacterPawn->SetUnitName(MyPlayerState->GetPlayerName());
+		CharacterPawn->SupremeController = this;
 		CharacterPawn->OnCharacterDead.AddDynamic(this, &AStandardModeAIController::OnCharacterPawnDead);
 		CharacterPawn->OnCharacterHealthChanged.AddDynamic(this, &AStandardModeAIController::OnHealthChanged);
 	}
@@ -419,6 +420,20 @@ void AStandardModeAIController::RequestActorTarget()
 	// Use target pawn if it's already specified
 	if (TargetCharacterPawn != nullptr)
 	{
+		// Trigger delegate before create new target info to gain possibility to change target now
+		AActor** OldActorAddress = reinterpret_cast<AActor**>(&TargetCharacterPawn);
+		AActor** TargetActorAddress{OldActorAddress};
+		OnTargetActorSelected.Broadcast(TargetActorAddress);
+
+		// Override target actor if changed
+		if (*TargetActorAddress != *OldActorAddress)
+		{
+			if (AStandardModePlayerCharacter* NewPawn = static_cast<AStandardModePlayerCharacter*>(*TargetActorAddress))
+			{
+				TargetCharacterPawn = NewPawn;
+			}
+		}
+
 		FCardInstructionTargetInfo NewTargetInfo;
 		NewTargetInfo.ActorPtr = TargetCharacterPawn;
 		NewTargetInfo.TargetType = ECardInstructionTargetType::Actor;
@@ -439,6 +454,20 @@ void AStandardModeAIController::RequestActorTarget()
 
 	if (IGameCardUserPlayerControllerInterface* CardUserPlayerController = Cast<IGameCardUserPlayerControllerInterface>(TargetController))
 	{
+		// Trigger delegate before create new target info to gain possibility to change target now
+		AActor** OldActorAddress = reinterpret_cast<AActor**>(&TargetCharacterPawn);
+		AActor** TargetActorAddress{OldActorAddress};
+		OnTargetActorSelected.Broadcast(TargetActorAddress);
+
+		// Override target actor if changed
+		if (*TargetActorAddress != *OldActorAddress)
+		{
+			if (AStandardModePlayerCharacter* NewPawn = static_cast<AStandardModePlayerCharacter*>(*TargetActorAddress))
+			{
+				TargetCharacterPawn = NewPawn;
+			}
+		}
+
 		FCardInstructionTargetInfo NewTargetInfo;
 		NewTargetInfo.ActorPtr = CardUserPlayerController->GetActualPawn();
 		NewTargetInfo.TargetType = ECardInstructionTargetType::Actor;

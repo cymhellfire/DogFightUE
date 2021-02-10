@@ -92,6 +92,7 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 
 #pragma region Interfaces
 	virtual FCardTargetInfoAcquiredSignature& GetTargetInfoAcquiredDelegate() override { return OnCardTargetInfoAcquired; }
+	virtual FOnTargetActorSelectedSignature& GetOnTargetActorSelectedDelegate() override { return OnTargetActorSelected; }
 
 	virtual void RequestActorTarget() override;
 	virtual void RequestPositionTarget() override;
@@ -185,6 +186,9 @@ protected:
 
 private:
 	FCardTargetInfoAcquiredSignature OnCardTargetInfoAcquired;
+
+	/** Triggered after this player selected actor and before send this actor to card. */
+	FOnTargetActorSelectedSignature OnTargetActorSelected;
 
 	UPROPERTY(Category=PlayerController, VisibleAnywhere, ReplicatedUsing=OnRep_CharacterPawn)
 	AStandardModePlayerCharacter* CharacterPawn;

@@ -729,6 +729,16 @@ void AStandardModePlayerController::ClientSelectPositionTarget_Implementation()
 
 void AStandardModePlayerController::ServerSyncActorTarget_Implementation(AActor* TargetActor)
 {
+	// Trigger delegate before create new target info to gain possibility to change target now
+	AActor** TargetActorAddress = &TargetActor;
+	OnTargetActorSelected.Broadcast(TargetActorAddress);
+
+	// Override target actor if changed
+	if (*TargetActorAddress != TargetActor)
+	{
+		TargetActor = *TargetActorAddress;
+	}
+
 	// Package the target info struct
 	FCardInstructionTargetInfo NewTargetInfo;
 	NewTargetInfo.ActorPtr = TargetActor;
@@ -859,6 +869,7 @@ void AStandardModePlayerController::ServerSpawnCharacterPawn_Implementation()
 				RootComponent->GetComponentRotation());
 			CharacterPawn->SetOwner(this);
 			CharacterPawn->SetPlayerState(PlayerState);
+			CharacterPawn->SupremeController = this;
 			// Register listener
 			CharacterPawn->OnCharacterDead.AddDynamic(this, &AStandardModePlayerController::OnCharacterDead);
 			CharacterPawn->OnCharacterHealthChanged.AddDynamic(this, &AStandardModePlayerController::OnHealthChanged);

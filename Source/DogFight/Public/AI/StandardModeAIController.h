@@ -80,6 +80,7 @@ public:
 
 #pragma region Interface
 	virtual FCardTargetInfoAcquiredSignature& GetTargetInfoAcquiredDelegate() override { return OnCardTargetInfoAcquired; };
+	virtual FOnTargetActorSelectedSignature& GetOnTargetActorSelectedDelegate() override { return OnTargetActorSelected; }
 
 	virtual void RequestActorTarget() override;
 	virtual void RequestPositionTarget() override;
@@ -141,4 +142,6 @@ protected:
 	FName CurrentState;
 
 	FCardTargetInfoAcquiredSignature OnCardTargetInfoAcquired;
+
+	FOnTargetActorSelectedSignature OnTargetActorSelected;
 };
