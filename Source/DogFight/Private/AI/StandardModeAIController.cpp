@@ -80,7 +80,7 @@ void AStandardModeAIController::InitPlayerState()
 		CharacterPawn->SetOwner(this);
 		CharacterPawn->SetPlayerState(PlayerState);
 		CharacterPawn->SetUnitName(MyPlayerState->GetPlayerName());
-		CharacterPawn->SupremeController = this;
+		CharacterPawn->SetSupremeController(this);
 		CharacterPawn->OnCharacterDead.AddDynamic(this, &AStandardModeAIController::OnCharacterPawnDead);
 		CharacterPawn->OnCharacterHealthChanged.AddDynamic(this, &AStandardModeAIController::OnHealthChanged);
 	}

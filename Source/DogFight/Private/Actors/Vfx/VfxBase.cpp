@@ -3,6 +3,7 @@
 
 #include "Actors/Vfx/VfxBase.h"
 #include "Components/AudioComponent.h"
+#include "GameFramework/Character.h"
 
 // Sets default values
 AVfxBase::AVfxBase()
@@ -42,7 +43,16 @@ void AVfxBase::SetTargetActor(AActor* Target)
 	}
 	else
 	{
-		AttachToActor(Target, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
+		if (ACharacter* Character = Cast<ACharacter>(Target))
+		{
+			AttachToComponent(Character->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
+		}
+		else
+		{
+			AttachToActor(Target, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
+		}
+		SetActorRelativeLocation(FVector::ZeroVector);
+		SetActorRelativeRotation(FRotator::ZeroRotator);
 	}
 }
 

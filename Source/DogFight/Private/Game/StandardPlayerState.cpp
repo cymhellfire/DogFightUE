@@ -9,6 +9,7 @@
 #include "Pawns/StandardModePlayerCharacter.h"
 #include "AI/StandardModeAIController.h"
 #include "Actors/Managers/BuffQueue.h"
+#include "Common/BitmaskOperation.h"
 
 AStandardPlayerState::AStandardPlayerState(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -32,6 +33,7 @@ void AStandardPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 	DOREPLIFETIME(AStandardPlayerState, bAlive);
 	DOREPLIFETIME(AStandardPlayerState, PlayerStatisticArray);
 	DOREPLIFETIME(AStandardPlayerState, bIsRagdoll);
+	DOREPLIFETIME(AStandardPlayerState, SkipGamePhaseFlags);
 }
 
 void AStandardPlayerState::OnRep_PlayerName()
@@ -305,6 +307,16 @@ void AStandardPlayerState::ModifyPlayerHealth(int32 TargetPlayerId, int32 NewHea
 	}
 }
 
+void AStandardPlayerState::MarkGamePhasesAsSkip(int32 GamePhaseFlags)
+{
+	MERGE_FLAGS(SkipGamePhaseFlags, GamePhaseFlags);
+}
+
+void AStandardPlayerState::EraseGamePhasesFromSkip(int32 GamePhaseFlags)
+{
+	REMOVE_FLAGS(SkipGamePhaseFlags, GamePhaseFlags);
+}
+
 void AStandardPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
@@ -320,4 +332,9 @@ void AStandardPlayerState::OnRep_CardInfoList()
 {
 	// Broadcast event
 	OnPlayerCardInfoListChanged.Broadcast();
+}
+
+void AStandardPlayerState::OnRep_SkipGamePhaseFlags()
+{
+	
 }

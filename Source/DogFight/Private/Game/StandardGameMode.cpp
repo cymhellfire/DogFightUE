@@ -16,6 +16,7 @@
 #include "Game/GameplayCardPool.h"
 #include "Game/GameRoundsTimeline.h"
 #include "AI/StandardModeAIController.h"
+#include "Common/BitmaskOperation.h"
 
 namespace GamePhase
 {
@@ -793,12 +794,26 @@ void AStandardGameMode::HandlePhasePlayerRound()
 			AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(StandardGameState->GetGameRoundsTimeline()->GetCurrentPlayerId());
 			if (StandardModePlayerController != nullptr)
 			{
+				bool bSkipUsingCardPhase = false;
 				if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
 				{
-					StandardPlayerState->SetCardSelectionPurpose(ECardSelectionPurpose::CSP_Use);
+					bSkipUsingCardPhase = TEST_SINGLE_FLAG(StandardPlayerState->GetSkipGamePhaseFlags(), ESGP_UseCards);
+
+					if (!bSkipUsingCardPhase)
+					{
+						StandardPlayerState->SetCardSelectionPurpose(ECardSelectionPurpose::CSP_Use);
+					}
 				}
 
-				StandardModePlayerController->ClientShowCardDisplayWidgetWithSelectMode(ECardSelectionMode::CSM_SingleNoConfirm);
+				// Directly end current round if player is marked as SkipUsingCard
+				if (!bSkipUsingCardPhase)
+				{
+					StandardModePlayerController->ClientShowCardDisplayWidgetWithSelectMode(ECardSelectionMode::CSM_SingleNoConfirm);
+				}
+				else
+				{
+					EndCurrentPlayerRound();
+				}
 			}
 		}
 		else
@@ -806,8 +821,21 @@ void AStandardGameMode::HandlePhasePlayerRound()
 			AStandardModeAIController* StandardModeAIController = GetAIControllerById(StandardGameState->GetGameRoundsTimeline()->GetCurrentPlayerId());
 			if (StandardModeAIController != nullptr)
 			{
-				// Notify AIController round started
-				StandardModeAIController->StartAIRound();
+				bool bSkipUsingCard = false;
+				if (AStandardPlayerState* StandardPlayerState = StandardModeAIController->GetPlayerState<AStandardPlayerState>())
+				{
+					bSkipUsingCard = TEST_SINGLE_FLAG(StandardPlayerState->GetSkipGamePhaseFlags(), ESGP_UseCards);
+				}
+
+				if (!bSkipUsingCard)
+				{
+					// Notify AIController round started
+					StandardModeAIController->StartAIRound();
+				}
+				else
+				{
+					EndCurrentPlayerRound();
+				}
 			}
 		}
 	}

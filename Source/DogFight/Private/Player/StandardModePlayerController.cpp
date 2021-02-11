@@ -869,7 +869,7 @@ void AStandardModePlayerController::ServerSpawnCharacterPawn_Implementation()
 				RootComponent->GetComponentRotation());
 			CharacterPawn->SetOwner(this);
 			CharacterPawn->SetPlayerState(PlayerState);
-			CharacterPawn->SupremeController = this;
+			CharacterPawn->SetSupremeController(this);
 			// Register listener
 			CharacterPawn->OnCharacterDead.AddDynamic(this, &AStandardModePlayerController::OnCharacterDead);
 			CharacterPawn->OnCharacterHealthChanged.AddDynamic(this, &AStandardModePlayerController::OnHealthChanged);

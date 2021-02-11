@@ -5,6 +5,7 @@
 #include "DogFight.h"
 #include "GameFramework/PlayerState.h"
 #include "Card/GameCardTypes.h"
+#include "Game/GameType.h"
 #include "StandardPlayerState.generated.h"
 
 class ACardBase;
@@ -121,11 +122,21 @@ public:
 	/** Get the Buff Queue of this player. */
 	UBuffQueue* GetBuffQueue() const { return PlayerBuffQueue; }
 
+#pragma region SkipGamePhase
+	int32 GetSkipGamePhaseFlags() const { return SkipGamePhaseFlags; }
+
+	void MarkGamePhasesAsSkip(int32 GamePhaseFlags);
+	void EraseGamePhasesFromSkip(int32 GamePhaseFlags);
+#pragma endregion SkipGamePhase
+
 protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
 	void OnRep_CardInfoList();
+
+	UFUNCTION()
+	void OnRep_SkipGamePhaseFlags();
 
 	UFUNCTION()
 	void OnCardFinished();
@@ -174,4 +185,7 @@ protected:
 
 	UPROPERTY(Transient)
 	UBuffQueue* PlayerBuffQueue;
+
+	UPROPERTY(ReplicatedUsing=OnRep_SkipGamePhaseFlags)
+	int32 SkipGamePhaseFlags;
 };

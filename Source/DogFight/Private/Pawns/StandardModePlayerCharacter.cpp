@@ -87,6 +87,13 @@ AStandardModePlayerCharacter::AStandardModePlayerCharacter()
 	GameplayTags.AddTag(FGameplayTag::RequestGameplayTag(FName(TEXT("Actor.Character"))));
 }
 
+void AStandardModePlayerCharacter::SetSupremeController(AController* NewController)
+{
+	check(NewController);
+
+	SupremeController = NewController;
+}
+
 void AStandardModePlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
