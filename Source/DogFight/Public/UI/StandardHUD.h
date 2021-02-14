@@ -99,6 +99,9 @@ public:
 	UPROPERTY(Category="UI", EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UGameTitleMessageWidget> GameTitleMessageWidgetClass;
 
+	UPROPERTY(Category="UI", EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UUserWidget> DebugUIClass;
+
 protected:
 	void DrawMiniMap();
 
@@ -120,6 +123,8 @@ protected:
 	UCardDisplayWidget* CardDisplayWidget;
 	UPROPERTY()
 	UGameTitleMessageWidget* GameTitleMessageWidget;
+	UPROPERTY()
+	UUserWidget* DebugUIWidget;
 
 	AStandardGameState* StandardGameState;
 };

@@ -166,6 +166,18 @@ void AStandardModeAIController::UseRandomCard()
 	}
 }
 
+void AStandardModeAIController::DiscardRandomCards(int32 Count)
+{
+	if (AStandardPlayerState* MyPlayerState = GetPlayerState<AStandardPlayerState>())
+	{
+		for (int32 i = 0; i < Count; ++i)
+		{
+			const int32 CardIndex = FMath::RandRange(0, MyPlayerState->GetCurrentCardCount() - 1);
+			MyPlayerState->RemoveCard(CardIndex);
+		}
+	}
+}
+
 bool AStandardModeAIController::UseCardByCategoryFlags(int32 CategoryFlags)
 {
 	// Check if there is card available

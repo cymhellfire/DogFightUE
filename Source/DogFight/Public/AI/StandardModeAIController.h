@@ -55,6 +55,9 @@ public:
 	/** Use a random card. */
 	void UseRandomCard();
 
+	/** Discard random cards by count. */
+	void DiscardRandomCards(int32 Count);
+
 	/**
 	 * Use a card by giving specified category flags.
 	 * @return Whether card found and used successfully.

@@ -737,8 +737,13 @@ void AStandardGameMode::OnPlayerBuffQueueBeginRoundFinished()
 
 			// Reset player state for new round
 			StandardPlayerState->InitializePlayerForNewRound();
-			// Give current player random cards
-			GivePlayerCards(GetCurrentPlayerId(), StandardPlayerState->GetCardGainNumByRound());
+
+			// Skip give card if player is marked with SkipGiveCard
+			if (!TEST_SINGLE_FLAG(StandardPlayerState->GetSkipGamePhaseFlags(), ESGP_GiveCards))
+			{
+				// Give current player random cards
+				GivePlayerCards(GetCurrentPlayerId(), StandardPlayerState->GetCardGainNumByRound());
+			}
 
 			// Register card finished delegate
 			StandardPlayerState->OnUsingCardFinished.AddDynamic(this, &AStandardGameMode::OnPlayerUsingCardFinished);
@@ -768,8 +773,13 @@ void AStandardGameMode::OnPlayerBuffQueueBeginRoundFinished()
 
 			// Reset player state for new round
 			StandardPlayerState->InitializePlayerForNewRound();
-			// Give current player random cards
-			GivePlayerCards(GetCurrentPlayerId(), StandardPlayerState->GetCardGainNumByRound());
+
+			// Skip give card if player is marked with SkipGiveCard
+			if (!TEST_SINGLE_FLAG(StandardPlayerState->GetSkipGamePhaseFlags(), ESGP_GiveCards))
+			{
+				// Give current player random cards
+				GivePlayerCards(GetCurrentPlayerId(), StandardPlayerState->GetCardGainNumByRound());
+			}
 
 			// Register card finished delegate
 			StandardPlayerState->OnUsingCardFinished.AddDynamic(this, &AStandardGameMode::OnPlayerUsingCardFinished);
@@ -827,6 +837,7 @@ void AStandardGameMode::HandlePhasePlayerRound()
 					bSkipUsingCard = TEST_SINGLE_FLAG(StandardPlayerState->GetSkipGamePhaseFlags(), ESGP_UseCards);
 				}
 
+				// Directly end current round if player is marked as SkipUsingCard
 				if (!bSkipUsingCard)
 				{
 					// Notify AIController round started
@@ -856,7 +867,7 @@ void AStandardGameMode::HandlePhaseDiscardCards()
 		if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
 		{
 			// Check whether to discard cards
-			const int32 DiscardCount = StandardPlayerState->CardCountToDiscard();
+			const int32 DiscardCount = TEST_SINGLE_FLAG(StandardPlayerState->GetSkipGamePhaseFlags(), ESGP_DropCards) ? 0 : StandardPlayerState->CardCountToDiscard();
 			if (DiscardCount > 0 && StandardPlayerState->IsAlive())
 			{
 				StandardPlayerState->SetCardSelectionPurpose(ECardSelectionPurpose::CSP_Discard);
@@ -872,7 +883,25 @@ void AStandardGameMode::HandlePhaseDiscardCards()
 	}
 	else
 	{
-		SetGamePhase(GamePhase::PlayerRoundEnd);
+		// Handle AI player
+		AStandardModeAIController* StandardModeAIController = GetAIControllerById(GetCurrentPlayerId());
+		if (StandardModeAIController == nullptr)
+		{
+			UE_LOG(LogDogFight, Error, TEXT("Failed to get AIController with Id %d"), GetCurrentPlayerId());
+			return;
+		}
+
+		if (AStandardPlayerState* StandardPlayerState = StandardModeAIController->GetPlayerState<AStandardPlayerState>())
+		{
+			// Check whether to discard cards
+			const int32 DiscardCount = TEST_SINGLE_FLAG(StandardPlayerState->GetSkipGamePhaseFlags(), ESGP_DropCards) ? 0 : StandardPlayerState->CardCountToDiscard();
+			if (DiscardCount > 0 && StandardPlayerState->IsAlive())
+			{
+				StandardModeAIController->DiscardRandomCards(DiscardCount);
+			}
+
+			SetGamePhase(GamePhase::PlayerRoundEnd);
+		}
 	}
 }
 

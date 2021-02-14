@@ -330,6 +330,8 @@ void AStandardPlayerState::BeginPlay()
 
 void AStandardPlayerState::OnRep_CardInfoList()
 {
+	OnPlayerCardCountChanged.Broadcast(GetCurrentCardCount());
+
 	// Broadcast event
 	OnPlayerCardInfoListChanged.Broadcast();
 }

@@ -100,6 +100,7 @@ public:
 	void SetRagdollActive(bool bActive);
 
 	/** Get the count of cards this player has. */
+	UFUNCTION(BlueprintCallable, Category="StandardPlayerState")
 	FORCEINLINE int32 GetCurrentCardCount() const { return CardInstanceList.Num(); }
 
 	/** Whether this player should discard cards before end this round. */
@@ -128,6 +129,13 @@ public:
 	void MarkGamePhasesAsSkip(int32 GamePhaseFlags);
 	void EraseGamePhasesFromSkip(int32 GamePhaseFlags);
 #pragma endregion SkipGamePhase
+
+#pragma region DebugInterface
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerCardCountChangeSignature, int32, CardCount);
+	/** Triggered when player card count changed. */
+	UPROPERTY(BlueprintAssignable, Category="StandardPlayerState")
+	FOnPlayerCardCountChangeSignature OnPlayerCardCountChanged;
+#pragma endregion DebugInterface
 
 protected:
 	virtual void BeginPlay() override;
