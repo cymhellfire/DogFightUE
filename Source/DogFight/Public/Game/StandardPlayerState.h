@@ -88,6 +88,16 @@ public:
 	/** Get the number of cards can be gained in this round. */
 	int32 GetCardGainNumByRound();
 
+	void SetCardGainNumByRound(int32 NewValue);
+
+	int32 GetCardUseCountPerRound();
+
+	void SetCardUseCountPerRound(int32 NewValue);
+
+	int32 GetMaxCardNum();
+
+	void SetMaxCardNum(int32 NewValue);
+
 	FORCEINLINE TArray<FCardInstanceDisplayInfo> GetCardDisplayInfoList() const { return CardInfoList; }
 
 	/** Get the card instance list. */

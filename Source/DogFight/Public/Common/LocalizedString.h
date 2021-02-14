@@ -26,4 +26,9 @@ struct FLocalizedString
 	{
 		return FText::FromStringTable(FName(*FString::Printf(TEXT("%s%s.%s"), ST_LOC_PATH, *LocalizeFile, *LocalizeFile)), LocalizeKey);
 	}
+
+	FText FormatLocalizeText(FFormatOrderedArguments FormatArgumentValues) const
+	{
+		return FText::Format(GetLocalizeText(), FormatArgumentValues);
+	}
 };

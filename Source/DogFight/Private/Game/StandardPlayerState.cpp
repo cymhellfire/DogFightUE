@@ -159,6 +159,40 @@ int32 AStandardPlayerState::GetCardGainNumByRound()
 	return CardGainPerRounds;
 }
 
+void AStandardPlayerState::SetCardGainNumByRound(int32 NewValue)
+{
+	if (NewValue == CardGainPerRounds)
+		return;
+
+	CardGainPerRounds = NewValue;
+}
+
+int32 AStandardPlayerState::GetCardUseCountPerRound()
+{
+	return MaxUseNum;
+}
+
+void AStandardPlayerState::SetCardUseCountPerRound(int32 NewValue)
+{
+	if (NewValue == MaxUseNum)
+		return;
+
+	MaxUseNum = NewValue;
+}
+
+int32 AStandardPlayerState::GetMaxCardNum()
+{
+	return MaxCardCount;
+}
+
+void AStandardPlayerState::SetMaxCardNum(int32 NewValue)
+{
+	if (NewValue == MaxCardCount)
+		return;
+
+	MaxCardCount = NewValue;
+}
+
 void AStandardPlayerState::SetAlive(bool bIsAlive)
 {
 	if (GetNetMode() == NM_Client)
