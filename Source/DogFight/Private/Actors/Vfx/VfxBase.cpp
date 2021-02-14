@@ -43,16 +43,16 @@ void AVfxBase::SetTargetActor(AActor* Target)
 	}
 	else
 	{
+		const FAttachmentTransformRules AttachmentTransformRules(EAttachmentRule::SnapToTarget,
+			EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, false);
 		if (ACharacter* Character = Cast<ACharacter>(Target))
 		{
-			AttachToComponent(Character->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
+			AttachToComponent(Character->GetMesh(), AttachmentTransformRules, SocketName);
 		}
 		else
 		{
-			AttachToActor(Target, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
+			AttachToActor(Target, AttachmentTransformRules, SocketName);
 		}
-		SetActorRelativeLocation(FVector::ZeroVector);
-		SetActorRelativeRotation(FRotator::ZeroRotator);
 	}
 }
 
