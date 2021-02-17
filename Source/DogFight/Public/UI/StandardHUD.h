@@ -39,6 +39,8 @@ public:
 
 	void SetCardDisplayInfoList(const TArray<FCardInstanceDisplayInfo>& CardInfoList);
 
+	void RefreshCardUsingAbilityInfo();
+
 	void ToggleCardDisplayWidgetVisibility(bool bVisible);
 
 	void SetCardSelectionMode(ECardSelectionMode SelectionMode);

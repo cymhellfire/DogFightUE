@@ -138,7 +138,7 @@ void AStandardPlayerState::PostCardFinished()
 	CardInfoList.RemoveAt(UsingCardIndex);
 
 	// Increase used card count
-	UsedCardNum++;
+	SetUsedCardCount(UsedCardNum + 1);
 	// Check if player round should be ended
 	const bool bFinishRound = (UsedCardNum >= MaxUseNum || CardInstanceList.Num() <= 0);
 	OnUsingCardFinished.Broadcast(bFinishRound);
@@ -151,7 +151,7 @@ void AStandardPlayerState::PostCardFinished()
 
 void AStandardPlayerState::InitializePlayerForNewRound()
 {
-	UsedCardNum = 0;
+	SetUsedCardCount(0);
 }
 
 int32 AStandardPlayerState::GetCardGainNumByRound()
@@ -165,6 +165,11 @@ void AStandardPlayerState::SetCardGainNumByRound(int32 NewValue)
 		return;
 
 	CardGainPerRounds = NewValue;
+
+	if (GetNetMode() != NM_Client)
+	{
+		OnRep_CardGainPerRound();
+	}
 }
 
 int32 AStandardPlayerState::GetCardUseCountPerRound()
@@ -178,6 +183,29 @@ void AStandardPlayerState::SetCardUseCountPerRound(int32 NewValue)
 		return;
 
 	MaxUseNum = NewValue;
+
+	if (GetNetMode() != NM_Client)
+	{
+		OnRep_MaxUseNum();
+	}
+}
+
+int32 AStandardPlayerState::GetUsedCardCount()
+{
+	return UsedCardNum;
+}
+
+void AStandardPlayerState::SetUsedCardCount(int32 NewValue)
+{
+	if (NewValue == UsedCardNum)
+		return;
+
+	UsedCardNum = NewValue;
+
+	if (GetNetMode() != NM_Client)
+	{
+		OnRep_UsedCardNum();
+	}
 }
 
 int32 AStandardPlayerState::GetMaxCardNum()
@@ -191,6 +219,11 @@ void AStandardPlayerState::SetMaxCardNum(int32 NewValue)
 		return;
 
 	MaxCardCount = NewValue;
+
+	if (GetNetMode() != NM_Client)
+	{
+		OnRep_MaxCardCount();
+	}
 }
 
 void AStandardPlayerState::SetAlive(bool bIsAlive)
@@ -373,4 +406,24 @@ void AStandardPlayerState::OnRep_CardInfoList()
 void AStandardPlayerState::OnRep_SkipGamePhaseFlags()
 {
 	
+}
+
+void AStandardPlayerState::OnRep_MaxCardCount()
+{
+	OnPlayerCardUsingAbilityChanged.Broadcast();
+}
+
+void AStandardPlayerState::OnRep_MaxUseNum()
+{
+	OnPlayerCardUsingAbilityChanged.Broadcast();
+}
+
+void AStandardPlayerState::OnRep_UsedCardNum()
+{
+	OnPlayerCardUsingAbilityChanged.Broadcast();
+}
+
+void AStandardPlayerState::OnRep_CardGainPerRound()
+{
+	OnPlayerCardUsingAbilityChanged.Broadcast();
 }

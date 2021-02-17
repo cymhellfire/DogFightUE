@@ -64,6 +64,10 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDiscardCardFinishedSignature);
 	FDiscardCardFinishedSignature OnDiscardCardFinished;
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerCardUsingAbilityChangeSignature);
+	/** Triggered when player using card ability changed, for example, MaxUseNum changed. */
+	FPlayerCardUsingAbilityChangeSignature OnPlayerCardUsingAbilityChanged;
+
 	AStandardPlayerState(const FObjectInitializer& ObjectInitializer);
 
 	virtual void OnRep_PlayerName() override;
@@ -93,6 +97,10 @@ public:
 	int32 GetCardUseCountPerRound();
 
 	void SetCardUseCountPerRound(int32 NewValue);
+
+	int32 GetUsedCardCount();
+
+	void SetUsedCardCount(int32 NewValue);
 
 	int32 GetMaxCardNum();
 
@@ -157,6 +165,18 @@ protected:
 	void OnRep_SkipGamePhaseFlags();
 
 	UFUNCTION()
+	void OnRep_MaxCardCount();
+
+	UFUNCTION()
+	void OnRep_MaxUseNum();
+
+	UFUNCTION()
+	void OnRep_UsedCardNum();
+
+	UFUNCTION()
+	void OnRep_CardGainPerRound();
+
+	UFUNCTION()
 	void OnCardFinished();
 
 	void PostCardFinished();
@@ -175,16 +195,16 @@ protected:
 	TArray<ACardBase*> CardInstanceList;
 
 	/** The maximum count of cards in player hand. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState", Replicated)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState", ReplicatedUsing=OnRep_MaxCardCount)
 	int32 MaxCardCount;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState", Replicated)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState", ReplicatedUsing=OnRep_MaxUseNum)
 	int32 MaxUseNum;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState", Replicated)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState", ReplicatedUsing=OnRep_UsedCardNum)
 	int32 UsedCardNum;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="StandardPlayerState", Replicated)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="StandardPlayerState", ReplicatedUsing=OnRep_CardGainPerRound)
 	int32 CardGainPerRounds;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState", Replicated)

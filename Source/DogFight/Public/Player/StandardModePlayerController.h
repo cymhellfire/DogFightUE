@@ -154,6 +154,9 @@ protected:
 	void OnCardInfoListChanged();
 
 	UFUNCTION()
+	void OnCardUsingAbilityChanged();
+
+	UFUNCTION()
 	void OnCardSelectionConfirmed(TArray<int32>& SelectedIndexList);
 
 #pragma region Target Acquire

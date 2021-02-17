@@ -67,6 +67,7 @@ void AStandardModePlayerController::InitPlayerState()
 			StandardPlayerState->OnPlayerNameChanged.AddDynamic(this, &AStandardModePlayerController::OnPlayerNameChanged);
 
 			StandardPlayerState->OnPlayerCardInfoListChanged.AddDynamic(this, &AStandardModePlayerController::OnCardInfoListChanged);
+			StandardPlayerState->OnPlayerCardUsingAbilityChanged.AddDynamic(this, &AStandardModePlayerController::OnCardUsingAbilityChanged);
 		}
 	}
 }
@@ -90,6 +91,7 @@ void AStandardModePlayerController::OnRep_PlayerState()
 
 			// Register card info list changed delegate
 			StandardPlayerState->OnPlayerCardInfoListChanged.AddDynamic(this, &AStandardModePlayerController::OnCardInfoListChanged);
+			StandardPlayerState->OnPlayerCardUsingAbilityChanged.AddDynamic(this, &AStandardModePlayerController::OnCardUsingAbilityChanged);
 		}
 	}
 	
@@ -666,6 +668,14 @@ void AStandardModePlayerController::OnCardInfoListChanged()
 		{
 			StandardHUD->SetCardDisplayInfoList(StandardPlayerState->GetCardDisplayInfoList());
 		}
+	}
+}
+
+void AStandardModePlayerController::OnCardUsingAbilityChanged()
+{
+	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
+	{
+		StandardHUD->RefreshCardUsingAbilityInfo();
 	}
 }
 

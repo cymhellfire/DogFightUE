@@ -81,6 +81,14 @@ void AStandardHUD::SetCardDisplayInfoList(const TArray<FCardInstanceDisplayInfo>
 	}
 }
 
+void AStandardHUD::RefreshCardUsingAbilityInfo()
+{
+	if (CardDisplayWidget != nullptr)
+	{
+		CardDisplayWidget->OnCardUsingAbilityInfoChanged();
+	}
+}
+
 void AStandardHUD::ToggleCardDisplayWidgetVisibility(bool bVisible)
 {
 	if (CardDisplayWidget == nullptr)
