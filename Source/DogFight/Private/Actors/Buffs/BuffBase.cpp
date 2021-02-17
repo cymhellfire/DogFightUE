@@ -20,6 +20,7 @@ ABuffBase::ABuffBase()
 	PrimaryActorTick.bCanEverTick = false;
 
 	Lifetime = 1;
+	LifetimeMode = EBuffLifetimeMode::EBLM_Default;
 	BuffEndingDuration = 1.f;
 	MaxCountPerTarget = 0;
 	bAppliedToTarget = false;
@@ -32,10 +33,17 @@ void ABuffBase::SetLifetime(float NewLifetime)
 {
 	bPermanentBuff = NewLifetime == 0;
 
-	AStandardGameState* StandardGameState = GetWorld()->GetGameState<AStandardGameState>();
-	if (StandardGameState != nullptr)
+	if (LifetimeMode == EBuffLifetimeMode::EBLM_Default)
 	{
-		LifetimeQueue = StandardGameState->GetGameRoundsTimeline()->GetLifetime(NewLifetime);
+		AStandardGameState* StandardGameState = GetWorld()->GetGameState<AStandardGameState>();
+		if (StandardGameState != nullptr)
+		{
+			LifetimeQueue = StandardGameState->GetGameRoundsTimeline()->GetLifetime(NewLifetime);
+		}
+	}
+	else if (LifetimeMode == EBuffLifetimeMode::EBLM_Custom)
+	{
+		LifetimeQueue = SetupCustomLifetime(NewLifetime);
 	}
 }
 
@@ -72,10 +80,17 @@ void ABuffBase::BeginPlay()
 	Super::BeginPlay();
 
 	// Get the lifetime
-	AStandardGameState* StandardGameState = GetWorld()->GetGameState<AStandardGameState>();
-	if (StandardGameState != nullptr)
+	if (LifetimeMode == EBuffLifetimeMode::EBLM_Default)
 	{
-		LifetimeQueue = StandardGameState->GetGameRoundsTimeline()->GetLifetime(Lifetime);
+		AStandardGameState* StandardGameState = GetWorld()->GetGameState<AStandardGameState>();
+		if (StandardGameState != nullptr)
+		{
+			LifetimeQueue = StandardGameState->GetGameRoundsTimeline()->GetLifetime(Lifetime);
+		}
+	}
+	else
+	{
+		LifetimeQueue = SetupCustomLifetime(Lifetime);
 	}
 
 	// Register delegate
@@ -255,19 +270,25 @@ void ABuffBase::UnregisterCallbackFromCharacter()
 
 void ABuffBase::OnPlayerRoundEnd(int32 PlayerId)
 {
-	// Shorten lifetime
-	LifetimeQueue.RemoveSingle(PlayerId);
-
-	if (LifetimeQueue.Num() == 0 && !bPermanentBuff)
+	if (LifetimeMode == EBuffLifetimeMode::EBLM_Default)
 	{
-		bPendingEnd = true;
+		// Shorten lifetime
+		LifetimeQueue.RemoveSingle(PlayerId);
+
+		if (LifetimeQueue.Num() == 0 && !bPermanentBuff)
+		{
+			bPendingEnd = true;
+		}
 	}
 }
 
 void ABuffBase::OnPlayerDead(int32 PlayerId)
 {
-	// Remove the dead player from timeline
-	LifetimeQueue.RemoveAll([PlayerId] (const int32 Item){return Item == PlayerId;});
+	if (LifetimeMode == EBuffLifetimeMode::EBLM_Default)
+	{
+		// Remove the dead player from timeline
+		LifetimeQueue.RemoveAll([PlayerId] (const int32 Item){return Item == PlayerId;});
+	}
 }
 
 void ABuffBase::OnTargetActorDead()
@@ -278,4 +299,21 @@ void ABuffBase::OnTargetActorDead()
 	}
 
 	EndBuff();
+}
+
+void ABuffBase::ConsumeLifetime(int32 TargetNumber, bool bConsumeAll)
+{
+	if (bConsumeAll)
+	{
+		LifetimeQueue.RemoveAll([TargetNumber] (const int32 Element) {return Element == TargetNumber;});
+	}
+	else
+	{
+		LifetimeQueue.RemoveSingle(TargetNumber);
+	}
+
+	if (!bPermanentBuff && LifetimeQueue.Num() == 0)
+	{
+		bPendingEnd = true;
+	}
 }

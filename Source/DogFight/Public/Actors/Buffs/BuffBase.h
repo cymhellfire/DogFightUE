@@ -11,6 +11,13 @@
 
 class AVfxBase;
 
+UENUM(BlueprintType)
+enum class EBuffLifetimeMode : uint8
+{
+	EBLM_Default		UMETA(DisplayName="Default", Tooltip="Lifetime reduces once when any player's round ended."),
+	EBLM_Custom			UMETA(DisplayName="Custom", Tooltip="Lifetime managed by customized functions."),
+};
+
 UCLASS(Abstract)
 class DOGFIGHT_API ABuffBase : public AActor, public IGameBuffInterface
 {
@@ -80,6 +87,11 @@ protected:
 	UFUNCTION()
 	virtual void OnTargetActorDead();
 
+	/** Function that is in charge of generate lifetime queue on demand. */
+	virtual TArray<int32> SetupCustomLifetime(int32 TimelineFactor) { return {}; }
+
+	/** Function to use when manually manage lifetime queue when use EBLM_Custom. */
+	virtual void ConsumeLifetime(int32 TargetNumber, bool bConsumeAll = false);
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Buff")
 	int32 Lifetime;
@@ -88,6 +100,9 @@ public:
 	TSubclassOf<AVfxBase> VfxClass;
 
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Buff")
+	EBuffLifetimeMode LifetimeMode;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Buff")
 	float BuffEndingDuration;
 

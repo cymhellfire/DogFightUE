@@ -200,11 +200,13 @@ void AStandardHUD::BeginPlay()
 		GameTitleMessageWidget = CreateWidget<UGameTitleMessageWidget>(PlayerController, GameTitleMessageWidgetClass, FName("GameTitleMessageWidget"));
 	}
 
+#if WITH_EDITOR
 	if (DebugUIWidget == nullptr && DebugUIClass != nullptr)
 	{
 		DebugUIWidget = CreateWidget<UUserWidget>(PlayerController, DebugUIClass, FName("DebugUI"));
 		DebugUIWidget->AddToViewport();
 	}
+#endif
 
 	// Listen the GamePhase change event
 	StandardGameState = GetWorld()->GetGameState<AStandardGameState>();

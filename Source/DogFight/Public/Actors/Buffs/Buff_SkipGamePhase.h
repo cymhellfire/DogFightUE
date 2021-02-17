@@ -13,6 +13,8 @@ UCLASS()
 class DOGFIGHT_API ABuff_SkipGamePhase : public ABuffBase
 {
 	GENERATED_BODY()
+public:
+	ABuff_SkipGamePhase();
 
 protected:
 	virtual void ApplyBuff() override;
@@ -20,6 +22,7 @@ protected:
 
 	virtual void OnTargetPlayerRoundBegin() override;
 
+	virtual TArray<int32> SetupCustomLifetime(int32 TimelineFactor) override;
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Buff", meta=(Bitmask, BitmaskEnum="ESkippableGamePhase"))
 	int32 SkipGamePhase;
