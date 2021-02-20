@@ -181,11 +181,15 @@ float AStandardGameMode::CalculateDamage(AActor* DamageTaker, float Damage, FDam
 	// Record the damage to PlayerState if taker and source are both PlayerCharacter
 	AStandardModePlayerCharacter* PlayerCharacter = Cast<AStandardModePlayerCharacter>(DamageTaker);
 	AStandardModePlayerController* SourcePlayerController = Cast<AStandardModePlayerController>(EventInstigator);
-	if (PlayerCharacter && SourcePlayerController)
+	AStandardModeAIController* SourceAIController = Cast<AStandardModeAIController>(EventInstigator);
+	AStandardPlayerState* SourcePlayerState =
+		SourcePlayerController ? SourcePlayerController->GetPlayerState<AStandardPlayerState>()
+		: SourceAIController ? SourceAIController->GetPlayerState<AStandardPlayerState>()
+		: nullptr;
+	if (PlayerCharacter && SourcePlayerState)
 	{
-		AStandardPlayerState* SourcePlayerState = SourcePlayerController->GetPlayerState<AStandardPlayerState>();
 		AStandardPlayerState* StandardPlayerState = Cast<AStandardPlayerState>(PlayerCharacter->GetPlayerState());
-		if (StandardPlayerState && SourcePlayerState)
+		if (StandardPlayerState)
 		{
 			StandardPlayerState->RecordReceivedDamage(SourcePlayerState->GetPlayerId(), FinalDamage);
 		}

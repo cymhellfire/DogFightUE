@@ -19,20 +19,20 @@ struct FPlayerRelationStatistic
 {
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int32 PlayerId;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool IsAIPlayer;
 
 	/** Represents Enemy if this value less than 0. Represents Ally when larger than 0. */
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int32 RelationPoint;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int32 ReceiveDamage;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int32 CurrentHealth;
 };
 
@@ -136,6 +136,7 @@ public:
 	void ModifyPlayerHealth(int32 TargetPlayerId, int32 NewHealth);
 
 	/** Get all player relation statistic. */
+	UFUNCTION(BlueprintCallable, Category="StandardPlayerState")
 	TArray<FPlayerRelationStatistic> GetPlayerRelationStatisticList() const { return TArray<FPlayerRelationStatistic>(PlayerStatisticArray); }
 
 	/** Get the Buff Queue of this player. */
@@ -153,6 +154,11 @@ public:
 	/** Triggered when player card count changed. */
 	UPROPERTY(BlueprintAssignable, Category="StandardPlayerState")
 	FOnPlayerCardCountChangeSignature OnPlayerCardCountChanged;
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerRelationInfoChangedSignature);
+	/** Triggered when player relation info changed. */
+	UPROPERTY(BlueprintAssignable, Category="StandardPlayerState")
+	FOnPlayerRelationInfoChangedSignature OnPlayerRelationInfoChanged;
 #pragma endregion DebugInterface
 
 protected:

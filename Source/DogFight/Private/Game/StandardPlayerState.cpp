@@ -297,6 +297,8 @@ void AStandardPlayerState::RegisterPlayersForRelation()
 		return;
 	}
 
+	UE_LOG(LogDogFight, Log, TEXT("Process GameState with %d players."), StandardGameState->PlayerArray.Num());
+
 	for (APlayerState* TargetPlayerState : StandardGameState->PlayerArray)
 	{
 		// Skip myself
@@ -363,6 +365,10 @@ void AStandardPlayerState::RecordReceivedDamage(int32 SourcePlayerId, float Dama
 		// Modify relation point
 		TargetStatistic->RelationPoint -= (int32)Damage;
 	}
+
+#if WITH_EDITOR
+	OnPlayerRelationInfoChanged.Broadcast();
+#endif
 }
 
 void AStandardPlayerState::ModifyPlayerHealth(int32 TargetPlayerId, int32 NewHealth)
@@ -372,6 +378,10 @@ void AStandardPlayerState::ModifyPlayerHealth(int32 TargetPlayerId, int32 NewHea
 	{
 		TargetStatistic->CurrentHealth = NewHealth;
 	}
+
+#if WITH_EDITOR
+	OnPlayerRelationInfoChanged.Broadcast();
+#endif
 }
 
 void AStandardPlayerState::MarkGamePhasesAsSkip(int32 GamePhaseFlags)
