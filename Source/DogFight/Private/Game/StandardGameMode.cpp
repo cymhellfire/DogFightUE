@@ -726,9 +726,6 @@ void AStandardGameMode::OnPlayerBuffQueueBeginRoundFinished()
 			return;
 		}
 
-		// Enable card selection for new player
-		StandardModePlayerController->ClientSetCardDisplayWidgetSelectable(true);
-
 		if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
 		{
 			if (UBuffQueue* BuffQueue = StandardPlayerState->GetBuffQueue())
@@ -822,6 +819,8 @@ void AStandardGameMode::HandlePhasePlayerRound()
 				// Directly end current round if player is marked as SkipUsingCard
 				if (!bSkipUsingCardPhase)
 				{
+					// Enable card selection for new player
+					StandardModePlayerController->ClientSetCardDisplayWidgetSelectable(true);
 					StandardModePlayerController->ClientShowCardDisplayWidgetWithSelectMode(ECardSelectionMode::CSM_SingleNoConfirm);
 				}
 				else
@@ -875,6 +874,8 @@ void AStandardGameMode::HandlePhaseDiscardCards()
 			if (DiscardCount > 0 && StandardPlayerState->IsAlive())
 			{
 				StandardPlayerState->SetCardSelectionPurpose(ECardSelectionPurpose::CSP_Discard);
+				// Enable card selection for discarding
+				StandardModePlayerController->ClientSetCardDisplayWidgetSelectable(true);
 				StandardModePlayerController->ClientStartDiscardCards(DiscardCount);
 
 				StandardPlayerState->OnDiscardCardFinished.AddDynamic(this, &AStandardGameMode::AStandardGameMode::OnPlayerDiscardCardFinished);

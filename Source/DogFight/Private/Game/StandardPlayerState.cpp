@@ -411,6 +411,9 @@ void AStandardPlayerState::OnRep_CardInfoList()
 
 	// Broadcast event
 	OnPlayerCardInfoListChanged.Broadcast();
+
+	// Card changing cause using ability changed 
+	OnPlayerCardUsingAbilityChanged.Broadcast();
 }
 
 void AStandardPlayerState::OnRep_SkipGamePhaseFlags()
