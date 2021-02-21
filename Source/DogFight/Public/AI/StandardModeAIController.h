@@ -113,9 +113,9 @@ protected:
 
 	AController* GetRandomTargetPlayer(bool bIgnoreSelf);
 
-	void FilterForEnemyPlayer(TArray<struct FPlayerRelationStatistic>& ResultArray);
+	void FilterAndSortForEnemyPlayer(TArray<struct FPlayerRelationStatistic>& ResultArray, int32& TopCount);
 
-	void FilterForAllyPlayer(TArray<struct FPlayerRelationStatistic>& ResultArray);
+	void FilterAndSortForAllyPlayer(TArray<struct FPlayerRelationStatistic>& ResultArray, int32& TopCount);
 
 	void FilterForHumanPlayer(TArray<struct FPlayerRelationStatistic>& ResultArray);
 

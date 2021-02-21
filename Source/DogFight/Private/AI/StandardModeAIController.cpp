@@ -227,13 +227,14 @@ AStandardModePlayerCharacter* AStandardModeAIController::AcquireTargetPlayerChar
 		return nullptr;
 	}
 
+	int32 TopScoredCount = 0;
 	if (TEST_PLAYER_FLAG(TargetFlags, EFindPlayerFlags::EFP_Enemy))
 	{
-		FilterForEnemyPlayer(PlayerRelationStatisticList);
+		FilterAndSortForEnemyPlayer(PlayerRelationStatisticList, TopScoredCount);
 	}
 	else if (TEST_PLAYER_FLAG(TargetFlags, EFindPlayerFlags::EFP_Ally))
 	{
-		FilterForAllyPlayer(PlayerRelationStatisticList);
+		FilterAndSortForAllyPlayer(PlayerRelationStatisticList, TopScoredCount);
 	}
 
 	if (TEST_PLAYER_FLAG(TargetFlags, EFindPlayerFlags::EFP_Alive))
@@ -256,7 +257,13 @@ AStandardModePlayerCharacter* AStandardModeAIController::AcquireTargetPlayerChar
 
 	if (PlayerRelationStatisticList.Num() > 0)
 	{
-		FPlayerRelationStatistic const * TargetPlayerStatistic = &PlayerRelationStatisticList[0];
+		// Generate a random target if there are several target sharing same score in sorting
+		int32 TargetIndex = 0;
+		if (TopScoredCount > 1)
+		{
+			TargetIndex = FMath::RandRange(0, TopScoredCount - 1);
+		}
+		FPlayerRelationStatistic const * TargetPlayerStatistic = &PlayerRelationStatisticList[TargetIndex];
 		AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode());
 		if (TargetPlayerStatistic->IsAIPlayer)
 		{
@@ -276,7 +283,7 @@ AStandardModePlayerCharacter* AStandardModeAIController::AcquireTargetPlayerChar
 	return nullptr;
 }
 
-void AStandardModeAIController::FilterForEnemyPlayer(TArray<FPlayerRelationStatistic>& ResultArray)
+void AStandardModeAIController::FilterAndSortForEnemyPlayer(TArray<FPlayerRelationStatistic>& ResultArray, int32& TopCount)
 {
 	// Sort player with ascending order based on RelationPoint
 	ResultArray.Sort([](const FPlayerRelationStatistic& PlayerA, const FPlayerRelationStatistic& PlayerB)
@@ -297,9 +304,22 @@ void AStandardModeAIController::FilterForEnemyPlayer(TArray<FPlayerRelationStati
 			break;
 		}
 	}
+
+	// Check how many items have the lowest score
+	TopCount = 0;
+	if (ResultArray.Num() > 0)
+	{
+		const int32 LowestScore = ResultArray[0].RelationPoint;
+		int32 Index = 0;
+		while (Index < ResultArray.Num() && ResultArray[Index].RelationPoint == LowestScore)
+		{
+			TopCount++;
+			Index++;
+		}
+	}
 }
 
-void AStandardModeAIController::FilterForAllyPlayer(TArray<FPlayerRelationStatistic>& ResultArray)
+void AStandardModeAIController::FilterAndSortForAllyPlayer(TArray<FPlayerRelationStatistic>& ResultArray, int32& TopCount)
 {
 	// Sort player with descending order based on RelationPoint
 	ResultArray.Sort([](const FPlayerRelationStatistic& PlayerA, const FPlayerRelationStatistic& PlayerB)
@@ -317,6 +337,19 @@ void AStandardModeAIController::FilterForAllyPlayer(TArray<FPlayerRelationStatis
 		else
 		{
 			break;
+		}
+	}
+
+	// Check how many items have the highest score
+	TopCount = 0;
+	if (ResultArray.Num() > 0)
+	{
+		const int32 HighestScore = ResultArray[0].RelationPoint;
+		int32 Index = 0;
+		while (Index < ResultArray.Num() && ResultArray[Index].RelationPoint == HighestScore)
+		{
+			TopCount++;
+			Index++;
 		}
 	}
 }
