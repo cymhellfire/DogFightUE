@@ -259,7 +259,7 @@ AStandardModePlayerCharacter* AStandardModeAIController::AcquireTargetPlayerChar
 	{
 		// Generate a random target if there are several target sharing same score in sorting
 		int32 TargetIndex = 0;
-		if (TopScoredCount > 1)
+		if (TopScoredCount > 1 && PlayerRelationStatisticList.Num() > 1)
 		{
 			TargetIndex = FMath::RandRange(0, TopScoredCount - 1);
 		}

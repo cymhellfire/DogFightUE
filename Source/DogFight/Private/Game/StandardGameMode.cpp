@@ -50,6 +50,14 @@ AStandardGameMode::AStandardGameMode(const FObjectInitializer& ObjectInitializer
 	FreeMovingDuration = 5;
 	GameRoundInterval = 2;
 
+	// Player settings
+	DefaultCardCapacity = 2;
+	CardCapacityRange = FInt32Range(1, 8);
+	DefaultCardUsingCount = 2;
+	CardUsingCountRange = FInt32Range(1, 8);
+	DefaultCardGainPerRound = 2;
+	CardGainPerRoundRange = FInt32Range(1, 6);
+
 	// Enable the primary tick
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
@@ -429,6 +437,21 @@ AStandardModePlayerCharacter* AStandardGameMode::GetPlayerCharacterById(int32 Pl
 	}
 
 	return nullptr;
+}
+
+int32 AStandardGameMode::ClampCardUsingCount(int32 InValue)
+{
+	return FMath::Clamp(InValue, CardUsingCountRange.GetLowerBoundValue(), CardUsingCountRange.GetUpperBoundValue());
+}
+
+int32 AStandardGameMode::ClampCardCapacity(int32 InValue)
+{
+	return FMath::Clamp(InValue, CardCapacityRange.GetLowerBoundValue(), CardCapacityRange.GetUpperBoundValue());
+}
+
+int32 AStandardGameMode::ClampCardGainPerRound(int32 InValue)
+{
+	return FMath::Clamp(InValue, CardGainPerRoundRange.GetLowerBoundValue(), CardGainPerRoundRange.GetUpperBoundValue());
 }
 
 void AStandardGameMode::BeginPlay()

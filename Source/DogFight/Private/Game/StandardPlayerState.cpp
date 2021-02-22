@@ -15,9 +15,6 @@ AStandardPlayerState::AStandardPlayerState(const FObjectInitializer& ObjectIniti
 	: Super(ObjectInitializer)
 {
 	// Initial value
-	CardGainPerRounds = 2;
-	MaxUseNum = 2;
-	MaxCardCount = 2;
 	bAlive = true;
 }
 
@@ -164,11 +161,18 @@ void AStandardPlayerState::SetCardGainNumByRound(int32 NewValue)
 	if (NewValue == CardGainPerRounds)
 		return;
 
-	CardGainPerRounds = NewValue;
-
-	if (GetNetMode() != NM_Client)
+	// Clamp the value based on GameMode
+	if (AGameModeBase* GameMode = GetWorld()->GetAuthGameMode())
 	{
-		OnRep_CardGainPerRound();
+		if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GameMode))
+		{
+			CardGainPerRounds = StandardGameMode->ClampCardGainPerRound(NewValue);
+
+			if (GetNetMode() != NM_Client)
+			{
+				OnRep_CardGainPerRound();
+			}
+		}
 	}
 }
 
@@ -182,11 +186,18 @@ void AStandardPlayerState::SetCardUseCountPerRound(int32 NewValue)
 	if (NewValue == MaxUseNum)
 		return;
 
-	MaxUseNum = NewValue;
-
-	if (GetNetMode() != NM_Client)
+	// Clamp the value based on GameMode
+	if (AGameModeBase* GameMode = GetWorld()->GetAuthGameMode())
 	{
-		OnRep_MaxUseNum();
+		if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GameMode))
+		{
+			MaxUseNum = StandardGameMode->ClampCardUsingCount(NewValue);
+
+			if (GetNetMode() != NM_Client)
+			{
+				OnRep_MaxUseNum();
+			}
+		}
 	}
 }
 
@@ -218,11 +229,18 @@ void AStandardPlayerState::SetMaxCardNum(int32 NewValue)
 	if (NewValue == MaxCardCount)
 		return;
 
-	MaxCardCount = NewValue;
-
-	if (GetNetMode() != NM_Client)
+	// Clamp the value based on GameMode
+	if (AGameModeBase* GameMode = GetWorld()->GetAuthGameMode())
 	{
-		OnRep_MaxCardCount();
+		if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GameMode))
+		{
+			MaxCardCount = StandardGameMode->ClampCardCapacity(NewValue);
+
+			if (GetNetMode() != NM_Client)
+			{
+				OnRep_MaxCardCount();
+			}
+		}
 	}
 }
 
@@ -402,6 +420,21 @@ void AStandardPlayerState::BeginPlay()
 	{
 		// Create Buff Queue on server side
 		PlayerBuffQueue = NewObject<UBuffQueue>(this, UBuffQueue::StaticClass());
+
+		InitializeCardVariable();
+	}
+}
+
+void AStandardPlayerState::InitializeCardVariable()
+{
+	if (AGameModeBase* GameMode = GetWorld()->GetAuthGameMode())
+	{
+		if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GameMode))
+		{
+			MaxCardCount = StandardGameMode->GetDefaultCardCapacity();
+			MaxUseNum = StandardGameMode->GetDefaultCardUsingCount();
+			CardGainPerRounds = StandardGameMode->GetDefaultCardGainPerRound();
+		}
 	}
 }
 

@@ -164,6 +164,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	void InitializeCardVariable();
+
 	UFUNCTION()
 	void OnRep_CardInfoList();
 

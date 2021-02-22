@@ -150,6 +150,18 @@ public:
 	void RemovePlayerInRagdoll(int32 PlayerId);
 
 	class AStandardModePlayerCharacter* GetPlayerCharacterById(int32 PlayerId);
+
+	int32 GetDefaultCardUsingCount() const { return DefaultCardUsingCount; }
+
+	int32 ClampCardUsingCount(int32 InValue);
+
+	int32 GetDefaultCardCapacity() const { return DefaultCardCapacity; }
+
+	int32 ClampCardCapacity(int32 InValue);
+
+	int32 GetDefaultCardGainPerRound() const { return DefaultCardGainPerRound; }
+
+	int32 ClampCardGainPerRound(int32 InValue);
 protected:
 	virtual void BeginPlay() override;
 	
@@ -248,6 +260,25 @@ protected:
 	UGameplayCardPool* CardPool;
 
 	void GivePlayerCards(AController* TargetController, AStandardPlayerState* TargetPlayerState, int32 CardNum);
+
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="PlayerSettings")
+	int32 DefaultCardUsingCount;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="PlayerSettings")
+	FInt32Range CardUsingCountRange;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="PlayerSettings")
+	int32 DefaultCardCapacity;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="PlayerSettings")
+	FInt32Range CardCapacityRange;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="PlayerSettings")
+	int32 DefaultCardGainPerRound;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="PlayerSettings")
+	FInt32Range CardGainPerRoundRange;
 
 #pragma region Debug
 public:
