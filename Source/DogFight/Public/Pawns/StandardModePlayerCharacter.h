@@ -37,6 +37,7 @@ public:
 	virtual void SetInvincible(bool bActive) override;
 	virtual bool AddExtraArmor(FActorArmor& NewArmor) override;
 	virtual bool RemoveExtraArmor(FActorArmor& TargetArmor) override;
+	virtual void SetHealthPercentage(float NewPercentage) override;
 #pragma endregion IDamageableActorInterface
 
 #pragma region IGameAnimatedCharacterInterface

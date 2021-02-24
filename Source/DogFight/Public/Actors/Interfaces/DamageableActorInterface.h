@@ -28,4 +28,7 @@ public:
 
 	/** Remove specified armor from this actor. */
 	virtual bool RemoveExtraArmor(struct FActorArmor& TargetArmor) { return true; }
+
+	/** Set health based on given percentage. */
+	virtual void SetHealthPercentage(float NewPercentage) {}
 };

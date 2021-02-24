@@ -178,6 +178,11 @@ bool AStandardModePlayerCharacter::RemoveExtraArmor(FActorArmor& TargetArmor)
 	return false;
 }
 
+void AStandardModePlayerCharacter::SetHealthPercentage(float NewPercentage)
+{
+	SetCurrentHealth(MaxBaseHealth * NewPercentage);
+}
+
 float AStandardModePlayerCharacter::PlayMontage(UAnimMontage* MontageToPlay)
 {
 	// Play montage across network
