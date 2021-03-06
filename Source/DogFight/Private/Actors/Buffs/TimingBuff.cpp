@@ -3,6 +3,12 @@
 
 #include "Actors/Buffs/TimingBuff.h"
 
+ATimingBuff::ATimingBuff()
+	: Super()
+{
+	TriggeredEndTimerDuration = 2.f;
+}
+
 void ATimingBuff::RemoveBuff()
 {
 	// Only take actions when this buff is end normally
@@ -22,4 +28,7 @@ void ATimingBuff::TimerExpired()
 		AActor* NewVfxActor = GetWorld()->SpawnActor<AActor>(ActionVfxClass);
 		NewVfxActor->SetActorLocation(TargetActor->GetActorLocation());
 	}
+
+	// Modify the end timer when successfully triggered
+	BuffEndingDuration = TriggeredEndTimerDuration;
 }

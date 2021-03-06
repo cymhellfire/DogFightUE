@@ -25,11 +25,14 @@ void ABuff_IncredibleSurvive::ApplyBuff()
 
 void ABuff_IncredibleSurvive::TimerExpired()
 {
-	Super::TimerExpired();
-
 	// Restore target actor health
 	if (IDamageableActorInterface* DamageableActor = Cast<IDamageableActorInterface>(TargetActor))
 	{
-		DamageableActor->SetHealthPercentage(RecoverPercentage);
+		if (DamageableActor->IsAlive())
+		{
+			DamageableActor->SetHealthPercentage(RecoverPercentage);
+
+			Super::TimerExpired();
+		}
 	}
 }

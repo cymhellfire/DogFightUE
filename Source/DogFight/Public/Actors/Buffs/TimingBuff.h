@@ -14,6 +14,9 @@ class DOGFIGHT_API ATimingBuff : public ABuffBase
 {
 	GENERATED_BODY()
 
+public:
+	ATimingBuff();
+
 protected:
 	virtual void RemoveBuff() override;
 
@@ -24,4 +27,8 @@ protected:
 	/** The Vfx plays when buff take action. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="TimingBuff")
 	TSubclassOf<AActor> ActionVfxClass;
+
+	/** Override end timer duration when this buff is successfully triggered. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="TimingBuff")
+	float TriggeredEndTimerDuration;
 };

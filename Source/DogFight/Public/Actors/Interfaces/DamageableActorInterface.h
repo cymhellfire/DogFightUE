@@ -31,4 +31,7 @@ public:
 
 	/** Set health based on given percentage. */
 	virtual void SetHealthPercentage(float NewPercentage) {}
+
+	/** Get if this actor is alive. */
+	virtual bool IsAlive() { return false; }
 };

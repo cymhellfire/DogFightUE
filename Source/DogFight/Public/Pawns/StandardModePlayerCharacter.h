@@ -38,6 +38,7 @@ public:
 	virtual bool AddExtraArmor(FActorArmor& NewArmor) override;
 	virtual bool RemoveExtraArmor(FActorArmor& TargetArmor) override;
 	virtual void SetHealthPercentage(float NewPercentage) override;
+	virtual bool IsAlive() override { return bAlive; }
 #pragma endregion IDamageableActorInterface
 
 #pragma region IGameAnimatedCharacterInterface
