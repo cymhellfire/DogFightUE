@@ -11,6 +11,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Actors/Components/ReceiveDamageComponent.h"
+#include "Actors/Weapons/WeaponBase.h"
 #include "Game/StandardPlayerState.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -216,6 +217,74 @@ void AStandardModePlayerCharacter::MulticastPlayMontage_Implementation(UAnimMont
 			UE_LOG(LogAnimation, Error, TEXT("Failed to play montage."));
 		}
 	}
+}
+
+EWeaponType AStandardModePlayerCharacter::GetCurrentWeaponType()
+{
+	return CurrentWeapon ? CurrentWeapon->GetWeaponType() : EWeaponType::WT_None;
+}
+
+void AStandardModePlayerCharacter::EquipWeapon(UWeaponBase* NewWeapon)
+{
+	if (NewWeapon == CurrentWeapon)
+	{
+		return;
+	}
+
+	// UnEquip previous weapon first
+	if (IsValid(CurrentWeapon))
+	{
+		PendingWeapon = NewWeapon;
+		UnEquipWeapon();
+	}
+	else
+	{
+		CurrentWeapon = NewWeapon;
+		CurrentWeapon->SetWeaponOwner(this);
+		CurrentWeapon->OnWeaponEquippedEvent.AddDynamic(this, &AStandardModePlayerCharacter::OnWeaponEquipped);
+		CurrentWeapon->Equip();
+	}
+}
+
+void AStandardModePlayerCharacter::UnEquipWeapon()
+{
+	if (CurrentWeapon == nullptr)
+	{
+		return;
+	}
+
+	CurrentWeapon->UnEquip();
+	CurrentWeapon->OnWeaponUnEquippedEvent.AddDynamic(this, &AStandardModePlayerCharacter::OnWeaponUnEquipped);
+}
+
+void AStandardModePlayerCharacter::OnWeaponEquipped()
+{
+	CurrentWeapon->OnWeaponEquippedEvent.RemoveDynamic(this, &AStandardModePlayerCharacter::OnWeaponEquipped);
+
+	// Trigger callback
+	OnWeaponEquippedEvent.Broadcast(this);
+}
+
+void AStandardModePlayerCharacter::OnWeaponUnEquipped()
+{
+	CurrentWeapon->OnWeaponUnEquippedEvent.RemoveDynamic(this, &AStandardModePlayerCharacter::OnWeaponUnEquipped);
+	CurrentWeapon = nullptr;
+
+	if (IsValid(PendingWeapon))
+	{
+		EquipWeapon(PendingWeapon);
+		PendingWeapon = nullptr;
+	}
+}
+
+void AStandardModePlayerCharacter::EnqueueInput(EWeaponActionInput NewInput)
+{
+	if (CurrentWeapon == nullptr)
+	{
+		return;
+	}
+
+	CurrentWeapon->EnqueueWeaponInput(NewInput);
 }
 
 // Called when the game starts or when spawned
@@ -499,6 +568,15 @@ void AStandardModePlayerCharacter::RecoverStrength()
 void AStandardModePlayerCharacter::MulticastAddFloatingText_Implementation(const FText& NewText)
 {
 	ShowFloatingText(NewText);
+}
+
+void AStandardModePlayerCharacter::EquipTestWeapon()
+{
+	if (IsValid(TestWeaponClass))
+	{
+		UWeaponBase* NewWeapon = NewObject<UWeaponBase>(this, TestWeaponClass);
+		EquipWeapon(NewWeapon);
+	}
 }
 
 void AStandardModePlayerCharacter::ShowFloatingText(FText NewText)

@@ -846,6 +846,33 @@ void AStandardModePlayerController::ExecSetRagdoll(bool bActive)
 	CharacterPawn->MulticastSetRagdollActive(bActive);
 }
 
+void AStandardModePlayerController::ExecEquipTestWeapon()
+{
+	if (CharacterPawn == nullptr)
+		return;
+
+	CharacterPawn->EquipTestWeapon();
+}
+
+void AStandardModePlayerController::ExecUnEquipTestWeapon()
+{
+	if (CharacterPawn == nullptr)
+		return;
+
+	CharacterPawn->UnEquipWeapon();
+}
+
+void AStandardModePlayerController::ExecEnqueueInput(uint8 InputIndex, int32 InputCount)
+{
+	if (CharacterPawn == nullptr)
+		return;
+
+	for (int32 i = 0; i < InputCount; ++i)
+	{
+		CharacterPawn->EnqueueInput(static_cast<EWeaponActionInput>(InputIndex));
+	}
+}
+
 void AStandardModePlayerController::ServerMoveToMouseCursor_Implementation(FVector Destination)
 {
 	if (CharacterPawn == nullptr)

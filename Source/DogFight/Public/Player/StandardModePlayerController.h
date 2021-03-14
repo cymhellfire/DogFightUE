@@ -231,5 +231,14 @@ public:
 
 	UFUNCTION(Exec)
 	void ExecSetRagdoll(bool bActive);
+
+	UFUNCTION(Exec)
+	void ExecEquipTestWeapon();
+
+	UFUNCTION(Exec)
+	void ExecUnEquipTestWeapon();
+
+	UFUNCTION(Exec)
+	void ExecEnqueueInput(uint8 InputIndex, int32 InputCount);
 #pragma endregion DebugCommand
 };

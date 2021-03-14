@@ -7,12 +7,13 @@
 #include "Actors/Interfaces/BuffableActorInterface.h"
 #include "Actors/Interfaces/GameplayTagsActorInterface.h"
 #include "Actors/Interfaces/GameAnimatedCharacterInterface.h"
+#include "Actors/Interfaces/WeaponCarrierInterface.h"
 #include "GameFramework/Character.h"
 #include "StandardModePlayerCharacter.generated.h"
 
 UCLASS(Config=Game)
 class DOGFIGHT_API AStandardModePlayerCharacter : public ACharacter, public IDamageableActorInterface, public IGameAnimatedCharacterInterface,
-	public IBuffableActorInterface, public IGameplayTagsActorInterface
+	public IBuffableActorInterface, public IGameplayTagsActorInterface, public IWeaponCarrierInterface
 {
 	GENERATED_BODY()
 
@@ -51,6 +52,17 @@ public:
 
 #pragma region GameplayTagsActorInterface
 	virtual void GetGameplayTags(FGameplayTagContainer& OutGameplayTags) override;
+#pragma endregion
+
+#pragma region WeaponCarrierInterface
+	virtual UWeaponBase* GetCurrentWeapon() override { return CurrentWeapon; }
+	virtual EWeaponType GetCurrentWeaponType() override;
+	virtual void EquipWeapon(UWeaponBase* NewWeapon) override;
+	virtual void UnEquipWeapon() override;
+	virtual void EnqueueInput(EWeaponActionInput NewInput) override;
+	virtual FOnWeaponEquippedSignature& GetWeaponEquippedEvent() override { return OnWeaponEquippedEvent; }
+
+	FOnWeaponEquippedSignature OnWeaponEquippedEvent;
 #pragma endregion
 
 protected:
@@ -93,6 +105,12 @@ protected:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastPlayMontage(UAnimMontage* MontageToPlay);
+
+	UFUNCTION()
+	void OnWeaponEquipped();
+
+	UFUNCTION()
+	void OnWeaponUnEquipped();
 
 public:
 	/** Set name for this unit. */
@@ -139,6 +157,8 @@ public:
 
 	/** Get BuffQueue of this character. */
 	class UBuffQueue* GetBuffQueue() const;
+
+	void EquipTestWeapon();
 
 protected:
 
@@ -187,6 +207,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character")
 	FGameplayTagContainer GameplayTags;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Debug")
+	TSubclassOf<UWeaponBase> TestWeaponClass;
 
 private:
 	/** Current unit name. */
@@ -251,4 +274,10 @@ private:
 	class UCharacterFloatingTextPanelWidget* FloatingTextPanelWidget;
 
 	AController* SupremeController;
+
+	UPROPERTY()
+	UWeaponBase* CurrentWeapon;
+
+	UPROPERTY()
+	UWeaponBase* PendingWeapon;
 };

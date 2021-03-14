@@ -6,3 +6,4 @@
 #define ST_PROJECTILE_LOC		"/Game/DogFight/Localization/ST_Projectile.ST_Projectile"
 #define ST_BUFF_LOC				"/Game/DogFight/Localization/ST_Buff.ST_Buff"
 #define ST_CARD_ENHANCE_LOC		"/Game/DogFight/Localization/ST_CardEnhance.ST_CardEnhance"
+#define ST_WEAPON_LOC			"/Game/DogFight/Localization/ST_Weapon.ST_Weapon"

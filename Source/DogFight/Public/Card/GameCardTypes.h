@@ -1,11 +1,7 @@
 ﻿#pragma once
 
+#include "Common/Localization.h"
 #include "GameCardTypes.generated.h"
-
-#define ST_CARD_LOC				"/Game/DogFight/Localization/ST_Card.ST_Card"
-#define ST_PROJECTILE_LOC		"/Game/DogFight/Localization/ST_Projectile.ST_Projectile"
-#define ST_BUFF_LOC				"/Game/DogFight/Localization/ST_Buff.ST_Buff"
-#define ST_CARD_ENHANCE_LOC		"/Game/DogFight/Localization/ST_CardEnhance.ST_CardEnhance"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogGameCards, Log, All);
 
@@ -72,6 +68,7 @@ enum class ECardDisplayInfoLocType : uint8
 	ILT_Raw				UMETA(DisplayName="Raw", ToolTip="Not use any localization."),
 	ILT_Image			UMETA(DisplayName="Image", ToolTip="Use image defined in DT_RichTextImageSet."),
 	ILT_CardEnhance		UMETA(DisplayName="CardEnhancement", ToolTip="Use localization from ST_CardEnhance."),
+	ILT_Weapon			UMETA(DisplayName="Weapon", ToolTip="Use localization from ST_Weapon."),
 };
 
 USTRUCT(BlueprintType)
@@ -116,6 +113,9 @@ struct FCardDisplayInfoArgument
 			break;
 		case ECardDisplayInfoLocType::ILT_CardEnhance:
 			LocalizedText = FText::FromStringTable(ST_CARD_ENHANCE_LOC, StringValue);
+			break;
+		case ECardDisplayInfoLocType::ILT_Weapon:
+			LocalizedText = FText::FromStringTable(ST_WEAPON_LOC, StringValue);
 			break;
 		default:
 			LocalizedText = FText::FromString(TEXT("Invalid Argument"));
@@ -168,6 +168,8 @@ struct FUpgradablePropertyDisplayInfo
 			return FText::FromString(StringValue);
 		case ECardDisplayInfoLocType::ILT_CardEnhance:
 			return FText::FromStringTable(ST_CARD_ENHANCE_LOC, StringValue);
+		case ECardDisplayInfoLocType::ILT_Weapon:
+			return FText::FromStringTable(ST_WEAPON_LOC, StringValue);
 		case ECardDisplayInfoLocType::ILT_Image:
 		default: ;
 		}
@@ -231,6 +233,8 @@ struct FCardDescriptionItemInfo
 			return FText::FromString(FString::Printf(TEXT("<img id=\"%s\"/>"), *StringValue));
 		case ECardDisplayInfoLocType::ILT_CardEnhance:
 			return FText::Format(FText::FromStringTable(ST_CARD_ENHANCE_LOC, StringValue), FormatArgumentValues);
+		case ECardDisplayInfoLocType::ILT_Weapon:
+			return FText::Format(FText::FromStringTable(ST_WEAPON_LOC, StringValue), FormatArgumentValues);
 		default: ;
 		}
 
