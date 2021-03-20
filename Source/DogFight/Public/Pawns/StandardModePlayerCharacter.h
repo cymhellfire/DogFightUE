@@ -60,9 +60,19 @@ public:
 	virtual void EquipWeapon(UWeaponBase* NewWeapon) override;
 	virtual void UnEquipWeapon() override;
 	virtual void EnqueueInput(EWeaponActionInput NewInput) override;
-	virtual FOnWeaponEquippedSignature& GetWeaponEquippedEvent() override { return OnWeaponEquippedEvent; }
+	virtual void SetWeaponTargetActor(AActor* NewTarget) override;
+	virtual void SetWeaponTargetLocation(FVector NewLocation) override;
+	virtual void ClearWeaponTargetActor() override { WeaponTargetActor = nullptr; }
+	virtual void MoveToActionDistance() override;
+	virtual void SetActionDistance(float NewDistance) override;
+	virtual AActor* GetWeaponTargetActor() override { return WeaponTargetActor; }
+	virtual FWeaponCarrierWithOwnerSignature& GetWeaponEquippedEvent() override { return OnWeaponEquippedEvent; }
+	virtual FWeaponCarrierWithOwnerSignature& GetWeaponActionFinishedEvent() override { return OnWeaponActionFinishedEvent; }
+	virtual FWeaponCarrierWithOwnerSignature& GetCarrierReachActionDistanceEvent() override { return OnCarrierReachedActionDistanceEvent; }
 
-	FOnWeaponEquippedSignature OnWeaponEquippedEvent;
+	FWeaponCarrierWithOwnerSignature OnWeaponEquippedEvent;
+	FWeaponCarrierWithOwnerSignature OnWeaponActionFinishedEvent;
+	FWeaponCarrierWithOwnerSignature OnCarrierReachedActionDistanceEvent;
 #pragma endregion
 
 protected:
@@ -112,6 +122,12 @@ protected:
 	UFUNCTION()
 	void OnWeaponUnEquipped();
 
+	UFUNCTION()
+	void OnWeaponActionFinished();
+
+	UFUNCTION()
+	void OnPlayerRoundEnd(int32 PlayerId);
+
 public:
 	/** Set name for this unit. */
 	void SetUnitName(const FString& NewName);
@@ -157,6 +173,10 @@ public:
 
 	/** Get BuffQueue of this character. */
 	class UBuffQueue* GetBuffQueue() const;
+
+	void CacheCurrentLocation();
+
+	void ReturnToCachedLocation();
 
 	void EquipTestWeapon();
 
@@ -280,4 +300,10 @@ private:
 
 	UPROPERTY()
 	UWeaponBase* PendingWeapon;
+
+	AActor* WeaponTargetActor;
+	FVector WeaponTargetLocation;
+	float WeaponActionDistance;
+	bool bTracingActionDistance;
+	FVector CachedLocation;
 };

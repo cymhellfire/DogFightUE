@@ -8,6 +8,7 @@
 UWeaponBase::UWeaponBase()
 {
 	bEquipped = false;
+	bAutoConsumeInput = false;
 }
 
 void UWeaponBase::SetWeaponOwner(ACharacter* NewOwner)
@@ -123,6 +124,22 @@ EWeaponActionInput UWeaponBase::DequeueWeaponInput()
 
 	// Return None if no input in queue
 	return EWeaponActionInput::WAI_None;
+}
+
+void UWeaponBase::ResetWeaponAction()
+{
+	if (!WeaponInputQueue.IsEmpty())
+	{
+		WeaponInputQueue.Empty();
+	}
+
+	if (!InitialActionName.IsNone())
+	{
+		if (WeaponActionMap.Contains(InitialActionName))
+		{
+			StartWeaponAction(WeaponActionMap[InitialActionName]);
+		}
+	}
 }
 
 void UWeaponBase::Tick(float DeltaTime)
@@ -312,6 +329,16 @@ void UWeaponBase::OnWeaponActionFinished()
 		CurrentAction->OnWeaponActionFinished.RemoveDynamic(this, &UWeaponBase::OnWeaponActionFinished);
 	}
 
-	// Try to consume input
-	ConsumeNextInput();
+	// Trigger callback
+	OnWeaponActionFinishedEvent.Broadcast();
+
+	// Consume next input if set
+	if (bAutoConsumeInput)
+	{
+		ConsumeNextInput();
+	}
+	else
+	{
+		CurrentWeaponState = WS_None;
+	}
 }

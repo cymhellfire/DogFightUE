@@ -12,7 +12,7 @@ class UWeaponCarrierInterface : public UInterface
 	GENERATED_BODY()
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponEquippedSignature, AActor*, CarrierActor);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWeaponCarrierWithOwnerSignature, AActor*, CarrierActor);
 
 /**
  * Interface that support equip weapon.
@@ -39,6 +39,30 @@ public:
 	/** Enqueue new input to equipping weapon. */
 	virtual void EnqueueInput(EWeaponActionInput NewInput) {}
 
+	/** Set the target actor that weapon attack to. */
+	virtual void SetWeaponTargetActor(AActor* NewTarget) {}
+
+	/** Set the target location that carrier move to. */
+	virtual void SetWeaponTargetLocation(FVector NewLocation) {}
+
+	/** Clear current weapon target actor. */
+	virtual void ClearWeaponTargetActor() {}
+
+	/** Move toward current target actor. */
+	virtual void MoveToActionDistance() = 0;
+
+	/** Set start distance for next action. */
+	virtual void SetActionDistance(float NewDistance) = 0;
+
+	/** Get current target actor. */
+	virtual AActor* GetWeaponTargetActor() = 0;
+
 	/** Get the delegate of weapon equipped event. */
-	virtual FOnWeaponEquippedSignature& GetWeaponEquippedEvent() = 0;
+	virtual FWeaponCarrierWithOwnerSignature& GetWeaponEquippedEvent() = 0;
+
+	/** Get the delegate of weapon action finished. */
+	virtual FWeaponCarrierWithOwnerSignature& GetWeaponActionFinishedEvent() = 0;
+
+	/** Get the delegate of carrier reached the action distance. */
+	virtual FWeaponCarrierWithOwnerSignature& GetCarrierReachActionDistanceEvent() = 0;
 };

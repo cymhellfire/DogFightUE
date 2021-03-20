@@ -2,27 +2,43 @@
 
 
 #include "Actors/Weapons/WeaponActionBase.h"
+
+#include "Actors/Interfaces/WeaponCarrierInterface.h"
 #include "Actors/Weapons/WeaponBase.h"
+
+UWeaponActionBase::UWeaponActionBase()
+{
+	ActionDistance = 50.f;
+}
 
 void UWeaponActionBase::EnterAction()
 {
-	if (IsValid(ActionMontage))
+	// Check distance from target
+	AActor* WeaponTarget = nullptr;
+	ACharacter* OwnerCharacter = OwnerWeapon->GetWeaponOwnerCharacter();
+	IWeaponCarrierInterface* WeaponCarrier = Cast<IWeaponCarrierInterface>(OwnerCharacter);
+	if (WeaponCarrier)
 	{
-		ACharacter* OwnerCharacter = OwnerWeapon->GetWeaponOwnerCharacter();
-		USkeletalMeshComponent* MeshComponent = OwnerCharacter->GetMesh();
-		if (MeshComponent != nullptr)
+		WeaponTarget = WeaponCarrier->GetWeaponTargetActor();
+
+		const float Distance = WeaponTarget ? (WeaponTarget->GetActorLocation() - OwnerCharacter->GetActorLocation()).Size() : 0.f;
+		// Close to target if necessary
+		if (Distance > ActionDistance)
 		{
-			if (UAnimInstance* AnimInstance = MeshComponent->GetAnimInstance())
-			{
-				const float ActionDuration = AnimInstance->Montage_Play(ActionMontage);
-				GetWorld()->GetTimerManager().SetTimer(ActionTimerHandle, this, &UWeaponActionBase::OnActionMontageFinished, ActionDuration);
-			}
+			WeaponCarrier->GetCarrierReachActionDistanceEvent().AddDynamic(this, &UWeaponActionBase::OnReachedActionDistance);
+			WeaponCarrier->SetActionDistance(ActionDistance);
+			WeaponCarrier->MoveToActionDistance();
+		}
+		else
+		{
+			OnReachedActionDistance(nullptr);
 		}
 	}
 	else
 	{
-		// If no valid montage, trigger callback directly
-		OnActionMontageFinished();
+		UE_LOG(LogDogFight, Warning, TEXT("[WeaponAction] No valid target actor specified."));
+
+		OnReachedActionDistance(nullptr);
 	}
 }
 
@@ -46,6 +62,37 @@ void UWeaponActionBase::SetOwnerWeapon(UWeaponBase* NewWeapon)
 		return;
 
 	OwnerWeapon = NewWeapon;
+}
+
+void UWeaponActionBase::OnReachedActionDistance(AActor* Carrier)
+{
+	// Unregister callback
+	if (IsValid(Carrier))
+	{
+		if (IWeaponCarrierInterface* WeaponCarrier = Cast<IWeaponCarrierInterface>(Carrier))
+		{
+			WeaponCarrier->GetCarrierReachActionDistanceEvent().RemoveDynamic(this, &UWeaponActionBase::OnReachedActionDistance);
+		}
+	}
+
+	if (IsValid(ActionMontage))
+	{
+		ACharacter* OwnerCharacter = OwnerWeapon->GetWeaponOwnerCharacter();
+		USkeletalMeshComponent* MeshComponent = OwnerCharacter->GetMesh();
+		if (MeshComponent != nullptr)
+		{
+			if (UAnimInstance* AnimInstance = MeshComponent->GetAnimInstance())
+			{
+				const float ActionDuration = AnimInstance->Montage_Play(ActionMontage);
+				GetWorld()->GetTimerManager().SetTimer(ActionTimerHandle, this, &UWeaponActionBase::OnActionMontageFinished, ActionDuration);
+			}
+		}
+	}
+	else
+	{
+		// If no valid montage, trigger callback directly
+		OnActionMontageFinished();
+	}
 }
 
 void UWeaponActionBase::OnActionMontageFinished()

@@ -84,6 +84,9 @@ public:
 
 	virtual EWeaponActionInput DequeueWeaponInput();
 
+	/** Reset weapon to the initial action. */
+	virtual void ResetWeaponAction();
+
 	EWeaponType GetWeaponType() const { return WeaponType; }
 
 	ACharacter* GetWeaponOwnerCharacter() const { return OwnerCharacter; }
@@ -122,6 +125,9 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponUnEquippedSignature);
 	FOnWeaponUnEquippedSignature OnWeaponUnEquippedEvent;
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponActionFinishedSignature);
+	FOnWeaponActionFinishedSignature OnWeaponActionFinishedEvent;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Weapon")
 	EWeaponType WeaponType;
@@ -141,6 +147,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Weapon")
 	UAnimMontage* UnEquipAnimMontage;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Weapon")
+	uint8 bAutoConsumeInput : 1;
+
 	uint8 bEquipped : 1;
 
 	EWeaponState CurrentWeaponState;
@@ -158,5 +167,6 @@ protected:
 	UWeaponActionBase* CurrentAction;
 	TQueue<EWeaponActionInput> WeaponInputQueue;
 
+	UPROPERTY()
 	TMap<FName, UWeaponActionBase*> WeaponActionMap;
 };

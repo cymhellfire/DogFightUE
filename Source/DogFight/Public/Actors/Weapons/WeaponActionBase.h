@@ -32,6 +32,8 @@ class DOGFIGHT_API UWeaponActionBase : public UObject
 	GENERATED_BODY()
 
 public:
+	UWeaponActionBase();
+
 	virtual void EnterAction();
 
 	virtual FName GetNextActionWithInput(EWeaponActionInput NewInput);
@@ -43,6 +45,9 @@ public:
 
 protected:
 	UFUNCTION()
+	void OnReachedActionDistance(AActor* Carrier);
+
+	UFUNCTION()
 	void OnActionMontageFinished();
 
 public:
@@ -51,6 +56,10 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponAction")
 	UAnimMontage* ActionMontage;
+
+	/** The maximum distance from target that allow this action start. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponAction")
+	float ActionDistance;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponAction")
 	TArray<FWeaponActionTransition> ActionTransitions;

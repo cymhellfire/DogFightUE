@@ -23,6 +23,7 @@ namespace GamePhase
 	extern DOGFIGHT_API const FName DecideOrder;			// The order of players can take action will be decided here.
 	extern DOGFIGHT_API const FName PlayerRoundBegin;		// Phase before a player's round begin.
 	extern DOGFIGHT_API const FName PlayerRound;			// Specified player can take action in this phase.
+	extern DOGFIGHT_API const FName CharacterReturn;		// Current player's character will return to the position where it's at round begin.
 	extern DOGFIGHT_API const FName DiscardCards;			// Current player should discard all cards exceed the count limitation.
 	extern DOGFIGHT_API const FName PlayerRoundEnd;			// Phase after a player's round end.
 	extern DOGFIGHT_API const FName CheckGameEnd;			// Check if the game should end or continue.
@@ -216,6 +217,11 @@ protected:
 	virtual void OnPlayerBuffQueueBeginRoundFinished();
 
 	virtual void HandlePhasePlayerRound();
+
+	virtual void HandlePhaseCharacterReturn();
+
+	UFUNCTION()
+	virtual void OnCharacterReturnFinished(AActor* Actor);
 
 	virtual void HandlePhaseDiscardCards();
 

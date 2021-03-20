@@ -6,15 +6,18 @@
 #include "DogFight.h"
 #include "Game/DogFightGameModeBase.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
+#include "NavigationPath.h"
 #include "Actors/Projectiles/ProjectileBase.h"
 #include "Player/StandardModePlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Actors/Components/ReceiveDamageComponent.h"
 #include "Actors/Weapons/WeaponBase.h"
+#include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Game/StandardPlayerState.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Game/StandardGameMode.h"
 #include "UI/Widget/CharacterFloatingTextPanelWidget.h"
 
 // Sets default values
@@ -242,6 +245,7 @@ void AStandardModePlayerCharacter::EquipWeapon(UWeaponBase* NewWeapon)
 		CurrentWeapon = NewWeapon;
 		CurrentWeapon->SetWeaponOwner(this);
 		CurrentWeapon->OnWeaponEquippedEvent.AddDynamic(this, &AStandardModePlayerCharacter::OnWeaponEquipped);
+		CurrentWeapon->OnWeaponActionFinishedEvent.AddDynamic(this, &AStandardModePlayerCharacter::OnWeaponActionFinished);
 		CurrentWeapon->Equip();
 	}
 }
@@ -253,8 +257,9 @@ void AStandardModePlayerCharacter::UnEquipWeapon()
 		return;
 	}
 
-	CurrentWeapon->UnEquip();
+	CurrentWeapon->OnWeaponActionFinishedEvent.RemoveDynamic(this, &AStandardModePlayerCharacter::OnWeaponActionFinished);
 	CurrentWeapon->OnWeaponUnEquippedEvent.AddDynamic(this, &AStandardModePlayerCharacter::OnWeaponUnEquipped);
+	CurrentWeapon->UnEquip();
 }
 
 void AStandardModePlayerCharacter::OnWeaponEquipped()
@@ -277,6 +282,28 @@ void AStandardModePlayerCharacter::OnWeaponUnEquipped()
 	}
 }
 
+void AStandardModePlayerCharacter::OnWeaponActionFinished()
+{
+	// Broadcast callback
+	OnWeaponActionFinishedEvent.Broadcast(this);
+}
+
+void AStandardModePlayerCharacter::OnPlayerRoundEnd(int32 PlayerId)
+{
+	if (APlayerState* MyPlayerState = GetPlayerState())
+	{
+		if (MyPlayerState->GetPlayerId() == PlayerId)
+		{
+			// Clear weapon target and reset weapon action to initial one
+			if (CurrentWeapon != nullptr)
+			{
+				WeaponTargetActor = nullptr;
+				CurrentWeapon->ResetWeaponAction();
+			}
+		}
+	}
+}
+
 void AStandardModePlayerCharacter::EnqueueInput(EWeaponActionInput NewInput)
 {
 	if (CurrentWeapon == nullptr)
@@ -285,6 +312,34 @@ void AStandardModePlayerCharacter::EnqueueInput(EWeaponActionInput NewInput)
 	}
 
 	CurrentWeapon->EnqueueWeaponInput(NewInput);
+}
+
+void AStandardModePlayerCharacter::SetWeaponTargetActor(AActor* NewTarget)
+{
+	WeaponTargetActor = NewTarget;
+}
+
+void AStandardModePlayerCharacter::SetWeaponTargetLocation(FVector NewLocation)
+{
+	WeaponTargetLocation = NewLocation;
+}
+
+void AStandardModePlayerCharacter::MoveToActionDistance()
+{
+	bTracingActionDistance = true;
+	if (WeaponTargetActor)
+	{
+		UAIBlueprintHelperLibrary::SimpleMoveToActor(this->GetController(), WeaponTargetActor);
+	}
+	else
+	{
+		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this->GetController(), WeaponTargetLocation);
+	}
+}
+
+void AStandardModePlayerCharacter::SetActionDistance(float NewDistance)
+{
+	WeaponActionDistance = NewDistance;
 }
 
 // Called when the game starts or when spawned
@@ -311,6 +366,14 @@ void AStandardModePlayerCharacter::BeginPlay()
 	if (!FloatingTextPanelWidget)
 	{
 		UE_LOG(LogInit, Log, TEXT("No widget available"));
+	}
+
+	if (AGameModeBase* GameMode = GetWorld()->GetAuthGameMode())
+	{
+		if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GameMode))
+		{
+			StandardGameMode->OnPlayerRoundEnd.AddDynamic(this, &AStandardModePlayerCharacter::OnPlayerRoundEnd);
+		}
 	}
 }
 
@@ -447,6 +510,20 @@ void AStandardModePlayerCharacter::Tick(float DeltaTime)
 			SkeletalMeshComponent->SetRelativeLocation(SkeletalMeshOffset);
 		}
 	}
+
+	if (bTracingActionDistance)
+	{
+		const UNavigationPath* CurrentPath = UAIBlueprintHelperLibrary::GetCurrentPath(this->GetController());
+		float LeftPathLength = CurrentPath ? CurrentPath->GetPathLength() : 0.f;
+		if (LeftPathLength <= WeaponActionDistance)
+		{
+			bTracingActionDistance = false;
+			StopMoveImmediately();
+
+			// Trigger callback
+			OnCarrierReachedActionDistanceEvent.Broadcast(this);
+		}
+	}
 }
 
 // Called to bind functionality to input
@@ -568,6 +645,18 @@ void AStandardModePlayerCharacter::RecoverStrength()
 void AStandardModePlayerCharacter::MulticastAddFloatingText_Implementation(const FText& NewText)
 {
 	ShowFloatingText(NewText);
+}
+
+void AStandardModePlayerCharacter::CacheCurrentLocation()
+{
+	CachedLocation = GetActorLocation();
+}
+
+void AStandardModePlayerCharacter::ReturnToCachedLocation()
+{
+	SetWeaponTargetLocation(CachedLocation);
+	ClearWeaponTargetActor();
+	MoveToActionDistance();
 }
 
 void AStandardModePlayerCharacter::EquipTestWeapon()

@@ -28,6 +28,7 @@ namespace GamePhase
 	const FName DecideOrder = FName(TEXT("DecideOrder"));
 	const FName PlayerRoundBegin = FName(TEXT("PlayerRoundBegin"));
 	const FName PlayerRound = FName(TEXT("PlayerRound"));
+	const FName CharacterReturn = FName(TEXT("CharacterReturn"));
 	const FName DiscardCards = FName(TEXT("DiscardCards"));
 	const FName PlayerRoundEnd = FName(TEXT("PlayerRoundEnd"));
 	const FName CheckGameEnd = FName(TEXT("CheckGameEnd"));
@@ -388,7 +389,8 @@ void AStandardGameMode::EndCurrentPlayerRound()
 	if (CurrentGamePhase == GamePhase::PlayerRound)
 	{
 		//SetGamePhase(GamePhase::PlayerRoundEnd);
-		SetGamePhase(GamePhase::DiscardCards);
+		//SetGamePhase(GamePhase::DiscardCards);
+		SetGamePhase(GamePhase::CharacterReturn);
 	}
 	else if (CurrentGamePhase == GamePhase::PlayerRoundBegin)
 	{
@@ -553,6 +555,10 @@ void AStandardGameMode::OnGamePhaseChanged()
 	else if (CurrentGamePhase == GamePhase::PlayerRound)
 	{
 		HandlePhasePlayerRound();
+	}
+	else if (CurrentGamePhase == GamePhase::CharacterReturn)
+	{
+		HandlePhaseCharacterReturn();
 	}
 	else if (CurrentGamePhase == GamePhase::DiscardCards)
 	{
@@ -828,6 +834,12 @@ void AStandardGameMode::HandlePhasePlayerRound()
 			AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(StandardGameState->GetGameRoundsTimeline()->GetCurrentPlayerId());
 			if (StandardModePlayerController != nullptr)
 			{
+				// Cache character location
+				if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(StandardModePlayerController->GetActualPawn()))
+				{
+					StandardModePlayerCharacter->CacheCurrentLocation();
+				}
+
 				bool bSkipUsingCardPhase = false;
 				if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
 				{
@@ -857,6 +869,12 @@ void AStandardGameMode::HandlePhasePlayerRound()
 			AStandardModeAIController* StandardModeAIController = GetAIControllerById(StandardGameState->GetGameRoundsTimeline()->GetCurrentPlayerId());
 			if (StandardModeAIController != nullptr)
 			{
+				// Cache character location
+				if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(StandardModeAIController->GetActualPawn()))
+				{
+					StandardModePlayerCharacter->CacheCurrentLocation();
+				}
+
 				bool bSkipUsingCard = false;
 				if (AStandardPlayerState* StandardPlayerState = StandardModeAIController->GetPlayerState<AStandardPlayerState>())
 				{
@@ -876,6 +894,52 @@ void AStandardGameMode::HandlePhasePlayerRound()
 			}
 		}
 	}
+}
+
+void AStandardGameMode::HandlePhaseCharacterReturn()
+{
+	if (!bIsCurrentAIPlayer)
+	{
+		// Handle human player
+		AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(GetCurrentPlayerId());
+		if (StandardModePlayerController == nullptr)
+		{
+			UE_LOG(LogDogFight, Error, TEXT("Failed to get PlayerController with Id %d"), GetCurrentPlayerId());
+			return;
+		}
+
+		if (AStandardModePlayerCharacter* PlayerCharacter = Cast<AStandardModePlayerCharacter>(StandardModePlayerController->GetActualPawn()))
+		{
+			PlayerCharacter->GetCarrierReachActionDistanceEvent().AddDynamic(this, &AStandardGameMode::OnCharacterReturnFinished);
+			PlayerCharacter->ReturnToCachedLocation();
+		}
+	}
+	else
+	{
+		// Handle AI player
+		AStandardModeAIController* StandardModeAIController = GetAIControllerById(GetCurrentPlayerId());
+		if (StandardModeAIController == nullptr)
+		{
+			UE_LOG(LogDogFight, Error, TEXT("Failed to get AIController with Id %d"), GetCurrentPlayerId());
+			return;
+		}
+
+		if (AStandardModePlayerCharacter* PlayerCharacter = Cast<AStandardModePlayerCharacter>(StandardModeAIController->GetActualPawn()))
+		{
+			PlayerCharacter->GetCarrierReachActionDistanceEvent().AddDynamic(this, &AStandardGameMode::OnCharacterReturnFinished);
+			PlayerCharacter->ReturnToCachedLocation();
+		}
+	}
+}
+
+void AStandardGameMode::OnCharacterReturnFinished(AActor* Actor)
+{
+	if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(Actor))
+	{
+		StandardModePlayerCharacter->GetCarrierReachActionDistanceEvent().RemoveDynamic(this, &AStandardGameMode::OnCharacterReturnFinished);
+	}
+
+	SetGamePhase(GamePhase::DiscardCards);
 }
 
 void AStandardGameMode::HandlePhaseDiscardCards()
