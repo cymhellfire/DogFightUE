@@ -41,6 +41,8 @@ public:
 
 	void RefreshCardUsingAbilityInfo();
 
+	void RefreshCardUsableState();
+
 	void ToggleCardDisplayWidgetVisibility(bool bVisible);
 
 	void SetCardSelectionMode(ECardSelectionMode SelectionMode);

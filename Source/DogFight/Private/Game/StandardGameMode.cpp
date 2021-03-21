@@ -335,7 +335,6 @@ void AStandardGameMode::GivePlayerCards(AController* TargetController, AStandard
 	}
 }
 
-
 void AStandardGameMode::GivePlayerCardsByCardIndex(int32 PlayerId, int32 CardNum, int32 CardIndex)
 {
 	if (CardPool == nullptr)
@@ -454,6 +453,85 @@ int32 AStandardGameMode::ClampCardCapacity(int32 InValue)
 int32 AStandardGameMode::ClampCardGainPerRound(int32 InValue)
 {
 	return FMath::Clamp(InValue, CardGainPerRoundRange.GetLowerBoundValue(), CardGainPerRoundRange.GetUpperBoundValue());
+}
+
+void AStandardGameMode::RequestResponseCardFromPlayer(int32 PlayerId, TArray<TSubclassOf<ACardBase>> ResponseCardClasses, AActor* SourceActor)
+{
+	const bool bTargetHumanPlayer = IsValid(GetPlayerControllerById(PlayerId));
+
+	if (bTargetHumanPlayer)
+	{
+		// Handle human player
+		AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(PlayerId);
+		if (StandardModePlayerController == nullptr)
+		{
+			UE_LOG(LogDogFight, Error, TEXT("Failed to get PlayerController with Id %d"), GetCurrentPlayerId());
+			return;
+		}
+
+		if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
+		{
+			// Apply card using filter
+			StandardPlayerState->ClearCardUsableFilter();
+			StandardPlayerState->ApplyCardUsableFilterByClass(ResponseCardClasses);
+			StandardPlayerState->ApplyCardUsableFilterByUseMethod(ECardUseMethod::CUM_Passive);
+
+			// Check if there is any card can response
+			if (StandardPlayerState->GetUsableCardCount() > 0)
+			{
+				// Face to incoming enemy
+				if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(StandardModePlayerController->GetActualPawn()))
+				{
+					const FVector FacingDirection = SourceActor->GetActorLocation() - StandardModePlayerCharacter->GetActorLocation();
+					StandardModePlayerCharacter->SetAimingDirection(FacingDirection);
+				}
+
+				StandardPlayerState->SetCardSelectionPurpose(ECardSelectionPurpose::CSP_Response);
+				StandardPlayerState->OnResponseCardSelected.AddDynamic(this, &AStandardGameMode::OnResponseCardSelected);
+				StandardModePlayerController->ClientShowCardDisplayWidgetWithSelectMode(ECardSelectionMode::CSM_SingleNoConfirm);
+				StandardModePlayerController->ClientSetCardDisplayWidgetSelectable(true);
+			}
+			else
+			{
+				OnResponseCardSelected(nullptr, StandardPlayerState);
+			}
+		}
+	}
+	else
+	{
+		// Handle AI player
+		AStandardModeAIController* StandardModeAIController = GetAIControllerById(PlayerId);
+		if (StandardModeAIController == nullptr)
+		{
+			UE_LOG(LogDogFight, Error, TEXT("Failed to get AIController with Id %d"), GetCurrentPlayerId());
+			return;
+		}
+
+		
+	}
+}
+
+void AStandardGameMode::OnResponseCardSelected(ACardBase* SelectedCard, AStandardPlayerState* ResponsePlayerState)
+{
+	// Unregister callback
+	if (ResponsePlayerState->OnResponseCardSelected.IsAlreadyBound(this, &AStandardGameMode::OnResponseCardSelected))
+	{
+		ResponsePlayerState->OnResponseCardSelected.RemoveDynamic(this, &AStandardGameMode::OnResponseCardSelected);
+	}
+
+	if (AStandardModePlayerController* StandardModePlayerController = Cast<AStandardModePlayerController>(ResponsePlayerState->GetInstigatorController()))
+	{
+		StandardModePlayerController->ClientSetCardDisplayWidgetSelectable(false);
+	}
+
+	if (IsValid(SelectedCard))
+	{
+		// Use card here
+		SelectedCard->Use();
+	}
+
+	// Broadcast callback
+	OnPlayerResponseCardSelected.Broadcast();
 }
 
 void AStandardGameMode::BeginPlay()
@@ -848,6 +926,8 @@ void AStandardGameMode::HandlePhasePlayerRound()
 					if (!bSkipUsingCardPhase)
 					{
 						StandardPlayerState->SetCardSelectionPurpose(ECardSelectionPurpose::CSP_Use);
+						StandardPlayerState->ClearCardUsableFilter();
+						StandardPlayerState->ApplyCardUsableFilterByUseMethod(ECardUseMethod::CUM_Aggressive);
 					}
 				}
 
@@ -963,6 +1043,7 @@ void AStandardGameMode::HandlePhaseDiscardCards()
 				StandardPlayerState->SetCardSelectionPurpose(ECardSelectionPurpose::CSP_Discard);
 				// Enable card selection for discarding
 				StandardModePlayerController->ClientSetCardDisplayWidgetSelectable(true);
+				StandardPlayerState->ClearCardUsableFilter();
 				StandardModePlayerController->ClientStartDiscardCards(DiscardCount);
 
 				StandardPlayerState->OnDiscardCardFinished.AddDynamic(this, &AStandardGameMode::AStandardGameMode::OnPlayerDiscardCardFinished);
@@ -1019,6 +1100,9 @@ void AStandardGameMode::HandlePhasePlayerRoundEnd()
 
 		if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
 		{
+			// Disable all cards using
+			StandardPlayerState->MarkAllCardUnUsable();
+
 			// Remove the card finished delegate
 			StandardPlayerState->OnUsingCardFinished.RemoveDynamic(this, &AStandardGameMode::OnPlayerUsingCardFinished);
 
@@ -1288,6 +1372,11 @@ void AStandardGameMode::OnPlayerUsingCardFinished(bool bShouldEndRound)
 			if (AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(GetCurrentPlayerId()))
 			{
 				StandardModePlayerController->ClientSetCardDisplayWidgetSelectable(true);
+				if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
+				{
+					StandardPlayerState->ClearCardUsableFilter();
+					StandardPlayerState->ApplyCardUsableFilterByUseMethod(ECardUseMethod::CUM_Aggressive);
+				}
 			}
 		}
 	}

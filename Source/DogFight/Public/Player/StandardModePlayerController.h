@@ -11,6 +11,7 @@
 
 #include "StandardModePlayerController.generated.h"
 
+class ACardBase;
 class AStandardModePlayerCharacter;
 
 UENUM(BlueprintType)
@@ -90,6 +91,9 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 	/** Stop the character movement immediately. */
 	void StopCharacterMovementImmediately();
 
+	UFUNCTION(Client, Reliable)
+	void ClientRequestCardByClasses(const TArray<TSubclassOf<ACardBase>>& RequestCardClasses);
+
 #pragma region Interfaces
 	virtual FCardTargetInfoAcquiredSignature& GetTargetInfoAcquiredDelegate() override { return OnCardTargetInfoAcquired; }
 	virtual FOnTargetActorSelectedSignature& GetOnTargetActorSelectedDelegate() override { return OnTargetActorSelected; }
@@ -155,6 +159,9 @@ protected:
 
 	UFUNCTION()
 	void OnCardUsingAbilityChanged();
+
+	UFUNCTION()
+	void OnCardUsableIndexChanged();
 
 	UFUNCTION()
 	void OnCardSelectionConfirmed(TArray<int32>& SelectedIndexList);

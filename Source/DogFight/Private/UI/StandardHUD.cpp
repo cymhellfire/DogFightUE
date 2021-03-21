@@ -89,6 +89,14 @@ void AStandardHUD::RefreshCardUsingAbilityInfo()
 	}
 }
 
+void AStandardHUD::RefreshCardUsableState()
+{
+	if (CardDisplayWidget != nullptr)
+	{
+		CardDisplayWidget->OnCardUsableIndexChanged();
+	}
+}
+
 void AStandardHUD::ToggleCardDisplayWidgetVisibility(bool bVisible)
 {
 	if (CardDisplayWidget == nullptr)

@@ -102,6 +102,8 @@ public:
 	/** Add a new instruction which is not directly used by card. */
 	void AddExtraCardInstruction(UCardInstructionBase* NewInstruction);
 
+	ECardUseMethod GetCardUseMethod() const { return CardUseMethod; }
+
 protected:
 	/** Do prepare operations before card executing phase. */
 	virtual void Prepare() {};
@@ -153,6 +155,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="CustomizableCard", Meta = (Bitmask, BitmaskEnum = "ECardCategoryFlags"))
 	int32 CardCategories;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="CustomizableCard")
+	ECardUseMethod CardUseMethod;
 
 	int32 CurrentInstructionIndex;
 

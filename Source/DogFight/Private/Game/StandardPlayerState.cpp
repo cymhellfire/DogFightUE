@@ -23,6 +23,7 @@ void AStandardPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AStandardPlayerState, CardInfoList);
+	DOREPLIFETIME(AStandardPlayerState, UsableCardIndex);
 	DOREPLIFETIME(AStandardPlayerState, MaxUseNum);
 	DOREPLIFETIME(AStandardPlayerState, UsedCardNum);
 	DOREPLIFETIME(AStandardPlayerState, CardGainPerRounds);
@@ -101,6 +102,15 @@ void AStandardPlayerState::ServerHandleSelectedCard_Implementation(int32 Index)
 			{
 				OnDiscardCardFinished.Broadcast();
 			}
+		}
+		break;
+	case ECardSelectionPurpose::CSP_Response:
+		{
+			ACardBase* ResponseCard = CardInstanceList[Index];
+			RemoveCard(Index);
+
+			// Callback
+			OnResponseCardSelected.Broadcast(ResponseCard, this);
 		}
 		break;
 	default: ;
@@ -402,6 +412,86 @@ void AStandardPlayerState::ModifyPlayerHealth(int32 TargetPlayerId, int32 NewHea
 #endif
 }
 
+int32 AStandardPlayerState::GetPlayerCardByClass(TArray<TSubclassOf<ACardBase>> CardClasses, TArray<int32>& CardIndex)
+{
+	int32 Result = 0;
+	CardIndex.Empty();
+	for (int32 i = 0; i < CardInstanceList.Num(); ++i)
+	{
+		UClass* CardClass = CardInstanceList[i]->GetClass();
+		if (CardClasses.Contains(CardClass))
+		{
+			// Record index in result array
+			CardIndex.Add(i);
+			Result++;
+		}
+	}
+
+	return Result;
+}
+
+void AStandardPlayerState::ApplyCardUsableFilterByClass(TArray<TSubclassOf<ACardBase>> CardClasses)
+{
+	for (int32 Index = UsableCardIndex.Num() - 1; Index >= 0; --Index)
+	{
+		UClass* CardClass = CardInstanceList[UsableCardIndex[Index]]->GetClass();
+		if (!CardClasses.Contains(CardClass))
+		{
+			// Filter out card not meet requirement
+			UsableCardIndex.RemoveAt(Index);
+		}
+	}
+
+	if (GetNetMode() != NM_Client)
+	{
+		OnRep_UsableCardIndex();
+	}
+}
+
+void AStandardPlayerState::ApplyCardUsableFilterByUseMethod(ECardUseMethod NewUseMethod)
+{
+	for (int32 Index = UsableCardIndex.Num() - 1; Index >= 0; --Index)
+	{
+		const ACardBase* CardInstance = CardInstanceList[UsableCardIndex[Index]];
+		if (CardInstance->GetCardUseMethod() != NewUseMethod)
+		{
+			// Filter out card not meet requirement
+			UsableCardIndex.RemoveAt(Index);
+		}
+	}
+
+	if (GetNetMode() != NM_Client)
+	{
+		OnRep_UsableCardIndex();
+	}
+}
+
+void AStandardPlayerState::ClearCardUsableFilter()
+{
+	// Mark all card as usable
+	UsableCardIndex.Empty();
+	for (int32 Index = 0; Index < CardInstanceList.Num(); ++Index)
+	{
+		UsableCardIndex.Add(Index);
+	}
+
+	if (GetNetMode() != NM_Client)
+	{
+		OnRep_UsableCardIndex();
+	}
+}
+
+void AStandardPlayerState::MarkAllCardUnUsable()
+{
+	// Clear usable cards
+	UsableCardIndex.Empty();
+
+	if (GetNetMode() != NM_Client)
+	{
+		OnRep_UsableCardIndex();
+	}
+}
+
 void AStandardPlayerState::MarkGamePhasesAsSkip(int32 GamePhaseFlags)
 {
 	MERGE_FLAGS(SkipGamePhaseFlags, GamePhaseFlags);
@@ -447,6 +537,11 @@ void AStandardPlayerState::OnRep_CardInfoList()
 
 	// Card changing cause using ability changed 
 	OnPlayerCardUsingAbilityChanged.Broadcast();
+}
+
+void AStandardPlayerState::OnRep_UsableCardIndex()
+{
+	OnPlayerCardUsableIndexChanged.Broadcast();
 }
 
 void AStandardPlayerState::OnRep_SkipGamePhaseFlags()

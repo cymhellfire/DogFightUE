@@ -30,6 +30,9 @@ public:
 	void OnCardUsingAbilityInfoChanged();
 
 	UFUNCTION(BlueprintImplementableEvent, Category="DogFight|UI")
+	void OnCardUsableIndexChanged();
+
+	UFUNCTION(BlueprintImplementableEvent, Category="DogFight|UI")
 	void OnCardSelectionModeChanged(ECardSelectionMode NewMode);
 
 	UFUNCTION(BlueprintImplementableEvent, Category="DogFight|UI")

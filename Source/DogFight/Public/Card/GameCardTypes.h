@@ -333,6 +333,13 @@ enum class ECardCategoryFlags
 	ECC_Support			UMETA(DisplayName = "Support")
 };
 
+UENUM(BlueprintType)
+enum class ECardUseMethod : uint8
+{
+	CUM_Aggressive		UMETA(DisplayName="Aggressive", Tooltip="This card can be used in player's round."),
+	CUM_Passive			UMETA(DisplayName="Passive", Tooltip="This card can only be used when requested."),
+};
+
 #pragma region Upgradable Property
 
 USTRUCT(BlueprintType)

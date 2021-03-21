@@ -68,6 +68,7 @@ void AStandardModePlayerController::InitPlayerState()
 
 			StandardPlayerState->OnPlayerCardInfoListChanged.AddDynamic(this, &AStandardModePlayerController::OnCardInfoListChanged);
 			StandardPlayerState->OnPlayerCardUsingAbilityChanged.AddDynamic(this, &AStandardModePlayerController::OnCardUsingAbilityChanged);
+			StandardPlayerState->OnPlayerCardUsableIndexChanged.AddDynamic(this, &AStandardModePlayerController::OnCardUsableIndexChanged);
 		}
 	}
 }
@@ -92,6 +93,7 @@ void AStandardModePlayerController::OnRep_PlayerState()
 			// Register card info list changed delegate
 			StandardPlayerState->OnPlayerCardInfoListChanged.AddDynamic(this, &AStandardModePlayerController::OnCardInfoListChanged);
 			StandardPlayerState->OnPlayerCardUsingAbilityChanged.AddDynamic(this, &AStandardModePlayerController::OnCardUsingAbilityChanged);
+			StandardPlayerState->OnPlayerCardUsableIndexChanged.AddDynamic(this, &AStandardModePlayerController::OnCardUsableIndexChanged);
 		}
 	}
 	
@@ -280,6 +282,11 @@ void AStandardModePlayerController::StopCharacterMovementImmediately()
 	{
 		CharacterPawn->StopMoveImmediately();
 	}
+}
+
+void AStandardModePlayerController::ClientRequestCardByClasses_Implementation(const TArray<TSubclassOf<ACardBase>>& RequestCardClasses)
+{
+
 }
 
 void AStandardModePlayerController::RequestActorTarget()
@@ -676,6 +683,14 @@ void AStandardModePlayerController::OnCardUsingAbilityChanged()
 	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
 	{
 		StandardHUD->RefreshCardUsingAbilityInfo();
+	}
+}
+
+void AStandardModePlayerController::OnCardUsableIndexChanged()
+{
+	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
+	{
+		StandardHUD->RefreshCardUsableState();
 	}
 }
 

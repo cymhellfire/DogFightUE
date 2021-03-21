@@ -5,6 +5,7 @@
 
 #include "Actors/Interfaces/WeaponCarrierInterface.h"
 #include "Actors/Weapons/WeaponBase.h"
+#include "Game/StandardGameMode.h"
 
 UWeaponActionBase::UWeaponActionBase()
 {
@@ -64,18 +65,14 @@ void UWeaponActionBase::SetOwnerWeapon(UWeaponBase* NewWeapon)
 	OwnerWeapon = NewWeapon;
 }
 
-void UWeaponActionBase::OnReachedActionDistance(AActor* Carrier)
+void UWeaponActionBase::PrepareActionMontage()
 {
-	// Unregister callback
-	if (IsValid(Carrier))
-	{
-		if (IWeaponCarrierInterface* WeaponCarrier = Cast<IWeaponCarrierInterface>(Carrier))
-		{
-			WeaponCarrier->GetCarrierReachActionDistanceEvent().RemoveDynamic(this, &UWeaponActionBase::OnReachedActionDistance);
-		}
-	}
+	PlayActionMontage(ActionMontage);
+}
 
-	if (IsValid(ActionMontage))
+void UWeaponActionBase::PlayActionMontage(UAnimMontage* MontageToPlay)
+{
+	if (IsValid(MontageToPlay))
 	{
 		ACharacter* OwnerCharacter = OwnerWeapon->GetWeaponOwnerCharacter();
 		USkeletalMeshComponent* MeshComponent = OwnerCharacter->GetMesh();
@@ -83,7 +80,7 @@ void UWeaponActionBase::OnReachedActionDistance(AActor* Carrier)
 		{
 			if (UAnimInstance* AnimInstance = MeshComponent->GetAnimInstance())
 			{
-				const float ActionDuration = AnimInstance->Montage_Play(ActionMontage);
+				const float ActionDuration = AnimInstance->Montage_Play(MontageToPlay);
 				GetWorld()->GetTimerManager().SetTimer(ActionTimerHandle, this, &UWeaponActionBase::OnActionMontageFinished, ActionDuration);
 			}
 		}
@@ -92,6 +89,50 @@ void UWeaponActionBase::OnReachedActionDistance(AActor* Carrier)
 	{
 		// If no valid montage, trigger callback directly
 		OnActionMontageFinished();
+	}
+}
+
+void UWeaponActionBase::OnReachedActionDistance(AActor* Carrier)
+{
+	AActor* TargetActor = nullptr;
+	// Unregister callback
+	if (IsValid(Carrier))
+	{
+		if (IWeaponCarrierInterface* WeaponCarrier = Cast<IWeaponCarrierInterface>(Carrier))
+		{
+			WeaponCarrier->GetCarrierReachActionDistanceEvent().RemoveDynamic(this, &UWeaponActionBase::OnReachedActionDistance);
+			TargetActor = WeaponCarrier->GetWeaponTargetActor();
+		}
+	}
+
+	// Request response card from target player
+	bool bWaitingResponseCard = false;
+	ACharacter* TargetCharacter = Cast<ACharacter>(TargetActor);
+	if (IsValid(TargetCharacter))
+	{
+		APlayerState* PlayerState = TargetCharacter->GetPlayerState();
+		if (ResponseCardClasses.Num() > 0 && IsValid(PlayerState))
+		{
+			// TODO: Remove this hack debug condition
+			if (PlayerState->GetPlayerId() >= 100)
+			{
+				if (AGameModeBase* GameModeBase = GetWorld()->GetAuthGameMode())
+				{
+					if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GameModeBase))
+					{
+						bWaitingResponseCard = true;
+						StandardGameMode->OnPlayerResponseCardSelected.AddDynamic(this, &UWeaponActionBase::OnResponseCardSelected);
+						StandardGameMode->RequestResponseCardFromPlayer(PlayerState->GetPlayerId(), ResponseCardClasses, Carrier);
+					}
+				}
+			}
+		}
+	}
+
+	// Play montage directly if no need to wait response card
+	if (!bWaitingResponseCard)
+	{
+		PrepareActionMontage();
 	}
 }
 
@@ -104,4 +145,18 @@ void UWeaponActionBase::OnActionMontageFinished()
 
 	// Trigger callback
 	OnWeaponActionFinished.Broadcast();
+}
+
+void UWeaponActionBase::OnResponseCardSelected()
+{
+	// Unregister callback
+	if (AGameModeBase* GameModeBase = GetWorld()->GetAuthGameMode())
+	{
+		if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GameModeBase))
+		{
+			StandardGameMode->OnPlayerResponseCardSelected.RemoveDynamic(this, &UWeaponActionBase::OnResponseCardSelected);
+		}
+	}
+
+	PrepareActionMontage();
 }

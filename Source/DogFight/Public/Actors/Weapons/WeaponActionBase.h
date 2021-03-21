@@ -44,11 +44,19 @@ public:
 	FOnWeaponActionFinished OnWeaponActionFinished;
 
 protected:
+	/** Prepare for playing action montage. */
+	virtual void PrepareActionMontage();
+
+	virtual void PlayActionMontage(UAnimMontage* MontageToPlay);
+
 	UFUNCTION()
 	void OnReachedActionDistance(AActor* Carrier);
 
 	UFUNCTION()
 	void OnActionMontageFinished();
+
+	UFUNCTION()
+	void OnResponseCardSelected();
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponAction")
@@ -63,6 +71,10 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponAction")
 	TArray<FWeaponActionTransition> ActionTransitions;
+
+	/** Card classes that can response to this action. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponAction")
+	TArray<TSubclassOf<class ACardBase>> ResponseCardClasses;
 
 protected:
 	UWeaponBase* OwnerWeapon;

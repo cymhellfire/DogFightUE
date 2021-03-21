@@ -41,6 +41,7 @@ enum class ECardSelectionPurpose : uint8
 {
 	CSP_Use			UMETA(DisplayName="Use"),
 	CSP_Discard		UMETA(DisplayName="Discard"),
+	CSP_Response	UMETA(DisplayName="Response"),
 };
 
 /**
@@ -64,9 +65,14 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDiscardCardFinishedSignature);
 	FDiscardCardFinishedSignature OnDiscardCardFinished;
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FResponseCardSelectedSignature, ACardBase*, SelectedCard, AStandardPlayerState*, PlayerState);
+	FResponseCardSelectedSignature OnResponseCardSelected;
+
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerCardUsingAbilityChangeSignature);
 	/** Triggered when player using card ability changed, for example, MaxUseNum changed. */
 	FPlayerCardUsingAbilityChangeSignature OnPlayerCardUsingAbilityChanged;
+
+	FPlayerCardUsingAbilityChangeSignature OnPlayerCardUsableIndexChanged;
 
 	AStandardPlayerState(const FObjectInitializer& ObjectInitializer);
 
@@ -142,6 +148,34 @@ public:
 	/** Get the Buff Queue of this player. */
 	UBuffQueue* GetBuffQueue() const { return PlayerBuffQueue; }
 
+	/**
+	 * Get player card index that meet given class.
+	 * @param CardClasses		Classes to filter player cards.
+	 * @param CardIndex			Index of cards fit class filter.
+	 * @return Count of cards in filter result
+	 */
+	int32 GetPlayerCardByClass(TArray<TSubclassOf<class ACardBase>> CardClasses, TArray<int32>& CardIndex);
+
+#pragma region CardUsableFilter
+	/**
+	 * Set card classes that allow player to use.
+	 */
+	void ApplyCardUsableFilterByClass(TArray<TSubclassOf<ACardBase>> CardClasses);
+
+	void ApplyCardUsableFilterByUseMethod(ECardUseMethod NewUseMethod);
+
+	/**
+	 * Clear all filters and make all cards usable.
+	 */
+	void ClearCardUsableFilter();
+
+	void MarkAllCardUnUsable();
+
+	int32 GetUsableCardCount() const { return UsableCardIndex.Num(); }
+
+	TArray<int32> GetAllUsableCardIndex() const { return UsableCardIndex; }
+#pragma endregion
+
 #pragma region SkipGamePhase
 	int32 GetSkipGamePhaseFlags() const { return SkipGamePhaseFlags; }
 
@@ -168,6 +202,9 @@ protected:
 
 	UFUNCTION()
 	void OnRep_CardInfoList();
+
+	UFUNCTION()
+	void OnRep_UsableCardIndex();
 
 	UFUNCTION()
 	void OnRep_SkipGamePhaseFlags();
@@ -197,6 +234,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState", ReplicatedUsing=OnRep_CardInfoList)
 	TArray<FCardInstanceDisplayInfo> CardInfoList;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState", ReplicatedUsing=OnRep_UsableCardIndex)
+	TArray<int32> UsableCardIndex;
 
 	/** The list of card instances. (Server Only) */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState")

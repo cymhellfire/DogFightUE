@@ -51,6 +51,9 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerDeadSignature, int32, PlayerId);
 	FPlayerDeadSignature OnPlayerDead;
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerResponseCardSelectedSignature);
+	FPlayerResponseCardSelectedSignature OnPlayerResponseCardSelected;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="StandardGameMode")
 	TSubclassOf<UGameplayCardPool> CardPoolClass;
 
@@ -163,6 +166,14 @@ public:
 	int32 GetDefaultCardGainPerRound() const { return DefaultCardGainPerRound; }
 
 	int32 ClampCardGainPerRound(int32 InValue);
+
+	/**
+	 * Request a card with specified classes from target player.
+	 * @param PlayerId				Id of target player.
+	 * @param ResponseCardClasses	Array of card class requested.
+	 * @param SourceActor			Actor that send request.
+	 */
+	void RequestResponseCardFromPlayer(int32 PlayerId, TArray<TSubclassOf<class ACardBase>> ResponseCardClasses, AActor* SourceActor);
 protected:
 	virtual void BeginPlay() override;
 	
@@ -266,6 +277,9 @@ protected:
 	UGameplayCardPool* CardPool;
 
 	void GivePlayerCards(AController* TargetController, AStandardPlayerState* TargetPlayerState, int32 CardNum);
+
+	UFUNCTION()
+	void OnResponseCardSelected(ACardBase* SelectedCard, AStandardPlayerState* ResponsePlayerState);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="PlayerSettings")
