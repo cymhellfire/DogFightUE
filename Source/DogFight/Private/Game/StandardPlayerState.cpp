@@ -117,6 +117,20 @@ void AStandardPlayerState::ServerHandleSelectedCard_Implementation(int32 Index)
 	}
 }
 
+void AStandardPlayerState::ServerHandleEmptySelectCard_Implementation()
+{
+	switch(CardSelectionPurpose)
+	{
+	case ECardSelectionPurpose::CSP_Response:
+		{
+			// Callback
+			OnResponseCardSelected.Broadcast(nullptr, this);
+		}
+		break;
+	default: ;
+	}
+}
+
 void AStandardPlayerState::OnCardFinished()
 {
 	ACardBase* UsingCard = CardInstanceList[UsingCardIndex];

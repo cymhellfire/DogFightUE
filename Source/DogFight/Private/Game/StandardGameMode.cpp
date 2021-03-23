@@ -488,7 +488,7 @@ void AStandardGameMode::RequestResponseCardFromPlayer(int32 PlayerId, TArray<TSu
 
 				StandardPlayerState->SetCardSelectionPurpose(ECardSelectionPurpose::CSP_Response);
 				StandardPlayerState->OnResponseCardSelected.AddDynamic(this, &AStandardGameMode::OnResponseCardSelected);
-				StandardModePlayerController->ClientShowCardDisplayWidgetWithSelectMode(ECardSelectionMode::CSM_SingleNoConfirm);
+				StandardModePlayerController->ClientShowCardDisplayWidgetWithSelectMode(ECardSelectionMode::CSM_AnyWithConfirm);
 				StandardModePlayerController->ClientSetCardDisplayWidgetSelectable(true);
 			}
 			else
@@ -519,8 +519,9 @@ void AStandardGameMode::OnResponseCardSelected(ACardBase* SelectedCard, AStandar
 		ResponsePlayerState->OnResponseCardSelected.RemoveDynamic(this, &AStandardGameMode::OnResponseCardSelected);
 	}
 
-	if (AStandardModePlayerController* StandardModePlayerController = Cast<AStandardModePlayerController>(ResponsePlayerState->GetInstigatorController()))
+	if (AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(ResponsePlayerState->GetPlayerId()))
 	{
+		ResponsePlayerState->MarkAllCardUnUsable();
 		StandardModePlayerController->ClientSetCardDisplayWidgetSelectable(false);
 	}
 

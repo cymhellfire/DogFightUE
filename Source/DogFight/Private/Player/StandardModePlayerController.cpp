@@ -215,9 +215,16 @@ void AStandardModePlayerController::ServerUploadSelectedCardIndex_Implementation
 {
 	if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
 	{
-		for (int32 Index : SelectedIndexList)
+		if (SelectedIndexList.Num() > 0)
 		{
-			StandardPlayerState->ServerHandleSelectedCard(Index);
+			for (int32 Index : SelectedIndexList)
+			{
+				StandardPlayerState->ServerHandleSelectedCard(Index);
+			}
+		}
+		else
+		{
+			StandardPlayerState->ServerHandleEmptySelectCard();
 		}
 	}
 }

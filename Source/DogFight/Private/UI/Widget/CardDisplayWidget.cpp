@@ -99,6 +99,7 @@ void UCardDisplayWidget::HandleSelectionChanged()
 		}
 		break;
 	case ECardSelectionMode::CSM_MultiWithConfirm:
+	case ECardSelectionMode::CSM_AnyWithConfirm:
 		// Trigger BP function
 		OnSelectedCountChanged(SelectedCardIndexList.Num());
 		break;

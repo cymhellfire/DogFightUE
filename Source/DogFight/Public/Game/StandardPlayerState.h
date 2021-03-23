@@ -90,6 +90,9 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerHandleSelectedCard(int32 Index);
 
+	UFUNCTION(Server, Reliable)
+	void ServerHandleEmptySelectCard();
+
 	FORCEINLINE bool CanUseCard() const { return UsedCardNum < MaxUseNum; }
 
 	/** Initialize the player for his new round. */
