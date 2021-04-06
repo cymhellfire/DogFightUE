@@ -45,14 +45,12 @@ class DOGFIGHT_API AStandardGameMode : public ADogFightGameModeBase
 	GENERATED_BODY()
 	
 public:
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerRoundEndSignature, int32, PlayerId);
-	FPlayerRoundEndSignature OnPlayerRoundEnd;
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGameModeDelegateWithPlayerId, int32, PlayerId);
+	FGameModeDelegateWithPlayerId OnPlayerRoundEnd;
+	FGameModeDelegateWithPlayerId OnPlayerDead;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerDeadSignature, int32, PlayerId);
-	FPlayerDeadSignature OnPlayerDead;
-
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerResponseCardSelectedSignature);
-	FPlayerResponseCardSelectedSignature OnPlayerResponseCardSelected;
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FGameModeDelegateNoArgument);
+	FGameModeDelegateNoArgument OnPlayerResponseCardSelected;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="StandardGameMode")
 	TSubclassOf<UGameplayCardPool> CardPoolClass;

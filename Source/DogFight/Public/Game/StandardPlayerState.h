@@ -56,23 +56,21 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerNameChangedSignature, const FString&, NewName);
 	FPlayerNameChangedSignature OnPlayerNameChanged;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerCardInfoListChangedSignature);
-	FPlayerCardInfoListChangedSignature OnPlayerCardInfoListChanged;
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerStateDelegateNoArgument);
+	FPlayerStateDelegateNoArgument OnPlayerCardInfoListChanged;
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUsingCardFinsishedSignature, bool, bPlayerRoundFinished);
 	FUsingCardFinsishedSignature OnUsingCardFinished;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDiscardCardFinishedSignature);
-	FDiscardCardFinishedSignature OnDiscardCardFinished;
+	FPlayerStateDelegateNoArgument OnDiscardCardFinished;
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FResponseCardSelectedSignature, ACardBase*, SelectedCard, AStandardPlayerState*, PlayerState);
 	FResponseCardSelectedSignature OnResponseCardSelected;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerCardUsingAbilityChangeSignature);
 	/** Triggered when player using card ability changed, for example, MaxUseNum changed. */
-	FPlayerCardUsingAbilityChangeSignature OnPlayerCardUsingAbilityChanged;
+	FPlayerStateDelegateNoArgument OnPlayerCardUsingAbilityChanged;
 
-	FPlayerCardUsingAbilityChangeSignature OnPlayerCardUsableIndexChanged;
+	FPlayerStateDelegateNoArgument OnPlayerCardUsableIndexChanged;
 
 	AStandardPlayerState(const FObjectInitializer& ObjectInitializer);
 

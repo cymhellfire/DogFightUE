@@ -23,10 +23,9 @@ public:
 
 	TArray<AShieldBase*> GetAllShield() const { return ShieldList; }
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FShieldRegisteredSignature, AShieldBase*, NewShield);
-	FShieldRegisteredSignature OnShieldRegistered;
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FShieldUnregisteredSignature, AShieldBase*, Shield);
-	FShieldUnregisteredSignature OnShieldUnregistered;
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FShieldManagerDelegateWithInstancePointer, AShieldBase*, NewShield);
+	FShieldManagerDelegateWithInstancePointer OnShieldRegistered;
+	FShieldManagerDelegateWithInstancePointer OnShieldUnregistered;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="ShieldManager")

@@ -42,11 +42,9 @@ public:
 	virtual bool IsCompatibleWith(AActor* Target) override;
 #pragma endregion Interface
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBuffEndedSignature, ABuffBase*, Buff);
-	FOnBuffEndedSignature OnBuffEndedEvent;
-
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBuffProcessEndedSignature, ABuffBase*, Buff);
-	FOnBuffProcessEndedSignature OnBuffProcessEndedEvent;
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FBuffDelegateWithInstancePointer, ABuffBase*, Buff);
+	FBuffDelegateWithInstancePointer OnBuffEndedEvent;
+	FBuffDelegateWithInstancePointer OnBuffProcessEndedEvent;
 
 protected:
 	// Called when the game starts or when spawned

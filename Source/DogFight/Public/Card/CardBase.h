@@ -21,16 +21,14 @@ class DOGFIGHT_API ACardBase : public AActor
 	
 public:
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCardStartExecuting);
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCardFinished);
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCardCancelled);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCardDelegateNoArgument);
 
 	/** This delegate triggered before card executing. */
-	FOnCardStartExecuting OnCardStartExecuting;
+	FCardDelegateNoArgument OnCardStartExecuting;
 	/** This delegate triggered when card is finished. */
-	FOnCardFinished OnCardFinished;
+	FCardDelegateNoArgument OnCardFinished;
 	/** This delegate triggered when card is cancelled. */
-	FOnCardCancelled OnCardCancelled;
+	FCardDelegateNoArgument OnCardCancelled;
 
 	// Sets default values for this actor's properties
 	ACardBase(const FObjectInitializer& ObjectInitializer);

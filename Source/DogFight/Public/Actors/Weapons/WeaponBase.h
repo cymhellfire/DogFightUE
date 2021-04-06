@@ -119,14 +119,12 @@ protected:
 	void OnWeaponActionFinished();
 
 public:
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponEquippedSignature);
-	FOnWeaponEquippedSignature OnWeaponEquippedEvent;
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWeaponDelegateNoArgument);
+	FWeaponDelegateNoArgument OnWeaponEquippedEvent;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponUnEquippedSignature);
-	FOnWeaponUnEquippedSignature OnWeaponUnEquippedEvent;
+	FWeaponDelegateNoArgument OnWeaponUnEquippedEvent;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponActionFinishedSignature);
-	FOnWeaponActionFinishedSignature OnWeaponActionFinishedEvent;
+	FWeaponDelegateNoArgument OnWeaponActionFinishedEvent;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Weapon")
