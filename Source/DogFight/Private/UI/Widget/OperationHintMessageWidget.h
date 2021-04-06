@@ -12,6 +12,7 @@ namespace EOperationHintMessageContent
 	extern const FName SelectPositionTarget;
 	extern const FName SelectDirectionTarget;
 	extern const FName DiscardCard;
+	extern const FName ResponseToCard;
 }
 
 /**
@@ -27,7 +28,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category="DogFight|UI")
 	void OnHintMessageChanged(const FText& HintMessage);
 
-	void SetHintMessage(FName& NewMessage);
+	void SetHintMessage(FName& NewMessage, TArray<FText> Arguments);
 
 protected:
 

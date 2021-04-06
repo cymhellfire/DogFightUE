@@ -88,6 +88,12 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 	UFUNCTION(Client, Reliable)
 	void ClientStopDiscardCards();
 
+	UFUNCTION(Client, Reliable)
+	void ClientStartRequestResponseCard(int32 MaxCardCount, const FText& CardToResponse);
+
+	UFUNCTION(Client, Reliable)
+	void ClientStopRequestResponseCard();
+
 	/** Stop the character movement immediately. */
 	void StopCharacterMovementImmediately();
 

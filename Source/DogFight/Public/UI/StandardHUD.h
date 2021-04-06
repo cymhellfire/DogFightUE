@@ -29,7 +29,7 @@ class DOGFIGHT_API AStandardHUD : public AHUD
 public:
 
 	/** Display specified hint message on screen. */
-	void DisplayHintMessage(FName HintMessage);
+	void DisplayHintMessage(FName HintMessage, TArray<FText> MessageArguments = {});
 
 	void HideOperationHintMessageWidget();
 
@@ -60,6 +60,8 @@ public:
 	void StartDiscardCards(int32 CountToDiscard);
 
 	void StopDiscardCards();
+
+	void StartRequestResponseCard(int32 MaxCardCount);
 
 protected:
 	virtual void BeginPlay() override;

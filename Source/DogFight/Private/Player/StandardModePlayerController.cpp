@@ -280,6 +280,23 @@ void AStandardModePlayerController::ClientStopDiscardCards_Implementation()
 	}
 }
 
+void AStandardModePlayerController::ClientStartRequestResponseCard_Implementation(int32 MaxCardCount, const FText& CardToResponse)
+{
+	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
+	{
+		StandardHUD->StartRequestResponseCard(MaxCardCount);
+		StandardHUD->DisplayHintMessage(EOperationHintMessageContent::ResponseToCard, {CardToResponse});
+	}
+}
+
+void AStandardModePlayerController::ClientStopRequestResponseCard_Implementation()
+{
+	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
+	{
+		StandardHUD->HideOperationHintMessageWidget();
+	}
+}
+
 void AStandardModePlayerController::StopCharacterMovementImmediately()
 {
 	if (GetNetMode() == NM_Client)

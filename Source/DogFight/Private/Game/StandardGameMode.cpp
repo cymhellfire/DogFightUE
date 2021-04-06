@@ -455,7 +455,7 @@ int32 AStandardGameMode::ClampCardGainPerRound(int32 InValue)
 	return FMath::Clamp(InValue, CardGainPerRoundRange.GetLowerBoundValue(), CardGainPerRoundRange.GetUpperBoundValue());
 }
 
-void AStandardGameMode::RequestResponseCardFromPlayer(int32 PlayerId, TArray<TSubclassOf<ACardBase>> ResponseCardClasses, AActor* SourceActor)
+void AStandardGameMode::RequestResponseCardFromPlayer(int32 PlayerId, TArray<TSubclassOf<ACardBase>> ResponseCardClasses, AActor* SourceActor, const FText& CardToResponse)
 {
 	const bool bTargetHumanPlayer = IsValid(GetPlayerControllerById(PlayerId));
 
@@ -488,7 +488,7 @@ void AStandardGameMode::RequestResponseCardFromPlayer(int32 PlayerId, TArray<TSu
 
 				StandardPlayerState->SetCardSelectionPurpose(ECardSelectionPurpose::CSP_Response);
 				StandardPlayerState->OnResponseCardSelected.AddDynamic(this, &AStandardGameMode::OnResponseCardSelected);
-				StandardModePlayerController->ClientShowCardDisplayWidgetWithSelectMode(ECardSelectionMode::CSM_AnyWithConfirm);
+				StandardModePlayerController->ClientStartRequestResponseCard(1, CardToResponse);
 				StandardModePlayerController->ClientSetCardDisplayWidgetSelectable(true);
 			}
 			else
@@ -523,6 +523,7 @@ void AStandardGameMode::OnResponseCardSelected(ACardBase* SelectedCard, AStandar
 	{
 		ResponsePlayerState->MarkAllCardUnUsable();
 		StandardModePlayerController->ClientSetCardDisplayWidgetSelectable(false);
+		StandardModePlayerController->ClientStopRequestResponseCard();
 	}
 
 	if (IsValid(SelectedCard))

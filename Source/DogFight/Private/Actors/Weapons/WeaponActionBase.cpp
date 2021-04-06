@@ -122,7 +122,7 @@ void UWeaponActionBase::OnReachedActionDistance(AActor* Carrier)
 					{
 						bWaitingResponseCard = true;
 						StandardGameMode->OnPlayerResponseCardSelected.AddDynamic(this, &UWeaponActionBase::OnResponseCardSelected);
-						StandardGameMode->RequestResponseCardFromPlayer(PlayerState->GetPlayerId(), ResponseCardClasses, Carrier);
+						StandardGameMode->RequestResponseCardFromPlayer(PlayerState->GetPlayerId(), ResponseCardClasses, Carrier, FText::FromName(WeaponActionName));
 					}
 				}
 			}

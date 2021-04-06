@@ -172,8 +172,9 @@ public:
 	 * @param PlayerId				Id of target player.
 	 * @param ResponseCardClasses	Array of card class requested.
 	 * @param SourceActor			Actor that send request.
+	 * @param CardToResponse		Localized card name to response.
 	 */
-	void RequestResponseCardFromPlayer(int32 PlayerId, TArray<TSubclassOf<class ACardBase>> ResponseCardClasses, AActor* SourceActor);
+	void RequestResponseCardFromPlayer(int32 PlayerId, TArray<TSubclassOf<class ACardBase>> ResponseCardClasses, AActor* SourceActor, const FText& CardToResponse);
 protected:
 	virtual void BeginPlay() override;
 	

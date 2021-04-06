@@ -22,7 +22,7 @@ AStandardHUD::AStandardHUD(const FObjectInitializer& ObjectInitializer)
 	MiniMapPoints.Init(FVector2D::ZeroVector, 4);
 }
 
-void AStandardHUD::DisplayHintMessage(FName HintMessage)
+void AStandardHUD::DisplayHintMessage(FName HintMessage, TArray<FText> MessageArguments)
 {
 	if (OperationHintMessageWidget != nullptr)
 	{
@@ -36,7 +36,7 @@ void AStandardHUD::DisplayHintMessage(FName HintMessage)
 			{
 				OperationHintMessageWidget->AddToViewport();
 			}
-			OperationHintMessageWidget->SetHintMessage(HintMessage);
+			OperationHintMessageWidget->SetHintMessage(HintMessage, MessageArguments);
 		}
 	}
 }
@@ -176,6 +176,20 @@ void AStandardHUD::StopDiscardCards()
 	if (CardDisplayWidget != nullptr)
 	{
 		CardDisplayWidget->SetSelectMode(ECardSelectionMode::CSM_SingleNoConfirm);
+	}
+}
+
+void AStandardHUD::StartRequestResponseCard(int32 MaxCardCount)
+{
+	if (CardDisplayWidget != nullptr)
+	{
+		if (!CardDisplayWidget->IsInViewport())
+		{
+			CardDisplayWidget->AddToViewport();
+		}
+
+		CardDisplayWidget->SetDesireSelectCount(MaxCardCount);
+		CardDisplayWidget->SetSelectMode(ECardSelectionMode::CSM_AnyWithConfirm);
 	}
 }
 
