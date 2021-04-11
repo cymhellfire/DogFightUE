@@ -3,7 +3,6 @@
 
 #include "AI/StandardModeAIController.h"
 
-#include "AI/AIType.h"
 #include "DogFight.h"
 #include "Game/StandardGameMode.h"
 #include "GameFramework/PlayerState.h"
@@ -17,14 +16,6 @@
 #include "Actors/Managers/BuffQueue.h"
 #include "Card/CardBase.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
-
-namespace EStandardModeAIControllerState
-{
-	const FName Idle = FName(TEXT("Idle"));
-	const FName UsingCard = FName(TEXT("UsingCard"));
-	const FName WaitingOrder = FName(TEXT("WaitingOrder"));
-	const FName Dead = FName(TEXT("Dead"));
-}
 
 AStandardModeAIController::AStandardModeAIController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -133,9 +124,7 @@ void AStandardModeAIController::StartAIRound()
 		return;
 	}
 
-	Blackboard->SetValueAsEnum(FName(TEXT("AIState")), (uint8)EAIControllerState::ACS_UsingCard);
-
-	SetState(EStandardModeAIControllerState::WaitingOrder);
+	PrepareForUsingCard();
 }
 
 void AStandardModeAIController::StopAIRound()
@@ -145,23 +134,35 @@ void AStandardModeAIController::StopAIRound()
 		UE_LOG(LogDogFight, Error, TEXT("No BehaviorTree attached to AIController."));
 		return;
 	}
-	
-	Blackboard->SetValueAsEnum(FName(TEXT("AIState")), (uint8)EAIControllerState::ACS_Idle);
 
-	SetState(EStandardModeAIControllerState::Idle);
+	SetState(EAIControllerState::ACS_Idle);
+}
+
+void AStandardModeAIController::PrepareForUsingCard()
+{
+	// Check available cards
+	if (HasUsableCard())
+	{
+		SetState(EAIControllerState::ACS_SelectingCard);
+	}
+	else
+	{
+		FinishMyRound();
+	}
 }
 
 void AStandardModeAIController::UseRandomCard()
 {
 	if (AStandardPlayerState* MyPlayerState = GetPlayerState<AStandardPlayerState>())
 	{
-		const int32 CardCount = MyPlayerState->GetCurrentCardCount();
+		const int32 CardCount = MyPlayerState->GetUsableCardCount();
 		if (CardCount > 0)
 		{
 			const int32 TargetIndex = FMath::RandRange(0, CardCount - 1);
-			MyPlayerState->ServerHandleSelectedCard(TargetIndex);
+			const TArray<int32> UsableCardIndex = MyPlayerState->GetAllUsableCardIndex();
+			MyPlayerState->ServerHandleSelectedCard(UsableCardIndex[TargetIndex]);
 
-			SetState(EStandardModeAIControllerState::UsingCard);
+			SetState(EAIControllerState::ACS_UsingCard);
 		}
 	}
 }
@@ -183,15 +184,16 @@ bool AStandardModeAIController::UseCardByCategoryFlags(int32 CategoryFlags)
 	// Check if there is card available
 	if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
 	{
-		if (StandardPlayerState->GetCurrentCardCount() > 0)
+		if (StandardPlayerState->GetUsableCardCount() > 0)
 		{
 			TArray<ACardBase*> CardInstanceList = StandardPlayerState->GetCardInstanceList();
+			const TArray<int32> UsableCardIndex = StandardPlayerState->GetAllUsableCardIndex();
 			bool bFound = false;
-			for (int32 Index = 0; Index < CardInstanceList.Num(); ++Index)
+			for (int32 Index = 0; Index < UsableCardIndex.Num(); ++Index)
 			{
-				if (CardInstanceList[Index]->IsCardMatchCategoryFlags(CategoryFlags))
+				if (CardInstanceList[UsableCardIndex[Index]]->IsCardMatchCategoryFlags(CategoryFlags))
 				{
-					StandardPlayerState->ServerHandleSelectedCard(Index);
+					StandardPlayerState->ServerHandleSelectedCard(UsableCardIndex[Index]);
 					bFound = true;
 					break;
 				}
@@ -199,7 +201,7 @@ bool AStandardModeAIController::UseCardByCategoryFlags(int32 CategoryFlags)
 
 			if (bFound)
 			{
-				SetState(EStandardModeAIControllerState::UsingCard);
+				SetState(EAIControllerState::ACS_UsingCard);
 				return true;
 			}
 		}
@@ -422,7 +424,7 @@ void AStandardModeAIController::FilterForDeadPlayer(TArray<FPlayerRelationStatis
 	}
 }
 
-void AStandardModeAIController::SetState(FName NewState)
+void AStandardModeAIController::SetState(EAIControllerState NewState)
 {
 	if (CurrentState == NewState)
 	{
@@ -430,7 +432,51 @@ void AStandardModeAIController::SetState(FName NewState)
 	}
 
 	CurrentState = NewState;
+	if (IsValid(Blackboard))
+	{
+		Blackboard->SetValueAsEnum(FName(TEXT("AIState")), (uint8)NewState);
+	}
 	OnStateChanged(CurrentState);
+
+	UE_LOG(LogDogFight, Log, TEXT("[AI %s] Set state to %s"), *GetName(), *UEnum::GetValueAsString<EAIControllerState>(NewState));
+}
+
+bool AStandardModeAIController::HasUsableCard() const
+{
+	if (AStandardPlayerState* MyPlayerState = GetPlayerState<AStandardPlayerState>())
+	{
+		return MyPlayerState->GetUsableCardCount() > 0;
+	}
+
+	return false;
+}
+
+bool AStandardModeAIController::UseResponseCard()
+{
+	// Check if there is card available
+	if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
+	{
+		if (StandardPlayerState->GetUsableCardCount() > 0)
+		{
+			const TArray<int32> UsableCardIndex = StandardPlayerState->GetAllUsableCardIndex();
+
+			for (int32 Index = 0; Index < UsableCardIndex.Num(); ++Index)
+			{
+				//if (UsableCardList[Index]->IsCardMatchCategoryFlags(CategoryFlags))
+				{
+					const int32 TargetIndex = FMath::RandRange(0, UsableCardIndex.Num() - 1);
+					StandardPlayerState->ServerHandleSelectedCard(UsableCardIndex[TargetIndex]);
+					return true;
+				}
+			}
+		}
+		else
+		{
+			UE_LOG(LogDogFight, Error, TEXT("[AIController] No usable response card."));
+		}
+	}
+
+	return false;
 }
 
 AController* AStandardModeAIController::GetRandomTargetPlayer(bool bIgnoreSelf = true)
@@ -686,24 +732,47 @@ void AStandardModeAIController::BeginPlay()
 	}
 }
 
-void AStandardModeAIController::OnStateChanged(FName NewState)
+void AStandardModeAIController::OnStateChanged(EAIControllerState NewState)
 {
-	if (NewState == EStandardModeAIControllerState::Dead)
+	if (NewState == EAIControllerState::ACS_Dead)
 	{
 		BrainComponent->StopLogic(FString(TEXT("Dead")));
 	}
 }
 
+void AStandardModeAIController::FinishMyRound()
+{
+	if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
+		{
+			if (StandardGameMode->GetCurrentPlayerId() == StandardPlayerState->GetPlayerId())
+			{
+				StandardGameMode->EndCurrentPlayerRound();
+			}
+		}
+	}
+}
+
 void AStandardModeAIController::OnCardFinished(bool bPlayerRoundFinished)
 {
-	SetState(EStandardModeAIControllerState::WaitingOrder);
+	// Check available left
+	if (HasUsableCard())
+	{
+		SetState(EAIControllerState::ACS_CardFinished);
+	}
+	else
+	{
+		// Finish current round forcibly
+		FinishMyRound();
+	}
 }
 
 void AStandardModeAIController::OnCharacterPawnDead()
 {
 	if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
 	{
-		SetState(EStandardModeAIControllerState::Dead);
+		SetState(EAIControllerState::ACS_Dead);
 
 		StandardPlayerState->SetAlive(false);
 		if (UBuffQueue* BuffQueue = StandardPlayerState->GetBuffQueue())

@@ -50,10 +50,3 @@ struct FGameTitleMessage
 	UPROPERTY(BlueprintReadOnly)
 	TArray<FString> Arguments;
 };
-
-UENUM(BlueprintType)
-enum class EAIControllerState : uint8
-{
-	ACS_Idle		UMETA(DisplayName="Idle"),
-	ACS_UsingCard	UMETA(DisplayName="UsingCard"),
-};

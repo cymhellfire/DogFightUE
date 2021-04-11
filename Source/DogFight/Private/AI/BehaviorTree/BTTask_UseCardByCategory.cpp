@@ -80,7 +80,7 @@ void UBTTask_UseCardByCategory::TickTask(UBehaviorTreeComponent& OwnerComp, uint
 		if (AStandardModeAIController* StandardModeAIController = Cast<AStandardModeAIController>(AIController))
 		{
 			// Check if the card is finished
-			if (StandardModeAIController->GetCurrentState() != EStandardModeAIControllerState::UsingCard)
+			if (StandardModeAIController->GetCurrentState() != EAIControllerState::ACS_UsingCard)
 			{
 				FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 			}

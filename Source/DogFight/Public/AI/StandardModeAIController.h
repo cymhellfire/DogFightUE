@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 
+#include "AIType.h"
 #include "AI/DogFightAIController.h"
 #include "Actors/Interfaces/GameCardUserPlayerControllerInterface.h"
 #include "Actors/Interfaces/GameTargetProviderInterface.h"
@@ -13,14 +14,6 @@
 #include "StandardModeAIController.generated.h"
 
 class AStandardModePlayerCharacter;
-
-namespace EStandardModeAIControllerState
-{
-	extern DOGFIGHT_API const FName Idle;
-	extern DOGFIGHT_API const FName UsingCard;
-	extern DOGFIGHT_API const FName WaitingOrder;
-	extern DOGFIGHT_API const FName Dead;
-}
 
 /**
  * AI Controller for StandardMode
@@ -52,6 +45,8 @@ public:
 
 	void StopAIRound();
 
+	void PrepareForUsingCard();
+
 	/** Use a random card. */
 	void UseRandomCard();
 
@@ -72,14 +67,18 @@ public:
 	 */
 	AStandardModePlayerCharacter* AcquireTargetPlayerCharacter(int32 TargetFlags);
 
-	FORCEINLINE FName GetCurrentState() const { return CurrentState; }
+	FORCEINLINE EAIControllerState GetCurrentState() const { return CurrentState; }
 
-	void SetState(FName NewState);
+	void SetState(EAIControllerState NewState);
 
 	AStandardModePlayerCharacter* GetCharacterPawn() const { return CharacterPawn; }
 
 	/** Set target character pawn for next used card. */
 	void SetTargetCharacter(AStandardModePlayerCharacter* NewTarget) { TargetCharacterPawn = NewTarget; };
+
+	bool HasUsableCard() const;
+
+	bool UseResponseCard();
 
 #pragma region Interface
 	virtual FCardTargetInfoAcquiredSignature& GetTargetInfoAcquiredDelegate() override { return OnCardTargetInfoAcquired; };
@@ -100,7 +99,9 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	virtual void OnStateChanged(FName NewState);
+	virtual void OnStateChanged(EAIControllerState NewState);
+
+	void FinishMyRound();
 
 	UFUNCTION()
 	void OnCardFinished(bool bPlayerRoundFinished);
@@ -142,7 +143,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category="AIController")
 	AStandardModePlayerCharacter* TargetCharacterPawn;
 
-	FName CurrentState;
+	EAIControllerState CurrentState;
 
 	FCardTargetInfoAcquiredSignature OnCardTargetInfoAcquired;
 

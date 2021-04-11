@@ -507,7 +507,33 @@ void AStandardGameMode::RequestResponseCardFromPlayer(int32 PlayerId, TArray<TSu
 			return;
 		}
 
-		
+		if (AStandardPlayerState* StandardPlayerState = StandardModeAIController->GetPlayerState<AStandardPlayerState>())
+		{
+			// Apply card using filter
+			StandardPlayerState->ClearCardUsableFilter();
+			StandardPlayerState->ApplyCardUsableFilterByClass(ResponseCardClasses);
+			StandardPlayerState->ApplyCardUsableFilterByUseMethod(ECardUseMethod::CUM_Passive);
+
+			// Check if there is any card can response
+			if (StandardPlayerState->GetUsableCardCount() > 0)
+			{
+				// Face to incoming enemy
+				if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(StandardModeAIController->GetActualPawn()))
+				{
+					const FVector FacingDirection = SourceActor->GetActorLocation() - StandardModePlayerCharacter->GetActorLocation();
+					StandardModePlayerCharacter->SetAimingDirection(FacingDirection);
+				}
+
+				StandardPlayerState->SetCardSelectionPurpose(ECardSelectionPurpose::CSP_Response);
+				StandardPlayerState->OnResponseCardSelected.AddDynamic(this, &AStandardGameMode::OnResponseCardSelected);
+
+				StandardModeAIController->UseResponseCard();
+			}
+			else
+			{
+				OnResponseCardSelected(nullptr, StandardPlayerState);
+			}
+		}
 	}
 }
 
@@ -961,6 +987,13 @@ void AStandardGameMode::HandlePhasePlayerRound()
 				if (AStandardPlayerState* StandardPlayerState = StandardModeAIController->GetPlayerState<AStandardPlayerState>())
 				{
 					bSkipUsingCard = TEST_SINGLE_FLAG(StandardPlayerState->GetSkipGamePhaseFlags(), ESGP_UseCards);
+
+					if (!bSkipUsingCard)
+					{
+						StandardPlayerState->SetCardSelectionPurpose(ECardSelectionPurpose::CSP_Use);
+						StandardPlayerState->ClearCardUsableFilter();
+						StandardPlayerState->ApplyCardUsableFilterByUseMethod(ECardUseMethod::CUM_Aggressive);
+					}
 				}
 
 				// Directly end current round if player is marked as SkipUsingCard
@@ -1379,6 +1412,18 @@ void AStandardGameMode::OnPlayerUsingCardFinished(bool bShouldEndRound)
 					StandardPlayerState->ClearCardUsableFilter();
 					StandardPlayerState->ApplyCardUsableFilterByUseMethod(ECardUseMethod::CUM_Aggressive);
 				}
+			}
+		}
+		else
+		{
+			if (AStandardModeAIController* StandardModeAIController = GetAIControllerById(GetCurrentPlayerId()))
+			{
+				if (AStandardPlayerState* StandardPlayerState = StandardModeAIController->GetPlayerState<AStandardPlayerState>())
+				{
+					StandardPlayerState->ClearCardUsableFilter();
+					StandardPlayerState->ApplyCardUsableFilterByUseMethod(ECardUseMethod::CUM_Aggressive);
+				}
+				StandardModeAIController->PrepareForUsingCard();
 			}
 		}
 	}

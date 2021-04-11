@@ -114,7 +114,7 @@ void UWeaponActionBase::OnReachedActionDistance(AActor* Carrier)
 		if (ResponseCardClasses.Num() > 0 && IsValid(PlayerState))
 		{
 			// TODO: Remove this hack debug condition
-			if (PlayerState->GetPlayerId() >= 100)
+			//if (PlayerState->GetPlayerId() >= 100)
 			{
 				if (AGameModeBase* GameModeBase = GetWorld()->GetAuthGameMode())
 				{

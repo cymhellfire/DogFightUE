@@ -6,6 +6,16 @@
 #define TEST_MULTI_PLAYER_FLAG(Bitmask, DesiredFlags) (((Bitmask) & (DesiredFlags)) == (DesiredFlags))
 
 UENUM(BlueprintType)
+enum class EAIControllerState : uint8
+{
+	ACS_Idle			UMETA(DisplayName="Idle"),
+	ACS_SelectingCard	UMETA(DisplayName="SelectingCard"),
+	ACS_UsingCard		UMETA(DisplayName="UsingCard"),
+	ACS_CardFinished	UMETA(DisplayName="CardFinished"),
+	ACS_Dead			UMETA(DisplayName="Dead"),
+};
+
+UENUM(BlueprintType)
 enum class EAIPlayerStyle : uint8
 {
 	APS_Default			UMETA(DisplayName = "Default"),
