@@ -46,6 +46,7 @@ class DOGFIGHT_API AStandardGameMode : public ADogFightGameModeBase
 	
 public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGameModeDelegateWithPlayerId, int32, PlayerId);
+	FGameModeDelegateWithPlayerId OnPlayerRoundBegin;
 	FGameModeDelegateWithPlayerId OnPlayerRoundEnd;
 	FGameModeDelegateWithPlayerId OnPlayerDead;
 
@@ -298,6 +299,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="PlayerSettings")
 	FInt32Range CardGainPerRoundRange;
+
+	int32 ReturnedCharacterCount;
 
 #pragma region Debug
 public:

@@ -483,13 +483,14 @@ void AStandardGameMode::RequestResponseCardFromPlayer(int32 PlayerId, TArray<TSu
 				if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(StandardModePlayerController->GetActualPawn()))
 				{
 					const FVector FacingDirection = SourceActor->GetActorLocation() - StandardModePlayerCharacter->GetActorLocation();
-					StandardModePlayerCharacter->SetAimingDirection(FacingDirection);
+					StandardModePlayerCharacter->SetAimingDirection(FacingDirection, [this, StandardPlayerState, StandardModePlayerController, CardToResponse]()
+					{
+						StandardPlayerState->SetCardSelectionPurpose(ECardSelectionPurpose::CSP_Response);
+						StandardPlayerState->OnResponseCardSelected.AddDynamic(this, &AStandardGameMode::OnResponseCardSelected);
+						StandardModePlayerController->ClientStartRequestResponseCard(1, CardToResponse);
+						StandardModePlayerController->ClientSetCardDisplayWidgetSelectable(true);
+					});
 				}
-
-				StandardPlayerState->SetCardSelectionPurpose(ECardSelectionPurpose::CSP_Response);
-				StandardPlayerState->OnResponseCardSelected.AddDynamic(this, &AStandardGameMode::OnResponseCardSelected);
-				StandardModePlayerController->ClientStartRequestResponseCard(1, CardToResponse);
-				StandardModePlayerController->ClientSetCardDisplayWidgetSelectable(true);
 			}
 			else
 			{
@@ -521,13 +522,14 @@ void AStandardGameMode::RequestResponseCardFromPlayer(int32 PlayerId, TArray<TSu
 				if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(StandardModeAIController->GetActualPawn()))
 				{
 					const FVector FacingDirection = SourceActor->GetActorLocation() - StandardModePlayerCharacter->GetActorLocation();
-					StandardModePlayerCharacter->SetAimingDirection(FacingDirection);
+					StandardModePlayerCharacter->SetAimingDirection(FacingDirection, [this, StandardPlayerState, StandardModeAIController]()
+					{
+						StandardPlayerState->SetCardSelectionPurpose(ECardSelectionPurpose::CSP_Response);
+						StandardPlayerState->OnResponseCardSelected.AddDynamic(this, &AStandardGameMode::OnResponseCardSelected);
+
+						StandardModeAIController->UseResponseCard();
+					});
 				}
-
-				StandardPlayerState->SetCardSelectionPurpose(ECardSelectionPurpose::CSP_Response);
-				StandardPlayerState->OnResponseCardSelected.AddDynamic(this, &AStandardGameMode::OnResponseCardSelected);
-
-				StandardModeAIController->UseResponseCard();
 			}
 			else
 			{
@@ -928,6 +930,8 @@ void AStandardGameMode::OnPlayerBuffQueueBeginRoundFinished()
 	BroadcastGameTitleMessageToAllPlayers(FGameTitleMessage {FString(TEXT("TitleMsg_PlayerRoundBegin")), NewRoundMessageArgument});
 
 	SetGamePhase(GamePhase::PlayerRound);
+
+	OnPlayerRoundBegin.Broadcast(GetCurrentPlayerId());
 }
 
 void AStandardGameMode::HandlePhasePlayerRound()
@@ -940,12 +944,6 @@ void AStandardGameMode::HandlePhasePlayerRound()
 			AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(StandardGameState->GetGameRoundsTimeline()->GetCurrentPlayerId());
 			if (StandardModePlayerController != nullptr)
 			{
-				// Cache character location
-				if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(StandardModePlayerController->GetActualPawn()))
-				{
-					StandardModePlayerCharacter->CacheCurrentLocation();
-				}
-
 				bool bSkipUsingCardPhase = false;
 				if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
 				{
@@ -977,12 +975,6 @@ void AStandardGameMode::HandlePhasePlayerRound()
 			AStandardModeAIController* StandardModeAIController = GetAIControllerById(StandardGameState->GetGameRoundsTimeline()->GetCurrentPlayerId());
 			if (StandardModeAIController != nullptr)
 			{
-				// Cache character location
-				if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(StandardModeAIController->GetActualPawn()))
-				{
-					StandardModePlayerCharacter->CacheCurrentLocation();
-				}
-
 				bool bSkipUsingCard = false;
 				if (AStandardPlayerState* StandardPlayerState = StandardModeAIController->GetPlayerState<AStandardPlayerState>())
 				{
@@ -1023,26 +1015,44 @@ void AStandardGameMode::HandlePhaseCharacterReturn()
 			return;
 		}
 
-		if (AStandardModePlayerCharacter* PlayerCharacter = Cast<AStandardModePlayerCharacter>(StandardModePlayerController->GetActualPawn()))
+		// Disable all cards for selecting
+		if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
 		{
-			PlayerCharacter->GetCarrierReachActionDistanceEvent().AddDynamic(this, &AStandardGameMode::OnCharacterReturnFinished);
-			PlayerCharacter->ReturnToCachedLocation();
+			StandardPlayerState->MarkAllCardUnUsable();
 		}
 	}
-	else
-	{
-		// Handle AI player
-		AStandardModeAIController* StandardModeAIController = GetAIControllerById(GetCurrentPlayerId());
-		if (StandardModeAIController == nullptr)
-		{
-			UE_LOG(LogDogFight, Error, TEXT("Failed to get AIController with Id %d"), GetCurrentPlayerId());
-			return;
-		}
 
-		if (AStandardModePlayerCharacter* PlayerCharacter = Cast<AStandardModePlayerCharacter>(StandardModeAIController->GetActualPawn()))
+	ReturnedCharacterCount = 0;
+
+	// Let all players return
+	for (AStandardModePlayerController* PlayerController : StandardPlayerControllerList)
+	{
+		if (AStandardPlayerState* StandardPlayerState = PlayerController->GetPlayerState<AStandardPlayerState>())
 		{
-			PlayerCharacter->GetCarrierReachActionDistanceEvent().AddDynamic(this, &AStandardGameMode::OnCharacterReturnFinished);
-			PlayerCharacter->ReturnToCachedLocation();
+			if (StandardPlayerState->IsAlive())
+			{
+				if (AStandardModePlayerCharacter* PlayerCharacter = Cast<AStandardModePlayerCharacter>(PlayerController->GetActualPawn()))
+				{
+					PlayerCharacter->GetCarrierReachActionDistanceEvent().AddDynamic(this, &AStandardGameMode::OnCharacterReturnFinished);
+					PlayerCharacter->ReturnToCachedLocation();
+				}
+			}
+		}
+	}
+
+	// Let all AI return
+	for (AStandardModeAIController* AIController : StandardAIControllerList)
+	{
+		if (AStandardPlayerState* StandardPlayerState = AIController->GetPlayerState<AStandardPlayerState>())
+		{
+			if (StandardPlayerState->IsAlive())
+			{
+				if (AStandardModePlayerCharacter* PlayerCharacter = Cast<AStandardModePlayerCharacter>(AIController->GetActualPawn()))
+				{
+					PlayerCharacter->GetCarrierReachActionDistanceEvent().AddDynamic(this, &AStandardGameMode::OnCharacterReturnFinished);
+					PlayerCharacter->ReturnToCachedLocation();
+				}
+			}
 		}
 	}
 }
@@ -1054,7 +1064,19 @@ void AStandardGameMode::OnCharacterReturnFinished(AActor* Actor)
 		StandardModePlayerCharacter->GetCarrierReachActionDistanceEvent().RemoveDynamic(this, &AStandardGameMode::OnCharacterReturnFinished);
 	}
 
-	SetGamePhase(GamePhase::DiscardCards);
+	ReturnedCharacterCount++;
+
+	if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())
+	{
+		if (StandardGameState->GetAlivePlayerCount() == ReturnedCharacterCount)
+		{
+			SetGamePhase(GamePhase::DiscardCards);
+		}
+	}
+	else
+	{
+		UE_LOG(LogDogFight, Error, TEXT("Failed to get StandardGameState."));
+	}
 }
 
 void AStandardGameMode::HandlePhaseDiscardCards()

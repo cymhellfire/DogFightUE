@@ -18,8 +18,8 @@ class DOGFIGHT_API AStandardModePlayerCharacter : public ACharacter, public IDam
 	GENERATED_BODY()
 
 public:
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCharacterDeadSignature);
-	FCharacterDeadSignature OnCharacterDead;
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCharacterDelegateNoArgument);
+	FCharacterDelegateNoArgument OnCharacterDead;
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterHealthChangedSignature, int32, NewHealth);
 	FCharacterHealthChangedSignature OnCharacterHealthChanged;
@@ -126,6 +126,9 @@ protected:
 	void OnWeaponActionFinished();
 
 	UFUNCTION()
+	void OnPlayerRoundBegin(int32 PlayerId);
+
+	UFUNCTION()
 	void OnPlayerRoundEnd(int32 PlayerId);
 
 public:
@@ -157,7 +160,7 @@ public:
 	void StopMoveImmediately();
 
 	/** Set the aiming direction and start rotating. */
-	void SetAimingDirection(FVector NewDirection);
+	void SetAimingDirection(FVector NewDirection, TFunction<void()> Callback = nullptr);
 
 	int32 GetCurrentHealth() const { return CurrentHealth; }
 
@@ -259,6 +262,8 @@ private:
 
 	/** The desired rotation when character is aimed. */
 	FRotator DesireFacingRotation;
+
+	TFunction<void()> FacingFinishCallback;
 
 	uint8 AimingState;
 

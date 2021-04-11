@@ -288,6 +288,12 @@ void AStandardModePlayerCharacter::OnWeaponActionFinished()
 	OnWeaponActionFinishedEvent.Broadcast(this);
 }
 
+void AStandardModePlayerCharacter::OnPlayerRoundBegin(int32 PlayerId)
+{
+	// Cache current location when round begin
+	CacheCurrentLocation();
+}
+
 void AStandardModePlayerCharacter::OnPlayerRoundEnd(int32 PlayerId)
 {
 	if (APlayerState* MyPlayerState = GetPlayerState())
@@ -372,6 +378,7 @@ void AStandardModePlayerCharacter::BeginPlay()
 	{
 		if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GameMode))
 		{
+			StandardGameMode->OnPlayerRoundBegin.AddDynamic(this, &AStandardModePlayerCharacter::OnPlayerRoundBegin);
 			StandardGameMode->OnPlayerRoundEnd.AddDynamic(this, &AStandardModePlayerCharacter::OnPlayerRoundEnd);
 		}
 	}
@@ -476,6 +483,12 @@ void AStandardModePlayerCharacter::Tick(float DeltaTime)
 		{
 			CurrentRotation.Yaw = DesireFacingRotation.Yaw;
 			AimingState = 0;
+
+			// Invoke callback
+			if (FacingFinishCallback)
+			{
+				FacingFinishCallback();
+			}
 		}
 		SetActorRotation(CurrentRotation);
 	}
@@ -604,7 +617,7 @@ void AStandardModePlayerCharacter::StopMoveImmediately()
 	GetMovementComponent()->StopMovementImmediately();
 }
 
-void AStandardModePlayerCharacter::SetAimingDirection(FVector NewDirection)
+void AStandardModePlayerCharacter::SetAimingDirection(FVector NewDirection, TFunction<void()> Callback)
 {
 	// Decide rotating clockwise or not
 	DesireFacingRotation = NewDirection.Rotation();
@@ -613,6 +626,11 @@ void AStandardModePlayerCharacter::SetAimingDirection(FVector NewDirection)
 	// Filter little direction changes
 	if (FMath::Abs(YawDelta) < 1.f)
 	{
+		// Invoke callback
+		if (Callback)
+		{
+			Callback();
+		}
 		return;
 	}
 
@@ -630,6 +648,8 @@ void AStandardModePlayerCharacter::SetAimingDirection(FVector NewDirection)
 		// Count clockwise
 		AimingState = 2;
 	}
+
+	FacingFinishCallback = Callback;
 }
 
 void AStandardModePlayerCharacter::RecoverStrength()
@@ -723,6 +743,9 @@ void AStandardModePlayerCharacter::SetRagdollActive(bool bActive)
 
 		// Recover all strength after disable ragdoll
 		RecoverStrength();
+
+		// Re-cache location that character will leave here
+		CacheCurrentLocation();
 	}
 }
 
