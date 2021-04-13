@@ -8,6 +8,7 @@ enum class EWeaponType : uint8
 {
 	WT_None			UMETA(DisplayName="None", Tooltip="No weapon equipped."),
 	WT_DualSword	UMETA(DisplayName="Dual Sword", Tooltip="Dual sword equipped."),
+	WT_Fist			UMETA(DisplayName="Fist", Tooltip="Attack enemy by fist."),
 };
 
 UENUM(BlueprintType)

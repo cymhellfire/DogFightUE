@@ -17,6 +17,7 @@
 #include "Game/GameRoundsTimeline.h"
 #include "AI/StandardModeAIController.h"
 #include "Common/BitmaskOperation.h"
+#include "Actors/Weapons/WeaponBase.h"
 
 namespace GamePhase
 {
@@ -777,6 +778,19 @@ void AStandardGameMode::HandlePhaseDecideOrder()
 			{
 				StandardPlayerState->RegisterPlayersForRelation();
 			}
+
+			// Equip default weapon
+			if (IsValid(CharacterDefaultWeapon))
+			{
+				if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(PlayerController->GetActualPawn()))
+				{
+					UWeaponBase* NewWeapon = NewObject<UWeaponBase>(StandardModePlayerCharacter, CharacterDefaultWeapon);
+					StandardModePlayerCharacter->OnWeaponEquippedEvent.AddDynamic(this, &AStandardGameMode::AStandardGameMode::OnWeaponEquipped);
+					StandardModePlayerCharacter->EquipWeapon(NewWeapon);
+
+					WeaponEquipWaitingCharacterCount++;
+				}
+			}
 		}
 
 		// Register players statistic for AI
@@ -786,10 +800,41 @@ void AStandardGameMode::HandlePhaseDecideOrder()
 			{
 				StandardPlayerState->RegisterPlayersForRelation();
 			}
+
+			// Equip default weapon
+			if (IsValid(CharacterDefaultWeapon))
+			{
+				if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(AIController->GetActualPawn()))
+				{
+					UWeaponBase* NewWeapon = NewObject<UWeaponBase>(StandardModePlayerCharacter, CharacterDefaultWeapon);
+					StandardModePlayerCharacter->OnWeaponEquippedEvent.AddDynamic(this, &AStandardGameMode::AStandardGameMode::OnWeaponEquipped);
+					StandardModePlayerCharacter->EquipWeapon(NewWeapon);
+
+					WeaponEquipWaitingCharacterCount++;
+				}
+			}
 		}
 	}
 
-	SetGamePhase(GamePhase::PlayerRoundBegin);
+	// If no weapon to equip, just move to next phase
+	if (WeaponEquipWaitingCharacterCount == 0)
+	{
+		SetGamePhase(GamePhase::PlayerRoundBegin);
+	}
+}
+
+void AStandardGameMode::OnWeaponEquipped(AActor* CarrierActor)
+{
+	if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(CarrierActor))
+	{
+		StandardModePlayerCharacter->OnWeaponEquippedEvent.RemoveDynamic(this, &AStandardGameMode::OnWeaponEquipped);
+	}
+
+	WeaponEquipWaitingCharacterCount--;
+	if (WeaponEquipWaitingCharacterCount == 0)
+	{
+		SetGamePhase(GamePhase::PlayerRoundBegin);
+	}
 }
 
 void AStandardGameMode::HandlePhasePlayerRoundBegin()

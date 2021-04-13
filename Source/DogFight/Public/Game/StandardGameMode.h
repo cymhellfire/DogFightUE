@@ -222,6 +222,9 @@ protected:
 
 	virtual void HandlePhaseDecideOrder();
 
+	UFUNCTION()
+	void OnWeaponEquipped(AActor* CarrierActor);
+
 	virtual void HandlePhasePlayerRoundBegin();
 
 	UFUNCTION()
@@ -300,7 +303,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="PlayerSettings")
 	FInt32Range CardGainPerRoundRange;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="PlayerSettings")
+	TSubclassOf<class UWeaponBase> CharacterDefaultWeapon;
+
 	int32 ReturnedCharacterCount;
+
+	int32 WeaponEquipWaitingCharacterCount;
 
 #pragma region Debug
 public:
