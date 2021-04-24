@@ -3,12 +3,14 @@
 
 #include "Actors/Weapons/WeaponBase.h"
 #include "Actors/Weapons/WeaponActionBase.h"
+#include "Actors/Weapons/WeaponMeshActor.h"
 
 // Sets default values
 UWeaponBase::UWeaponBase()
 {
 	bEquipped = false;
 	bAutoConsumeInput = false;
+	BaseDamage = 5.f;
 }
 
 void UWeaponBase::SetWeaponOwner(ACharacter* NewOwner)
@@ -142,6 +144,16 @@ void UWeaponBase::ResetWeaponAction()
 	}
 }
 
+AWeaponMeshActor* UWeaponBase::GetWeaponMeshByParentSocket(FName SocketName)
+{
+	if (!WeaponMeshActorMap.Contains(SocketName))
+	{
+		return nullptr;
+	}
+
+	return WeaponMeshActorMap[SocketName];
+}
+
 void UWeaponBase::Tick(float DeltaTime)
 {
 	switch (CurrentWeaponState)
@@ -235,16 +247,24 @@ void UWeaponBase::UpdateDestroyQueue(float DeltaTime)
 
 void UWeaponBase::SpawnWeaponActor(FWeaponSpawningInfo SpawnSettings)
 {
+	// Check duplicate parent socket
+	if (WeaponMeshActorMap.Contains(SpawnSettings.TargetSocketName))
+	{
+		UE_LOG(LogDogFight, Error, TEXT("[WeaponBase] Multiple actors spawns to same socket %s."), *SpawnSettings.TargetSocketName.ToString());
+		return;
+	}
+
 	const FAttachmentTransformRules WeaponAttachRules(EAttachmentRule::SnapToTarget,
 		EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, false);
 
 	USkeletalMeshComponent* MeshComponent = OwnerCharacter->GetMesh();
 
-	AActor* NewMeshActor = GetWorld()->SpawnActor<AActor>(SpawnSettings.WeaponMeshClass);
+	AWeaponMeshActor* NewMeshActor = GetWorld()->SpawnActor<AWeaponMeshActor>(SpawnSettings.WeaponMeshClass);
 	NewMeshActor->AttachToComponent(MeshComponent, WeaponAttachRules, SpawnSettings.TargetSocketName);
+	NewMeshActor->SetWeaponMeshOwner(OwnerCharacter);
 
 	// Record new actor to array
-	WeaponMeshActors.Add(NewMeshActor);
+	WeaponMeshActorMap.Add(SpawnSettings.TargetSocketName, NewMeshActor);
 
 	// Create destroy info
 	DestroyInfos.Add(FWeaponDestroyInfo{NewMeshActor, SpawnSettings.DestroyDelay});
@@ -312,7 +332,7 @@ void UWeaponBase::OnWeaponUnEquipped()
 {
 	GetWorld()->GetTimerManager().ClearTimer(WeaponUnEquipTimerHandle);
 
-	WeaponMeshActors.Empty();
+	WeaponMeshActorMap.Empty();
 
 	CurrentWeaponState = WS_None;
 	bEquipped = false;

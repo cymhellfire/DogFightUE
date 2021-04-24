@@ -5,6 +5,8 @@
 
 #include "Actors/Interfaces/WeaponCarrierInterface.h"
 #include "Actors/Weapons/WeaponBase.h"
+#include "Actors/Weapons/WeaponMeshActor.h"
+#include "Animation/AnimNotify_SwitchHitDetect.h"
 #include "Game/StandardGameMode.h"
 
 UWeaponActionBase::UWeaponActionBase()
@@ -80,6 +82,15 @@ void UWeaponActionBase::PlayActionMontage(UAnimMontage* MontageToPlay)
 		{
 			if (UAnimInstance* AnimInstance = MeshComponent->GetAnimInstance())
 			{
+				// Register callback to notifies
+				for (FAnimNotifyEvent Notify : MontageToPlay->Notifies)
+				{
+					if (UAnimNotify_SwitchHitDetect* ApplyDamageNotify = Cast<UAnimNotify_SwitchHitDetect>(Notify.Notify))
+					{
+						ApplyDamageNotify->OnHitDetectSwitched.AddDynamic(this, &UWeaponActionBase::OnHitDetectSwitched);
+					}
+				}
+				
 				const float ActionDuration = AnimInstance->Montage_Play(MontageToPlay);
 				GetWorld()->GetTimerManager().SetTimer(ActionTimerHandle, this, &UWeaponActionBase::OnActionMontageFinished, ActionDuration);
 			}
@@ -159,4 +170,26 @@ void UWeaponActionBase::OnResponseCardSelected()
 	}
 
 	PrepareActionMontage();
+}
+
+void UWeaponActionBase::OnHitDetectSwitched(UAnimNotify_SwitchHitDetect* Notify, bool bTurnOn, float DamageRatio, FName ParentSocketName)
+{
+	// Unregister callback
+	if (Notify)
+	{
+		Notify->OnHitDetectSwitched.RemoveDynamic(this, &UWeaponActionBase::OnHitDetectSwitched);
+	}
+
+	if (ParentSocketName.IsNone())
+	{
+		UE_LOG(LogDogFight, Warning, TEXT("[WeaponActionBase] Invalid bone name specified."));
+		return;
+	}
+
+	// Get collision test actor
+	if (AWeaponMeshActor* MeshActor = OwnerWeapon->GetWeaponMeshByParentSocket(ParentSocketName))
+	{
+		MeshActor->SetDamageRatio(DamageRatio);
+		MeshActor->SetDetectHit(bTurnOn);
+	}
 }

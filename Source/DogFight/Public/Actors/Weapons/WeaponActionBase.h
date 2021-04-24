@@ -58,6 +58,9 @@ protected:
 	UFUNCTION()
 	void OnResponseCardSelected();
 
+	UFUNCTION()
+	void OnHitDetectSwitched(class UAnimNotify_SwitchHitDetect* Notify, bool bTurnOn, float DamageRatio, FName ParentSocketName);
+
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponAction")
 	FName WeaponActionName;

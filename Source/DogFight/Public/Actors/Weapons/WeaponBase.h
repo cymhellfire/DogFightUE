@@ -9,6 +9,7 @@
 #include "WeaponBase.generated.h"
 
 class UWeaponActionBase;
+class AWeaponMeshActor;
 
 enum EWeaponState
 {
@@ -27,7 +28,7 @@ struct FWeaponMeshSetting
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponMeshSetting")
-	TSubclassOf<AActor> WeaponMeshActorClass;
+	TSubclassOf<AWeaponMeshActor> WeaponMeshActorClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponMeshSetting")
 	FName ParentSocketName;
@@ -41,7 +42,7 @@ struct FWeaponMeshSetting
 
 struct FWeaponSpawningInfo
 {
-	TSubclassOf<AActor> WeaponMeshClass;
+	TSubclassOf<AWeaponMeshActor> WeaponMeshClass;
 
 	FName TargetSocketName;
 
@@ -60,7 +61,7 @@ struct FWeaponSpawningInfo
 
 struct FWeaponDestroyInfo
 {
-	AActor* WeaponActor;
+	AWeaponMeshActor* WeaponActor;
 
 	float DestroyCountdown;
 };
@@ -90,6 +91,8 @@ public:
 	EWeaponType GetWeaponType() const { return WeaponType; }
 
 	ACharacter* GetWeaponOwnerCharacter() const { return OwnerCharacter; }
+
+	AWeaponMeshActor* GetWeaponMeshByParentSocket(FName SocketName);
 
 #pragma region FTickableGameObject
 	virtual void Tick(float DeltaTime) override;
@@ -131,6 +134,9 @@ protected:
 	EWeaponType WeaponType;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Weapon")
+	float BaseDamage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Weapon")
 	TArray<FWeaponMeshSetting> MeshSettings;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Weapon")
@@ -155,7 +161,7 @@ protected:
 	TArray<FWeaponSpawningInfo> SpawningInfos;
 	TArray<FWeaponDestroyInfo> DestroyInfos;
 
-	TArray<AActor*> WeaponMeshActors;
+	TMap<FName, AWeaponMeshActor*> WeaponMeshActorMap;
 
 	ACharacter* OwnerCharacter;
 
