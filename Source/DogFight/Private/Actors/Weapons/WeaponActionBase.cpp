@@ -3,11 +3,14 @@
 
 #include "Actors/Weapons/WeaponActionBase.h"
 
+#include "Actors/Components/ReceiveDamageComponent.h"
 #include "Actors/Interfaces/WeaponCarrierInterface.h"
 #include "Actors/Weapons/WeaponBase.h"
 #include "Actors/Weapons/WeaponMeshActor.h"
+#include "Animation/AnimNotify_InvincibleFrame.h"
 #include "Animation/AnimNotify_SwitchHitDetect.h"
 #include "Game/StandardGameMode.h"
+#include "Pawns/StandardModePlayerCharacter.h"
 
 UWeaponActionBase::UWeaponActionBase()
 {
@@ -88,6 +91,10 @@ void UWeaponActionBase::PlayActionMontage(UAnimMontage* MontageToPlay)
 					if (UAnimNotify_SwitchHitDetect* ApplyDamageNotify = Cast<UAnimNotify_SwitchHitDetect>(Notify.Notify))
 					{
 						ApplyDamageNotify->OnHitDetectSwitched.AddDynamic(this, &UWeaponActionBase::OnHitDetectSwitched);
+					}
+					else if (UAnimNotify_InvincibleFrame* InvincibleFrameNotify = Cast<UAnimNotify_InvincibleFrame>(Notify.Notify))
+					{
+						InvincibleFrameNotify->OnInvincibleStateChanged.AddDynamic(this, &UWeaponActionBase::OnInvincibleFrameChanged);
 					}
 				}
 				
@@ -191,5 +198,26 @@ void UWeaponActionBase::OnHitDetectSwitched(UAnimNotify_SwitchHitDetect* Notify,
 	{
 		MeshActor->SetDamageRatio(DamageRatio);
 		MeshActor->SetDetectHit(bTurnOn);
+	}
+}
+
+void UWeaponActionBase::OnInvincibleFrameChanged(UAnimNotify_InvincibleFrame* Notify, bool bInvincible)
+{
+	// Unregister callback
+	if (Notify)
+	{
+		Notify->OnInvincibleStateChanged.RemoveDynamic(this, &UWeaponActionBase::OnInvincibleFrameChanged);
+	}
+
+	if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(OwnerWeapon->GetWeaponOwnerCharacter()))
+	{
+		if (bInvincible)
+		{
+			StandardModePlayerCharacter->AddInvincibleFlags(static_cast<int32>(EActorInvincibleFlags::AIF_InvincibleFrame));
+		}
+		else
+		{
+			StandardModePlayerCharacter->RemoveInvincibleFlags(static_cast<int32>(EActorInvincibleFlags::AIF_InvincibleFrame));
+		}
 	}
 }

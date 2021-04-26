@@ -35,7 +35,8 @@ public:
 #pragma region IDamageableActorInterface
 
 	virtual UReceiveDamageComponent* GetDamageReceiveComponent() override;
-	virtual void SetInvincible(bool bActive) override;
+	virtual void AddInvincibleFlags(int32 Flags) override;
+	virtual void RemoveInvincibleFlags(int32 Flags) override;
 	virtual bool AddExtraArmor(FActorArmor& NewArmor) override;
 	virtual bool RemoveExtraArmor(FActorArmor& TargetArmor) override;
 	virtual void SetHealthPercentage(float NewPercentage) override;
@@ -136,7 +137,7 @@ public:
 	void SetUnitName(const FString& NewName);
 
 	UFUNCTION(BlueprintCallable, Category="DogFight|Character")
-	void SetCurrentHealth(int32 NewHealth);
+	void SetCurrentHealth(float NewHealth);
 
 	UFUNCTION(BlueprintImplementableEvent, Category="DogFight|Character")
 	void UnitNameChanged(const FText& PlayerName);
@@ -162,7 +163,8 @@ public:
 	/** Set the aiming direction and start rotating. */
 	void SetAimingDirection(FVector NewDirection, TFunction<void()> Callback = nullptr);
 
-	int32 GetCurrentHealth() const { return CurrentHealth; }
+	UFUNCTION(BlueprintCallable, Category="DogFight|Character")
+	int32 GetCurrentHealth() const { return FMath::CeilToInt(CurrentHealth); }
 
 	UFUNCTION(BlueprintCallable, Category="Animation", NetMulticast, Reliable)
 	void MulticastSetRagdollActive(bool bActive);
@@ -240,7 +242,7 @@ private:
 	FString UnitName;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Character", meta = (AllowPrivateAccess = "true"), ReplicatedUsing=OnRep_CurrentHealth)
-	int32 CurrentHealth;
+	float CurrentHealth;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Character", meta = (AllowPrivateAccess = "true"), ReplicatedUsing=OnRep_CurrentStrength)
 	int32 CurrentStrength;

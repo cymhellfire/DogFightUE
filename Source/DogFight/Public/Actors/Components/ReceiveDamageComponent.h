@@ -5,7 +5,15 @@
 #include "DogFight.h"
 #include "Components/ActorComponent.h"
 #include "DamageStructures.h"
+#include "Common/BitmaskOperation.h"
 #include "ReceiveDamageComponent.generated.h"
+
+UENUM(BlueprintType, meta=(BitFlags))
+enum class EActorInvincibleFlags : uint8
+{
+	AIF_GameplayBuff		UMETA(DisplayName="Gameplay Buff"),
+	AIF_InvincibleFrame		UMETA(DisplayName="Invincible Frame"),
+};
 
 /**
  * Component that contains all damage relevant variables for parent actor.
@@ -26,9 +34,15 @@ public:
 
 	bool RemoveExtraArmor(FActorArmor& TargetArmor);
 
+	void AddInvincibleFlags(int32 Flags);
+
+	void RemoveInvincibleFlags(int32 Flags);
+
+	bool IsInvincible() const { return InvincibleFlags != 0; }
+
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="ReceiveDamageComponent", Replicated)
-	bool bInvincible;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="ReceiveDamageComponent", Replicated, meta=(Bitmask, BitmaskEnum="EActorInvincibleFlags"))
+	int32 InvincibleFlags;
 
 	/** The armor to reduce any physical type damage. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="ReceiveDamageComponent", Replicated)

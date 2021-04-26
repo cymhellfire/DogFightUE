@@ -2,7 +2,7 @@
 
 
 #include "Actors/Buffs/Buff_Invincible.h"
-
+#include "Actors/Components/ReceiveDamageComponent.h"
 #include "Actors/Interfaces/DamageableActorInterface.h"
 
 void ABuff_Invincible::ApplyBuff()
@@ -11,7 +11,7 @@ void ABuff_Invincible::ApplyBuff()
 
 	if (IDamageableActorInterface* DamageableActor = Cast<IDamageableActorInterface>(TargetActor))
 	{
-		DamageableActor->SetInvincible(true);
+		DamageableActor->AddInvincibleFlags(static_cast<int32>(EActorInvincibleFlags::AIF_GameplayBuff));
 	}
 }
 
@@ -21,6 +21,6 @@ void ABuff_Invincible::RemoveBuff()
 
 	if (IDamageableActorInterface* DamageableActor = Cast<IDamageableActorInterface>(TargetActor))
 	{
-		DamageableActor->SetInvincible(false);
+		DamageableActor->RemoveInvincibleFlags(static_cast<int32>(EActorInvincibleFlags::AIF_GameplayBuff));
 	}
 }

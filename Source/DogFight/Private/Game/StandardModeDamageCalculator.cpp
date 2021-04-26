@@ -15,7 +15,7 @@ float UStandardModeDamageCalculator::CalculateActualDamage(AActor* DamageTaker, 
 		if (UReceiveDamageComponent* ReceiveDamageComponent = DamageableActor->GetDamageReceiveComponent())
 		{
 			// Erase damage if target is invincible
-			if (ReceiveDamageComponent->bInvincible)
+			if (ReceiveDamageComponent->IsInvincible())
 				return 0;
 
 			// Check the damage type

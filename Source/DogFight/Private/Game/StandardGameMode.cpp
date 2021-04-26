@@ -788,6 +788,9 @@ void AStandardGameMode::HandlePhaseDecideOrder()
 					StandardModePlayerCharacter->OnWeaponEquippedEvent.AddDynamic(this, &AStandardGameMode::AStandardGameMode::OnWeaponEquipped);
 					StandardModePlayerCharacter->EquipWeapon(NewWeapon);
 
+					// Also update cache location
+					StandardModePlayerCharacter->CacheCurrentLocation();
+
 					WeaponEquipWaitingCharacterCount++;
 				}
 			}
@@ -809,6 +812,9 @@ void AStandardGameMode::HandlePhaseDecideOrder()
 					UWeaponBase* NewWeapon = NewObject<UWeaponBase>(StandardModePlayerCharacter, CharacterDefaultWeapon);
 					StandardModePlayerCharacter->OnWeaponEquippedEvent.AddDynamic(this, &AStandardGameMode::AStandardGameMode::OnWeaponEquipped);
 					StandardModePlayerCharacter->EquipWeapon(NewWeapon);
+
+					// Also update cache location
+					StandardModePlayerCharacter->CacheCurrentLocation();
 
 					WeaponEquipWaitingCharacterCount++;
 				}

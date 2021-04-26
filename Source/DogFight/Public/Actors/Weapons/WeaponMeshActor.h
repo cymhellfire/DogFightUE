@@ -45,4 +45,6 @@ protected:
 
 	AActor* WeaponOwner;
 	AController* WeaponOwnerController;
+
+	TArray<AActor*> HitActorList;
 };

@@ -61,6 +61,9 @@ protected:
 	UFUNCTION()
 	void OnHitDetectSwitched(class UAnimNotify_SwitchHitDetect* Notify, bool bTurnOn, float DamageRatio, FName ParentSocketName);
 
+	UFUNCTION()
+	void OnInvincibleFrameChanged(class UAnimNotify_InvincibleFrame* Notify, bool bInvincible);
+
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponAction")
 	FName WeaponActionName;

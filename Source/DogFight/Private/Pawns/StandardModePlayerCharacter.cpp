@@ -136,12 +136,12 @@ void AStandardModePlayerCharacter::SetUnitName(const FString& NewName)
 	}
 }
 
-void AStandardModePlayerCharacter::SetCurrentHealth(int32 NewHealth)
+void AStandardModePlayerCharacter::SetCurrentHealth(float NewHealth)
 {
 	if (GetLocalRole() != ROLE_Authority)
 		return;
 	
-	const int32 NewValue = FMath::Clamp(NewHealth, 0, MaxBaseHealth);
+	const float NewValue = FMath::Clamp<float>(NewHealth, 0.f, MaxBaseHealth);
 	if (CurrentHealth != NewValue)
 	{
 		CurrentHealth = NewValue;
@@ -154,11 +154,19 @@ UReceiveDamageComponent* AStandardModePlayerCharacter::GetDamageReceiveComponent
 	return ReceiveDamageComponent;
 }
 
-void AStandardModePlayerCharacter::SetInvincible(bool bActive)
+void AStandardModePlayerCharacter::AddInvincibleFlags(int32 Flags)
 {
 	if (ReceiveDamageComponent != nullptr)
 	{
-		ReceiveDamageComponent->bInvincible = bActive;
+		ReceiveDamageComponent->AddInvincibleFlags(Flags);
+	}
+}
+
+void AStandardModePlayerCharacter::RemoveInvincibleFlags(int32 Flags)
+{
+	if (ReceiveDamageComponent != nullptr)
+	{
+		ReceiveDamageComponent->RemoveInvincibleFlags(Flags);
 	}
 }
 
@@ -391,16 +399,19 @@ void AStandardModePlayerCharacter::OnRep_UnitName()
 
 void AStandardModePlayerCharacter::OnRep_CurrentHealth()
 {
-	if (CurrentHealth <= 0)
+	if (CurrentHealth <= 0.f)
 	{
 		Dead();
 	}
 
+	// Use ceil version of health for other logic
+	const int32 CeilHealth = GetCurrentHealth();
+
 	// Invoke delegate
-	OnCharacterHealthChanged.Broadcast(CurrentHealth);
+	OnCharacterHealthChanged.Broadcast(CeilHealth);
 
 	// Invoke Blueprint implementation
-	CurrentHealthChanged(CurrentHealth);
+	CurrentHealthChanged(CeilHealth);
 }
 
 void AStandardModePlayerCharacter::OnRep_CurrentStrength()
@@ -593,7 +604,7 @@ float AStandardModePlayerCharacter::TakeDamage(float Damage, FDamageEvent const&
 
 	if (ActualDamage > 0.f)
 	{
-		CurrentHealth = FMath::Clamp<int32>(CurrentHealth - ActualDamage, 0, MaxBaseHealth);
+		CurrentHealth = FMath::Clamp<float>(CurrentHealth - ActualDamage, 0, MaxBaseHealth);
 
 		// Invoke OnRep on server side manually
 		OnRep_CurrentHealth();

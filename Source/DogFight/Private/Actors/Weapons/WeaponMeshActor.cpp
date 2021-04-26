@@ -44,6 +44,9 @@ void AWeaponMeshActor::SetDetectHit(bool bActivate)
 		{
 			StaticMeshComponent->SetCollisionProfileName(DefaultCollisionProfile);
 		}
+
+		// Clear hit actor list
+		HitActorList.Empty();
 	}
 }
 
@@ -61,5 +64,10 @@ void AWeaponMeshActor::OnMeshComponentBeginOverlap(UPrimitiveComponent* Overlapp
 		return;
 	}
 
-	OtherActor->TakeDamage(WeaponDamage * DamageRatio, FDamageEvent{WeaponDamageType}, WeaponOwnerController, WeaponOwner);
+	// Don't damage same actor twice
+	if (!HitActorList.Contains(OtherActor))
+	{
+		OtherActor->TakeDamage(WeaponDamage * DamageRatio, FDamageEvent{WeaponDamageType}, WeaponOwnerController, WeaponOwner);
+		HitActorList.Add(OtherActor);
+	}
 }

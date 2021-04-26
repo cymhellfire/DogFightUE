@@ -36,11 +36,21 @@ bool UReceiveDamageComponent::RemoveExtraArmor(FActorArmor& TargetArmor)
 	return false;
 }
 
+void UReceiveDamageComponent::AddInvincibleFlags(int32 Flags)
+{
+	MERGE_FLAGS(InvincibleFlags, Flags);
+}
+
+void UReceiveDamageComponent::RemoveInvincibleFlags(int32 Flags)
+{
+	REMOVE_FLAGS(InvincibleFlags, Flags);
+}
+
 void UReceiveDamageComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UReceiveDamageComponent, bInvincible);
+	DOREPLIFETIME(UReceiveDamageComponent, InvincibleFlags);
 	DOREPLIFETIME(UReceiveDamageComponent, PhysicalArmor);
 	DOREPLIFETIME(UReceiveDamageComponent, MagicalArmor);
 	DOREPLIFETIME(UReceiveDamageComponent, ExtraArmorList);
