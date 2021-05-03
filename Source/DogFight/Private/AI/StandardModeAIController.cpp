@@ -263,7 +263,7 @@ AStandardModePlayerCharacter* AStandardModeAIController::AcquireTargetPlayerChar
 		int32 TargetIndex = 0;
 		if (TopScoredCount > 1 && PlayerRelationStatisticList.Num() > 1)
 		{
-			TargetIndex = FMath::RandRange(0, TopScoredCount - 1);
+			TargetIndex = FMath::RandRange(0, FMath::Min(TopScoredCount, PlayerRelationStatisticList.Num()) - 1);
 		}
 		FPlayerRelationStatistic const * TargetPlayerStatistic = &PlayerRelationStatisticList[TargetIndex];
 		AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode());

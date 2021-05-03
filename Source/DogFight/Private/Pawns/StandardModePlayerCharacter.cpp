@@ -625,7 +625,18 @@ float AStandardModePlayerCharacter::TakeDamage(float Damage, FDamageEvent const&
 		OnRep_CurrentHealth();
 
 		// Show damage
-		FloatingTextPanelWidget->AddDamageText(ActualDamage, DamageEvent.DamageTypeClass.GetDefaultObject());
+		// Check damage type and format the text
+		FString DamageText = FString::Printf(TEXT("%.2f"), ActualDamage);
+		if (UDogFightDamageType* DogFightDamage = Cast<UDogFightDamageType>(DamageEvent.DamageTypeClass.GetDefaultObject()))
+		{
+			const FString StyleName = DogFightDamage->DamageStyleName;
+			if (!StyleName.IsEmpty())
+			{
+				DamageText = FString::Printf(TEXT("<img id=\"%s\"/><%s>%s</>"), *DogFightDamage->DamageTypeName.LocalizeKey, *StyleName, *DamageText);
+			}
+		}
+
+		MulticastAddFloatingText(FText::FromString(DamageText));
 	}
 
 	return ActualDamage;

@@ -39,6 +39,7 @@ public:
 	/**
 	 * Execute when projectile dead.
 	 */
+	UFUNCTION(BlueprintCallable, Category="DogFight|Projectile")
 	virtual void Dead();
 
 	virtual void BeginDestroy() override;

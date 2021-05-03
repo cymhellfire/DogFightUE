@@ -24,6 +24,7 @@ void AStandardPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 
 	DOREPLIFETIME(AStandardPlayerState, CardInfoList);
 	DOREPLIFETIME(AStandardPlayerState, UsableCardIndex);
+	DOREPLIFETIME(AStandardPlayerState, MaxCardCount);
 	DOREPLIFETIME(AStandardPlayerState, MaxUseNum);
 	DOREPLIFETIME(AStandardPlayerState, UsedCardNum);
 	DOREPLIFETIME(AStandardPlayerState, CardGainPerRounds);

@@ -126,7 +126,10 @@ public:
 
 	/** Get the count of cards this player has. */
 	UFUNCTION(BlueprintCallable, Category="StandardPlayerState")
-	FORCEINLINE int32 GetCurrentCardCount() const { return CardInstanceList.Num(); }
+	FORCEINLINE int32 GetCurrentCardCount() const
+	{
+		return GetNetMode() == NM_Client ? CardInfoList.Num() : CardInstanceList.Num();
+	}
 
 	/** Whether this player should discard cards before end this round. */
 	int32 CardCountToDiscard() const

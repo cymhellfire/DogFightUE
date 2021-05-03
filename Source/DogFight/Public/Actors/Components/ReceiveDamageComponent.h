@@ -8,11 +8,12 @@
 #include "Common/BitmaskOperation.h"
 #include "ReceiveDamageComponent.generated.h"
 
-UENUM(BlueprintType, meta=(BitFlags))
+UENUM(BlueprintType, meta=(BitFlags, UseEnumValuesAsMaskValuesInEditor = "true"))
 enum class EActorInvincibleFlags : uint8
 {
-	AIF_GameplayBuff		UMETA(DisplayName="Gameplay Buff"),
-	AIF_InvincibleFrame		UMETA(DisplayName="Invincible Frame"),
+	AIF_None				= 0 UMETA(Hidden),
+	AIF_GameplayBuff		= 1 << 0 UMETA(DisplayName="Gameplay Buff"),
+	AIF_InvincibleFrame		= 1 << 1 UMETA(DisplayName="Invincible Frame"),
 };
 
 /**
