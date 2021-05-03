@@ -18,6 +18,8 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Game/StandardGameMode.h"
+#include "Actors/Weapons/WeaponDisplayRelative.h"
+#include "Actors/Weapons/WeaponActionBase.h"
 #include "UI/Widget/CharacterFloatingTextPanelWidget.h"
 
 // Sets default values
@@ -106,6 +108,7 @@ void AStandardModePlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimePr
 	DOREPLIFETIME(AStandardModePlayerCharacter, CurrentHealth);
 	DOREPLIFETIME(AStandardModePlayerCharacter, CurrentStrength);
 	DOREPLIFETIME(AStandardModePlayerCharacter, CacheBlastForce);
+	DOREPLIFETIME(AStandardModePlayerCharacter, CurrentWeaponType);
 }
 
 void AStandardModePlayerCharacter::OnRep_SyncRagdollRotation()
@@ -232,7 +235,17 @@ void AStandardModePlayerCharacter::MulticastPlayMontage_Implementation(UAnimMont
 
 EWeaponType AStandardModePlayerCharacter::GetCurrentWeaponType()
 {
-	return CurrentWeapon ? CurrentWeapon->GetWeaponType() : EWeaponType::WT_None;
+	return CurrentWeaponType;
+}
+
+FWeaponActionDisplayInfo AStandardModePlayerCharacter::GetNextActionDisplayInfoByInput(EWeaponActionInput Input) const
+{
+	if (IsValid(CurrentWeapon))
+	{
+		return CurrentWeapon->GetNextActionByInput(Input)->GetWeaponActionDisplayInfo();
+	}
+
+	return FWeaponActionDisplayInfo();
 }
 
 void AStandardModePlayerCharacter::EquipWeapon(UWeaponBase* NewWeapon)
@@ -251,6 +264,7 @@ void AStandardModePlayerCharacter::EquipWeapon(UWeaponBase* NewWeapon)
 	else
 	{
 		CurrentWeapon = NewWeapon;
+		CurrentWeaponType = CurrentWeapon->GetWeaponType();
 		CurrentWeapon->SetWeaponOwner(this);
 		CurrentWeapon->OnWeaponEquippedEvent.AddDynamic(this, &AStandardModePlayerCharacter::OnWeaponEquipped);
 		CurrentWeapon->OnWeaponActionFinishedEvent.AddDynamic(this, &AStandardModePlayerCharacter::OnWeaponActionFinished);
@@ -268,6 +282,7 @@ void AStandardModePlayerCharacter::UnEquipWeapon()
 	CurrentWeapon->OnWeaponActionFinishedEvent.RemoveDynamic(this, &AStandardModePlayerCharacter::OnWeaponActionFinished);
 	CurrentWeapon->OnWeaponUnEquippedEvent.AddDynamic(this, &AStandardModePlayerCharacter::OnWeaponUnEquipped);
 	CurrentWeapon->UnEquip();
+	CurrentWeaponType = EWeaponType::WT_None;
 }
 
 void AStandardModePlayerCharacter::OnWeaponEquipped()

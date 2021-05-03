@@ -4,6 +4,7 @@
 #include "Actors/Weapons/WeaponBase.h"
 #include "Actors/Weapons/WeaponActionBase.h"
 #include "Actors/Weapons/WeaponMeshActor.h"
+#include "Pawns/StandardModePlayerCharacter.h"
 
 // Sets default values
 UWeaponBase::UWeaponBase()
@@ -35,18 +36,18 @@ void UWeaponBase::Equip()
 	}
 
 	// Get character mesh component for attachment
-	USkeletalMeshComponent* MeshComponent = OwnerCharacter->GetMesh();
-	if (!MeshComponent)
+	AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(OwnerCharacter);
+	if (!StandardModePlayerCharacter)
 	{
-		UE_LOG(LogDogFight, Error, TEXT("[Weapon] Owner doesn't have valid MeshComponent."))
+		UE_LOG(LogDogFight, Error, TEXT("[Weapon] Owner isn't a subclass of StandardModePlayerCharacter."))
 		return;
 	}
 
 	// Play equip montage
 	if (IsValid(EquipAnimMontage))
 	{
-		UAnimInstance* AnimInstance = MeshComponent->GetAnimInstance();
-		const float EquipDuration = AnimInstance->Montage_Play(EquipAnimMontage);
+		const float EquipDuration = EquipAnimMontage->SequenceLength;
+		StandardModePlayerCharacter->PlayMontage(EquipAnimMontage);
 		// Set the equip callback
 		GetWorld()->GetTimerManager().SetTimer(WeaponEquipTimerHandle, this, &UWeaponBase::OnWeaponEquipped, EquipDuration);
 	}
@@ -76,18 +77,18 @@ void UWeaponBase::UnEquip()
 	}
 
 	// Get character mesh component for attachment
-	USkeletalMeshComponent* MeshComponent = OwnerCharacter->GetMesh();
-	if (!MeshComponent)
+	AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(OwnerCharacter);
+	if (!StandardModePlayerCharacter)
 	{
-		UE_LOG(LogDogFight, Error, TEXT("[Weapon] Owner doesn't have valid MeshComponent."))
+		UE_LOG(LogDogFight, Error, TEXT("[Weapon] Owner isn't a subclass of StandardModePlayerCharacter."))
 		return;
 	}
 
 	// Play UnEquip animation
 	if (IsValid(UnEquipAnimMontage))
 	{
-		UAnimInstance* AnimInstance = MeshComponent->GetAnimInstance();
-		const float UnEquipDuration = AnimInstance->Montage_Play(UnEquipAnimMontage);
+		const float UnEquipDuration = UnEquipAnimMontage->SequenceLength;
+		StandardModePlayerCharacter->PlayMontage(UnEquipAnimMontage);
 		// Set the equip callback
 		GetWorld()->GetTimerManager().SetTimer(WeaponUnEquipTimerHandle, this, &UWeaponBase::OnWeaponUnEquipped, UnEquipDuration);
 	}
@@ -152,6 +153,29 @@ AWeaponMeshActor* UWeaponBase::GetWeaponMeshByParentSocket(FName SocketName)
 	}
 
 	return WeaponMeshActorMap[SocketName];
+}
+
+UWeaponActionBase* UWeaponBase::GetNextActionByInput(EWeaponActionInput Input)
+{
+	FName NextActionName;
+	if (IsValid(CurrentAction))
+	{
+		for (FWeaponActionTransition Transition : CurrentAction->ActionTransitions)
+		{
+			if (Transition.TransitionInput == Input)
+			{
+				NextActionName = Transition.TargetActionName;
+				break;
+			}
+		}
+	}
+
+	if (!NextActionName.IsNone() && WeaponActionMap.Contains(NextActionName))
+	{
+		return WeaponActionMap[NextActionName];
+	}
+
+	return nullptr;
 }
 
 void UWeaponBase::Tick(float DeltaTime)

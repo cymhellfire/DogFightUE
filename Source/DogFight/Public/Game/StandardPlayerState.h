@@ -201,6 +201,8 @@ protected:
 
 	void InitializeCardVariable();
 
+	void RefreshCardInfoList();
+
 	UFUNCTION()
 	void OnRep_CardInfoList();
 

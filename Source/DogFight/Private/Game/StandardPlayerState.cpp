@@ -47,8 +47,8 @@ void AStandardPlayerState::AddCard(ACardBase* Card)
 	if (GetNetMode() == NM_Client)
 		return;
 
-	CardInfoList.Add(Card->GetCardDisplayInfo());
 	CardInstanceList.Add(Card);
+	RefreshCardInfoList();
 
 	// Invoke OnRep function on server side
 	OnRep_CardInfoList();
@@ -64,8 +64,8 @@ void AStandardPlayerState::RemoveCard(int32 CardIndex)
 		return;
 	}
 
-	CardInfoList.RemoveAt(CardIndex);
 	CardInstanceList.RemoveAt(CardIndex);
+	RefreshCardInfoList();
 
 	// Invoke OnRep function on server side
 	OnRep_CardInfoList();
@@ -156,7 +156,7 @@ void AStandardPlayerState::RagdollWaitingTick()
 void AStandardPlayerState::PostCardFinished()
 {
 	CardInstanceList.RemoveAt(UsingCardIndex);
-	CardInfoList.RemoveAt(UsingCardIndex);
+	RefreshCardInfoList();
 
 	// Increase used card count
 	SetUsedCardCount(UsedCardNum + 1);
@@ -539,6 +539,16 @@ void AStandardPlayerState::InitializeCardVariable()
 			MaxUseNum = StandardGameMode->GetDefaultCardUsingCount();
 			CardGainPerRounds = StandardGameMode->GetDefaultCardGainPerRound();
 		}
+	}
+}
+
+void AStandardPlayerState::RefreshCardInfoList()
+{
+	CardInfoList.Empty(CardInfoList.Num());
+
+	for (ACardBase* Card : CardInstanceList)
+	{
+		CardInfoList.Add(Card->GetCardDisplayInfo());
 	}
 }
 

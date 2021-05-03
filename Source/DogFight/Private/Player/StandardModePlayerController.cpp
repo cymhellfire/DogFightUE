@@ -380,7 +380,7 @@ FCardInstructionTargetInfo AStandardModePlayerController::RequestRandomDirection
 	return ResultInfo;
 }
 
-APawn* AStandardModePlayerController::GetActualPawn()
+APawn* AStandardModePlayerController::GetActualPawn() const
 {
 	return Cast<APawn>(CharacterPawn);
 }

@@ -7,8 +7,8 @@ void UAnimNotify_InvincibleFrame::Notify(USkeletalMeshComponent* MeshComp, UAnim
 {
 	Super::Notify(MeshComp, Animation);
 
-	UWorld* CurrentWorld = GetWorld();
-	if (CurrentWorld && !CurrentWorld->IsPreviewWorld())
+	CachedWorld = MeshComp->GetWorld();
+	if (CachedWorld && !CachedWorld->IsPreviewWorld())
 	{
 		// Trigger begin invincible frame delegate
 		OnInvincibleStateChanged.Broadcast(this, true);
@@ -16,7 +16,7 @@ void UAnimNotify_InvincibleFrame::Notify(USkeletalMeshComponent* MeshComp, UAnim
 		if (InvincibleDuration > 0.f)
 		{
 			// Register timer for invincible frame
-			CurrentWorld->GetTimerManager().SetTimer(InvincibleTimerHandle, this, &UAnimNotify_InvincibleFrame::OnInvincibleFrameTimerExpired, InvincibleDuration);
+			CachedWorld->GetTimerManager().SetTimer(InvincibleTimerHandle, this, &UAnimNotify_InvincibleFrame::OnInvincibleFrameTimerExpired, InvincibleDuration);
 		}
 		else
 		{
@@ -27,6 +27,11 @@ void UAnimNotify_InvincibleFrame::Notify(USkeletalMeshComponent* MeshComp, UAnim
 
 void UAnimNotify_InvincibleFrame::OnInvincibleFrameTimerExpired()
 {
-	// Trigger end invincible frame delegate
-	OnInvincibleStateChanged.Broadcast(this, false);
+	if (CachedWorld && !CachedWorld->IsPreviewWorld())
+	{
+		CachedWorld->GetTimerManager().ClearTimer(InvincibleTimerHandle);
+
+		// Trigger end invincible frame delegate
+		OnInvincibleStateChanged.Broadcast(this, false);
+	}
 }

@@ -28,5 +28,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AnimNotify")
 	float InvincibleDuration;
 
+	UWorld* CachedWorld;
 	FTimerHandle InvincibleTimerHandle;
 };

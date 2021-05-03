@@ -43,11 +43,15 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponActionFinished);
 	FOnWeaponActionFinished OnWeaponActionFinished;
 
+	struct FWeaponActionDisplayInfo GetWeaponActionDisplayInfo() const;
+
 protected:
 	/** Prepare for playing action montage. */
 	virtual void PrepareActionMontage();
 
 	virtual void PlayActionMontage(UAnimMontage* MontageToPlay);
+
+	TArray<float> GetAllActionDamage() const;
 
 	UFUNCTION()
 	void OnReachedActionDistance(AActor* Carrier);
@@ -67,6 +71,9 @@ protected:
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponAction")
 	FName WeaponActionName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponAction")
+	FString WeaponActionDescription;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponAction")
 	UAnimMontage* ActionMontage;

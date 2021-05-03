@@ -6,6 +6,7 @@
 #include "Actors/Components/ReceiveDamageComponent.h"
 #include "Actors/Interfaces/WeaponCarrierInterface.h"
 #include "Actors/Weapons/WeaponBase.h"
+#include "Actors/Weapons/WeaponDisplayRelative.h"
 #include "Actors/Weapons/WeaponMeshActor.h"
 #include "Animation/AnimNotify_InvincibleFrame.h"
 #include "Animation/AnimNotify_SwitchHitDetect.h"
@@ -70,6 +71,35 @@ void UWeaponActionBase::SetOwnerWeapon(UWeaponBase* NewWeapon)
 	OwnerWeapon = NewWeapon;
 }
 
+FWeaponActionDisplayInfo UWeaponActionBase::GetWeaponActionDisplayInfo() const
+{
+	FWeaponActionDisplayInfo NewDisplayInfo;
+	NewDisplayInfo.ActionName = WeaponActionName.ToString();
+	NewDisplayInfo.ActionDescription = WeaponActionDescription;
+	NewDisplayInfo.ActionRangeString = FString::Printf(TEXT("%.0f"), ActionDistance);
+	const TArray<float> AllDamage = GetAllActionDamage();
+	if (AllDamage.Num() > 0)
+	{
+		FString DamageString;
+		for (float Damage : AllDamage)
+		{
+			if (!DamageString.IsEmpty())
+			{
+				DamageString.Append(TEXT(" + "));
+			}
+
+			DamageString.Append(FString::Printf(TEXT("%.2f"), Damage));
+		}
+		NewDisplayInfo.ActionDamageString = DamageString;
+	}
+	else
+	{
+		NewDisplayInfo.ActionDamageString = TEXT("0");
+	}
+
+	return NewDisplayInfo;
+}
+
 void UWeaponActionBase::PrepareActionMontage()
 {
 	PlayActionMontage(ActionMontage);
@@ -80,27 +110,25 @@ void UWeaponActionBase::PlayActionMontage(UAnimMontage* MontageToPlay)
 	if (IsValid(MontageToPlay))
 	{
 		ACharacter* OwnerCharacter = OwnerWeapon->GetWeaponOwnerCharacter();
-		USkeletalMeshComponent* MeshComponent = OwnerCharacter->GetMesh();
-		if (MeshComponent != nullptr)
+		AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(OwnerCharacter);
+		if (StandardModePlayerCharacter != nullptr)
 		{
-			if (UAnimInstance* AnimInstance = MeshComponent->GetAnimInstance())
+			// Register callback to notifies
+			for (FAnimNotifyEvent Notify : MontageToPlay->Notifies)
 			{
-				// Register callback to notifies
-				for (FAnimNotifyEvent Notify : MontageToPlay->Notifies)
+				if (UAnimNotify_SwitchHitDetect* ApplyDamageNotify = Cast<UAnimNotify_SwitchHitDetect>(Notify.Notify))
 				{
-					if (UAnimNotify_SwitchHitDetect* ApplyDamageNotify = Cast<UAnimNotify_SwitchHitDetect>(Notify.Notify))
-					{
-						ApplyDamageNotify->OnHitDetectSwitched.AddDynamic(this, &UWeaponActionBase::OnHitDetectSwitched);
-					}
-					else if (UAnimNotify_InvincibleFrame* InvincibleFrameNotify = Cast<UAnimNotify_InvincibleFrame>(Notify.Notify))
-					{
-						InvincibleFrameNotify->OnInvincibleStateChanged.AddDynamic(this, &UWeaponActionBase::OnInvincibleFrameChanged);
-					}
+					ApplyDamageNotify->OnHitDetectSwitched.AddDynamic(this, &UWeaponActionBase::OnHitDetectSwitched);
 				}
-				
-				const float ActionDuration = AnimInstance->Montage_Play(MontageToPlay);
-				GetWorld()->GetTimerManager().SetTimer(ActionTimerHandle, this, &UWeaponActionBase::OnActionMontageFinished, ActionDuration);
+				else if (UAnimNotify_InvincibleFrame* InvincibleFrameNotify = Cast<UAnimNotify_InvincibleFrame>(Notify.Notify))
+				{
+					InvincibleFrameNotify->OnInvincibleStateChanged.AddDynamic(this, &UWeaponActionBase::OnInvincibleFrameChanged);
+				}
 			}
+			
+			const float ActionDuration = MontageToPlay->SequenceLength;
+			StandardModePlayerCharacter->PlayMontage(MontageToPlay);
+			GetWorld()->GetTimerManager().SetTimer(ActionTimerHandle, this, &UWeaponActionBase::OnActionMontageFinished, ActionDuration);
 		}
 	}
 	else
@@ -108,6 +136,36 @@ void UWeaponActionBase::PlayActionMontage(UAnimMontage* MontageToPlay)
 		// If no valid montage, trigger callback directly
 		OnActionMontageFinished();
 	}
+}
+
+TArray<float> UWeaponActionBase::GetAllActionDamage() const
+{
+	TArray<float> Result;
+
+	if (IsValid(ActionMontage))
+	{
+		for (FAnimNotifyEvent Notify : ActionMontage->Notifies)
+		{
+			if (UAnimNotify_SwitchHitDetect* ApplyDamageNotify = Cast<UAnimNotify_SwitchHitDetect>(Notify.Notify))
+			{
+				// Only consider notify which are able to damage target
+				if (ApplyDamageNotify->bTurnOn && !ApplyDamageNotify->CollisionParentSocketName.IsNone())
+				{
+					// Calculate action damage
+					const AWeaponMeshActor* WeaponMeshActor = OwnerWeapon->GetWeaponMeshByParentSocket(ApplyDamageNotify->CollisionParentSocketName);
+					const float WeaponBaseDamage = WeaponMeshActor ? WeaponMeshActor->GetBaseDamage() : 0.f;
+
+					const float FinalDamage = ApplyDamageNotify->DamageRatio * WeaponBaseDamage;
+					if (FinalDamage > 0.f)
+					{
+						Result.Add(FinalDamage);
+					}
+				}
+			}
+		}
+	}
+
+	return Result;
 }
 
 void UWeaponActionBase::OnReachedActionDistance(AActor* Carrier)
@@ -203,8 +261,8 @@ void UWeaponActionBase::OnHitDetectSwitched(UAnimNotify_SwitchHitDetect* Notify,
 
 void UWeaponActionBase::OnInvincibleFrameChanged(UAnimNotify_InvincibleFrame* Notify, bool bInvincible)
 {
-	// Unregister callback
-	if (Notify)
+	// Unregister callback after invincible disable
+	if (Notify && !bInvincible)
 	{
 		Notify->OnInvincibleStateChanged.RemoveDynamic(this, &UWeaponActionBase::OnInvincibleFrameChanged);
 	}

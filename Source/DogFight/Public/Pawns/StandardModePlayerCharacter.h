@@ -58,6 +58,7 @@ public:
 #pragma region WeaponCarrierInterface
 	virtual UWeaponBase* GetCurrentWeapon() override { return CurrentWeapon; }
 	virtual EWeaponType GetCurrentWeaponType() override;
+	virtual struct FWeaponActionDisplayInfo GetNextActionDisplayInfoByInput(EWeaponActionInput Input) const override;
 	virtual void EquipWeapon(UWeaponBase* NewWeapon) override;
 	virtual void UnEquipWeapon() override;
 	virtual void EnqueueInput(EWeaponActionInput NewInput) override;
@@ -304,6 +305,9 @@ private:
 
 	UPROPERTY()
 	UWeaponBase* CurrentWeapon;
+
+	UPROPERTY(Replicated)
+	EWeaponType CurrentWeaponType;
 
 	UPROPERTY()
 	UWeaponBase* PendingWeapon;

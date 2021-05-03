@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Actors/Weapons/WeaponCommon.h"
+#include "Actors/Weapons/WeaponDisplayRelative.h"
 #include "WeaponCarrierInterface.generated.h"
 
 class UWeaponBase;
@@ -29,6 +30,9 @@ public:
 	/** Get the type of current weapon. */
 	UFUNCTION(BlueprintCallable, Category="WeaponCarrierInterface")
 	virtual EWeaponType GetCurrentWeaponType() = 0;
+
+	UFUNCTION(BlueprintCallable, Category="WeaponCarrierInterface")
+	virtual FWeaponActionDisplayInfo GetNextActionDisplayInfoByInput(EWeaponActionInput Input) const = 0;
 
 	/** Equip given weapon. */
 	virtual void EquipWeapon(UWeaponBase* NewWeapon) {}

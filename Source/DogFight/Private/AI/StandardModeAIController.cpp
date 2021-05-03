@@ -692,7 +692,7 @@ FCardInstructionTargetInfo AStandardModeAIController::RequestRandomDirectionTarg
 	return ResultInfo;
 }
 
-APawn* AStandardModeAIController::GetActualPawn()
+APawn* AStandardModeAIController::GetActualPawn() const
 {
 	return Cast<APawn>(CharacterPawn);
 }

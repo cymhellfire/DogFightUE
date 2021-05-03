@@ -4,7 +4,7 @@
 #include "Card/GameCardTypes.h"
 #include "GameCardUserPlayerControllerInterface.generated.h"
 
-UINTERFACE(MinimalAPI, Blueprintable)
+UINTERFACE(MinimalAPI, Blueprintable, meta=(CannotImplementInterfaceInBlueprint))
 class UGameCardUserPlayerControllerInterface : public UInterface
 {
 	GENERATED_BODY()
@@ -18,8 +18,9 @@ class IGameCardUserPlayerControllerInterface
 	GENERATED_BODY()
 
 public:
+	UFUNCTION(BlueprintCallable, Category="GameCardUserPlayerControllerInterface")
 	/** Get the actual pawn controlling by this PlayerController. */
-	virtual APawn* GetActualPawn() = 0;
+	virtual APawn* GetActualPawn() const = 0;
 
 	/** Broadcast card using message with target information. */
 	virtual void BroadcastCardTargetingResult(FText CardName, FText TargetText, ECardInstructionTargetType TargetType) = 0;

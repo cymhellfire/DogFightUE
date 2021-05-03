@@ -94,6 +94,8 @@ public:
 
 	AWeaponMeshActor* GetWeaponMeshByParentSocket(FName SocketName);
 
+	UWeaponActionBase* GetNextActionByInput(EWeaponActionInput Input);
+
 #pragma region FTickableGameObject
 	virtual void Tick(float DeltaTime) override;
 	virtual bool IsTickable() const override { return true; }
