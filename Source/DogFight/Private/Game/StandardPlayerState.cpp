@@ -445,6 +445,52 @@ int32 AStandardPlayerState::GetPlayerCardByClass(TArray<TSubclassOf<ACardBase>> 
 	return Result;
 }
 
+bool AStandardPlayerState::GetRandomTransferCards(int32 CardCount, TArray<int32>& CardIndexList)
+{
+	CardIndexList.Empty();
+	if (CardInstanceList.Num() == 0)
+	{
+		return false;
+	}
+
+	// Put all cards into candidate list
+	TArray<int32> CandidateList;
+	for (int32 Index = 0; Index < CardInstanceList.Num(); ++Index)
+	{
+		CandidateList.Add(Index);
+	}
+
+	if (CardCount >= CardInstanceList.Num())
+	{
+		// Return all cards as result since no enough cards
+		CardIndexList = TArray<int32>(CandidateList);
+
+		return CardCount == CardInstanceList.Num();
+	}
+
+	// Get random cards from candidate list
+	for (int32 Loop = 0; Loop < CardCount; ++Loop)
+	{
+		int32 Index = FMath::RandRange(0, CandidateList.Num() - 1);
+		CardIndexList.Add(Index);
+
+		// Remove selected card from candidate list
+		CandidateList.Remove(Index);
+	}
+
+	return true;
+}
+
+ACardBase* AStandardPlayerState::GetCardByIndex(int32 CardIndex)
+{
+	if (CardIndex < CardInstanceList.Num())
+	{
+		return CardInstanceList[CardIndex];
+	}
+
+	return nullptr;
+}
+
 void AStandardPlayerState::ApplyCardUsableFilterByClass(TArray<TSubclassOf<ACardBase>> CardClasses)
 {
 	for (int32 Index = UsableCardIndex.Num() - 1; Index >= 0; --Index)

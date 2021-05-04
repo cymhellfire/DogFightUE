@@ -132,6 +132,9 @@ public:
 
 	virtual void StartGame();
 
+	/** Send a localized message to specified player. */
+	void SendGameMessageToPlayer(FGameMessage Message, int32 PlayerId);
+
 	/** Broadcast a localized message to all players in current game. */
 	void BroadcastGameMessageToAllPlayers(FGameMessage Message);
 
@@ -174,6 +177,15 @@ public:
 	 * @param CardToResponse		Localized card name to response.
 	 */
 	void RequestResponseCardFromPlayer(int32 PlayerId, TArray<TSubclassOf<class ACardBase>> ResponseCardClasses, AActor* SourceActor, const FText& CardToResponse);
+
+	/**
+	 * Transfer cards from source player to destination player.
+	 * @param SrcPlayerState			Id of source player.
+	 * @param DestPlayerState			Id of destination player.
+	 * @param CardInfo				Detail information about cards to transfer.
+	 * @return Actual card count that transferred.
+	 */
+	int32 TransferCardsBetweenPlayer(AStandardPlayerState* SrcPlayerState, AStandardPlayerState* DestPlayerState, struct FTransferCardInfo CardInfo);
 protected:
 	virtual void BeginPlay() override;
 	
@@ -283,6 +295,8 @@ protected:
 
 	UFUNCTION()
 	void OnResponseCardSelected(ACardBase* SelectedCard, AStandardPlayerState* ResponsePlayerState);
+
+	void TransferCardBetweenPlayers_Internal(AStandardPlayerState* SrcPlayerState, AStandardPlayerState* DestPlayerState, int32 CardIndex);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="PlayerSettings")

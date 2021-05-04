@@ -513,3 +513,16 @@ public:
 };
 
 #pragma endregion Upgradable Property
+
+enum ETransferCardType
+{
+	TCT_Random,
+	TCT_Specified,
+};
+
+struct FTransferCardInfo
+{
+	ETransferCardType TransferType;
+
+	TArray<int32> TransferCardData;
+};

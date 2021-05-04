@@ -160,6 +160,16 @@ public:
 	 */
 	int32 GetPlayerCardByClass(TArray<TSubclassOf<class ACardBase>> CardClasses, TArray<int32>& CardIndex);
 
+	/**
+	 * Get random cards for transfer purpose.
+	 * @param CardCount			Card amount.
+	 * @param CardIndexList		Index list of all selected cards.
+	 * @return Whether get enough cards or not.
+	 */
+	bool GetRandomTransferCards(int32 CardCount, TArray<int32>& CardIndexList);
+
+	ACardBase* GetCardByIndex(int32 CardIndex);
+
 #pragma region CardUsableFilter
 	/**
 	 * Set card classes that allow player to use.

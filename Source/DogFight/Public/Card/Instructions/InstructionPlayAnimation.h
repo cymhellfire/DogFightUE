@@ -38,7 +38,7 @@ protected:
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="CardInstruction")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="CardInstruction")
 	UAnimMontage* MontageToPlay;
 
 	FTimerHandle AnimationWaitingTimerHandle;

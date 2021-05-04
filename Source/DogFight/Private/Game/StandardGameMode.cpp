@@ -368,6 +368,14 @@ void AStandardGameMode::StartGame()
 	BroadcastGameMessageToAllPlayers(NewMessage);
 }
 
+void AStandardGameMode::SendGameMessageToPlayer(FGameMessage Message, int32 PlayerId)
+{
+	if (AStandardModePlayerController* PlayerController = GetPlayerControllerById(PlayerId))
+	{
+		PlayerController->ClientReceivedGameMessage(Message);
+	}
+}
+
 void AStandardGameMode::BroadcastGameMessageToAllPlayers(FGameMessage Message)
 {
 	for (AStandardModePlayerController* PlayerController : StandardPlayerControllerList)
@@ -540,6 +548,29 @@ void AStandardGameMode::RequestResponseCardFromPlayer(int32 PlayerId, TArray<TSu
 	}
 }
 
+int32 AStandardGameMode::TransferCardsBetweenPlayer(AStandardPlayerState* SrcPlayerState, AStandardPlayerState* DestPlayerState, FTransferCardInfo CardInfo)
+{
+	TArray<int32> TransferCardList;
+	switch (CardInfo.TransferType)
+	{
+	case TCT_Random:
+		SrcPlayerState->GetRandomTransferCards(CardInfo.TransferCardData[0], TransferCardList);
+		break;
+	case TCT_Specified:
+		TransferCardList = CardInfo.TransferCardData;
+		break;
+	default:
+		break;
+	}
+
+	for (int32 CardIndex : TransferCardList)
+	{
+		TransferCardBetweenPlayers_Internal(SrcPlayerState, DestPlayerState, CardIndex);
+	}
+
+	return TransferCardList.Num();
+}
+
 void AStandardGameMode::OnResponseCardSelected(ACardBase* SelectedCard, AStandardPlayerState* ResponsePlayerState)
 {
 	// Unregister callback
@@ -563,6 +594,35 @@ void AStandardGameMode::OnResponseCardSelected(ACardBase* SelectedCard, AStandar
 
 	// Broadcast callback
 	OnPlayerResponseCardSelected.Broadcast();
+}
+
+void AStandardGameMode::TransferCardBetweenPlayers_Internal(AStandardPlayerState* SrcPlayerState, AStandardPlayerState* DestPlayerState, int32 CardIndex)
+{
+	ACardBase* TransferCard = SrcPlayerState->GetCardByIndex(CardIndex);
+
+	if (IsValid(TransferCard))
+	{
+		// Remove card from original owner
+		SrcPlayerState->RemoveCard(CardIndex);
+
+		TArray<FText> Arguments;
+		Arguments.Add(TransferCard->GetCardDisplayInfo().GetCardNameText());
+		SendGameMessageToPlayer(FGameMessage{TEXT("System"), EGameMessageType::GMT_System, TEXT("GameMsg_LoseCard"), Arguments}, SrcPlayerState->GetPlayerId());
+
+		// Change card owner
+		const int32 DestPlayerId = DestPlayerState->GetPlayerId();
+		AController* NewOwnerController = GetPlayerControllerById(DestPlayerId);
+		TransferCard->SetOwnerPlayerController(NewOwnerController ? NewOwnerController : GetAIControllerById(DestPlayerId));
+
+		// Add card to new owner
+		DestPlayerState->AddCard(TransferCard);
+
+		SendGameMessageToPlayer(FGameMessage{TEXT("System"), EGameMessageType::GMT_System, TEXT("GameMsg_GainCard"), Arguments}, DestPlayerState->GetPlayerId());
+	}
+	else
+	{
+		UE_LOG(LogDogFight, Error, TEXT("Invalid card to transfer."));
+	}
 }
 
 void AStandardGameMode::BeginPlay()
