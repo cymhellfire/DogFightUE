@@ -16,8 +16,12 @@ class DOGFIGHT_API AStealCardBeamVfx : public ABeamVfx
 
 public:
 
-	void SetCardItemColor(FColor NewColor);
+	void SetStealCardData(int32 NewCardCount, FColor NewCardColor);
 
-	UFUNCTION(BlueprintImplementableEvent, Category="StealCardBeam", meta=(DisplayName="OnCardItemColorSet"))
-	void K2_OnCardItemColorSet(FColor NewColor);
+protected:
+	UPROPERTY(BlueprintReadOnly, Category="StealCardBeam", Replicated)
+	int32 CardCount;
+
+	UPROPERTY(BlueprintReadOnly, Category="StealCardBeam", Replicated)
+	FColor CardItemColor;
 };

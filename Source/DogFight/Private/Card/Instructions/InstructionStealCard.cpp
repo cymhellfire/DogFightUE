@@ -42,9 +42,10 @@ bool UInstructionStealCard::HandleActorTarget(AActor* Target)
 		TransferCardInfo.TransferType = TCT_Random;
 		TransferCardInfo.TransferCardData = { CardCount.GetValue() };
 
+		int32 TransferCardCount = 0;
 		if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
 		{
-			const int32 TransferCardCount = StandardGameMode->TransferCardsBetweenPlayer(SourcePlayerState, DestPlayerState, TransferCardInfo);
+			TransferCardCount = StandardGameMode->TransferCardsBetweenPlayer(SourcePlayerState, DestPlayerState, TransferCardInfo);
 
 			if (TransferCardCount == 0)
 			{
@@ -59,21 +60,26 @@ bool UInstructionStealCard::HandleActorTarget(AActor* Target)
 		if (IsValid(BeamVfxClass))
 		{
 			AController* Controller = OwnerCard->GetOwnerPlayerController();
-			AStealCardBeamVfx* NewBeamVfx = GetWorld()->SpawnActor<AStealCardBeamVfx>(BeamVfxClass);
+			APawn* CardUserPawn = nullptr;
 			if (AStandardModePlayerController* PlayerController = Cast<AStandardModePlayerController>(Controller))
 			{
-				NewBeamVfx->SetTargetActor(PlayerController->GetActualPawn());
+				CardUserPawn = PlayerController->GetActualPawn();
 			}
 			else if (AStandardModeAIController* AIController = Cast<AStandardModeAIController>(Controller))
 			{
-				NewBeamVfx->SetTargetActor(AIController->GetActualPawn());
+				CardUserPawn = AIController->GetActualPawn();
 			}
 			else
 			{
 				UE_LOG(LogDogFight, Error, TEXT("Invalid card owner."));
-				NewBeamVfx->ConditionalBeginDestroy();
+				return false;
 			}
 
+			AStealCardBeamVfx* NewBeamVfx = GetWorld()->SpawnActorDeferred<AStealCardBeamVfx>(BeamVfxClass, CardUserPawn->GetActorTransform(), Controller);
+			NewBeamVfx->SetStealCardData(TransferCardCount, FColor::White);
+			NewBeamVfx->FinishSpawning(CardUserPawn->GetActorTransform());
+
+			NewBeamVfx->SetTargetActor(CardUserPawn);
 			NewBeamVfx->SetBeamTargetActor(Target);
 		}
 	}

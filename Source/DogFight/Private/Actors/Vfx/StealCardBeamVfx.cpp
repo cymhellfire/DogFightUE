@@ -3,7 +3,18 @@
 
 #include "Actors/Vfx/StealCardBeamVfx.h"
 
-void AStealCardBeamVfx::SetCardItemColor(FColor NewColor)
+#include "Net/UnrealNetwork.h"
+
+void AStealCardBeamVfx::SetStealCardData(int32 NewCardCount, FColor NewCardColor)
 {
-	K2_OnCardItemColorSet(NewColor);
+	CardItemColor = NewCardColor;
+	CardCount = NewCardCount;
+}
+
+void AStealCardBeamVfx::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AStealCardBeamVfx, CardCount);
+	DOREPLIFETIME(AStealCardBeamVfx, CardItemColor);
 }
