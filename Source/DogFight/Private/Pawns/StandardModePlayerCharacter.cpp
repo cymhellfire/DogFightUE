@@ -12,6 +12,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Actors/Components/ReceiveDamageComponent.h"
+#include "Actors/Components/ActorTeleportComponent.h"
 #include "Actors/Weapons/WeaponBase.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Game/StandardPlayerState.h"
@@ -69,6 +70,10 @@ AStandardModePlayerCharacter::AStandardModePlayerCharacter()
 	// Create ReceiveDamageComponent
 	ReceiveDamageComponent = CreateDefaultSubobject<UReceiveDamageComponent>("ReceiveDamageComponent");
 	ReceiveDamageComponent->SetIsReplicated(true);
+
+	// Create TeleportComponent
+	TeleportComponent = CreateDefaultSubobject<UActorTeleportComponent>("TeleportComponent");
+	TeleportComponent->SetIsReplicated(true);
 
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -333,6 +338,12 @@ void AStandardModePlayerCharacter::OnPlayerRoundEnd(int32 PlayerId)
 	}
 }
 
+void AStandardModePlayerCharacter::OnTeleportFinished(UActorTeleportComponent* Component)
+{
+	// Update cache location after teleport
+	CacheCurrentLocation();
+}
+
 void AStandardModePlayerCharacter::EnqueueInput(EWeaponActionInput NewInput)
 {
 	if (CurrentWeapon == nullptr)
@@ -405,6 +416,8 @@ void AStandardModePlayerCharacter::BeginPlay()
 			StandardGameMode->OnPlayerRoundEnd.AddDynamic(this, &AStandardModePlayerCharacter::OnPlayerRoundEnd);
 		}
 	}
+
+	TeleportComponent->OnTeleportFinished.AddDynamic(this, &AStandardModePlayerCharacter::OnTeleportFinished);
 }
 
 void AStandardModePlayerCharacter::OnRep_UnitName()

@@ -19,18 +19,23 @@ bool UInstructionStealCard::HandleActorTarget(AActor* Target)
 	{
 		AStandardPlayerState* SourcePlayerState = nullptr;
 		AStandardPlayerState* DestPlayerState = nullptr;
+		AController* DestController = OwnerCard->GetOwnerPlayerController();
+		if (DestController)
+		{
+			DestPlayerState = DestController->GetPlayerState<AStandardPlayerState>();
+		}
 		if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(Target))
 		{
 			AController* SupremeController = StandardModePlayerCharacter->GetSupremeController();
 			if (SupremeController)
 			{
+				if (SupremeController == DestController)
+				{
+					// No need to steal card from self
+					return true;
+				}
 				SourcePlayerState = SupremeController->GetPlayerState<AStandardPlayerState>();
 			}
-		}
-		AController* DestController = OwnerCard->GetOwnerPlayerController();
-		if (DestController)
-		{
-			DestPlayerState = DestController->GetPlayerState<AStandardPlayerState>();
 		}
 
 		if (!IsValid(SourcePlayerState) || !IsValid(DestPlayerState))

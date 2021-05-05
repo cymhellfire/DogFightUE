@@ -133,6 +133,9 @@ protected:
 	UFUNCTION()
 	void OnPlayerRoundEnd(int32 PlayerId);
 
+	UFUNCTION()
+	void OnTeleportFinished(class UActorTeleportComponent* Component);
+
 public:
 	/** Set name for this unit. */
 	void SetUnitName(const FString& NewName);
@@ -207,6 +210,9 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Unit", meta=(ExposeFunctionCategories = "ReceiveDamageComponent", AllowPrivateAccess = "true"))
 	UReceiveDamageComponent* ReceiveDamageComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Unit", meta=(ExposeFunctionCategories = "TeleportComponent", AllowPrivateAccess = "true"))
+	class UActorTeleportComponent* TeleportComponent;
 
 	/** The target bone to follow during ragdoll activate. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Animation")
