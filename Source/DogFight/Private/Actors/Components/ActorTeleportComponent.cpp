@@ -103,7 +103,7 @@ void UActorTeleportComponent::OnTeleportCountdownExpired()
 		}
 	}
 
-	OnTeleportFinished.Broadcast(this);
+	OnArrivedDestination.Broadcast(this);
 
 	CurrentTeleportPhase = EActorTeleportPhase::ATP_Cooldown;
 
@@ -123,6 +123,8 @@ void UActorTeleportComponent::OnTeleportCooldownExpired()
 	{
 		GetWorld()->GetTimerManager().ClearTimer(TeleportTimerHandle);
 	}
+
+	OnTeleportFinished.Broadcast(this);
 
 	CurrentTeleportPhase = EActorTeleportPhase::ATP_Idle;
 }

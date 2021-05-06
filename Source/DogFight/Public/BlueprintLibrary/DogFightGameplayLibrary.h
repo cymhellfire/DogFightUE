@@ -16,5 +16,5 @@ class DOGFIGHT_API UDogFightGameplayLibrary : public UBlueprintFunctionLibrary
 
 public:
 	UFUNCTION(BlueprintCallable, Category="DogFight|Actor")
-	static void TeleportActor(const AActor* Actor, const FVector& DestPos);
+	static class UActorTeleportComponent* TeleportActor(const AActor* Actor, const FVector& DestPos);
 };

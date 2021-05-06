@@ -3,10 +3,17 @@
 
 #include "Card/Instructions/InstructionTeleport.h"
 
+#include "Actors/Components/ActorTeleportComponent.h"
 #include "BlueprintLibrary/DogFightGameplayLibrary.h"
 #include "AI/StandardModeAIController.h"
 #include "Card/CardBase.h"
 #include "Player/StandardModePlayerController.h"
+
+UInstructionTeleport::UInstructionTeleport(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	bAutoFinish = false;
+}
 
 void UInstructionTeleport::HandlePositionTarget(FVector Position)
 {
@@ -22,5 +29,19 @@ void UInstructionTeleport::HandlePositionTarget(FVector Position)
 		UsingCardPawn = StandardModeAIController->GetActualPawn();
 	}
 
-	UDogFightGameplayLibrary::TeleportActor(UsingCardPawn, Position);
+	if (UActorTeleportComponent* TeleportComponent = UDogFightGameplayLibrary::TeleportActor(UsingCardPawn, Position))
+	{
+		TeleportComponent->OnTeleportFinished.AddDynamic(this, &UInstructionTeleport::OnTeleportFinished);
+	}
+	else
+	{
+		Finish();
+	}
+}
+
+void UInstructionTeleport::OnTeleportFinished(UActorTeleportComponent* Component)
+{
+	Component->OnTeleportFinished.RemoveDynamic(this, &UInstructionTeleport::OnTeleportFinished);
+
+	Finish();
 }

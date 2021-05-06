@@ -19,6 +19,7 @@ enum class EActorTeleportPhase : uint8
 class UActorTeleportComponent;
 
 DECLARE_DYNAMIC_MULTICAST_SPARSE_DELEGATE_OneParam(FTeleportComponentCountdownExpiredSignature, UActorTeleportComponent, OnTeleportStarted, UActorTeleportComponent*, TeleportComponent);
+DECLARE_DYNAMIC_MULTICAST_SPARSE_DELEGATE_OneParam(FTeleportComponentTeleportedSignature, UActorTeleportComponent, OnArrivedDestination, UActorTeleportComponent*, TeleportComponent);
 DECLARE_DYNAMIC_MULTICAST_SPARSE_DELEGATE_OneParam(FTeleportComponentCooldownExpiredSignature, UActorTeleportComponent, OnTeleportFinished, UActorTeleportComponent*, TeleportComponent);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -51,7 +52,11 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="TeleportComponent")
 	FTeleportComponentCountdownExpiredSignature OnTeleportStarted;
 
-	/** Triggered when actual teleport finished. */
+	/** Triggered when actor is teleported to destination. */
+	UPROPERTY(BlueprintAssignable, Category="TeleportComponent")
+	FTeleportComponentTeleportedSignature OnArrivedDestination;
+
+	/** Triggered when actual teleport finished (cooldown finished). */
 	UPROPERTY(BlueprintAssignable, Category="TeleportComponent")
 	FTeleportComponentCooldownExpiredSignature OnTeleportFinished;
 
