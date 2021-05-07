@@ -100,6 +100,9 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 	UFUNCTION(Client, Reliable)
 	void ClientRequestCardByClasses(const TArray<TSubclassOf<ACardBase>>& RequestCardClasses);
 
+	UFUNCTION(Client, Reliable)
+	void ClientSetCameraFocusPoint(float LocX, float LocY);
+
 #pragma region Interfaces
 	virtual FCardTargetInfoAcquiredSignature& GetTargetInfoAcquiredDelegate() override { return OnCardTargetInfoAcquired; }
 	virtual FOnTargetActorSelectedSignature& GetOnTargetActorSelectedDelegate() override { return OnTargetActorSelected; }
@@ -126,6 +129,8 @@ protected:
 
 	/** Set InputMode to IM_Disable and clear operation hint message. */
 	void DisableInputMode();
+
+	void SetCameraFocusPoint(float LocX, float LocY);
 
 	/** Callback function triggers when player name has been changed. */
 	UFUNCTION()
@@ -253,5 +258,8 @@ public:
 
 	UFUNCTION(Exec)
 	void ExecEnqueueInput(uint8 InputIndex, int32 InputCount);
+
+	UFUNCTION(Exec)
+	void ExecFocusTo(float X, float Y);
 #pragma endregion DebugCommand
 };

@@ -186,6 +186,14 @@ public:
 	 * @return Actual card count that transferred.
 	 */
 	int32 TransferCardsBetweenPlayer(AStandardPlayerState* SrcPlayerState, AStandardPlayerState* DestPlayerState, struct FTransferCardInfo CardInfo);
+
+	/**
+	 * Set focus point of specified player.
+	 * @param PlayerId			Id of specified player.
+	 * @param LocX				X coordinate of focus point.
+	 * @param LocY				Y coordinate of focus point.
+	 */
+	void SetPlayerCameraFocusPoint(int32 PlayerId, float LocX, float LocY);
 protected:
 	virtual void BeginPlay() override;
 	

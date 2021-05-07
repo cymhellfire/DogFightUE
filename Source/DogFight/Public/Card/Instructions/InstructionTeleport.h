@@ -6,6 +6,8 @@
 #include "Card/Instructions/HandleTargetInstructionBase.h"
 #include "InstructionTeleport.generated.h"
 
+class UActorTeleportComponent;
+
 /**
  * 
  */
@@ -21,5 +23,8 @@ protected:
 	virtual void HandlePositionTarget(FVector Position) override;
 
 	UFUNCTION()
-	void OnTeleportFinished(class UActorTeleportComponent* Component);
+	void OnCharacterTeleported(UActorTeleportComponent* Component);
+
+	UFUNCTION()
+	void OnTeleportFinished(UActorTeleportComponent* Component);
 };

@@ -571,6 +571,15 @@ int32 AStandardGameMode::TransferCardsBetweenPlayer(AStandardPlayerState* SrcPla
 	return TransferCardList.Num();
 }
 
+void AStandardGameMode::SetPlayerCameraFocusPoint(int32 PlayerId, float LocX, float LocY)
+{
+	// No need set focus point for AI player
+	if (AStandardModePlayerController* PlayerController = GetPlayerControllerById(PlayerId))
+	{
+		PlayerController->ClientSetCameraFocusPoint(LocX, LocY);
+	}
+}
+
 void AStandardGameMode::OnResponseCardSelected(ACardBase* SelectedCard, AStandardPlayerState* ResponsePlayerState)
 {
 	// Unregister callback

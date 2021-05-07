@@ -308,6 +308,11 @@ void AStandardModePlayerController::StopCharacterMovementImmediately()
 	}
 }
 
+void AStandardModePlayerController::ClientSetCameraFocusPoint_Implementation(float LocX, float LocY)
+{
+	SetCameraFocusPoint(LocX, LocY);
+}
+
 void AStandardModePlayerController::ClientRequestCardByClasses_Implementation(const TArray<TSubclassOf<ACardBase>>& RequestCardClasses)
 {
 
@@ -501,6 +506,20 @@ void AStandardModePlayerController::DisableInputMode()
 	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
 	{
 		StandardHUD->HideOperationHintMessageWidget();
+	}
+}
+
+void AStandardModePlayerController::SetCameraFocusPoint(float LocX, float LocY)
+{
+	if (APawn* CurrentPawn = GetPawn())
+	{
+		if (AStandardModePlayerPawn* StandardModePlayerPawn = Cast<AStandardModePlayerPawn>(CurrentPawn))
+		{
+			if (UStandardModeCameraComponent* CameraComponent = StandardModePlayerPawn->GetStandardModeCameraComponent())
+			{
+				CameraComponent->StartMoveToFocusPoint(FVector(LocX, LocY, 0));
+			}
+		}
 	}
 }
 
@@ -910,6 +929,11 @@ void AStandardModePlayerController::ExecEnqueueInput(uint8 InputIndex, int32 Inp
 	{
 		CharacterPawn->EnqueueInput(static_cast<EWeaponActionInput>(InputIndex));
 	}
+}
+
+void AStandardModePlayerController::ExecFocusTo(float X, float Y)
+{
+	SetCameraFocusPoint(X, Y);
 }
 
 void AStandardModePlayerController::ServerMoveToMouseCursor_Implementation(FVector Destination)

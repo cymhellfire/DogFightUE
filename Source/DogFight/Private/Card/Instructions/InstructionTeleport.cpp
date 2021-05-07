@@ -7,6 +7,8 @@
 #include "BlueprintLibrary/DogFightGameplayLibrary.h"
 #include "AI/StandardModeAIController.h"
 #include "Card/CardBase.h"
+#include "Game/StandardGameMode.h"
+#include "GameFramework/PlayerState.h"
 #include "Player/StandardModePlayerController.h"
 
 UInstructionTeleport::UInstructionTeleport(const FObjectInitializer& ObjectInitializer)
@@ -31,11 +33,26 @@ void UInstructionTeleport::HandlePositionTarget(FVector Position)
 
 	if (UActorTeleportComponent* TeleportComponent = UDogFightGameplayLibrary::TeleportActor(UsingCardPawn, Position))
 	{
+		TeleportComponent->OnArrivedDestination.AddDynamic(this, &UInstructionTeleport::OnCharacterTeleported);
 		TeleportComponent->OnTeleportFinished.AddDynamic(this, &UInstructionTeleport::OnTeleportFinished);
 	}
 	else
 	{
 		Finish();
+	}
+}
+
+void UInstructionTeleport::OnCharacterTeleported(UActorTeleportComponent* Component)
+{
+	Component->OnArrivedDestination.RemoveDynamic(this, &UInstructionTeleport::OnCharacterTeleported);
+
+	if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		if (APlayerState* OwnerPlayerState = GetOwnerCard()->GetOwnerPlayerController()->GetPlayerState<APlayerState>())
+		{
+			const FVector CurrentLoc = Component->GetOwner()->GetActorLocation();
+			StandardGameMode->SetPlayerCameraFocusPoint(OwnerPlayerState->GetPlayerId(), CurrentLoc.X, CurrentLoc.Y);
+		}
 	}
 }
 

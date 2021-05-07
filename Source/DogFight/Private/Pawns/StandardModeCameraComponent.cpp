@@ -9,8 +9,7 @@
 #include "DogFight/DogFight.h"
 
 UStandardModeCameraComponent::UStandardModeCameraComponent(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer),
-	bMouseDragging(false)
+	: Super(ObjectInitializer)
 {
 	CameraAngle = FRotator(-55.f, 0.f, 0.f);
 	CameraDistance = 1200;
@@ -20,6 +19,9 @@ UStandardModeCameraComponent::UStandardModeCameraComponent(const FObjectInitiali
 	MaxSpeedDistanceWhenDragging = 100.f;
 	MiniMapBoundsLimit = 0.8f;
 	bShouldClampCamera = 1;
+	MoveToFocusThreshold = 1.f;
+	MoveToFocusDuration = 1.f;
+	CameraMovementTypeStack.Add(ECameraMovementType::CMT_Normal);
 }
 
 void UStandardModeCameraComponent::GetCameraView(float DeltaTime, FMinimalViewInfo& DesiredView)
@@ -48,7 +50,7 @@ void UStandardModeCameraComponent::UpdateCameraMovement(const APlayerController*
 		AStandardModePlayerPawn* PlayerPawn = Cast<AStandardModePlayerPawn>(GetOwner());
 		float const DeltaTime = GetWorld()->GetDeltaSeconds();
 		// Check if mouse dragging movement is active
-		if (bMouseDragging)
+		if (GetCurrentMovementType() == ECameraMovementType::CMT_Dragged)
 		{
 			const FVector2D MousePosDelta = MousePosition - MouseStartPosition;
 			const float MoveX = MousePosDelta.X / MaxSpeedDistanceWhenDragging * MaxScrollSpeedDragging * DeltaTime;
@@ -56,7 +58,7 @@ void UStandardModeCameraComponent::UpdateCameraMovement(const APlayerController*
 			PlayerPawn->MoveRight(MoveX);
 			PlayerPawn->MoveForward(MoveY);
 		}
-		else
+		if (GetCurrentMovementType() == ECameraMovementType::CMT_Normal)
 		{
 			FViewport* Viewport = LocalPlayer->ViewportClient->Viewport;
 			const FIntPoint ViewportSize = Viewport->GetSizeXY();
@@ -94,10 +96,35 @@ void UStandardModeCameraComponent::UpdateCameraMovement(const APlayerController*
 		}
 	}
 #endif
+
+	// Move to focus point
+	if (GetCurrentMovementType() == ECameraMovementType::CMT_FocusPoint)
+	{
+		AStandardModePlayerPawn* PlayerPawn = Cast<AStandardModePlayerPawn>(GetOwner());
+
+		const float DeltaTime = GetWorld()->GetDeltaSeconds();
+		FocusMovingTimer += DeltaTime;
+
+		const FVector NewLoc = FocusMovingStartPoint + (FMath::Clamp<float>(FocusMovingTimer, 0.f, MoveToFocusDuration) / MoveToFocusDuration) * FocusMovingDeltaLoc;
+		PlayerPawn->SetActorLocation(NewLoc);
+
+		if (FocusMovingTimer >= MoveToFocusDuration)
+		{
+			CameraMovementTypeStack.RemoveSingle(ECameraMovementType::CMT_FocusPoint);
+		}
+	}
+}
+
+void UStandardModeCameraComponent::StartMoveToFocusPoint(FVector NewPoint)
+{
+	FocusMovingStartPoint = GetOwner()->GetActorLocation();
+	FocusMovingDeltaLoc = NewPoint - FocusMovingStartPoint;
+	FocusMovingTimer = 0.f;
+	CameraMovementTypeStack.Add(ECameraMovementType::CMT_FocusPoint);
 }
 
 void UStandardModeCameraComponent::ClampCameraLocation(const APlayerController* InPlayerController,
-	FVector& OutCameraLocation)
+                                                       FVector& OutCameraLocation)
 {
 	if (bShouldClampCamera)
 	{
@@ -111,7 +138,7 @@ void UStandardModeCameraComponent::ClampCameraLocation(const APlayerController* 
 
 void UStandardModeCameraComponent::StartDraggingMovement()
 {
-	bMouseDragging = true;
+	CameraMovementTypeStack.Add(ECameraMovementType::CMT_Dragged);
 
 	// Record current mouse position on screen
 	ULocalPlayer* const LocalPlayer = Cast<ULocalPlayer>(GetPlayerController()->GetLocalPlayer());
@@ -126,7 +153,7 @@ void UStandardModeCameraComponent::StartDraggingMovement()
 
 void UStandardModeCameraComponent::StopDraggingMovement()
 {
-	bMouseDragging = false;
+	CameraMovementTypeStack.RemoveSingle(ECameraMovementType::CMT_Dragged);
 }
 
 APlayerController* UStandardModeCameraComponent::GetPlayerController() const
