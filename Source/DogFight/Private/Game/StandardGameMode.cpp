@@ -571,13 +571,9 @@ int32 AStandardGameMode::TransferCardsBetweenPlayer(AStandardPlayerState* SrcPla
 	return TransferCardList.Num();
 }
 
-void AStandardGameMode::SetPlayerCameraFocusPoint(int32 PlayerId, float LocX, float LocY)
+void AStandardGameMode::BroadcastCameraFocusEvent(FCameraFocusEvent CameraEvent)
 {
-	// No need set focus point for AI player
-	if (AStandardModePlayerController* PlayerController = GetPlayerControllerById(PlayerId))
-	{
-		PlayerController->ClientSetCameraFocusPoint(LocX, LocY);
-	}
+	OnCameraEventHappened.Broadcast(CameraEvent);
 }
 
 void AStandardGameMode::OnResponseCardSelected(ACardBase* SelectedCard, AStandardPlayerState* ResponsePlayerState)
@@ -925,6 +921,17 @@ void AStandardGameMode::HandlePhasePlayerRoundBegin()
 			return;
 		}
 
+		// Camera focus event
+		const FVector CurrentLoc = StandardModePlayerController->GetActualPawn()->GetActorLocation();
+		BroadcastCameraFocusEvent(
+			FCameraFocusEvent
+			{
+				-1,
+				CurrentLoc.X,
+				CurrentLoc.Y,
+				ECameraFocusEventType::Type::Default
+			});
+
 		if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
 		{
 			if (UBuffQueue* BuffQueue = StandardPlayerState->GetBuffQueue())
@@ -950,6 +957,17 @@ void AStandardGameMode::HandlePhasePlayerRoundBegin()
 			UE_LOG(LogDogFight, Error, TEXT("Failed to get AIController with Id %d"), GetCurrentPlayerId());
 			return;
 		}
+		
+		// Camera focus event
+		const FVector CurrentLoc = StandardModeAIController->GetActualPawn()->GetActorLocation();
+		BroadcastCameraFocusEvent(
+			FCameraFocusEvent
+			{
+				-1,
+				CurrentLoc.X,
+				CurrentLoc.Y,
+				ECameraFocusEventType::Type::Default
+			});
 
 		if (AStandardPlayerState* StandardPlayerState = StandardModeAIController->GetPlayerState<AStandardPlayerState>())
 		{

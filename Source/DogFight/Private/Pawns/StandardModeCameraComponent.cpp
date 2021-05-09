@@ -118,9 +118,15 @@ void UStandardModeCameraComponent::UpdateCameraMovement(const APlayerController*
 void UStandardModeCameraComponent::StartMoveToFocusPoint(FVector NewPoint)
 {
 	FocusMovingStartPoint = GetOwner()->GetActorLocation();
+	// Filter out unnecessary movement
+	if ((NewPoint - FocusMovingStartPoint).Size() <= MoveToFocusThreshold)
+	{
+		return;
+	}
+
 	FocusMovingDeltaLoc = NewPoint - FocusMovingStartPoint;
 	FocusMovingTimer = 0.f;
-	CameraMovementTypeStack.Add(ECameraMovementType::CMT_FocusPoint);
+	CameraMovementTypeStack.AddUnique(ECameraMovementType::CMT_FocusPoint);
 }
 
 void UStandardModeCameraComponent::ClampCameraLocation(const APlayerController* InPlayerController,

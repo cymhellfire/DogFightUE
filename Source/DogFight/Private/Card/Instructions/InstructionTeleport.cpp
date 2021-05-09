@@ -51,7 +51,14 @@ void UInstructionTeleport::OnCharacterTeleported(UActorTeleportComponent* Compon
 		if (APlayerState* OwnerPlayerState = GetOwnerCard()->GetOwnerPlayerController()->GetPlayerState<APlayerState>())
 		{
 			const FVector CurrentLoc = Component->GetOwner()->GetActorLocation();
-			StandardGameMode->SetPlayerCameraFocusPoint(OwnerPlayerState->GetPlayerId(), CurrentLoc.X, CurrentLoc.Y);
+			StandardGameMode->BroadcastCameraFocusEvent(
+				FCameraFocusEvent
+				{
+					OwnerPlayerState->GetPlayerId(),
+					CurrentLoc.X,
+					CurrentLoc.Y,
+					ECameraFocusEventType::Type::OwnerForced
+				});
 		}
 	}
 }

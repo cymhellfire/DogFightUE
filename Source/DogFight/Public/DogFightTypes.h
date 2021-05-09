@@ -21,6 +21,27 @@ enum class EGameMessageType : uint8
 	GMT_Player			UMETA(DisplayName="Player"),
 };
 
+namespace ECameraFocusEventType
+{
+	enum Type
+	{
+		Default,			// Default events that only listening players response to
+		OwnerForced,		// Events that let owner player must response to
+	};
+}
+
+USTRUCT()
+struct FCameraFocusEvent
+{
+	GENERATED_BODY();
+
+	int32 OwnerPlayerId;
+	float LocationX;
+	float LocationY;
+
+	ECameraFocusEventType::Type EventType;
+};
+
 USTRUCT(BlueprintType)
 struct FGameMessage
 {

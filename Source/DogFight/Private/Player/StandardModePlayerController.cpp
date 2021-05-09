@@ -30,6 +30,7 @@ AStandardModePlayerController::AStandardModePlayerController(const FObjectInitia
 	CharacterPawn = nullptr;
 	PrimaryActorTick.bCanEverTick = true;
 	bInGameMenuShown = false;
+	bListenAllCameraEvent = false;
 }
 
 void AStandardModePlayerController::ClientSetClickMovementEnabled_Implementation(bool bEnabled)
@@ -103,6 +104,20 @@ void AStandardModePlayerController::GameStart()
 {
 	// Spawn the character pawn once game started
 	ServerSpawnCharacterPawn();
+}
+
+void AStandardModePlayerController::BeginDestroy()
+{
+	// Clear callback
+	if (GetNetMode() != NM_Client && GetWorld())
+	{
+		if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
+		{
+			StandardGameMode->OnCameraEventHappened.RemoveDynamic(this, &AStandardModePlayerController::OnCameraEventHappened);
+		}
+	}
+
+	Super::BeginDestroy();
 }
 
 void AStandardModePlayerController::ClientReceivedGameTitleMessage_Implementation(FGameTitleMessage Message)
@@ -211,6 +226,30 @@ void AStandardModePlayerController::OnHealthChanged(int32 NewHealth)
 	}
 }
 
+void AStandardModePlayerController::OnCameraEventHappened(FCameraFocusEvent CameraFocusEvent)
+{
+	if (CameraFocusEvent.EventType == ECameraFocusEventType::Type::OwnerForced)
+	{
+		// Check if this event is must response
+		if (PlayerState->GetPlayerId() == CameraFocusEvent.OwnerPlayerId)
+		{
+			ClientSetCameraFocusPoint(CameraFocusEvent.LocationX, CameraFocusEvent.LocationY);
+		}
+		else if (bListenAllCameraEvent)
+		{
+			ClientSetCameraFocusPoint(CameraFocusEvent.LocationX, CameraFocusEvent.LocationY);
+		}
+	}
+	else if (CameraFocusEvent.EventType == ECameraFocusEventType::Type::Default)
+	{
+		// Check current player is listening all events
+		if (bListenAllCameraEvent)
+		{
+			ClientSetCameraFocusPoint(CameraFocusEvent.LocationX, CameraFocusEvent.LocationY);
+		}
+	}
+}
+
 void AStandardModePlayerController::ServerUploadSelectedCardIndex_Implementation(const TArray<int32>& SelectedIndexList)
 {
 	if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
@@ -306,6 +345,11 @@ void AStandardModePlayerController::StopCharacterMovementImmediately()
 	{
 		CharacterPawn->StopMoveImmediately();
 	}
+}
+
+void AStandardModePlayerController::ServerSetListenAllCameraEvent_Implementation(bool NewListenState)
+{
+	bListenAllCameraEvent = NewListenState;
 }
 
 void AStandardModePlayerController::ClientSetCameraFocusPoint_Implementation(float LocX, float LocY)
@@ -455,6 +499,15 @@ void AStandardModePlayerController::BeginPlay()
 			ServerRegisterToGameTimeline();
 		}
 	}
+
+	// Register callback
+	if (GetNetMode() != NM_Client)
+	{
+		if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
+		{
+			StandardGameMode->OnCameraEventHappened.AddDynamic(this, &AStandardModePlayerController::OnCameraEventHappened);
+		}
+	}
 }
 
 void AStandardModePlayerController::SetupInputComponent()
@@ -511,6 +564,8 @@ void AStandardModePlayerController::DisableInputMode()
 
 void AStandardModePlayerController::SetCameraFocusPoint(float LocX, float LocY)
 {
+	UE_LOG(LogInit, Log, TEXT("[StandardModePlayerController] %s SetCameraFocusPoint (%.2f, %.2f)"), *GetPathName(GetWorld()), LocX, LocY);
+
 	if (APawn* CurrentPawn = GetPawn())
 	{
 		if (AStandardModePlayerPawn* StandardModePlayerPawn = Cast<AStandardModePlayerPawn>(CurrentPawn))
@@ -545,6 +600,7 @@ void AStandardModePlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeP
 
 	DOREPLIFETIME(AStandardModePlayerController, CharacterPawnClass);
 	DOREPLIFETIME(AStandardModePlayerController, CharacterPawn);
+	DOREPLIFETIME(AStandardModePlayerController, bListenAllCameraEvent);
 }
 
 void AStandardModePlayerController::OnSetDestinationPressed()

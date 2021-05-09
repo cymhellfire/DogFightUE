@@ -54,6 +54,8 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 	/** Current game enter InProgress phase. */
 	virtual void GameStart();
 
+	virtual void BeginDestroy() override;
+
 	UFUNCTION(BlueprintCallable, Category="DogFight|PlayerController")
 	AStandardModePlayerCharacter* GetCharacterPawn() const { return CharacterPawn; }
 
@@ -102,6 +104,12 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 
 	UFUNCTION(Client, Reliable)
 	void ClientSetCameraFocusPoint(float LocX, float LocY);
+
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category="DogFight|Game")
+	void ServerSetListenAllCameraEvent(bool NewListenState);
+
+	UFUNCTION(BlueprintCallable, Category="DogFight|Game")
+	bool GetListenAllCameraEvent() const { return bListenAllCameraEvent; }
 
 #pragma region Interfaces
 	virtual FCardTargetInfoAcquiredSignature& GetTargetInfoAcquiredDelegate() override { return OnCardTargetInfoAcquired; }
@@ -205,6 +213,9 @@ protected:
 	UFUNCTION()
 	void OnHealthChanged(int32 NewHealth);
 
+	UFUNCTION()
+	void OnCameraEventHappened(FCameraFocusEvent CameraFocusEvent);
+
 private:
 	FCardTargetInfoAcquiredSignature OnCardTargetInfoAcquired;
 
@@ -219,6 +230,9 @@ private:
 
 	/** Is the in game menu displayed? */
 	bool bInGameMenuShown;
+
+	UPROPERTY(Replicated)
+	bool bListenAllCameraEvent;
 
 	/** If player name is set before controlling pawn spawn, this variable will be the temporary buffer. */
 	FString PendingUnitName;

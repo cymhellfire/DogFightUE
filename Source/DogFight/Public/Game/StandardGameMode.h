@@ -53,6 +53,9 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FGameModeDelegateNoArgument);
 	FGameModeDelegateNoArgument OnPlayerResponseCardSelected;
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGameModeDelegateCameraEvent, FCameraFocusEvent, EventInfo);
+	FGameModeDelegateCameraEvent OnCameraEventHappened;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="StandardGameMode")
 	TSubclassOf<UGameplayCardPool> CardPoolClass;
 
@@ -188,12 +191,10 @@ public:
 	int32 TransferCardsBetweenPlayer(AStandardPlayerState* SrcPlayerState, AStandardPlayerState* DestPlayerState, struct FTransferCardInfo CardInfo);
 
 	/**
-	 * Set focus point of specified player.
-	 * @param PlayerId			Id of specified player.
-	 * @param LocX				X coordinate of focus point.
-	 * @param LocY				Y coordinate of focus point.
+	 * Broadcast a camera focus change event to all players.
+	 * @param CameraEvent			Information of camera event.
 	 */
-	void SetPlayerCameraFocusPoint(int32 PlayerId, float LocX, float LocY);
+	void BroadcastCameraFocusEvent(FCameraFocusEvent CameraEvent);
 protected:
 	virtual void BeginPlay() override;
 	
