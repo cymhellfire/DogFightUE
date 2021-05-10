@@ -452,6 +452,9 @@ void AStandardModePlayerCharacter::OnRep_CurrentStrength()
 
 	// Invoke delegate
 	OnCharacterStrengthChanged.Broadcast(CurrentStrength);
+
+	// Invoke Blueprint implementation
+	CurrentStrengthChanged(CurrentStrength);
 }
 
 void AStandardModePlayerCharacter::Dead()

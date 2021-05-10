@@ -149,6 +149,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category="DogFight|Gameplay")
 	void CurrentHealthChanged(const int32 NewHealth);
 
+	UFUNCTION(BlueprintImplementableEvent, Category="DogFight|Gameplay")
+	void CurrentStrengthChanged(const int32 NewStrength);
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
