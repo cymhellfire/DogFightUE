@@ -25,6 +25,8 @@ public:
 
 	virtual void SetDamage(float NewDamage) {};
 
+	virtual void SetStrengthCost(float NewStrengthCost) {};
+
 	virtual void SetDamageRadius(float NewDamageRadius) {};
 
 	virtual void SetInitialSpeed(float NewSpeed) {};

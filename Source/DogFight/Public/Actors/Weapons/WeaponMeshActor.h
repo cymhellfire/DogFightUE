@@ -32,6 +32,9 @@ protected:
 	float WeaponDamage;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponMeshActor")
+	float StrengthCost;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponMeshActor")
 	TSubclassOf<UDamageType> WeaponDamageType;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponMeshActor")

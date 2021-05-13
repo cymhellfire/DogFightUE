@@ -4,6 +4,7 @@
 #include "Actors/Projectiles/ProjectileBase.h"
 
 #include "Card/GameCardTypes.h"
+#include "DamageStructures.h"
 #include "Game/DogFightGameModeBase.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -256,9 +257,9 @@ void AProjectileBase::Dead()
 	// Damage target
 	if (FMath::Abs(DamageRadius) < 0.01f)
 	{
-		if (HitActor != nullptr)
+		if (IDamageableActorInterface* DamageableActor = Cast<IDamageableActorInterface>(HitActor))
 		{
-			HitActor->TakeDamage(BaseDamage, FDamageEvent{DamageType}, OwnerController, this);
+			DamageableActor->ApplyDamage(FDamageStruct{BaseDamage, StrengthCost}, FDamageEvent{DamageType}, OwnerController, this);
 		}
 	}
 	else
@@ -275,7 +276,10 @@ void AProjectileBase::Dead()
 				// Ensure one actor only be damaged once
 				if (!DamagedActorList.Contains(TargetActor))
 				{
-					TargetActor->TakeDamage(BaseDamage, FDamageEvent{DamageType}, OwnerController, this);
+					if (IDamageableActorInterface* DamageableActor = Cast<IDamageableActorInterface>(TargetActor))
+					{
+						DamageableActor->ApplyDamage(FDamageStruct{BaseDamage, StrengthCost}, FDamageEvent{DamageType}, OwnerController, this);
+					}
 					DamagedActorList.Add(TargetActor);
 				}
 			}
@@ -357,6 +361,14 @@ void AProjectileBase::SetDamage(float NewDamage)
 	if (GetNetMode() != NM_Client)
 	{
 		BaseDamage = NewDamage;
+	}
+}
+
+void AProjectileBase::SetStrengthCost(float NewStrengthCost)
+{
+	if (GetNetMode() != NM_Client)
+	{
+		StrengthCost = NewStrengthCost;
 	}
 }
 

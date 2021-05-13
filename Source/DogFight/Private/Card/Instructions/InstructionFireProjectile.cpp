@@ -15,6 +15,7 @@ UInstructionFireProjectile::UInstructionFireProjectile(const FObjectInitializer&
 	Damage = FUpgradableIntProperty(5, FString(TEXT("Property_Damage")), ECardDisplayInfoLocType::ILT_Card);
 	MuzzleSpeed = FUpgradableIntProperty(1000, FString(TEXT("Property_MuzzleSpeed")), ECardDisplayInfoLocType::ILT_Card);
 	DamageRadius = FUpgradableIntProperty(0, FString(TEXT("Property_DamageRadius")), ECardDisplayInfoLocType::ILT_Card);
+	StrengthCost = FUpgradableIntProperty(0, FString(TEXT("Property_StrengthCost")), ECardDisplayInfoLocType::ILT_Card);
 
 	// Turn off the auto finish since we need wait for projectiles dead
 	bAutoFinish = false;
@@ -134,6 +135,7 @@ void UInstructionFireProjectile::SpawnProjectileAndLaunch(FVector Position, FRot
 		Projectile->SetOwnerCharacter(GetOwnerControlledPawn());
 		Projectile->SetDamage(Damage.GetValue());
 		Projectile->SetDamageRadius(DamageRadius.GetValue());
+		Projectile->SetStrengthCost(StrengthCost.GetValue());
 		Projectile->SetInitialSpeed(MuzzleSpeed.GetValue());
 		Projectile->LaunchAtDirection(FireDirection);
 

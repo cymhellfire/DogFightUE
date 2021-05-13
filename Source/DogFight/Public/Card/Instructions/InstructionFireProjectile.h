@@ -50,6 +50,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Instruction")
 	FUpgradableIntProperty DamageRadius;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Instruction")
+	FUpgradableIntProperty StrengthCost;
+
 	/** The initial speed of the projectile after launched. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Instruction")
 	FUpgradableIntProperty MuzzleSpeed;

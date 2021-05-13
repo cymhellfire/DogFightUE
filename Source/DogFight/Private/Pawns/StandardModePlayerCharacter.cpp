@@ -203,6 +203,18 @@ void AStandardModePlayerCharacter::SetHealthPercentage(float NewPercentage)
 	SetCurrentHealth(MaxBaseHealth * NewPercentage);
 }
 
+void AStandardModePlayerCharacter::ApplyDamage(FDamageStruct Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	// Handle damage
+	TakeDamage(Damage.DamageValue, DamageEvent, EventInstigator, DamageCauser);
+
+	// Handle strength cost
+	if (UDogFightDamageType* DamageType = Cast<UDogFightDamageType>(DamageEvent.DamageTypeClass->GetDefaultObject()))
+	{
+		TakeStrengthCost(Damage.StrengthCost, DamageType, DamageCauser);
+	}
+}
+
 float AStandardModePlayerCharacter::PlayMontage(UAnimMontage* MontageToPlay)
 {
 	// Play montage across network
@@ -342,6 +354,33 @@ void AStandardModePlayerCharacter::OnTeleportFinished(UActorTeleportComponent* C
 {
 	// Update cache location after teleport
 	CacheCurrentLocation();
+}
+
+void AStandardModePlayerCharacter::TakeStrengthCost(float StrengthCost, UDogFightDamageType* DamageType, AActor* DamageCauser)
+{
+	CurrentStrength = FMath::Clamp<int32>(CurrentStrength - StrengthCost, 0, MaxStrength);
+
+	// Cache blast force value
+	if (CurrentStrength <= 0)
+	{
+		CacheBlastForce = (GetActorLocation() - DamageCauser->GetActorLocation());
+		CacheBlastForce.Normalize();
+		CacheBlastForce += FVector::UpVector * DamageType->BlastForceUpwardRatio;
+		// Calculate the actual force
+		if (AProjectileBase* Projectile = Cast<AProjectileBase>(DamageCauser))
+		{
+			CacheBlastForce *= DamageType->CalculateBlastForceSize(DamageCauser->GetActorLocation(), GetActorLocation(), Projectile->DamageRadius);
+		}
+		else
+		{
+			CacheBlastForce *= DamageType->BlastForce;
+		}
+	}
+
+	UE_LOG(LogInit, Log, TEXT("Calculated CacheBlastForce: %s"), *CacheBlastForce.ToString());
+
+	// Invoke OnRep on server
+	OnRep_CurrentStrength();
 }
 
 void AStandardModePlayerCharacter::EnqueueInput(EWeaponActionInput NewInput)
@@ -596,32 +635,32 @@ float AStandardModePlayerCharacter::TakeDamage(float Damage, FDamageEvent const&
 	}
 	
 	// Calculate strength cost
-	if (UDogFightDamageType* DamageType = Cast<UDogFightDamageType>(DamageEvent.DamageTypeClass->GetDefaultObject()))
-	{
-		CurrentStrength = FMath::Clamp<int32>(CurrentStrength - DamageType->StrengthCost, 0, MaxStrength);
-
-		// Cache blast force value
-		if (CurrentStrength <= 0)
-		{
-			CacheBlastForce = (GetActorLocation() - DamageCauser->GetActorLocation());
-			CacheBlastForce.Normalize();
-			CacheBlastForce += FVector::UpVector * DamageType->BlastForceUpwardRatio;
-			// Calculate the actual force
-			if (AProjectileBase* Projectile = Cast<AProjectileBase>(DamageCauser))
-			{
-				CacheBlastForce *= DamageType->CalculateBlastForceSize(DamageCauser->GetActorLocation(), GetActorLocation(), Projectile->DamageRadius);
-			}
-			else
-			{
-				CacheBlastForce *= DamageType->BlastForce;
-			}
-		}
-
-		UE_LOG(LogInit, Log, TEXT("Calculated CacheBlastForce: %s"), *CacheBlastForce.ToString());
-
-		// Invoke OnRep on server
-		OnRep_CurrentStrength();
-	}
+	// if (UDogFightDamageType* DamageType = Cast<UDogFightDamageType>(DamageEvent.DamageTypeClass->GetDefaultObject()))
+	// {
+	// 	CurrentStrength = FMath::Clamp<int32>(CurrentStrength - DamageType->StrengthCost, 0, MaxStrength);
+	//
+	// 	// Cache blast force value
+	// 	if (CurrentStrength <= 0)
+	// 	{
+	// 		CacheBlastForce = (GetActorLocation() - DamageCauser->GetActorLocation());
+	// 		CacheBlastForce.Normalize();
+	// 		CacheBlastForce += FVector::UpVector * DamageType->BlastForceUpwardRatio;
+	// 		// Calculate the actual force
+	// 		if (AProjectileBase* Projectile = Cast<AProjectileBase>(DamageCauser))
+	// 		{
+	// 			CacheBlastForce *= DamageType->CalculateBlastForceSize(DamageCauser->GetActorLocation(), GetActorLocation(), Projectile->DamageRadius);
+	// 		}
+	// 		else
+	// 		{
+	// 			CacheBlastForce *= DamageType->BlastForce;
+	// 		}
+	// 	}
+	//
+	// 	UE_LOG(LogInit, Log, TEXT("Calculated CacheBlastForce: %s"), *CacheBlastForce.ToString());
+	//
+	// 	// Invoke OnRep on server
+	// 	OnRep_CurrentStrength();
+	// }
 
 	float ActualDamage = 0;
 	// Modify the damage by current GameMode

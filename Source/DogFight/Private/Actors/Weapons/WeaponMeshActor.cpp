@@ -2,6 +2,7 @@
 
 
 #include "Actors/Weapons/WeaponMeshActor.h"
+#include "DamageStructures.h"
 #include "GameFramework/Character.h"
 #include "Pawns/StandardModePlayerCharacter.h"
 
@@ -67,7 +68,10 @@ void AWeaponMeshActor::OnMeshComponentBeginOverlap(UPrimitiveComponent* Overlapp
 	// Don't damage same actor twice
 	if (!HitActorList.Contains(OtherActor))
 	{
-		OtherActor->TakeDamage(WeaponDamage * DamageRatio, FDamageEvent{WeaponDamageType}, WeaponOwnerController, WeaponOwner);
+		if (IDamageableActorInterface* DamageableActor = Cast<IDamageableActorInterface>(OtherActor))
+		{
+			DamageableActor->ApplyDamage(FDamageStruct{WeaponDamage * DamageRatio, StrengthCost}, FDamageEvent{WeaponDamageType}, WeaponOwnerController, WeaponOwner);
+		}
 		HitActorList.Add(OtherActor);
 	}
 }

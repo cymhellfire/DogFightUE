@@ -47,6 +47,7 @@ public:
 #pragma region GameProjectileInterface
 	virtual void AdjustGravityScale(float NewGravityScale) override;
 	virtual void SetDamage(float NewDamage) override;
+	virtual void SetStrengthCost(float NewStrengthCost) override;
 	virtual void SetDamageRadius(float NewDamageRadius) override;
 	virtual void SetInitialSpeed(float NewSpeed) override;
 	virtual void SetMaxSpeed(float NewSpeed) override;
@@ -104,6 +105,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Projectile")
 	float BaseDamage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Projectile")
+	float StrengthCost;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
 	TSubclassOf<UDamageType> DamageType;

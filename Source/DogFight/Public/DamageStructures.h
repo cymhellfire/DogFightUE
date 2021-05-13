@@ -102,3 +102,15 @@ struct FActorArmor
 		return !(Lhs == RHS);
 	}
 };
+
+USTRUCT()
+struct FDamageStruct
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	float DamageValue;
+
+	UPROPERTY()
+	float StrengthCost;
+};

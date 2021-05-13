@@ -11,6 +11,7 @@ UInstructionSpawnProjectileAt::UInstructionSpawnProjectileAt(const FObjectInitia
 	Damage = FUpgradableIntProperty(5, FString(TEXT("Property_Damage")), ECardDisplayInfoLocType::ILT_Card);
 	InitialSpeed = FUpgradableIntProperty(500, FString(TEXT("Property_MuzzleSpeed")), ECardDisplayInfoLocType::ILT_Card);
 	DamageRadius = FUpgradableIntProperty(0, FString(TEXT("Property_DamageRadius")), ECardDisplayInfoLocType::ILT_Card);
+	StrengthCost = FUpgradableIntProperty(0, FString(TEXT("Property_StrengthCost")), ECardDisplayInfoLocType::ILT_Card);
 
 	bAutoFinish = false;
 }
@@ -59,6 +60,7 @@ void UInstructionSpawnProjectileAt::SpawnProjectile(FVector Position, FRotator R
 		Projectile->SetInitialSpeed(InitialSpeed.GetValue());
 		Projectile->SetDamage(Damage.GetValue());
 		Projectile->SetDamageRadius(DamageRadius.GetValue());
+		Projectile->SetStrengthCost(StrengthCost.GetValue());
 		Projectile->LaunchAtDirection(InitialFacingDirection);
 		
 		// Record the new instance to list

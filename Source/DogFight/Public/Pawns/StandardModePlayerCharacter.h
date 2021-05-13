@@ -41,6 +41,7 @@ public:
 	virtual bool RemoveExtraArmor(FActorArmor& TargetArmor) override;
 	virtual void SetHealthPercentage(float NewPercentage) override;
 	virtual bool IsAlive() override { return bAlive; }
+	virtual void ApplyDamage(FDamageStruct Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 #pragma endregion IDamageableActorInterface
 
 #pragma region IGameAnimatedCharacterInterface
@@ -135,6 +136,8 @@ protected:
 
 	UFUNCTION()
 	void OnTeleportFinished(class UActorTeleportComponent* Component);
+
+	void TakeStrengthCost(float StrengthCost, class UDogFightDamageType* DamageType, AActor* DamageCauser);
 
 public:
 	/** Set name for this unit. */

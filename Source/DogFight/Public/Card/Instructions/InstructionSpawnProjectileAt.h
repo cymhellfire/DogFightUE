@@ -50,6 +50,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Instruction")
 	FUpgradableIntProperty DamageRadius;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Instruction")
+	FUpgradableIntProperty StrengthCost;
+
 protected:
 
 	/** List of projectiles spawned by this instruction. */
