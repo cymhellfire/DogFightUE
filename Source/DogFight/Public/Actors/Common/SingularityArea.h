@@ -38,17 +38,27 @@ protected:
 	UFUNCTION()
 	void OnActorEndOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	UFUNCTION()
+	void OnRep_DragForceMaxDistance();
+
 protected:
+	UPROPERTY(Replicated)
 	uint8 bActive : 1;
 	uint8 bCostStrength : 1;
 
+	UPROPERTY(Replicated)
 	float DragForceSize;
+	UPROPERTY(Replicated)
 	float MinDragForceRatio;
+	UPROPERTY(ReplicatedUsing=OnRep_DragForceMaxDistance)
 	float DragForceMaxDistance;
 
 	/** Objects in this range will not be drag toward center. */
+	UPROPERTY(Replicated)
 	float DragForceMinDistance;
+	UPROPERTY(Replicated)
 	float RaiseForceRatio;
+	UPROPERTY(Replicated)
 	float SingularityAreaDuration;
 	float SingularityAreaTimer;
 

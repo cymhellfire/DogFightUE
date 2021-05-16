@@ -19,8 +19,23 @@ ASingularityArea::ASingularityArea()
 
 	PrimaryActorTick.bCanEverTick = true;
 
+	bReplicates = true;
+
 	RaiseForceRatio = 0.5f;
 	MinDragForceRatio = 0.f;
+}
+
+void ASingularityArea::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASingularityArea, bActive);
+	DOREPLIFETIME(ASingularityArea, DragForceSize);
+	DOREPLIFETIME(ASingularityArea, MinDragForceRatio);
+	DOREPLIFETIME(ASingularityArea, DragForceMaxDistance);
+	DOREPLIFETIME(ASingularityArea, DragForceMinDistance);
+	DOREPLIFETIME(ASingularityArea, RaiseForceRatio);
+	DOREPLIFETIME(ASingularityArea, SingularityAreaDuration);
 }
 
 void ASingularityArea::InitializeSingularityArea(float InDragForceSize, float MaxDistance, float MinDistance, float InDuration, float InMinDragForceRatio)
@@ -188,5 +203,13 @@ void ASingularityArea::OnActorEndOverlapped(UPrimitiveComponent* OverlappedCompo
 		{
 			DraggingComponentList.Remove(OtherComp);
 		}
+	}
+}
+
+void ASingularityArea::OnRep_DragForceMaxDistance()
+{
+	if (USphereComponent* SphereComponent = Cast<USphereComponent>(RootComponent))
+	{
+		SphereComponent->SetSphereRadius(DragForceMaxDistance);
 	}
 }

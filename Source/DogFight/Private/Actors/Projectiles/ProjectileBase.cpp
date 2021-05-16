@@ -289,6 +289,9 @@ void AProjectileBase::Dead()
 	// Broadcast the event
 	OnProjectileDead.Broadcast(this);
 
+	// Stop physics collision
+	CollisionComponent->SetSimulatePhysics(false);
+
 	// Disable collision
 	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 

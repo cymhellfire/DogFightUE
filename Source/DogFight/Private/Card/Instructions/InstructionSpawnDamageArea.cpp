@@ -60,7 +60,6 @@ void UInstructionSpawnDamageArea::HandlePositionTarget(FVector Position)
 				SingularityArea->SetupDamageRelative(DamageType, CardUserPlayerController->GetActualPawn());
 			}
 		}
-		UE_LOG(LogInit, Log, TEXT("Spawn SingularityArea at %s"), *SingularityArea->GetActorLocation().ToString()); 
 		SingularityArea->Active();
 	}
 }
