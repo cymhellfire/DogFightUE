@@ -3,6 +3,14 @@
 
 #include "Game/LobbyGameState.h"
 
+#include "Game/DogFightGameInstance.h"
+
+ALobbyGameState::ALobbyGameState(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	AIPlayerCount = 2;
+}
+
 void ALobbyGameState::AddPlayerState(APlayerState* PlayerState)
 {
 	Super::AddPlayerState(PlayerState);
@@ -45,6 +53,20 @@ void ALobbyGameState::RemovePlayerState(APlayerState* PlayerState)
 	Super::RemovePlayerState(PlayerState);
 }
 
+void ALobbyGameState::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// Sync GameInstance AICount
+	if (GetNetMode() != NM_Client)
+	{
+		if (UDogFightGameInstance* GameInstance = Cast<UDogFightGameInstance>(GetGameInstance()))
+		{
+			AIPlayerCount = GameInstance->GameAICount;
+		}
+	}
+}
+
 void ALobbyGameState::OnLobbyPlayerInfoChanged()
 {
 	UE_LOG(LogDogFight, Log, TEXT("OnLobbyPlayerInfoChanged"));
@@ -59,6 +81,27 @@ void ALobbyGameState::OnLobbyPlayerInfoChanged()
 		bIsGameReady = Ready;
 
 		OnGameReadyChanged.Broadcast(bIsGameReady);
+	}
+}
+
+void ALobbyGameState::OnRep_AIPlayerCount()
+{
+	OnAIPlayerCountChanged.Broadcast();
+}
+
+void ALobbyGameState::SetAIPlayerCount(int32 NewCount)
+{
+	AIPlayerCount = NewCount;
+
+	if (GetNetMode() != NM_Client)
+	{
+		OnRep_AIPlayerCount();
+
+		// Set to GameInstance
+		if (UDogFightGameInstance* GameInstance = Cast<UDogFightGameInstance>(GetGameInstance()))
+		{
+			GameInstance->GameAICount = AIPlayerCount;
+		}
 	}
 }
 
@@ -81,5 +124,6 @@ void ALobbyGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ALobbyGameState, bIsGameReady);
+	DOREPLIFETIME(ALobbyGameState, AIPlayerCount);
 }
 

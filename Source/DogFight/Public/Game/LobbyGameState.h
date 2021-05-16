@@ -24,16 +24,26 @@ public:
 	FLobbyPlayerStateChangedSignature OnLobbyPlayerStateChanged;
 
 	UPROPERTY(BlueprintAssignable, Category="DogFight|Lobby")
+	FLobbyPlayerStateChangedSignature OnAIPlayerCountChanged;
+
+	UPROPERTY(BlueprintAssignable, Category="DogFight|Lobby")
 	FGameReadyChangedSignature OnGameReadyChanged;
+
+	ALobbyGameState(const FObjectInitializer& ObjectInitializer);
 
 	virtual void AddPlayerState(APlayerState* PlayerState) override;
 
 	virtual void RemovePlayerState(APlayerState* PlayerState) override;
 
+
 protected:
+	virtual void BeginPlay() override;
 
 	UFUNCTION()
 	void OnLobbyPlayerInfoChanged();
+
+	UFUNCTION()
+	void OnRep_AIPlayerCount();
 
 public:
 
@@ -44,7 +54,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category="DogFight|GameState")
 	bool IsGameReady() const { return bIsGameReady;}
 
+	UFUNCTION(BlueprintCallable, Category="DogFight|GameState")
+	void SetAIPlayerCount(int32 NewCount);
 
+	UFUNCTION(BlueprintCallable, Category="DogFight|GameState")
+	int32 GetAIPlayerCount() const { return AIPlayerCount; }
 protected:
 	/** All LobbyPlayerState in current game. */
 	UPROPERTY()
@@ -55,4 +69,7 @@ protected:
 	bool bIsGameReady;
 
 	bool IsGameReady();
+
+	UPROPERTY(ReplicatedUsing=OnRep_AIPlayerCount)
+	int32 AIPlayerCount;
 };
