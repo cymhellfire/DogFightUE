@@ -30,6 +30,14 @@ struct FInstructionMetaBase
 	}
 };
 
+UENUM(BlueprintType)
+enum class EInstructionCameraFocusType : uint8
+{
+	ICFT_None		UMETA(DisplayName="None", Tooltip="No camera focus event."),
+	ICFT_User		UMETA(DisplayName="User", Tooltip="Focus on card user."),
+	ICFT_Target		UMETA(DisplayName="Target", Tooltip="Focus on instruction target."),
+};
+
 /**
  * Base class of all kinds of Instruction.
  */
@@ -69,6 +77,12 @@ public:
 	/** Execution type. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Instruction")
 	ECardInstructionExecuteType ExecuteType;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Instruction")
+	EInstructionCameraFocusType CameraFocusType;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Instruction")
+	bool bForciblyCameraEventToOwner;
 
 	UFUNCTION(BlueprintCallable, Category="CustomizableCard|Instruction")
 	virtual void Finish();

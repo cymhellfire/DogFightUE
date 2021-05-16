@@ -7,6 +7,7 @@
 #include "Card/CardBase.h"
 #include "Actors/Interfaces/GameCardUserPlayerControllerInterface.h"
 #include "Common/Localization.h"
+#include "Game/StandardGameMode.h"
 #include "GameFramework/PlayerState.h"
 
 UHandleTargetInstructionBase::UHandleTargetInstructionBase(const FObjectInitializer& ObjectInitializer)
@@ -24,6 +25,8 @@ bool UHandleTargetInstructionBase::ProcessTarget()
 		return true;
 	}
 
+	FVector CameraFocusPos;
+
 	if (CurrentTargetIndex < OwnerCard->GetTargetInfoCount())
 	{
 		FCardInstructionTargetInfo TargetInfo = OwnerCard->GetTargetInfo(CurrentTargetIndex);
@@ -34,18 +37,49 @@ bool UHandleTargetInstructionBase::ProcessTarget()
 		{
 		case 1:
 			HandleActorTarget(ActorPtr);
+			CameraFocusPos = ActorPtr->GetActorLocation();
 			break;
 		case 2:
 			HandlePositionTarget(Position);
+			CameraFocusPos = Position;
 			break;
 		case 3:
 			HandleDirectionTarget(Direction);
+			CameraFocusPos = GetOwnerControlledPawn()->GetActorLocation();
 			break;
 		default:
 			UE_LOG(LogGameCards, Error, TEXT("Parsed an invalid target information for %s"), *OwnerCard->GetName());
 			break;;
 		}
 		CurrentTargetIndex++;
+	}
+
+	// Broadcast camera focus event
+	if (CameraFocusType == EInstructionCameraFocusType::ICFT_Target)
+	{
+		if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
+		{
+			if (bForciblyCameraEventToOwner)
+			{
+				StandardGameMode->BroadcastCameraFocusEvent(
+				FCameraFocusEvent{
+					OwnerCard->GetOwnerPlayerController()->GetPlayerState<APlayerState>()->GetPlayerId(),
+					CameraFocusPos.X,
+					CameraFocusPos.Y,
+					ECameraFocusEventType::Type::OwnerForced
+				});
+			}
+			else
+			{
+				StandardGameMode->BroadcastCameraFocusEvent(
+					FCameraFocusEvent{
+						-1,
+						CameraFocusPos.X,
+						CameraFocusPos.Y,
+						ECameraFocusEventType::Type::Default
+					});
+			}
+		}
 	}
 
 	return CurrentTargetIndex >= OwnerCard->GetTargetInfoCount();

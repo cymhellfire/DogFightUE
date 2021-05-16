@@ -10,6 +10,8 @@ UInstructionAddBuff::UInstructionAddBuff(const FObjectInitializer& ObjectInitial
 	: Super(ObjectInitializer)
 {
 	BuffLifetime = 1.f;
+
+	CameraFocusType = EInstructionCameraFocusType::ICFT_Target;
 }
 
 bool UInstructionAddBuff::HandleActorTarget(AActor* Target)

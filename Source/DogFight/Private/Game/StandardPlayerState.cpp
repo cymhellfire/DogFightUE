@@ -592,10 +592,28 @@ void AStandardPlayerState::InitializeCardVariable()
 void AStandardPlayerState::RefreshCardInfoList()
 {
 	CardInfoList.Empty(CardInfoList.Num());
+	ValidateCardInstances();
 
 	for (ACardBase* Card : CardInstanceList)
 	{
 		CardInfoList.Add(Card->GetCardDisplayInfo());
+	}
+}
+
+void AStandardPlayerState::ValidateCardInstances()
+{
+	TArray<int32> InvalidIndex;
+	for (int32 Index = CardInstanceList.Num() - 1; Index >= 0; --Index)
+	{
+		if (!IsValid(CardInstanceList[Index]))
+		{
+			InvalidIndex.Add(Index);
+		}
+	}
+
+	for (int32 Index : InvalidIndex)
+	{
+		CardInstanceList.RemoveAt(Index);
 	}
 }
 

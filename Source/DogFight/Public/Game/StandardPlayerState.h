@@ -216,6 +216,12 @@ protected:
 
 	void RefreshCardInfoList();
 
+	/**
+	 * Validate all card instances owned by this player. In case there are some cards not be removed in time after
+	 * card finished.
+	 */
+	void ValidateCardInstances();
+
 	UFUNCTION()
 	void OnRep_CardInfoList();
 

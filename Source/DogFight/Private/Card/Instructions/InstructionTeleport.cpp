@@ -15,6 +15,9 @@ UInstructionTeleport::UInstructionTeleport(const FObjectInitializer& ObjectIniti
 	: Super(ObjectInitializer)
 {
 	bAutoFinish = false;
+
+	CameraFocusType = EInstructionCameraFocusType::ICFT_User;
+	bForciblyCameraEventToOwner = true;
 }
 
 void UInstructionTeleport::HandlePositionTarget(FVector Position)

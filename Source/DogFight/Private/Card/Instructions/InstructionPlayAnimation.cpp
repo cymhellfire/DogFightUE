@@ -12,6 +12,8 @@ UInstructionPlayAnimation::UInstructionPlayAnimation(const FObjectInitializer& O
 	: Super(ObjectInitializer)
 {
 	InstructionName = "PlayAnimation";
+
+	CameraFocusType = EInstructionCameraFocusType::ICFT_User;
 }
 
 void UInstructionPlayAnimation::Execute()

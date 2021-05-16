@@ -14,6 +14,8 @@ UInstructionSpawnProjectileAt::UInstructionSpawnProjectileAt(const FObjectInitia
 	StrengthCost = FUpgradableIntProperty(0, FString(TEXT("Property_StrengthCost")), ECardDisplayInfoLocType::ILT_Card);
 
 	bAutoFinish = false;
+	CameraFocusType = EInstructionCameraFocusType::ICFT_Target;
+	bForciblyCameraEventToOwner = true;
 }
 
 void UInstructionSpawnProjectileAt::HandlePositionTarget(FVector Position)

@@ -356,33 +356,6 @@ void AStandardModePlayerCharacter::OnTeleportFinished(UActorTeleportComponent* C
 	CacheCurrentLocation();
 }
 
-void AStandardModePlayerCharacter::TakeStrengthCost(float StrengthCost, UDogFightDamageType* DamageType, AActor* DamageCauser)
-{
-	CurrentStrength = FMath::Clamp<int32>(CurrentStrength - StrengthCost, 0, MaxStrength);
-
-	// Cache blast force value
-	if (CurrentStrength <= 0)
-	{
-		CacheBlastForce = (GetActorLocation() - DamageCauser->GetActorLocation());
-		CacheBlastForce.Normalize();
-		CacheBlastForce += FVector::UpVector * DamageType->BlastForceUpwardRatio;
-		// Calculate the actual force
-		if (AProjectileBase* Projectile = Cast<AProjectileBase>(DamageCauser))
-		{
-			CacheBlastForce *= DamageType->CalculateBlastForceSize(DamageCauser->GetActorLocation(), GetActorLocation(), Projectile->DamageRadius);
-		}
-		else
-		{
-			CacheBlastForce *= DamageType->BlastForce;
-		}
-	}
-
-	UE_LOG(LogInit, Log, TEXT("Calculated CacheBlastForce: %s"), *CacheBlastForce.ToString());
-
-	// Invoke OnRep on server
-	OnRep_CurrentStrength();
-}
-
 void AStandardModePlayerCharacter::EnqueueInput(EWeaponActionInput NewInput)
 {
 	if (CurrentWeapon == nullptr)
@@ -483,6 +456,10 @@ void AStandardModePlayerCharacter::OnRep_CurrentHealth()
 
 void AStandardModePlayerCharacter::OnRep_CurrentStrength()
 {
+	// Skip the ragdoll setup if player is dead
+	if (!bAlive)
+		return;
+
 	if (CurrentStrength <= 0)
 	{
 		bRagdollAutoRecover = true;
@@ -588,7 +565,7 @@ void AStandardModePlayerCharacter::Tick(float DeltaTime)
 			{
 				GetCapsuleComponent()->SetWorldLocation(TraceResult.Location - SkeletalMeshOffset);
 
-				DrawDebugLine(GetWorld(), BonePosition + FloorDetectOffset, TraceResult.Location, FColor::Yellow);
+				//DrawDebugLine(GetWorld(), BonePosition + FloorDetectOffset, TraceResult.Location, FColor::Yellow);
 			}
 			else
 			{
@@ -633,34 +610,6 @@ float AStandardModePlayerCharacter::TakeDamage(float Damage, FDamageEvent const&
 	{
 		return 0.f;
 	}
-	
-	// Calculate strength cost
-	// if (UDogFightDamageType* DamageType = Cast<UDogFightDamageType>(DamageEvent.DamageTypeClass->GetDefaultObject()))
-	// {
-	// 	CurrentStrength = FMath::Clamp<int32>(CurrentStrength - DamageType->StrengthCost, 0, MaxStrength);
-	//
-	// 	// Cache blast force value
-	// 	if (CurrentStrength <= 0)
-	// 	{
-	// 		CacheBlastForce = (GetActorLocation() - DamageCauser->GetActorLocation());
-	// 		CacheBlastForce.Normalize();
-	// 		CacheBlastForce += FVector::UpVector * DamageType->BlastForceUpwardRatio;
-	// 		// Calculate the actual force
-	// 		if (AProjectileBase* Projectile = Cast<AProjectileBase>(DamageCauser))
-	// 		{
-	// 			CacheBlastForce *= DamageType->CalculateBlastForceSize(DamageCauser->GetActorLocation(), GetActorLocation(), Projectile->DamageRadius);
-	// 		}
-	// 		else
-	// 		{
-	// 			CacheBlastForce *= DamageType->BlastForce;
-	// 		}
-	// 	}
-	//
-	// 	UE_LOG(LogInit, Log, TEXT("Calculated CacheBlastForce: %s"), *CacheBlastForce.ToString());
-	//
-	// 	// Invoke OnRep on server
-	// 	OnRep_CurrentStrength();
-	// }
 
 	float ActualDamage = 0;
 	// Modify the damage by current GameMode
@@ -695,6 +644,33 @@ float AStandardModePlayerCharacter::TakeDamage(float Damage, FDamageEvent const&
 	}
 
 	return ActualDamage;
+}
+
+void AStandardModePlayerCharacter::TakeStrengthCost(float StrengthCost, UDogFightDamageType* DamageType, AActor* DamageCauser)
+{
+	CurrentStrength = FMath::Clamp<int32>(CurrentStrength - StrengthCost, 0, MaxStrength);
+
+	// Cache blast force value
+	if (CurrentStrength <= 0)
+	{
+		CacheBlastForce = (GetActorLocation() - DamageCauser->GetActorLocation());
+		CacheBlastForce.Normalize();
+		CacheBlastForce += FVector::UpVector * DamageType->BlastForceUpwardRatio;
+		// Calculate the actual force
+		if (AProjectileBase* Projectile = Cast<AProjectileBase>(DamageCauser))
+		{
+			CacheBlastForce *= DamageType->CalculateBlastForceSize(DamageCauser->GetActorLocation(), GetActorLocation(), Projectile->DamageRadius);
+		}
+		else
+		{
+			CacheBlastForce *= DamageType->BlastForce;
+		}
+	}
+
+	UE_LOG(LogInit, Log, TEXT("Calculated CacheBlastForce: %s"), *CacheBlastForce.ToString());
+
+	// Invoke OnRep on server
+	OnRep_CurrentStrength();
 }
 
 void AStandardModePlayerCharacter::SetCursorVisible(bool bVisible)
@@ -839,6 +815,18 @@ void AStandardModePlayerCharacter::SetRagdollActive(bool bActive)
 		// Re-cache location that character will leave here
 		CacheCurrentLocation();
 	}
+}
+
+void AStandardModePlayerCharacter::AddForceToAllRagdollBodies(FVector Force)
+{
+	// Skip if it's not Ragdoll mode currently
+	if (!bRagdoll)
+	{
+		return;
+	}
+
+	USkeletalMeshComponent* MeshComponent = GetMesh();
+	MeshComponent->AddForceToAllBodiesBelow(Force, PelvisBoneName);
 }
 
 void AStandardModePlayerCharacter::PreCacheRagdollPose()

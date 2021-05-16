@@ -137,8 +137,6 @@ protected:
 	UFUNCTION()
 	void OnTeleportFinished(class UActorTeleportComponent* Component);
 
-	void TakeStrengthCost(float StrengthCost, class UDogFightDamageType* DamageType, AActor* DamageCauser);
-
 public:
 	/** Set name for this unit. */
 	void SetUnitName(const FString& NewName);
@@ -163,6 +161,8 @@ public:
 
 	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
+	void TakeStrengthCost(float StrengthCost, class UDogFightDamageType* DamageType, AActor* DamageCauser);
+
 	FORCEINLINE class UDecalComponent* GetCursorToWorld() const { return CursorToWorld; }
 
 	void SetCursorVisible(bool bVisible);
@@ -180,6 +180,10 @@ public:
 	void MulticastSetRagdollActive(bool bActive);
 
 	void SetRagdollActive(bool bActive);
+
+	void AddForceToAllRagdollBodies(FVector Force);
+
+	bool IsRagdollActive() const { return bRagdoll; }
 
 	void RecoverStrength();
 

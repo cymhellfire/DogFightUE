@@ -13,6 +13,8 @@ UInstructionEquipWeapon::UInstructionEquipWeapon(const FObjectInitializer& Objec
 
 bool UInstructionEquipWeapon::HandleActorTarget(AActor* Target)
 {
+	Super::HandleActorTarget(Target);
+
 	IWeaponCarrierInterface* WeaponCarrier = Cast<IWeaponCarrierInterface>(Target);
 	const bool bWeaponValid = IsValid(WeaponClass);
 	if (WeaponCarrier != nullptr && bWeaponValid)

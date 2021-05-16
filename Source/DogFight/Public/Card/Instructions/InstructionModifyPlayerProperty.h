@@ -34,6 +34,9 @@ class DOGFIGHT_API UInstructionModifyPlayerProperty : public UHandleTargetInstru
 {
 	GENERATED_BODY()
 
+public:
+	UInstructionModifyPlayerProperty(const FObjectInitializer& ObjectInitializer);
+
 protected:
 	virtual bool HandleActorTarget(AActor* Target) override;
 

@@ -5,12 +5,16 @@
 
 #include "Actors/Interfaces/GameCardUserPlayerControllerInterface.h"
 #include "Card/CardBase.h"
+#include "Game/StandardGameMode.h"
+#include "GameFramework/PlayerState.h"
 
 UCardInstructionBase::UCardInstructionBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	InstructionName = TEXT("NewInstruction");
 	ExecuteType = ECardInstructionExecuteType::Synchronous;
+	CameraFocusType = EInstructionCameraFocusType::ICFT_None;
+	bForciblyCameraEventToOwner = false;
 }
 
 bool UCardInstructionBase::Tick(float DeltaSeconds)
@@ -56,6 +60,40 @@ void UCardInstructionBase::Execute()
 	if (GetClass()->HasAnyClassFlags(CLASS_CompiledFromBlueprint) || !GetClass()->HasAnyClassFlags(CLASS_Native))
 	{
 		BeginExecuteBP();
+	}
+
+	// Check to broadcast camera focus event
+	if (CameraFocusType == EInstructionCameraFocusType::ICFT_User)
+	{
+		if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
+		{
+			if (IGameCardUserPlayerControllerInterface* PlayerController = Cast<IGameCardUserPlayerControllerInterface>(OwnerCard->GetOwnerPlayerController()))
+			{
+				const FVector CurrentPos = PlayerController->GetActualPawn()->GetActorLocation();
+				if (bForciblyCameraEventToOwner)
+				{
+					StandardGameMode->BroadcastCameraFocusEvent(
+						FCameraFocusEvent
+						{
+							OwnerCard->GetOwnerPlayerController()->GetPlayerState<APlayerState>()->GetPlayerId(),
+							CurrentPos.X,
+							CurrentPos.Y,
+							ECameraFocusEventType::Type::OwnerForced
+						});
+				}
+				else
+				{
+					StandardGameMode->BroadcastCameraFocusEvent(
+						FCameraFocusEvent
+						{
+							-1,
+							CurrentPos.X,
+							CurrentPos.Y,
+							ECameraFocusEventType::Type::Default
+						});
+				}
+			}
+		}
 	}
 }
 

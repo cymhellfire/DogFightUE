@@ -11,6 +11,9 @@ UInstructionSpawnActor::UInstructionSpawnActor(const FObjectInitializer& ObjectI
 {
 	InstructionName = TEXT("SpawnActor");
 	bAutoCalculateRotation = true;
+
+	CameraFocusType = EInstructionCameraFocusType::ICFT_Target;
+	bForciblyCameraEventToOwner = true;
 }
 
 void UInstructionSpawnActor::BeginDestroy()

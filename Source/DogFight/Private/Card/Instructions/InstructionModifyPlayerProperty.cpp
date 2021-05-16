@@ -6,6 +6,12 @@
 #include "Game/StandardPlayerState.h"
 #include "Pawns/StandardModePlayerCharacter.h"
 
+UInstructionModifyPlayerProperty::UInstructionModifyPlayerProperty(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	CameraFocusType = EInstructionCameraFocusType::ICFT_Target;
+}
+
 bool UInstructionModifyPlayerProperty::HandleActorTarget(AActor* Target)
 {
 	const bool Result = Super::HandleActorTarget(Target);

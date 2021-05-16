@@ -4,7 +4,6 @@
 
 #include "Actors/Interfaces/GameCardUserPlayerControllerInterface.h"
 #include "Card/Instructions/CardInstructionBase.h"
-#include "Game/StandardGameMode.h"
 #include "GameFramework/PlayerState.h"
 
 // Sets default values
@@ -17,23 +16,6 @@ ACardBase::ACardBase(const FObjectInitializer& ObjectInitializer)
 
 void ACardBase::Use()
 {
-	// Broadcast the focus event
-	if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
-	{
-		if (IGameCardUserPlayerControllerInterface* GameCardUserPlayerController = Cast<IGameCardUserPlayerControllerInterface>(GetOwnerPlayerController()))
-		{
-			const FVector CurrentLoc = GameCardUserPlayerController->GetActualPawn()->GetActorLocation();
-			StandardGameMode->BroadcastCameraFocusEvent(
-				FCameraFocusEvent
-				{
-					-1,
-					CurrentLoc.X,
-					CurrentLoc.Y,
-					ECameraFocusEventType::Type::Default
-				});
-		}
-	}
-
 	Prepare();
 
 	Execute();
