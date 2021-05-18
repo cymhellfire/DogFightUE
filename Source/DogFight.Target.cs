@@ -10,5 +10,9 @@ public class DogFightTarget : TargetRules
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 		ExtraModuleNames.Add("DogFight");
+
+		BuildEnvironment = TargetBuildEnvironment.Unique;
+		bCompileChaos = true;
+		bUseChaos = true;
 	}
 }
