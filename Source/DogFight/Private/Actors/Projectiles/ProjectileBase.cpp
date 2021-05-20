@@ -125,6 +125,11 @@ bool AProjectileBase::CheckDeadOnHitCondition(AActor* OtherActor)
 	return true;
 }
 
+void AProjectileBase::OnZeroHitPoint()
+{
+	Dead();
+}
+
 void AProjectileBase::MulticastIgnoreActorWhileMoving_Implementation(AActor* Target, bool bShouldIgnore)
 {
 	// Update collision
@@ -388,7 +393,7 @@ float AProjectileBase::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 
 		if (CurrentHitPoint <= 0.f)
 		{
-			Dead();
+			OnZeroHitPoint();
 		}
 	}
 

@@ -13,9 +13,9 @@ void ATriggerableProjectile::SetTriggered(bool NewTriggered)
 {
 	bTriggered = NewTriggered;
 
-	if (bTriggered && MovementComponent != nullptr)
+	if (bTriggered && CollisionComponent != nullptr)
 	{
-		MovementComponent->AddForce(ForceAfterTriggered);
+		CollisionComponent->AddImpulse(ForceAfterTriggered);
 	}
 }
 
@@ -44,4 +44,9 @@ bool ATriggerableProjectile::CheckDeadOnHitCondition(AActor* OtherActor)
 	}
 
 	return Super::CheckDeadOnHitCondition(OtherActor);
+}
+
+void ATriggerableProjectile::OnZeroHitPoint()
+{
+	SetTriggered(true);
 }

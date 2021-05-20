@@ -27,11 +27,13 @@ protected:
 
 	virtual bool CheckDeadOnHitCondition(AActor* OtherActor) override;
 
+	virtual void OnZeroHitPoint() override;
+
 protected:
 	/** This force will be applied after this projectile is triggered. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="TriggerableProjectile")
 	FVector ForceAfterTriggered;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="TrigggerableProjectile")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="TriggerableProjectile")
 	uint8 bTriggered : 1;
 };

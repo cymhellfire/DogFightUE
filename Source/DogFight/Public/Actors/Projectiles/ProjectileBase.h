@@ -77,6 +77,8 @@ protected:
 
 	virtual bool CheckDeadOnHitCondition(AActor* OtherActor);
 
+	virtual void OnZeroHitPoint();
+
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastIgnoreActorWhileMoving(AActor* Target, bool bShouldIgnore);
 
