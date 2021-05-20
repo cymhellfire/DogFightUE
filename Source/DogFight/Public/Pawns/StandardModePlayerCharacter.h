@@ -41,7 +41,7 @@ public:
 	virtual bool RemoveExtraArmor(FActorArmor& TargetArmor) override;
 	virtual void SetHealthPercentage(float NewPercentage) override;
 	virtual bool IsAlive() override { return bAlive; }
-	virtual void ApplyDamage(FDamageStruct Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	virtual void ApplyDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 #pragma endregion IDamageableActorInterface
 
 #pragma region IGameAnimatedCharacterInterface
@@ -161,7 +161,7 @@ public:
 
 	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
-	void TakeStrengthCost(float StrengthCost, class UDogFightDamageType* DamageType, AActor* DamageCauser);
+	void TakeStrengthCost(float StrengthCost, FVector KnockdownForce);
 
 	FORCEINLINE class UDecalComponent* GetCursorToWorld() const { return CursorToWorld; }
 

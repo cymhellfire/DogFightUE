@@ -70,7 +70,7 @@ void AWeaponMeshActor::OnMeshComponentBeginOverlap(UPrimitiveComponent* Overlapp
 	{
 		if (IDamageableActorInterface* DamageableActor = Cast<IDamageableActorInterface>(OtherActor))
 		{
-			DamageableActor->ApplyDamage(FDamageStruct{WeaponDamage * DamageRatio, StrengthCost}, FDamageEvent{WeaponDamageType}, WeaponOwnerController, WeaponOwner);
+			DamageableActor->ApplyDamage(WeaponDamage * DamageRatio, FDamageEvent{WeaponDamageType}, WeaponOwnerController, WeaponOwner);
 		}
 		HitActorList.Add(OtherActor);
 	}

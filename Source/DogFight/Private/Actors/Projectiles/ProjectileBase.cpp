@@ -5,6 +5,7 @@
 
 #include "Card/GameCardTypes.h"
 #include "DamageStructures.h"
+#include "Actors/Common/BlastwaveArea.h"
 #include "Game/DogFightGameModeBase.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -44,6 +45,8 @@ AProjectileBase::AProjectileBase()
 	Lifetime = 5.f;
 	AlignVfxWithHitNormal = false;
 	bIgnoreOwnerCollisionAtStart = true;
+	MaxHitPoint = 10;
+	bCreateBlastwaveArea = false;
 
 	GameplayTags.AddTag(FGameplayTag::RequestGameplayTag(FName(TEXT("Actor.Projectile"))));
 }
@@ -53,6 +56,12 @@ void AProjectileBase::GetGameplayTags(FGameplayTagContainer& OutGameplayTags)
 	OutGameplayTags = GameplayTags;
 }
 
+void AProjectileBase::ApplyDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator,
+                                  AActor* DamageCauser)
+{
+	TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+}
+
 // Called when the game starts or when spawned
 void AProjectileBase::BeginPlay()
 {
@@ -60,6 +69,8 @@ void AProjectileBase::BeginPlay()
 
 	// Play the audio clip as default
 	AudioComponent->Play();
+
+	CurrentHitPoint = MaxHitPoint;
 
 	GetWorldTimerManager().SetTimer(LifeTimerHandle, this, &AProjectileBase::OnLifeTimerExpired, Lifetime);
 }
@@ -259,7 +270,7 @@ void AProjectileBase::Dead()
 	{
 		if (IDamageableActorInterface* DamageableActor = Cast<IDamageableActorInterface>(HitActor))
 		{
-			DamageableActor->ApplyDamage(FDamageStruct{BaseDamage, StrengthCost}, FDamageEvent{DamageType}, OwnerController, this);
+			DamageableActor->ApplyDamage(BaseDamage, FDamageEvent{DamageType}, OwnerController, this);
 		}
 	}
 	else
@@ -278,12 +289,21 @@ void AProjectileBase::Dead()
 				{
 					if (IDamageableActorInterface* DamageableActor = Cast<IDamageableActorInterface>(TargetActor))
 					{
-						DamageableActor->ApplyDamage(FDamageStruct{BaseDamage, StrengthCost}, FDamageEvent{DamageType}, OwnerController, this);
+						DamageableActor->ApplyDamage(BaseDamage, FDamageEvent{DamageType}, OwnerController, this);
 					}
 					DamagedActorList.Add(TargetActor);
 				}
 			}
 		}
+	}
+
+	// Create blast wave area
+	if (bCreateBlastwaveArea)
+	{
+		ABlastwaveArea* BlastwaveArea = GetWorld()->SpawnActor<ABlastwaveArea>(ABlastwaveArea::StaticClass(), GetActorLocation(), FRotator::ZeroRotator);
+		BlastwaveArea->InitializeBlastwaveArea(BlastwaveAreaSettings);
+		BlastwaveArea->SetIgnoreActors({this});
+		BlastwaveArea->MulticastActive();
 	}
 
 	// Broadcast the event
@@ -347,6 +367,32 @@ void AProjectileBase::BeginDestroy()
 			}
 		}
 	}
+}
+
+float AProjectileBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	if (!bIsAlive)
+		return 0;
+
+	float ActualDamage = 0;
+	// Modify the damage by current GameMode
+	if (ADogFightGameModeBase* DogFightGameModeBase = Cast<ADogFightGameModeBase>(GetWorld()->GetAuthGameMode()))
+	{
+		ActualDamage = DogFightGameModeBase->CalculateDamage(this, DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	}
+
+	ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	if (ActualDamage > 0.f)
+	{
+		CurrentHitPoint = FMath::Clamp<float>(CurrentHitPoint - ActualDamage, 0.f, MaxHitPoint);
+
+		if (CurrentHitPoint <= 0.f)
+		{
+			Dead();
+		}
+	}
+
+	return ActualDamage;
 }
 
 void AProjectileBase::AdjustGravityScale(float NewGravityScale)

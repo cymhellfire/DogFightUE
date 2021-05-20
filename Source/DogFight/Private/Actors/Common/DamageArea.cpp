@@ -61,7 +61,7 @@ void ADamageArea::ApplyDamage()
 			{
 				if (IDamageableActorInterface* DamageableActor = Cast<IDamageableActorInterface>(TargetActor))
 				{
-					DamageableActor->ApplyDamage(FDamageStruct{Damage,StrengthCost}, FDamageEvent{DamageType}, OwnerController, DamageInstigator);
+					DamageableActor->ApplyDamage(Damage, FDamageEvent{DamageType}, OwnerController, DamageInstigator);
 				}
 				DamagedActorList.Add(TargetActor);
 			}

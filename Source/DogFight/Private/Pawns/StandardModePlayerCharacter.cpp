@@ -203,16 +203,10 @@ void AStandardModePlayerCharacter::SetHealthPercentage(float NewPercentage)
 	SetCurrentHealth(MaxBaseHealth * NewPercentage);
 }
 
-void AStandardModePlayerCharacter::ApplyDamage(FDamageStruct Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+void AStandardModePlayerCharacter::ApplyDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	// Handle damage
-	TakeDamage(Damage.DamageValue, DamageEvent, EventInstigator, DamageCauser);
-
-	// Handle strength cost
-	if (UDogFightDamageType* DamageType = Cast<UDogFightDamageType>(DamageEvent.DamageTypeClass->GetDefaultObject()))
-	{
-		TakeStrengthCost(Damage.StrengthCost, DamageType, DamageCauser);
-	}
+	TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 }
 
 float AStandardModePlayerCharacter::PlayMontage(UAnimMontage* MontageToPlay)
@@ -646,25 +640,14 @@ float AStandardModePlayerCharacter::TakeDamage(float Damage, FDamageEvent const&
 	return ActualDamage;
 }
 
-void AStandardModePlayerCharacter::TakeStrengthCost(float StrengthCost, UDogFightDamageType* DamageType, AActor* DamageCauser)
+void AStandardModePlayerCharacter::TakeStrengthCost(float StrengthCost, FVector KnockdownForce)
 {
 	CurrentStrength = FMath::Clamp<int32>(CurrentStrength - StrengthCost, 0, MaxStrength);
 
 	// Cache blast force value
 	if (CurrentStrength <= 0)
 	{
-		CacheBlastForce = (GetActorLocation() - DamageCauser->GetActorLocation());
-		CacheBlastForce.Normalize();
-		CacheBlastForce += FVector::UpVector * DamageType->BlastForceUpwardRatio;
-		// Calculate the actual force
-		if (AProjectileBase* Projectile = Cast<AProjectileBase>(DamageCauser))
-		{
-			CacheBlastForce *= DamageType->CalculateBlastForceSize(DamageCauser->GetActorLocation(), GetActorLocation(), Projectile->DamageRadius);
-		}
-		else
-		{
-			CacheBlastForce *= DamageType->BlastForce;
-		}
+		CacheBlastForce = KnockdownForce;
 	}
 
 	UE_LOG(LogInit, Log, TEXT("Calculated CacheBlastForce: %s"), *CacheBlastForce.ToString());

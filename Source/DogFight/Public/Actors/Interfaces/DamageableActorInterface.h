@@ -4,7 +4,6 @@
 #include "DamageableActorInterface.generated.h"
 
 class UReceiveDamageComponent;
-struct FDamageStruct;
 
 UINTERFACE(MinimalAPI, Blueprintable)
 class UDamageableActorInterface : public UInterface
@@ -40,5 +39,5 @@ public:
 	virtual bool IsAlive() { return false; }
 
 	/** Apply damage to actor. */
-	virtual void ApplyDamage(FDamageStruct Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) = 0;
+	virtual void ApplyDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) = 0;
 };

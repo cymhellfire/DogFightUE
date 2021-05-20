@@ -125,7 +125,7 @@ void ASingularityArea::Tick(float DeltaSeconds)
 			{
 				if (!DraggingRecord.Key->IsRagdollActive())
 				{
-					DraggingRecord.Key->TakeStrengthCost(StrengthCostPerTick, Cast<UDogFightDamageType>(DamageType->GetDefaultObject()), DragInstigator);
+					DraggingRecord.Key->TakeStrengthCost(StrengthCostPerTick, FVector::ZeroVector);
 				}
 			}
 			StrengthCostTickTimer = 0.f;

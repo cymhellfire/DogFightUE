@@ -4,7 +4,7 @@
 
 #include "DogFight.h"
 #include "GameplayTagContainer.h"
-
+#include "Actors/Common/BlastwaveAreaSettings.h"
 #include "Pawns/StandardModePlayerCharacter.h"
 #include "GameFramework/Actor.h"
 #include "Actors/Interfaces/GameProjectileInterface.h"
@@ -19,7 +19,7 @@ class AShieldBase;
 class UAudioComponent;
 
 UCLASS()
-class DOGFIGHT_API AProjectileBase : public AActor, public IGameProjectileInterface, public IGameplayTagsActorInterface
+class DOGFIGHT_API AProjectileBase : public AActor, public IGameProjectileInterface, public IGameplayTagsActorInterface, public IDamageableActorInterface
 {
 	GENERATED_BODY()
 	
@@ -44,6 +44,8 @@ public:
 
 	virtual void BeginDestroy() override;
 
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
 #pragma region GameProjectileInterface
 	virtual void AdjustGravityScale(float NewGravityScale) override;
 	virtual void SetDamage(float NewDamage) override;
@@ -61,6 +63,11 @@ public:
 #pragma region GameplayTagsActorInterface
 	virtual void GetGameplayTags(FGameplayTagContainer& OutGameplayTags) override;
 #pragma endregion
+
+#pragma region DamageableActorInterface
+	virtual bool IsAlive() override { return bIsAlive; }
+	virtual void ApplyDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+#pragma endregion DamageableActorInterface
 
 protected:
 	// Called when the game starts or when spawned
@@ -160,6 +167,15 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Projectile", ReplicatedUsing=OnRep_LaunchVelocity)
 	FVector LaunchVelocity;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
+	int32 MaxHitPoint;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
+	bool bCreateBlastwaveArea;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile", meta=(EditCondition="bCreateBlastwaveArea"))
+	FBlastwaveAreaSettings BlastwaveAreaSettings;
+
 protected:
 
 	UPROPERTY(VisibleDefaultsOnly, Category="Projectile")
@@ -170,6 +186,8 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category="Projectile")
 	UAudioComponent* AudioComponent;
+
+	float CurrentHitPoint;
 
 	AActor* HitActor;
 
