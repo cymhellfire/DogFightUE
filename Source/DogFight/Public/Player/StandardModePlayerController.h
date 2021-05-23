@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "DogFightPlayerController.h"
 #include "DogFightTypes.h"
+#include "Ability/AbilityDisplayInfo.h"
 #include "UI/UIType.h"
 #include "Actors/Interfaces/GameCardUserPlayerControllerInterface.h"
 #include "Actors/Interfaces/GameTargetProviderInterface.h"
@@ -126,6 +127,16 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 	virtual APawn* GetActualPawn() const override;
 	virtual void BroadcastCardTargetingResult(FText CardName, FText TargetText, ECardInstructionTargetType TargetType) override;
 #pragma endregion Interfaces
+
+	UFUNCTION(Client, Reliable)
+	void  ClientAddNewPlayerAbility(const FAbilityDisplayInfo& AbilityInfo, int32 AbilitySlot);
+
+	UFUNCTION(Client, Reliable)
+	void ClientRemovePlayerAbility(int32 AbilitySlot);
+
+	UFUNCTION(Client, Reliable)
+	void ClientUpdateAbilityCooldown(int32 AbilitySlot, int32 CurrentCooldown);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -216,6 +227,25 @@ protected:
 	UFUNCTION()
 	void OnCameraEventHappened(FCameraFocusEvent CameraFocusEvent);
 
+#pragma region Ability
+
+	UFUNCTION()
+	void OnPlayerAbilityAdded(FAbilityDisplayInfo AbilityInfo, int32 AbilitySlot);
+
+	UFUNCTION()
+	void OnPlayerAbilityRemoved(int32 AbilitySlot);
+
+	UFUNCTION()
+	void OnPlayerAbilityCooldownChanged(int32 AbilitySlot, int32 CurrentCooldown);
+
+	UFUNCTION()
+	void OnPlayerAbilitySelected(int32 AbilitySlot);
+
+	UFUNCTION(Server, Reliable)
+	void ServerActivateSelectedAbility(int32 AbilitySlot);
+
+#pragma endregion Ability
+
 private:
 	FCardTargetInfoAcquiredSignature OnCardTargetInfoAcquired;
 
@@ -275,5 +305,20 @@ public:
 
 	UFUNCTION(Exec)
 	void ExecFocusTo(float X, float Y);
+
+	UFUNCTION(Exec)
+	void ExecAddTestAbility();
+
+	UFUNCTION(Exec)
+	void ExecRemoveTestAbility();
+
+	UFUNCTION(Server, Reliable)
+	void ServerAddTestAbility();
+
+	UFUNCTION(Server, Reliable)
+	void ServerRemoveTestAbility();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Debug", meta=(AllowPrivateAccess))
+	TSubclassOf<class UAbilityBase> TestAbilityClass;
 #pragma endregion DebugCommand
 };

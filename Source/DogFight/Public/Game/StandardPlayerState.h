@@ -3,6 +3,7 @@
 #pragma once
 
 #include "DogFight.h"
+#include "Ability/AbilityDisplayInfo.h"
 #include "GameFramework/PlayerState.h"
 #include "Card/GameCardTypes.h"
 #include "Game/GameType.h"
@@ -10,6 +11,7 @@
 
 class ACardBase;
 class UBuffQueue;
+class UAbilityBase;
 
 /**
  * Struct that handles the data describe relationship between players.
@@ -58,6 +60,15 @@ public:
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerStateDelegateNoArgument);
 	FPlayerStateDelegateNoArgument OnPlayerCardInfoListChanged;
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPlayerAbilityAddedSignature, FAbilityDisplayInfo, AbilityInfo, int32, AbilitySlot);
+	FPlayerAbilityAddedSignature OnPlayerAbilityAdded;
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerAbilityRemovedSignature, int32, AbilitySlot);
+	FPlayerAbilityRemovedSignature OnPlayerAbilityRemoved;
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPlayerAbilityCooldownChangedSignature, int32, AbilitySlot, int32, CurrentCooldown);
+	FPlayerAbilityCooldownChangedSignature OnPlayerAbilityCooldownChanged;
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUsingCardFinsishedSignature, bool, bPlayerRoundFinished);
 	FUsingCardFinsishedSignature OnUsingCardFinished;
@@ -197,6 +208,14 @@ public:
 	void EraseGamePhasesFromSkip(int32 GamePhaseFlags);
 #pragma endregion SkipGamePhase
 
+#pragma region Ability
+	void AddAbility(UAbilityBase* NewAbility);
+
+	void RemoveAbility(FName AbilityToRemove);
+
+	void UseAbility(int32 AbilitySlot);
+#pragma endregion Ability
+
 #pragma region DebugInterface
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerCardCountChangeSignature, int32, CardCount);
 	/** Triggered when player card count changed. */
@@ -245,6 +264,9 @@ protected:
 
 	UFUNCTION()
 	void OnCardFinished();
+
+	UFUNCTION()
+	void OnAbilityCooldownChanged(int32 AbilitySlot, int32 CurrentCooldown);
 
 	void PostCardFinished();
 
@@ -296,4 +318,7 @@ protected:
 
 	UPROPERTY(ReplicatedUsing=OnRep_SkipGamePhaseFlags)
 	int32 SkipGamePhaseFlags;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState")
+	TArray<UAbilityBase*> Abilities;
 };

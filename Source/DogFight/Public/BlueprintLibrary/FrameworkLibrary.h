@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 
+#include "Common/LocalizedString.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "FrameworkLibrary.generated.h"
 
@@ -20,4 +21,7 @@ public:
 	/** Get the SaveGameManager instance. */
 	UFUNCTION(BlueprintCallable, Category="DogFight|Framework", meta=(WorldContext="WorldContextObject"))
 	static class USaveGameManager* GetSaveGameManager(const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable, Category="DogFight|Framework")
+	static FText GetTextFromLocalizedString(const FLocalizedString& LocalizedString);
 };

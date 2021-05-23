@@ -15,6 +15,7 @@
 #include "Game/StandardGameMode.h"
 #include "UI/Widget/GameTitleMessageWidget.h"
 #include "UI/Widget/InGameHudWidget.h"
+#include "UI/Widget/AbilityPanelWidget.h"
 
 AStandardHUD::AStandardHUD(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -35,7 +36,7 @@ void AStandardHUD::DisplayHintMessage(FName HintMessage, TArray<FText> MessageAr
 		{
 			if (!OperationHintMessageWidget->IsInViewport())
 			{
-				InGameHudWidget->AddWidgetToSlotByName(OperationHintMessageWidget, OperationHintMessageWidget->SlotToAdd);
+				InGameHudWidget->AddWidgetToSlotByName(OperationHintMessageWidget);
 			}
 			OperationHintMessageWidget->SetHintMessage(HintMessage, MessageArguments);
 		}
@@ -59,7 +60,7 @@ void AStandardHUD::ShowGameMessage(FGameMessage Message)
 	{
 		if (GameMessageWindowWidget->Slot == nullptr)
 		{
-			InGameHudWidget->AddWidgetToSlotByName(GameMessageWindowWidget, GameMessageWindowWidget->SlotToAdd);
+			InGameHudWidget->AddWidgetToSlotByName(GameMessageWindowWidget);
 		}
 		
 		GameMessageWindowWidget->AddGameMessage(Message);
@@ -105,7 +106,7 @@ void AStandardHUD::ToggleCardDisplayWidgetVisibility(bool bVisible)
 
 	if (bVisible && CardDisplayWidget->Slot == nullptr)
 	{
-		InGameHudWidget->AddWidgetToSlotByName(CardDisplayWidget, CardDisplayWidget->SlotToAdd);
+		InGameHudWidget->AddWidgetToSlotByName(CardDisplayWidget);
 	}
 	else if (!bVisible && CardDisplayWidget->Slot != nullptr)
 	{
@@ -136,7 +137,7 @@ void AStandardHUD::SetTimelineVisibility(bool bVisible)
 	{
 		if (bVisible && GameRoundsTimelineWidget->Slot == nullptr)
 		{
-			InGameHudWidget->AddWidgetToSlotByName(GameRoundsTimelineWidget, GameRoundsTimelineWidget->SlotToAdd);
+			InGameHudWidget->AddWidgetToSlotByName(GameRoundsTimelineWidget);
 		}
 		else if (!bVisible && GameRoundsTimelineWidget->Slot != nullptr)
 		{
@@ -151,7 +152,7 @@ void AStandardHUD::ShowGameTitleMessage(FGameTitleMessage Message)
 	{
 		if (GameTitleMessageWidget->Slot == nullptr)
 		{
-			InGameHudWidget->AddWidgetToSlotByName(GameTitleMessageWidget, GameTitleMessageWidget->SlotToAdd);
+			InGameHudWidget->AddWidgetToSlotByName(GameTitleMessageWidget);
 		}
 
 		GameTitleMessageWidget->DisplayTitleMessage(Message);
@@ -191,6 +192,35 @@ void AStandardHUD::StartRequestResponseCard(int32 MaxCardCount)
 
 		CardDisplayWidget->SetDesireSelectCount(MaxCardCount);
 		CardDisplayWidget->SetSelectMode(ECardSelectionMode::CSM_AnyWithConfirm);
+	}
+}
+
+void AStandardHUD::AddNewPlayerAbility(FAbilityDisplayInfo AbilityInfo, int32 AbilitySlot)
+{
+	if (AbilityPanelWidget != nullptr)
+	{
+		if (AbilityPanelWidget->Slot == nullptr)
+		{
+			InGameHudWidget->AddWidgetToSlotByName(AbilityPanelWidget);
+		}
+
+		AbilityPanelWidget->AddAbility(AbilityInfo, AbilitySlot);
+	}
+}
+
+void AStandardHUD::RemovePlayerAbility(int32 AbilitySlot)
+{
+	if (AbilityPanelWidget != nullptr)
+	{
+		AbilityPanelWidget->RemoveAbility(AbilitySlot);
+	}
+}
+
+void AStandardHUD::UpdateAbilityCooldown(int32 AbilitySlot, int32 CurrentCooldown)
+{
+	if (AbilityPanelWidget != nullptr)
+	{
+		AbilityPanelWidget->UpdateAbilityCooldownAtSlot(AbilitySlot, CurrentCooldown);
 	}
 }
 
@@ -235,6 +265,11 @@ void AStandardHUD::BeginPlay()
 	if (GameTitleMessageWidget == nullptr && GameTitleMessageWidgetClass != nullptr)
 	{
 		GameTitleMessageWidget = CreateWidget<UGameTitleMessageWidget>(PlayerController, GameTitleMessageWidgetClass, FName("GameTitleMessageWidget"));
+	}
+
+	if (AbilityPanelWidget == nullptr && AbilityPanelWidgetClass != nullptr)
+	{
+		AbilityPanelWidget = CreateWidget<UAbilityPanelWidget>(PlayerController, AbilityPanelWidgetClass, FName("AbilityPanelWidget"));
 	}
 
 #if WITH_EDITOR
@@ -359,7 +394,7 @@ void AStandardHUD::OnGamePhaseChanged(const FName& NewGamePhase)
 		// Add to viewport if not be added yet
 		if (GamePhaseMessageWidget->Slot == nullptr)
 		{
-			InGameHudWidget->AddWidgetToSlotByName(GamePhaseMessageWidget, GamePhaseMessageWidget->SlotToAdd);
+			InGameHudWidget->AddWidgetToSlotByName(GamePhaseMessageWidget);
 		}
 	}
 	else

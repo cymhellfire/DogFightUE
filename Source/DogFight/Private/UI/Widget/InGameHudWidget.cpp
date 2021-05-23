@@ -2,8 +2,9 @@
 
 
 #include "UI/Widget/InGameHudWidget.h"
+#include "UI/Widget/SlotWidget.h"
 
-void UInGameHudWidget::AddWidgetToSlotByName(UUserWidget* WidgetToAdd, FName SlotName)
+void UInGameHudWidget::AddWidgetToSlotByName(USlotWidget* WidgetToAdd)
 {
-	K2_AddWidgetToSlotByName(WidgetToAdd, SlotName);
+	K2_AddWidgetToSlotByName(WidgetToAdd, WidgetToAdd->SlotToAdd);
 }

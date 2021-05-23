@@ -2,6 +2,8 @@
 
 
 #include "Game/StandardPlayerState.h"
+
+#include "Ability/AbilityBase.h"
 #include "Card/CardBase.h"
 #include "Game/StandardGameState.h"
 #include "Game/StandardGameMode.h"
@@ -169,6 +171,11 @@ void AStandardPlayerState::PostCardFinished()
 
 	// Invoke OnRep on server side
 	OnRep_CardInfoList();
+}
+
+void AStandardPlayerState::OnAbilityCooldownChanged(int32 AbilitySlot, int32 CurrentCooldown)
+{
+	OnPlayerAbilityCooldownChanged.Broadcast(AbilitySlot, CurrentCooldown);
 }
 
 void AStandardPlayerState::InitializePlayerForNewRound()
@@ -561,6 +568,61 @@ void AStandardPlayerState::MarkGamePhasesAsSkip(int32 GamePhaseFlags)
 void AStandardPlayerState::EraseGamePhasesFromSkip(int32 GamePhaseFlags)
 {
 	REMOVE_FLAGS(SkipGamePhaseFlags, GamePhaseFlags);
+}
+
+void AStandardPlayerState::AddAbility(UAbilityBase* NewAbility)
+{
+	if (Abilities.Contains(NewAbility))
+	{
+		UE_LOG(LogDogFight, Error, TEXT("[StandardPlayerState] Duplicated ability %s to add."), *NewAbility->GetAbilityName().ToString());
+		NewAbility->ConditionalBeginDestroy();
+		return;
+	}
+
+	NewAbility->RegisterAbility(this);
+	NewAbility->SetAbilitySlot(Abilities.Num());
+	NewAbility->OnAbilityCooldownChanged.AddDynamic(this, &AStandardPlayerState::OnAbilityCooldownChanged);
+	Abilities.Add(NewAbility);
+
+	OnPlayerAbilityAdded.Broadcast(NewAbility->GetAbilityDisplayInfo(), NewAbility->GetAbilitySlot());
+}
+
+void AStandardPlayerState::RemoveAbility(FName AbilityToRemove)
+{
+	int32 TargetIndex = -1;
+	for (int32 Index = 0; Index < Abilities.Num(); ++Index)
+	{
+		if (Abilities[Index]->GetAbilityName() == AbilityToRemove)
+		{
+			TargetIndex = Index;
+			break;
+		}
+	}
+
+	if (TargetIndex != -1)
+	{
+		Abilities[TargetIndex]->OnAbilityCooldownChanged.RemoveDynamic(this, &AStandardPlayerState::OnAbilityCooldownChanged);
+		Abilities.RemoveAt(TargetIndex);
+
+		// Update all ability slot
+		for (int32 Index = 0; Index < Abilities.Num(); ++Index)
+		{
+			Abilities[Index]->SetAbilitySlot(Index);
+		}
+
+		OnPlayerAbilityRemoved.Broadcast(TargetIndex);
+	}
+}
+
+void AStandardPlayerState::UseAbility(int32 AbilitySlot)
+{
+	if (AbilitySlot < 0 || AbilitySlot >= Abilities.Num())
+	{
+		UE_LOG(LogDogFight, Error, TEXT("[PlayerState] Invalid ability slot %d to use."), AbilitySlot);
+		return;
+	}
+
+	Abilities[AbilitySlot]->Active();
 }
 
 void AStandardPlayerState::BeginPlay()

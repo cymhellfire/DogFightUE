@@ -7,6 +7,7 @@
 #include "Card/GameCardTypes.h"
 #include "DogFightTypes.h"
 #include "UIType.h"
+#include "Ability/AbilityDisplayInfo.h"
 #include "GameFramework/HUD.h"
 #include "StandardHUD.generated.h"
 
@@ -18,6 +19,7 @@ class UCardDisplayWidget;
 class UGameTitleMessageWidget;
 class AStandardGameState;
 class UInGameHudWidget;
+class UAbilityPanelWidget;
 
 /**
  * 
@@ -63,6 +65,14 @@ public:
 	void StopDiscardCards();
 
 	void StartRequestResponseCard(int32 MaxCardCount);
+
+	void AddNewPlayerAbility(FAbilityDisplayInfo AbilityInfo, int32 AbilitySlot);
+
+	void RemovePlayerAbility(int32 AbilitySlot);
+
+	void UpdateAbilityCooldown(int32 AbilitySlot, int32 CurrentCooldown);
+
+	UAbilityPanelWidget* GetAbilityPanelWidget() const { return AbilityPanelWidget; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -110,6 +120,9 @@ public:
 	TSubclassOf<UGameTitleMessageWidget> GameTitleMessageWidgetClass;
 
 	UPROPERTY(Category="UI", EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UAbilityPanelWidget> AbilityPanelWidgetClass;
+
+	UPROPERTY(Category="UI", EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UUserWidget> DebugUIClass;
 
 protected:
@@ -136,6 +149,8 @@ protected:
 	UCardDisplayWidget* CardDisplayWidget;
 	UPROPERTY()
 	UGameTitleMessageWidget* GameTitleMessageWidget;
+	UPROPERTY()
+	UAbilityPanelWidget* AbilityPanelWidget;
 	UPROPERTY()
 	UUserWidget* DebugUIWidget;
 

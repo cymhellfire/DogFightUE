@@ -17,3 +17,8 @@ USaveGameManager* UFrameworkLibrary::GetSaveGameManager(const UObject* WorldCont
 
 	return GameInstance->GetSaveGameManager();
 }
+
+FText UFrameworkLibrary::GetTextFromLocalizedString(const FLocalizedString& LocalizedString)
+{
+	return LocalizedString.GetLocalizeText();
+}

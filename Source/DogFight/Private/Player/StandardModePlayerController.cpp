@@ -18,8 +18,10 @@
 #include "Game/StandardPlayerState.h"
 #include "UI/Widget/CardDisplayWidget.h"
 #include "NavigationSystem.h"
+#include "Ability/AbilityBase.h"
 #include "Actors/Managers/BuffQueue.h"
 #include "Blueprint/UserWidget.h"
+#include "UI/Widget/AbilityPanelWidget.h"
 
 AStandardModePlayerController::AStandardModePlayerController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -70,6 +72,9 @@ void AStandardModePlayerController::InitPlayerState()
 			StandardPlayerState->OnPlayerCardInfoListChanged.AddDynamic(this, &AStandardModePlayerController::OnCardInfoListChanged);
 			StandardPlayerState->OnPlayerCardUsingAbilityChanged.AddDynamic(this, &AStandardModePlayerController::OnCardUsingAbilityChanged);
 			StandardPlayerState->OnPlayerCardUsableIndexChanged.AddDynamic(this, &AStandardModePlayerController::OnCardUsableIndexChanged);
+			StandardPlayerState->OnPlayerAbilityAdded.AddDynamic(this, &AStandardModePlayerController::OnPlayerAbilityAdded);
+			StandardPlayerState->OnPlayerAbilityRemoved.AddDynamic(this, &AStandardModePlayerController::OnPlayerAbilityRemoved);
+			StandardPlayerState->OnPlayerAbilityCooldownChanged.AddDynamic(this, &AStandardModePlayerController::OnPlayerAbilityCooldownChanged);
 		}
 	}
 }
@@ -247,6 +252,34 @@ void AStandardModePlayerController::OnCameraEventHappened(FCameraFocusEvent Came
 		{
 			ClientSetCameraFocusPoint(CameraFocusEvent.LocationX, CameraFocusEvent.LocationY);
 		}
+	}
+}
+
+void AStandardModePlayerController::OnPlayerAbilityAdded(FAbilityDisplayInfo AbilityInfo, int32 AbilitySlot)
+{
+	ClientAddNewPlayerAbility(AbilityInfo, AbilitySlot);
+}
+
+void AStandardModePlayerController::OnPlayerAbilityRemoved(int32 AbilitySlot)
+{
+	ClientRemovePlayerAbility(AbilitySlot);
+}
+
+void AStandardModePlayerController::OnPlayerAbilityCooldownChanged(int32 AbilitySlot, int32 CurrentCooldown)
+{
+	ClientUpdateAbilityCooldown(AbilitySlot, CurrentCooldown);
+}
+
+void AStandardModePlayerController::OnPlayerAbilitySelected(int32 AbilitySlot)
+{
+	ServerActivateSelectedAbility(AbilitySlot);
+}
+
+void AStandardModePlayerController::ServerActivateSelectedAbility_Implementation(int32 AbilitySlot)
+{
+	if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
+	{
+		StandardPlayerState->UseAbility(AbilitySlot);
 	}
 }
 
@@ -461,6 +494,38 @@ void AStandardModePlayerController::BroadcastCardTargetingResult(FText CardName,
 		}
 		NewMessage.Arguments = {CardName, TargetText};
 		StandardGameMode->BroadcastGameMessageToAllPlayers(NewMessage);
+	}
+}
+
+void AStandardModePlayerController::ClientRemovePlayerAbility_Implementation(int32 AbilitySlot)
+{
+	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
+	{
+		StandardHUD->RemovePlayerAbility(AbilitySlot);
+	}
+}
+
+void AStandardModePlayerController::ClientAddNewPlayerAbility_Implementation(const FAbilityDisplayInfo& AbilityInfo, int32 AbilitySlot)
+{
+	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
+	{
+		if (UAbilityPanelWidget* AbilityPanelWidget = StandardHUD->GetAbilityPanelWidget())
+		{
+			if (!AbilityPanelWidget->OnAbilitySelected.IsAlreadyBound(this, &AStandardModePlayerController::OnPlayerAbilitySelected))
+			{
+				AbilityPanelWidget->OnAbilitySelected.AddDynamic(this, &AStandardModePlayerController::OnPlayerAbilitySelected);
+			}
+		}
+
+		StandardHUD->AddNewPlayerAbility(AbilityInfo, AbilitySlot);
+	}
+}
+
+void AStandardModePlayerController::ClientUpdateAbilityCooldown_Implementation(int32 AbilitySlot, int32 CurrentCooldown)
+{
+	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
+	{
+		StandardHUD->UpdateAbilityCooldown(AbilitySlot, CurrentCooldown);
 	}
 }
 
@@ -990,6 +1055,42 @@ void AStandardModePlayerController::ExecEnqueueInput(uint8 InputIndex, int32 Inp
 void AStandardModePlayerController::ExecFocusTo(float X, float Y)
 {
 	SetCameraFocusPoint(X, Y);
+}
+
+void AStandardModePlayerController::ExecAddTestAbility()
+{
+	ServerAddTestAbility();
+}
+
+void AStandardModePlayerController::ExecRemoveTestAbility()
+{
+	ServerRemoveTestAbility();
+}
+
+void AStandardModePlayerController::ServerRemoveTestAbility_Implementation()
+{
+	if (TestAbilityClass != nullptr)
+	{
+		if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
+		{
+			UAbilityBase* CDO = Cast<UAbilityBase>(TestAbilityClass->GetDefaultObject());
+			if (CDO)
+			{
+				StandardPlayerState->RemoveAbility(CDO->GetAbilityName());
+			}
+		}
+	}
+}
+
+void AStandardModePlayerController::ServerAddTestAbility_Implementation()
+{
+	if (TestAbilityClass != nullptr)
+	{
+		if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
+		{
+			StandardPlayerState->AddAbility(NewObject<UAbilityBase>(this, TestAbilityClass, TEXT("TestAbility")));
+		}
+	}
 }
 
 void AStandardModePlayerController::ServerMoveToMouseCursor_Implementation(FVector Destination)
