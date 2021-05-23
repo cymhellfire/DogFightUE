@@ -5,14 +5,14 @@
 #include "CoreMinimal.h"
 
 #include "DogFightTypes.h"
-#include "Blueprint/UserWidget.h"
+#include "UI/Widget/SlotWidget.h"
 #include "GameMessageWindowWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class UGameMessageWindowWidget : public UUserWidget
+class UGameMessageWindowWidget : public USlotWidget
 {
 	GENERATED_BODY()
 

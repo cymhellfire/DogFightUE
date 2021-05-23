@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "UI/Widget/SlotWidget.h"
 #include "Card/GameCardTypes.h"
 #include "UI/UIType.h"
 #include "CardDisplayWidget.generated.h"
@@ -12,7 +12,7 @@
  * 
  */
 UCLASS()
-class UCardDisplayWidget : public UUserWidget
+class UCardDisplayWidget : public USlotWidget
 {
 	GENERATED_BODY()
 

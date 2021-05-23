@@ -17,6 +17,7 @@ class UGameRoundsTimelineWidget;
 class UCardDisplayWidget;
 class UGameTitleMessageWidget;
 class AStandardGameState;
+class UInGameHudWidget;
 
 /**
  * 
@@ -85,6 +86,9 @@ public:
 	UPROPERTY(Category=Debug, EditAnywhere, BlueprintReadWrite)
 	bool DrawDebugLines;
 
+	UPROPERTY(Category="UI", EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UInGameHudWidget> InGameHudWidgetClass;
+
 	/** The GamePhaseMessageWidget class to use in game. */
 	UPROPERTY(Category="UI", EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UGamePhaseMessageWidget> GamePhaseMessageWidgetClass;
@@ -116,6 +120,9 @@ protected:
 
 	UFUNCTION()
 	void OnCountdownContentStringChanged();
+
+	UPROPERTY()
+	UInGameHudWidget* InGameHudWidget;
 
 	UPROPERTY()
 	UGamePhaseMessageWidget* GamePhaseMessageWidget;

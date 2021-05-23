@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "UI/Widget/SlotWidget.h"
 #include "GameRoundsTimelineWidget.generated.h"
 
 USTRUCT(BlueprintType)
@@ -22,7 +22,7 @@ struct FTimelineDisplayPlayerInfo
  * Widget to display the in-game Timeline.
  */
 UCLASS()
-class UGameRoundsTimelineWidget : public UUserWidget
+class UGameRoundsTimelineWidget : public USlotWidget
 {
 	GENERATED_BODY()
 

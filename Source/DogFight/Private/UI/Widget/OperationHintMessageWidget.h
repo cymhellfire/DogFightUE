@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "UI/Widget/SlotWidget.h"
 #include "OperationHintMessageWidget.generated.h"
 
 namespace EOperationHintMessageContent
@@ -19,7 +19,7 @@ namespace EOperationHintMessageContent
  * Widget that displays a hint message to player.
  */
 UCLASS()
-class UOperationHintMessageWidget : public UUserWidget
+class UOperationHintMessageWidget : public USlotWidget
 {
 	GENERATED_BODY()
 

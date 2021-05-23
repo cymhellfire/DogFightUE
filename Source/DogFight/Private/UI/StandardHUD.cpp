@@ -14,6 +14,7 @@
 #include "UI/Widget/CardDisplayWidget.h"
 #include "Game/StandardGameMode.h"
 #include "UI/Widget/GameTitleMessageWidget.h"
+#include "UI/Widget/InGameHudWidget.h"
 
 AStandardHUD::AStandardHUD(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -34,7 +35,7 @@ void AStandardHUD::DisplayHintMessage(FName HintMessage, TArray<FText> MessageAr
 		{
 			if (!OperationHintMessageWidget->IsInViewport())
 			{
-				OperationHintMessageWidget->AddToViewport();
+				InGameHudWidget->AddWidgetToSlotByName(OperationHintMessageWidget, OperationHintMessageWidget->SlotToAdd);
 			}
 			OperationHintMessageWidget->SetHintMessage(HintMessage, MessageArguments);
 		}
@@ -45,7 +46,7 @@ void AStandardHUD::HideOperationHintMessageWidget()
 {
 	if (OperationHintMessageWidget != nullptr)
 	{
-		if (OperationHintMessageWidget->IsInViewport())
+		if (OperationHintMessageWidget->Slot != nullptr)
 		{
 			OperationHintMessageWidget->RemoveFromParent();
 		}
@@ -56,9 +57,9 @@ void AStandardHUD::ShowGameMessage(FGameMessage Message)
 {
 	if (GameMessageWindowWidget != nullptr)
 	{
-		if (!GameMessageWindowWidget->IsInViewport())
+		if (GameMessageWindowWidget->Slot == nullptr)
 		{
-			GameMessageWindowWidget->AddToViewport();
+			InGameHudWidget->AddWidgetToSlotByName(GameMessageWindowWidget, GameMessageWindowWidget->SlotToAdd);
 		}
 		
 		GameMessageWindowWidget->AddGameMessage(Message);
@@ -102,11 +103,11 @@ void AStandardHUD::ToggleCardDisplayWidgetVisibility(bool bVisible)
 	if (CardDisplayWidget == nullptr)
 		return;
 
-	if (bVisible && !CardDisplayWidget->IsInViewport())
+	if (bVisible && CardDisplayWidget->Slot == nullptr)
 	{
-		CardDisplayWidget->AddToViewport();
+		InGameHudWidget->AddWidgetToSlotByName(CardDisplayWidget, CardDisplayWidget->SlotToAdd);
 	}
-	else if (!bVisible && CardDisplayWidget->IsInViewport())
+	else if (!bVisible && CardDisplayWidget->Slot != nullptr)
 	{
 		CardDisplayWidget->RemoveFromParent();
 	}
@@ -133,11 +134,11 @@ void AStandardHUD::SetTimelineVisibility(bool bVisible)
 {
 	if (GameRoundsTimelineWidget != nullptr)
 	{
-		if (bVisible && !GameRoundsTimelineWidget->IsInViewport())
+		if (bVisible && GameRoundsTimelineWidget->Slot == nullptr)
 		{
-			GameRoundsTimelineWidget->AddToViewport();
+			InGameHudWidget->AddWidgetToSlotByName(GameRoundsTimelineWidget, GameRoundsTimelineWidget->SlotToAdd);
 		}
-		else if (!bVisible && GameRoundsTimelineWidget->IsInViewport())
+		else if (!bVisible && GameRoundsTimelineWidget->Slot != nullptr)
 		{
 			GameRoundsTimelineWidget->RemoveFromParent();
 		}
@@ -148,9 +149,9 @@ void AStandardHUD::ShowGameTitleMessage(FGameTitleMessage Message)
 {
 	if (GameTitleMessageWidget != nullptr)
 	{
-		if (!GameTitleMessageWidget->IsInViewport())
+		if (GameTitleMessageWidget->Slot == nullptr)
 		{
-			GameTitleMessageWidget->AddToViewport();
+			InGameHudWidget->AddWidgetToSlotByName(GameTitleMessageWidget, GameTitleMessageWidget->SlotToAdd);
 		}
 
 		GameTitleMessageWidget->DisplayTitleMessage(Message);
@@ -198,6 +199,12 @@ void AStandardHUD::BeginPlay()
 	Super::BeginPlay();
 
 	APlayerController* PlayerController = GetGameInstance()->GetFirstLocalPlayerController();
+
+	if (InGameHudWidget == nullptr && InGameHudWidgetClass != nullptr)
+	{
+		InGameHudWidget = CreateWidget<UInGameHudWidget>(PlayerController, InGameHudWidgetClass, FName("InGameHudWidget"));
+		InGameHudWidget->AddToViewport();
+	}
 
 	// Instantiate GamePhaseMessageWidget
 	if (GamePhaseMessageWidget == nullptr && GamePhaseMessageWidgetClass != nullptr)
@@ -350,9 +357,9 @@ void AStandardHUD::OnGamePhaseChanged(const FName& NewGamePhase)
 		GamePhaseMessageWidget->SetGamePhase(NewGamePhase);
 		GamePhaseMessageWidget->SetCountdownContent(StandardGameState->GetCountdownContentString());
 		// Add to viewport if not be added yet
-		if (!GamePhaseMessageWidget->IsInViewport())
+		if (GamePhaseMessageWidget->Slot == nullptr)
 		{
-			GamePhaseMessageWidget->AddToViewport();
+			InGameHudWidget->AddWidgetToSlotByName(GamePhaseMessageWidget, GamePhaseMessageWidget->SlotToAdd);
 		}
 	}
 	else

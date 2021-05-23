@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "UI/Widget/SlotWidget.h"
 #include "GamePhaseMessageWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class UGamePhaseMessageWidget : public UUserWidget
+class UGamePhaseMessageWidget : public USlotWidget
 {
 	GENERATED_BODY()
 
