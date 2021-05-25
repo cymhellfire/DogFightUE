@@ -50,7 +50,22 @@ public:
 
 	void SetCooldown(int32 NewCooldown);
 
+	void SetAvailability(bool InAvailability);
+
+	virtual bool IsAbilityUsable() const;
+
 protected:
+
+	bool IsAbilityAvailable(EAbilityAvailablePhase CurrentPhase, bool bOwnerRound) const;
+
+	UFUNCTION()
+	void OnPrePlayerRoundBegin(int32 PlayerId);
+
+	UFUNCTION()
+	void OnPlayerRoundBegin(int32 PlayerId);
+
+	UFUNCTION()
+	void OnPlayerDiscardCards(int32 PlayerId);
 
 	UFUNCTION()
 	void OnPlayerRoundEnd(int32 PlayerId);
@@ -62,6 +77,9 @@ public:
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FAbilityCooldownChangedSignature, int32, AbilitySlot, int32, Cooldown);
 	FAbilityCooldownChangedSignature OnAbilityCooldownChanged;
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FAbilityAvailablityChanged, int32, AbilitySlot, bool, NewAvailability);
+	FAbilityAvailablityChanged OnAbilityAvailabilityChanged;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability")
@@ -77,7 +95,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability")
 	EAbilityCastType AbilityCastType;
 
-	bool bReady;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability", meta=(Bitmask, BitmaskEnum="EAbilityAvailablePhase"))
+	int32 AbilityAvailablePhase;
+
+	uint8 bReady:1;
+	uint8 bAvailable:1;
 
 	int32 OwnerPlayerId;
 	int32 CurrentCooldown;

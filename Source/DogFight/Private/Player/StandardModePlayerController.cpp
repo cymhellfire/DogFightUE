@@ -75,6 +75,7 @@ void AStandardModePlayerController::InitPlayerState()
 			StandardPlayerState->OnPlayerAbilityAdded.AddDynamic(this, &AStandardModePlayerController::OnPlayerAbilityAdded);
 			StandardPlayerState->OnPlayerAbilityRemoved.AddDynamic(this, &AStandardModePlayerController::OnPlayerAbilityRemoved);
 			StandardPlayerState->OnPlayerAbilityCooldownChanged.AddDynamic(this, &AStandardModePlayerController::OnPlayerAbilityCooldownChanged);
+			StandardPlayerState->OnPlayerAbilityAvailabilityChanged.AddDynamic(this, &AStandardModePlayerController::OnPlayerAbilityAvailabilityChanged);
 		}
 	}
 }
@@ -268,6 +269,11 @@ void AStandardModePlayerController::OnPlayerAbilityRemoved(int32 AbilitySlot)
 void AStandardModePlayerController::OnPlayerAbilityCooldownChanged(int32 AbilitySlot, int32 CurrentCooldown)
 {
 	ClientUpdateAbilityCooldown(AbilitySlot, CurrentCooldown);
+}
+
+void AStandardModePlayerController::OnPlayerAbilityAvailabilityChanged(int32 AbilitySlot, bool NewAvailability)
+{
+	ClientUpdateAbilityAvailability(AbilitySlot, NewAvailability);
 }
 
 void AStandardModePlayerController::OnPlayerAbilitySelected(int32 AbilitySlot)
@@ -526,6 +532,14 @@ void AStandardModePlayerController::ClientUpdateAbilityCooldown_Implementation(i
 	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
 	{
 		StandardHUD->UpdateAbilityCooldown(AbilitySlot, CurrentCooldown);
+	}
+}
+
+void AStandardModePlayerController::ClientUpdateAbilityAvailability_Implementation(int32 AbilitySlot, bool NewAvailability)
+{
+	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
+	{
+		StandardHUD->UpdateAbilityAvailability(AbilitySlot, NewAvailability);
 	}
 }
 

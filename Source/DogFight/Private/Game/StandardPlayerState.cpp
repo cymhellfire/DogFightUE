@@ -178,6 +178,11 @@ void AStandardPlayerState::OnAbilityCooldownChanged(int32 AbilitySlot, int32 Cur
 	OnPlayerAbilityCooldownChanged.Broadcast(AbilitySlot, CurrentCooldown);
 }
 
+void AStandardPlayerState::OnAbilityAvailabilityChanged(int32 AbilitySlot, bool NewAvailability)
+{
+	OnPlayerAbilityAvailabilityChanged.Broadcast(AbilitySlot, NewAvailability);
+}
+
 void AStandardPlayerState::InitializePlayerForNewRound()
 {
 	SetUsedCardCount(0);
@@ -582,6 +587,7 @@ void AStandardPlayerState::AddAbility(UAbilityBase* NewAbility)
 	NewAbility->RegisterAbility(this);
 	NewAbility->SetAbilitySlot(Abilities.Num());
 	NewAbility->OnAbilityCooldownChanged.AddDynamic(this, &AStandardPlayerState::OnAbilityCooldownChanged);
+	NewAbility->OnAbilityAvailabilityChanged.AddDynamic(this, &AStandardPlayerState::OnAbilityAvailabilityChanged);
 	Abilities.Add(NewAbility);
 
 	OnPlayerAbilityAdded.Broadcast(NewAbility->GetAbilityDisplayInfo(), NewAbility->GetAbilitySlot());
@@ -602,6 +608,7 @@ void AStandardPlayerState::RemoveAbility(FName AbilityToRemove)
 	if (TargetIndex != -1)
 	{
 		Abilities[TargetIndex]->OnAbilityCooldownChanged.RemoveDynamic(this, &AStandardPlayerState::OnAbilityCooldownChanged);
+		Abilities[TargetIndex]->OnAbilityAvailabilityChanged.RemoveDynamic(this, &AStandardPlayerState::OnAbilityAvailabilityChanged);
 		Abilities.RemoveAt(TargetIndex);
 
 		// Update all ability slot

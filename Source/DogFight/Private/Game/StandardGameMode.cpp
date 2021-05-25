@@ -910,6 +910,8 @@ void AStandardGameMode::OnWeaponEquipped(AActor* CarrierActor)
 
 void AStandardGameMode::HandlePhasePlayerRoundBegin()
 {
+	OnPrePlayerRoundBegin.Broadcast(GetCurrentPlayerId());
+
 	// Start Buff Queue process
 	if (!bIsCurrentAIPlayer)
 	{
@@ -1219,6 +1221,8 @@ void AStandardGameMode::OnCharacterReturnFinished(AActor* Actor)
 
 void AStandardGameMode::HandlePhaseDiscardCards()
 {
+	OnPlayerDiscardCard.Broadcast(GetCurrentPlayerId());
+
 	if (!bIsCurrentAIPlayer)
 	{
 		// Handle human player

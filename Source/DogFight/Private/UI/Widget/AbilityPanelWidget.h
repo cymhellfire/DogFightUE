@@ -24,6 +24,8 @@ public:
 
 	void UpdateAbilityCooldownAtSlot(int32 AbilitySlot, int32 CurrentCooldown);
 
+	void UpdateAbilityAvailability(int32 AbilitySlot, bool NewAvailability);
+
 	UFUNCTION(BlueprintCallable, Category="DogFight|UI")
 	void UseAbilityAtSlot(int32 AbilitySlot);
 
@@ -37,6 +39,9 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent, Category="DogFight|UI", meta=(DisplayName="Update Ability Cooldown"))
 	void K2_UpdateAbilityCooldown(int32 AbilitySlot, int32 CurrentCooldown);
+
+	UFUNCTION(BlueprintImplementableEvent, Category="DogFight|UI", meta=(DisplayName="Update Ability Availability"))
+	void K2_UpdateAbilityAvailability(int32 AbilitySlot, bool NewAvailability);
 
 public:
 

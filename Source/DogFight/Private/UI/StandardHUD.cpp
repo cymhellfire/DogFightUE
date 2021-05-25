@@ -224,6 +224,14 @@ void AStandardHUD::UpdateAbilityCooldown(int32 AbilitySlot, int32 CurrentCooldow
 	}
 }
 
+void AStandardHUD::UpdateAbilityAvailability(int32 AbilitySlot, bool NewAvailability)
+{
+	if (AbilityPanelWidget != nullptr)
+	{
+		AbilityPanelWidget->UpdateAbilityAvailability(AbilitySlot, NewAvailability);
+	}
+}
+
 void AStandardHUD::BeginPlay()
 {
 	Super::BeginPlay();

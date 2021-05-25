@@ -70,6 +70,9 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPlayerAbilityCooldownChangedSignature, int32, AbilitySlot, int32, CurrentCooldown);
 	FPlayerAbilityCooldownChangedSignature OnPlayerAbilityCooldownChanged;
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPlayerAbilityAvailabilityChangedSignature, int32, AbilitySlot, bool, NewAvailability);
+	FPlayerAbilityAvailabilityChangedSignature OnPlayerAbilityAvailabilityChanged;
+
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUsingCardFinsishedSignature, bool, bPlayerRoundFinished);
 	FUsingCardFinsishedSignature OnUsingCardFinished;
 
@@ -267,6 +270,9 @@ protected:
 
 	UFUNCTION()
 	void OnAbilityCooldownChanged(int32 AbilitySlot, int32 CurrentCooldown);
+
+	UFUNCTION()
+	void OnAbilityAvailabilityChanged(int32 AbilitySlot, bool NewAvailability);
 
 	void PostCardFinished();
 

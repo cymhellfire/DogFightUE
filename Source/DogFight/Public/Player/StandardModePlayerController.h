@@ -137,6 +137,9 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 	UFUNCTION(Client, Reliable)
 	void ClientUpdateAbilityCooldown(int32 AbilitySlot, int32 CurrentCooldown);
 
+	UFUNCTION(Client, Reliable)
+	void ClientUpdateAbilityAvailability(int32 AbilitySlot, bool NewAvailability);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -237,6 +240,9 @@ protected:
 
 	UFUNCTION()
 	void OnPlayerAbilityCooldownChanged(int32 AbilitySlot, int32 CurrentCooldown);
+
+	UFUNCTION()
+	void OnPlayerAbilityAvailabilityChanged(int32 AbilitySlot, bool NewAvailability);
 
 	UFUNCTION()
 	void OnPlayerAbilitySelected(int32 AbilitySlot);

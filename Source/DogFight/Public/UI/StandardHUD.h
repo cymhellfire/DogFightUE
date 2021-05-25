@@ -72,6 +72,8 @@ public:
 
 	void UpdateAbilityCooldown(int32 AbilitySlot, int32 CurrentCooldown);
 
+	void UpdateAbilityAvailability(int32 AbilitySlot, bool NewAvailability);
+
 	UAbilityPanelWidget* GetAbilityPanelWidget() const { return AbilityPanelWidget; }
 
 protected:

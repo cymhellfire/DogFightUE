@@ -18,6 +18,11 @@ void UAbilityPanelWidget::UpdateAbilityCooldownAtSlot(int32 AbilitySlot, int32 C
 	K2_UpdateAbilityCooldown(AbilitySlot, CurrentCooldown);
 }
 
+void UAbilityPanelWidget::UpdateAbilityAvailability(int32 AbilitySlot, bool NewAvailability)
+{
+	K2_UpdateAbilityAvailability(AbilitySlot, NewAvailability);
+}
+
 void UAbilityPanelWidget::UseAbilityAtSlot(int32 AbilitySlot)
 {
 	OnAbilitySelected.Broadcast(AbilitySlot);
