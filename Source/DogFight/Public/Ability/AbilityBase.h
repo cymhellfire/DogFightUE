@@ -23,10 +23,10 @@ public:
 
 	virtual void RegisterAbility(AStandardPlayerState* OwnerPlayerState);
 
-	/** Active ability. */
-	virtual void Active();
+	virtual void UnregisterAbility();
 
-	virtual void BeginDestroy() override;
+	/** Active ability. */
+	virtual void Activate();
 
 	bool IsAbilityReady() const { return bReady; }
 
@@ -92,7 +92,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability")
 	int32 Cooldown;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Ability")
 	EAbilityCastType AbilityCastType;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability", meta=(Bitmask, BitmaskEnum="EAbilityAvailablePhase"))

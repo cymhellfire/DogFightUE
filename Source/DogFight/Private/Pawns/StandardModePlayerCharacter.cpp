@@ -111,7 +111,9 @@ void AStandardModePlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimePr
 
 	DOREPLIFETIME(AStandardModePlayerCharacter, UnitName);
 	DOREPLIFETIME(AStandardModePlayerCharacter, CurrentHealth);
+	DOREPLIFETIME(AStandardModePlayerCharacter, MaxBaseHealth);
 	DOREPLIFETIME(AStandardModePlayerCharacter, CurrentStrength);
+	DOREPLIFETIME(AStandardModePlayerCharacter, MaxStrength);
 	DOREPLIFETIME(AStandardModePlayerCharacter, CacheBlastForce);
 	DOREPLIFETIME(AStandardModePlayerCharacter, CurrentWeaponType);
 }
@@ -155,6 +157,47 @@ void AStandardModePlayerCharacter::SetCurrentHealth(float NewHealth)
 		CurrentHealth = NewValue;
 		OnRep_CurrentHealth();
 	}
+}
+
+void AStandardModePlayerCharacter::SetMaxHealth(float NewMaxHealth)
+{
+	if (GetLocalRole() != ROLE_Authority)
+		return;
+
+	const int32 CeilMaxHealth = FMath::CeilToInt(NewMaxHealth);
+	const int32 DeltaHealth = CeilMaxHealth - MaxBaseHealth;
+	MaxBaseHealth = CeilMaxHealth;
+	// Also modify current health
+	SetCurrentHealth(FMath::Clamp<int32>(CurrentHealth + DeltaHealth, 1, MaxBaseHealth));
+
+	MaxHealthChanged(MaxBaseHealth);
+}
+
+void AStandardModePlayerCharacter::SetCurrentStrength(float NewStrength)
+{
+	if (GetLocalRole() != ROLE_Authority)
+		return;
+
+	const float NewValue = FMath::Clamp<float>(NewStrength, 0.f, MaxStrength);
+	if (CurrentStrength != NewValue)
+	{
+		CurrentStrength = NewValue;
+		OnRep_CurrentStrength();
+	}
+}
+
+void AStandardModePlayerCharacter::SetMaxStrength(float NewMaxStrength)
+{
+	if (GetLocalRole() != ROLE_Authority)
+		return;
+
+	const int32 CeilMaxStrength = FMath::CeilToInt(NewMaxStrength);
+	const int32 DeltaStrength = CeilMaxStrength - MaxStrength;
+	MaxStrength = CeilMaxStrength;
+	// Also modify current strength
+	SetCurrentStrength(FMath::Clamp<int32>(CurrentStrength + DeltaStrength, 1, MaxStrength));
+
+	MaxStrengthChanged(MaxStrength);
 }
 
 UReceiveDamageComponent* AStandardModePlayerCharacter::GetDamageReceiveComponent()
@@ -431,6 +474,11 @@ void AStandardModePlayerCharacter::OnRep_UnitName()
 	UnitNameChanged(FText::FromString(UnitName));
 }
 
+void AStandardModePlayerCharacter::OnRep_MaxBaseHealth()
+{
+	MaxHealthChanged(MaxBaseHealth);
+}
+
 void AStandardModePlayerCharacter::OnRep_CurrentHealth()
 {
 	if (CurrentHealth <= 0.f)
@@ -446,6 +494,11 @@ void AStandardModePlayerCharacter::OnRep_CurrentHealth()
 
 	// Invoke Blueprint implementation
 	CurrentHealthChanged(CeilHealth);
+}
+
+void AStandardModePlayerCharacter::OnRep_MaxStrength()
+{
+	MaxStrengthChanged(MaxStrength);
 }
 
 void AStandardModePlayerCharacter::OnRep_CurrentStrength()

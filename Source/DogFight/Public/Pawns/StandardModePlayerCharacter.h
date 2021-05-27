@@ -86,7 +86,13 @@ protected:
 	virtual void OnRep_UnitName();
 
 	UFUNCTION()
+	void OnRep_MaxBaseHealth();
+
+	UFUNCTION()
 	void OnRep_CurrentHealth();
+
+	UFUNCTION()
+	void OnRep_MaxStrength();
 
 	UFUNCTION()
 	void OnRep_CurrentStrength();
@@ -144,11 +150,23 @@ public:
 	UFUNCTION(BlueprintCallable, Category="DogFight|Character")
 	void SetCurrentHealth(float NewHealth);
 
+	void SetMaxHealth(float NewMaxHealth);
+
+	void SetCurrentStrength(float NewStrength);
+
+	void SetMaxStrength(float NewMaxStrength);
+
 	UFUNCTION(BlueprintImplementableEvent, Category="DogFight|Character")
 	void UnitNameChanged(const FText& PlayerName);
 
 	UFUNCTION(BlueprintImplementableEvent, Category="DogFight|Gameplay")
+	void MaxHealthChanged(const int32 NewMaxHealth);
+
+	UFUNCTION(BlueprintImplementableEvent, Category="DogFight|Gameplay")
 	void CurrentHealthChanged(const int32 NewHealth);
+
+	UFUNCTION(BlueprintImplementableEvent, Category="DogFight|Gameplay")
+	void MaxStrengthChanged(const int32 NewMaxStrength);
 
 	UFUNCTION(BlueprintImplementableEvent, Category="DogFight|Gameplay")
 	void CurrentStrengthChanged(const int32 NewStrength);
@@ -204,10 +222,10 @@ protected:
 	void ShowFloatingText(FText NewText);
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Character", Config)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Character", Config, ReplicatedUsing=OnRep_MaxBaseHealth)
 	int32 MaxBaseHealth;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character", Config)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character", Config, ReplicatedUsing=OnRep_MaxStrength)
 	int32 MaxStrength;
 
 	/** The duration between ragdoll stop moving and character start to recover. */

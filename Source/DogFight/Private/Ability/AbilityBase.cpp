@@ -31,7 +31,22 @@ void UAbilityBase::RegisterAbility(AStandardPlayerState* OwnerPlayerState)
 	}
 }
 
-void UAbilityBase::Active()
+void UAbilityBase::UnregisterAbility()
+{
+	if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		if (AbilityCastType == EAbilityCastType::ACT_Aggressive)
+		{
+			StandardGameMode->OnPlayerRoundEnd.RemoveDynamic(this, &UAbilityBase::OnPlayerRoundEnd);
+
+			StandardGameMode->OnPrePlayerRoundBegin.RemoveDynamic(this, &UAbilityBase::UAbilityBase::OnPrePlayerRoundBegin);
+			StandardGameMode->OnPlayerRoundBegin.RemoveDynamic(this, &UAbilityBase::OnPlayerRoundBegin);
+			StandardGameMode->OnPlayerDiscardCard.RemoveDynamic(this, &UAbilityBase::OnPlayerDiscardCards);
+		}
+	}
+}
+
+void UAbilityBase::Activate()
 {
 	if (!IsAbilityUsable())
 		return;
@@ -43,27 +58,6 @@ void UAbilityBase::Active()
 	}
 
 	K2_Active();
-}
-
-void UAbilityBase::BeginDestroy()
-{
-	UWorld* CurrentWorld = GetWorld();
-	if (IsValid(CurrentWorld))
-	{
-		if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(CurrentWorld->GetAuthGameMode()))
-		{
-			if (AbilityCastType == EAbilityCastType::ACT_Aggressive)
-			{
-				StandardGameMode->OnPlayerRoundEnd.RemoveDynamic(this, &UAbilityBase::OnPlayerRoundEnd);
-
-				StandardGameMode->OnPrePlayerRoundBegin.RemoveDynamic(this, &UAbilityBase::UAbilityBase::OnPrePlayerRoundBegin);
-				StandardGameMode->OnPlayerRoundBegin.RemoveDynamic(this, &UAbilityBase::OnPlayerRoundBegin);
-				StandardGameMode->OnPlayerDiscardCard.RemoveDynamic(this, &UAbilityBase::OnPlayerDiscardCards);
-			}
-		}
-	}
-
-	Super::BeginDestroy();
 }
 
 FAbilityDisplayInfo UAbilityBase::GetAbilityDisplayInfo() const

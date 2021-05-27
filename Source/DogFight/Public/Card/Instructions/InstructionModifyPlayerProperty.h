@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Card/Instructions/HandleTargetInstructionBase.h"
 #include "Common/LocalizedString.h"
+#include "Common/PropertyModifyCommon.h"
 
 #include "InstructionModifyPlayerProperty.generated.h"
 
@@ -16,14 +17,6 @@ enum class EModifiablePropertyName : uint8
 	EMPN_CardGainPerRound		UMETA(DisplayName="Card Gain Per Round"),
 	EMPN_CardUseCount			UMETA(DisplayName="Card Use Count"),
 	EMPN_MaxCardCount			UMETA(DisplayName="Max Card Count"),
-};
-
-UENUM(BlueprintType)
-enum class EPropertyModifyMethod : uint8
-{
-	EPMM_Addition		UMETA(DisplayName="Addition"),
-	EPMM_Subtract		UMETA(DisplayName="Subtract"),
-	EPMM_Replace		UMETA(DisplayName="Replace"),
 };
 
 /**

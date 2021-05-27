@@ -609,6 +609,7 @@ void AStandardPlayerState::RemoveAbility(FName AbilityToRemove)
 	{
 		Abilities[TargetIndex]->OnAbilityCooldownChanged.RemoveDynamic(this, &AStandardPlayerState::OnAbilityCooldownChanged);
 		Abilities[TargetIndex]->OnAbilityAvailabilityChanged.RemoveDynamic(this, &AStandardPlayerState::OnAbilityAvailabilityChanged);
+		Abilities[TargetIndex]->UnregisterAbility();
 		Abilities.RemoveAt(TargetIndex);
 
 		// Update all ability slot
@@ -629,7 +630,7 @@ void AStandardPlayerState::UseAbility(int32 AbilitySlot)
 		return;
 	}
 
-	Abilities[AbilitySlot]->Active();
+	Abilities[AbilitySlot]->Activate();
 }
 
 void AStandardPlayerState::BeginPlay()

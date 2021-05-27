@@ -76,11 +76,11 @@ int32 UInstructionModifyPlayerProperty::CalculateResult(int32 OldValue)
 	const int32 DeltaValue = FCString::Atoi(*NewValue);
 	switch(ModifyMethod)
 	{
-	case EPropertyModifyMethod::EPMM_Addition:
+	case EPropertyModifyMethod::PMM_Add:
 		return OldValue + DeltaValue;
-	case EPropertyModifyMethod::EPMM_Subtract:
+	case EPropertyModifyMethod::PMM_Subtract:
 		return OldValue - DeltaValue;
-	case EPropertyModifyMethod::EPMM_Replace:
+	case EPropertyModifyMethod::PMM_Replace:
 		return DeltaValue;
 	}
 
@@ -92,11 +92,11 @@ FText UInstructionModifyPlayerProperty::GetOperatorText()
 {
 	switch(ModifyMethod)
 	{
-	case EPropertyModifyMethod::EPMM_Addition:
+	case EPropertyModifyMethod::PMM_Add:
 		return FText::FromStringTable(ST_BUFF_LOC, TEXT("Operator_Addition"));
-	case EPropertyModifyMethod::EPMM_Subtract:
+	case EPropertyModifyMethod::PMM_Subtract:
 		return FText::FromStringTable(ST_BUFF_LOC, TEXT("Operator_Subtract"));
-	case EPropertyModifyMethod::EPMM_Replace: 
+	case EPropertyModifyMethod::PMM_Replace: 
 		return FText::FromStringTable(ST_BUFF_LOC, TEXT("Operator_Replace"));
 	}
 

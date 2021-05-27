@@ -25,6 +25,7 @@ class DOGFIGHT_API ABuffBase : public AActor, public IGameBuffInterface
 	
 public:
 	friend class UBuffQueue;
+	friend class UPermanentBuffAbility;
 
 	// Sets default values for this actor's properties
 	ABuffBase();
