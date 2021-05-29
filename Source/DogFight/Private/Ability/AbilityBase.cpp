@@ -6,6 +6,14 @@
 #include "Game/StandardGameMode.h"
 #include "Common/BitmaskOperation.h"
 
+UAbilityBase::UAbilityBase(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	// Initialize cooldown with non-zero value to ensure SetCooldown() in register function
+	// can work correctly.
+	CurrentCooldown = 1;
+}
+
 void UAbilityBase::RegisterAbility(AStandardPlayerState* OwnerPlayerState)
 {
 	if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
@@ -46,10 +54,10 @@ void UAbilityBase::UnregisterAbility()
 	}
 }
 
-void UAbilityBase::Activate()
+bool UAbilityBase::Activate()
 {
 	if (!IsAbilityUsable())
-		return;
+		return false;
 
 	// Set cooldown if larger than zero
 	if (Cooldown > 0)
@@ -58,6 +66,8 @@ void UAbilityBase::Activate()
 	}
 
 	K2_Active();
+
+	return true;
 }
 
 FAbilityDisplayInfo UAbilityBase::GetAbilityDisplayInfo() const

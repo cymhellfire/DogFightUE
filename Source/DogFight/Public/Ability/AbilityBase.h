@@ -20,13 +20,14 @@ class DOGFIGHT_API UAbilityBase : public UObject
 	GENERATED_BODY()
 
 public:
+	UAbilityBase(const FObjectInitializer& ObjectInitializer);
 
 	virtual void RegisterAbility(AStandardPlayerState* OwnerPlayerState);
 
 	virtual void UnregisterAbility();
 
 	/** Active ability. */
-	virtual void Activate();
+	virtual bool Activate();
 
 	bool IsAbilityReady() const { return bReady; }
 

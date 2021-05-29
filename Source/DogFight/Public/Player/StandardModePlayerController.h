@@ -313,18 +313,18 @@ public:
 	void ExecFocusTo(float X, float Y);
 
 	UFUNCTION(Exec)
-	void ExecAddTestAbility();
+	void ExecAddTestAbility(int32 Index);
 
 	UFUNCTION(Exec)
-	void ExecRemoveTestAbility();
+	void ExecRemoveTestAbility(int32 Index);
 
 	UFUNCTION(Server, Reliable)
-	void ServerAddTestAbility();
+	void ServerAddTestAbility(int32 Index);
 
 	UFUNCTION(Server, Reliable)
-	void ServerRemoveTestAbility();
+	void ServerRemoveTestAbility(int32 Index);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Debug", meta=(AllowPrivateAccess))
-	TSubclassOf<class UAbilityBase> TestAbilityClass;
+	TArray<TSubclassOf<class UAbilityBase>> TestAbilityClassList;
 #pragma endregion DebugCommand
 };

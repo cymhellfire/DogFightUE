@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Actors/Buffs/BuffBase.h"
 #include "Common/PropertyModifyCommon.h"
-#include "CharacterPropertyBuff.generated.h"
+#include "Buff_CharacterProperty.generated.h"
 
 class AStandardModePlayerCharacter;
 
@@ -41,7 +41,7 @@ struct FCharacterPropertyModifier
  * Buff that has ability to modify owner character properties.
  */
 UCLASS()
-class DOGFIGHT_API ACharacterPropertyBuff : public ABuffBase
+class DOGFIGHT_API ABuff_CharacterProperty : public ABuffBase
 {
 	GENERATED_BODY()
 

@@ -160,6 +160,8 @@ public:
 
 	void RemovePlayerInRagdoll(int32 PlayerId);
 
+	AController* GetControllerById(int32 PlayerId);
+
 	class AStandardModePlayerCharacter* GetPlayerCharacterById(int32 PlayerId);
 
 	int32 GetDefaultCardUsingCount() const { return DefaultCardUsingCount; }

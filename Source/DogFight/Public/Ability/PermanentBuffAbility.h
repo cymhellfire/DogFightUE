@@ -17,7 +17,7 @@ class DOGFIGHT_API UPermanentBuffAbility : public UPermanentPassiveAbility
 	GENERATED_BODY()
 
 public:
-	virtual void Activate() override;
+	virtual bool Activate() override;
 	virtual void Deactivate() override;
 
 protected:

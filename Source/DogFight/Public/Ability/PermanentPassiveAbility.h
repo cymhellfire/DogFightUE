@@ -22,7 +22,7 @@ public:
 
 	virtual void UnregisterAbility() override;
 
-	virtual void Activate() override;
+	virtual bool Activate() override;
 
 	virtual void Deactivate();
 };

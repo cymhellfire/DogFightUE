@@ -6,9 +6,12 @@
 #include "Game/StandardGameMode.h"
 #include "Pawns/StandardModePlayerCharacter.h"
 
-void UPermanentBuffAbility::Activate()
+bool UPermanentBuffAbility::Activate()
 {
-	Super::Activate();
+	if (!Super::Activate())
+	{
+		return false;
+	}
 
 	if (IsValid(BuffClass))
 	{
@@ -22,6 +25,8 @@ void UPermanentBuffAbility::Activate()
 			BuffInstance->SetLifetime(0);
 		}
 	}
+
+	return true;
 }
 
 

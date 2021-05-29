@@ -1071,23 +1071,23 @@ void AStandardModePlayerController::ExecFocusTo(float X, float Y)
 	SetCameraFocusPoint(X, Y);
 }
 
-void AStandardModePlayerController::ExecAddTestAbility()
+void AStandardModePlayerController::ExecAddTestAbility(int32 Index)
 {
-	ServerAddTestAbility();
+	ServerAddTestAbility(Index);
 }
 
-void AStandardModePlayerController::ExecRemoveTestAbility()
+void AStandardModePlayerController::ExecRemoveTestAbility(int32 Index)
 {
-	ServerRemoveTestAbility();
+	ServerRemoveTestAbility(Index);
 }
 
-void AStandardModePlayerController::ServerRemoveTestAbility_Implementation()
+void AStandardModePlayerController::ServerRemoveTestAbility_Implementation(int32 Index)
 {
-	if (TestAbilityClass != nullptr)
+	if (Index < TestAbilityClassList.Num())
 	{
 		if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
 		{
-			UAbilityBase* CDO = Cast<UAbilityBase>(TestAbilityClass->GetDefaultObject());
+			UAbilityBase* CDO = Cast<UAbilityBase>(TestAbilityClassList[Index]->GetDefaultObject());
 			if (CDO)
 			{
 				StandardPlayerState->RemoveAbility(CDO->GetAbilityName());
@@ -1096,13 +1096,13 @@ void AStandardModePlayerController::ServerRemoveTestAbility_Implementation()
 	}
 }
 
-void AStandardModePlayerController::ServerAddTestAbility_Implementation()
+void AStandardModePlayerController::ServerAddTestAbility_Implementation(int32 Index)
 {
-	if (TestAbilityClass != nullptr)
+	if (Index < TestAbilityClassList.Num())
 	{
 		if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
 		{
-			StandardPlayerState->AddAbility(NewObject<UAbilityBase>(this, TestAbilityClass, TEXT("TestAbility")));
+			StandardPlayerState->AddAbility(NewObject<UAbilityBase>(this, TestAbilityClassList[Index]));
 		}
 	}
 }

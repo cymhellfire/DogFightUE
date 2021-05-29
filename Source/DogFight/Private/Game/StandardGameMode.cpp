@@ -435,6 +435,20 @@ void AStandardGameMode::RemovePlayerInRagdoll(int32 PlayerId)
 	}
 }
 
+AController* AStandardGameMode::GetControllerById(int32 PlayerId)
+{
+	if (AStandardModePlayerController* PlayerController = GetPlayerControllerById(PlayerId))
+	{
+		return PlayerController;
+	}
+	else if (AStandardModeAIController* AIController = GetAIControllerById(PlayerId))
+	{
+		return AIController;
+	}
+
+	return nullptr;
+}
+
 AStandardModePlayerCharacter* AStandardGameMode::GetPlayerCharacterById(int32 PlayerId)
 {
 	if (AStandardModePlayerController* PlayerController = GetPlayerControllerById(PlayerId))

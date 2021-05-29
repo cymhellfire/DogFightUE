@@ -1,7 +1,7 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "Actors/Buffs/CharacterPropertyBuff.h"
+#include "Actors/Buffs/Buff_CharacterProperty.h"
 
 #include "Pawns/StandardModePlayerCharacter.h"
 
@@ -45,7 +45,7 @@ float FCharacterPropertyModifier::CalculateValue(float OrgValue, EPropertyModify
 	}
 }
 
-void ACharacterPropertyBuff::ApplyBuff()
+void ABuff_CharacterProperty::ApplyBuff()
 {
 	Super::ApplyBuff();
 
@@ -60,7 +60,7 @@ void ACharacterPropertyBuff::ApplyBuff()
 }
 
 
-void ACharacterPropertyBuff::RemoveBuff()
+void ABuff_CharacterProperty::RemoveBuff()
 {
 	// Revert all modifiers
 	if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(TargetActor))

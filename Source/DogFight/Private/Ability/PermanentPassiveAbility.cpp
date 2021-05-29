@@ -26,9 +26,9 @@ void UPermanentPassiveAbility::UnregisterAbility()
 	Super::UnregisterAbility();
 }
 
-void UPermanentPassiveAbility::Activate()
+bool UPermanentPassiveAbility::Activate()
 {
-	
+	return true;
 }
 
 void UPermanentPassiveAbility::Deactivate()
