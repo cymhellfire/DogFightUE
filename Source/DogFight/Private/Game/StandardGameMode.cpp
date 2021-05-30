@@ -1257,6 +1257,7 @@ void AStandardGameMode::HandlePhaseDiscardCards()
 				// Enable card selection for discarding
 				StandardModePlayerController->ClientSetCardDisplayWidgetSelectable(true);
 				StandardPlayerState->ClearCardUsableFilter();
+				StandardPlayerState->SetDesireCardCountAfterDiscard(StandardPlayerState->GetMaxCardNum());
 				StandardModePlayerController->ClientStartDiscardCards(DiscardCount);
 
 				StandardPlayerState->OnDiscardCardFinished.AddDynamic(this, &AStandardGameMode::AStandardGameMode::OnPlayerDiscardCardFinished);

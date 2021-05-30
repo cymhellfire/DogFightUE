@@ -163,9 +163,9 @@ void AStandardHUD::StartDiscardCards(int32 CountToDiscard)
 {
 	if (CardDisplayWidget != nullptr)
 	{
-		if (!CardDisplayWidget->IsInViewport())
+		if (CardDisplayWidget->Slot == nullptr)
 		{
-			CardDisplayWidget->AddToViewport();
+			InGameHudWidget->AddWidgetToSlotByName(CardDisplayWidget);
 		}
 
 		CardDisplayWidget->SetDesireSelectCount(CountToDiscard);

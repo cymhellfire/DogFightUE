@@ -127,6 +127,8 @@ public:
 
 	void SetMaxCardNum(int32 NewValue);
 
+	void SetDesireCardCountAfterDiscard(int32 NewCount);
+
 	FORCEINLINE TArray<FCardInstanceDisplayInfo> GetCardDisplayInfoList() const { return CardInfoList; }
 
 	/** Get the card instance list. */
@@ -327,4 +329,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState")
 	TArray<UAbilityBase*> Abilities;
+
+	int32 DesireCardCount;
 };

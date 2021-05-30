@@ -101,7 +101,7 @@ void AStandardPlayerState::ServerHandleSelectedCard_Implementation(int32 Index)
 			RemoveCard(Index);
 
 			// Callback
-			if (CardInstanceList.Num() == MaxCardCount)
+			if (CardInstanceList.Num() == DesireCardCount)
 			{
 				OnDiscardCardFinished.Broadcast();
 			}
@@ -279,6 +279,11 @@ void AStandardPlayerState::SetMaxCardNum(int32 NewValue)
 			}
 		}
 	}
+}
+
+void AStandardPlayerState::SetDesireCardCountAfterDiscard(int32 NewCount)
+{
+	DesireCardCount = NewCount;
 }
 
 void AStandardPlayerState::SetAlive(bool bIsAlive)
