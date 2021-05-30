@@ -11,6 +11,7 @@ class AStandardModePlayerController;
 class AStandardModeAIController;
 class AStandardPlayerState;
 class UGameplayCardPool;
+class UGameplayAbilityPool;
 class ADogFightAIController;
 
 namespace GamePhase
@@ -21,6 +22,7 @@ namespace GamePhase
 	extern DOGFIGHT_API const FName SpawnAIs;				// Spawn AI players for game.
 	extern DOGFIGHT_API const FName FreeMoving;				// All players can move around without limitation.
 	extern DOGFIGHT_API const FName DecideOrder;			// The order of players can take action will be decided here.
+	extern DOGFIGHT_API const FName SelectAbility;			// Player select the start ability in this phase.
 	extern DOGFIGHT_API const FName PlayerRoundBegin;		// Phase before a player's round begin.
 	extern DOGFIGHT_API const FName PlayerRound;			// Specified player can take action in this phase.
 	extern DOGFIGHT_API const FName CharacterReturn;		// Current player's character will return to the position where it's at round begin.
@@ -60,6 +62,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="StandardGameMode")
 	TSubclassOf<UGameplayCardPool> CardPoolClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="StandardGameMode")
+	TSubclassOf<UGameplayAbilityPool> AbilityPoolClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="StandardGameMode")
 	TSubclassOf<AStandardModeAIController> AIControllerClass;
@@ -250,6 +255,8 @@ protected:
 	UFUNCTION()
 	void OnWeaponEquipped(AActor* CarrierActor);
 
+	virtual void HandlePhaseSelectAbility();
+
 	virtual void HandlePhasePlayerRoundBegin();
 
 	UFUNCTION()
@@ -304,12 +311,18 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardGameMode")
 	UGameplayCardPool* CardPool;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardGameMode")
+	UGameplayAbilityPool* AbilityPool;
+
 	void GivePlayerCards(AController* TargetController, AStandardPlayerState* TargetPlayerState, int32 CardNum);
 
 	UFUNCTION()
 	void OnResponseCardSelected(ACardBase* SelectedCard, AStandardPlayerState* ResponsePlayerState);
 
 	void TransferCardBetweenPlayers_Internal(AStandardPlayerState* SrcPlayerState, AStandardPlayerState* DestPlayerState, int32 CardIndex);
+
+	UFUNCTION()
+	void OnCandidateAbilitySelected(AStandardPlayerState* PlayerState);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="PlayerSettings")
@@ -333,9 +346,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="PlayerSettings")
 	TSubclassOf<class UWeaponBase> CharacterDefaultWeapon;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="PlayerSettings")
+	int32 InitialAbilityCandidateCount;
+
 	int32 ReturnedCharacterCount;
 
 	int32 WeaponEquipWaitingCharacterCount;
+
+	int32 AbilitySelectingPlayerCount;
 
 #pragma region Debug
 public:

@@ -20,6 +20,7 @@ class UGameTitleMessageWidget;
 class AStandardGameState;
 class UInGameHudWidget;
 class UAbilityPanelWidget;
+class UAbilitySelectWindowWidget;
 
 /**
  * 
@@ -76,6 +77,12 @@ public:
 
 	UAbilityPanelWidget* GetAbilityPanelWidget() const { return AbilityPanelWidget; }
 
+	void ShowAbilitySelectWindow(TArray<FAbilityDisplayInfo> AbilityDisplayInfos);
+
+	void HideAbilitySelectWindow();
+
+	UAbilitySelectWindowWidget* GetAbilitySelectWindowWidget() const { return AbilitySelectWindowWidget; }
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -125,6 +132,9 @@ public:
 	TSubclassOf<UAbilityPanelWidget> AbilityPanelWidgetClass;
 
 	UPROPERTY(Category="UI", EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UAbilitySelectWindowWidget> AbilitySelectWindowWidgetClass;
+
+	UPROPERTY(Category="UI", EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UUserWidget> DebugUIClass;
 
 protected:
@@ -153,6 +163,8 @@ protected:
 	UGameTitleMessageWidget* GameTitleMessageWidget;
 	UPROPERTY()
 	UAbilityPanelWidget* AbilityPanelWidget;
+	UPROPERTY()
+	UAbilitySelectWindowWidget* AbilitySelectWindowWidget;
 	UPROPERTY()
 	UUserWidget* DebugUIWidget;
 

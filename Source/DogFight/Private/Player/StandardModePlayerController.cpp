@@ -22,6 +22,7 @@
 #include "Actors/Managers/BuffQueue.h"
 #include "Blueprint/UserWidget.h"
 #include "UI/Widget/AbilityPanelWidget.h"
+#include "UI/Widget/AbilitySelectWindowWidget.h"
 
 AStandardModePlayerController::AStandardModePlayerController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -281,6 +282,18 @@ void AStandardModePlayerController::OnPlayerAbilitySelected(int32 AbilitySlot)
 	ServerActivateSelectedAbility(AbilitySlot);
 }
 
+void AStandardModePlayerController::OnCandidateAbilitySelected(int32 SelectIndex)
+{
+	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
+	{
+		StandardHUD->HideAbilitySelectWindow();
+		StandardHUD->GetAbilitySelectWindowWidget()->OnAbilitySelected.RemoveDynamic(this, &AStandardModePlayerController::OnCandidateAbilitySelected);
+
+		// Upload select index to server
+		ServerSelectCandidateAbility(SelectIndex);
+	}
+}
+
 void AStandardModePlayerController::ServerActivateSelectedAbility_Implementation(int32 AbilitySlot)
 {
 	if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
@@ -383,6 +396,23 @@ void AStandardModePlayerController::StopCharacterMovementImmediately()
 	if (CharacterPawn != nullptr)
 	{
 		CharacterPawn->StopMoveImmediately();
+	}
+}
+
+void AStandardModePlayerController::ClientShowAbilitySelectWindow_Implementation(const TArray<FAbilityDisplayInfo>& AbilityDisplayInfos)
+{
+	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
+	{
+		StandardHUD->GetAbilitySelectWindowWidget()->OnAbilitySelected.AddDynamic(this, &AStandardModePlayerController::OnCandidateAbilitySelected);
+		StandardHUD->ShowAbilitySelectWindow(AbilityDisplayInfos);
+	}
+}
+
+void AStandardModePlayerController::ServerSelectCandidateAbility_Implementation(int32 SelectIndex)
+{
+	if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
+	{
+		StandardPlayerState->DecideCandidateAbility(SelectIndex);
 	}
 }
 

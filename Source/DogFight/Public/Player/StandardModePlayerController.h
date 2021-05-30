@@ -104,6 +104,12 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 	void ClientRequestCardByClasses(const TArray<TSubclassOf<ACardBase>>& RequestCardClasses);
 
 	UFUNCTION(Client, Reliable)
+	void ClientShowAbilitySelectWindow(const TArray<FAbilityDisplayInfo>& AbilityDisplayInfos);
+
+	UFUNCTION(Server, Reliable)
+	void ServerSelectCandidateAbility(int32 SelectIndex);
+
+	UFUNCTION(Client, Reliable)
 	void ClientSetCameraFocusPoint(float LocX, float LocY);
 
 	UFUNCTION(Server, Reliable, BlueprintCallable, Category="DogFight|Game")
@@ -249,6 +255,9 @@ protected:
 
 	UFUNCTION(Server, Reliable)
 	void ServerActivateSelectedAbility(int32 AbilitySlot);
+
+	UFUNCTION()
+	void OnCandidateAbilitySelected(int32 SelectIndex);
 
 #pragma endregion Ability
 

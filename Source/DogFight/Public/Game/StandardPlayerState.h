@@ -73,6 +73,9 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPlayerAbilityAvailabilityChangedSignature, int32, AbilitySlot, bool, NewAvailability);
 	FPlayerAbilityAvailabilityChangedSignature OnPlayerAbilityAvailabilityChanged;
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerCandidateAbilitySelectedSignature, AStandardPlayerState*, PlayerState);
+	FPlayerCandidateAbilitySelectedSignature OnCandidateAbilitySelected;
+
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUsingCardFinsishedSignature, bool, bPlayerRoundFinished);
 	FUsingCardFinsishedSignature OnUsingCardFinished;
 
@@ -219,6 +222,11 @@ public:
 	void RemoveAbility(FName AbilityToRemove);
 
 	void UseAbility(int32 AbilitySlot);
+
+	/** Add ability to candidate list for selection later. */
+	void AddCandidateAbility(UAbilityBase* NewAbility);
+
+	void DecideCandidateAbility(int32 SelectIndex);
 #pragma endregion Ability
 
 #pragma region DebugInterface
@@ -329,6 +337,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState")
 	TArray<UAbilityBase*> Abilities;
+
+	UPROPERTY(Transient)
+	TArray<UAbilityBase*> CandidateAbilities;
 
 	int32 DesireCardCount;
 };

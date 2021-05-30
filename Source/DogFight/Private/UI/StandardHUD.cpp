@@ -16,6 +16,7 @@
 #include "UI/Widget/GameTitleMessageWidget.h"
 #include "UI/Widget/InGameHudWidget.h"
 #include "UI/Widget/AbilityPanelWidget.h"
+#include "UI/Widget/AbilitySelectWindowWidget.h"
 
 AStandardHUD::AStandardHUD(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -232,6 +233,30 @@ void AStandardHUD::UpdateAbilityAvailability(int32 AbilitySlot, bool NewAvailabi
 	}
 }
 
+void AStandardHUD::ShowAbilitySelectWindow(TArray<FAbilityDisplayInfo> AbilityDisplayInfos)
+{
+	if (AbilitySelectWindowWidget != nullptr)
+	{
+		if (AbilitySelectWindowWidget->Slot == nullptr)
+		{
+			InGameHudWidget->AddWidgetToSlotByName(AbilitySelectWindowWidget);
+		}
+
+		AbilitySelectWindowWidget->SetDisplayAbilities(AbilityDisplayInfos);
+	}
+}
+
+void AStandardHUD::HideAbilitySelectWindow()
+{
+	if (AbilitySelectWindowWidget != nullptr)
+	{
+		if (AbilitySelectWindowWidget->Slot != nullptr)
+		{
+			AbilitySelectWindowWidget->RemoveFromParent();
+		}
+	}
+}
+
 void AStandardHUD::BeginPlay()
 {
 	Super::BeginPlay();
@@ -278,6 +303,11 @@ void AStandardHUD::BeginPlay()
 	if (AbilityPanelWidget == nullptr && AbilityPanelWidgetClass != nullptr)
 	{
 		AbilityPanelWidget = CreateWidget<UAbilityPanelWidget>(PlayerController, AbilityPanelWidgetClass, FName("AbilityPanelWidget"));
+	}
+
+	if (AbilitySelectWindowWidget == nullptr && AbilitySelectWindowWidgetClass != nullptr)
+	{
+		AbilitySelectWindowWidget = CreateWidget<UAbilitySelectWindowWidget>(PlayerController, AbilitySelectWindowWidgetClass, FName("AbilitySelectWindowWidget"));
 	}
 
 #if WITH_EDITOR

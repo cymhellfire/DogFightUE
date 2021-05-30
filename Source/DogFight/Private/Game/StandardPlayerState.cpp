@@ -638,6 +638,35 @@ void AStandardPlayerState::UseAbility(int32 AbilitySlot)
 	Abilities[AbilitySlot]->Activate();
 }
 
+void AStandardPlayerState::AddCandidateAbility(UAbilityBase* NewAbility)
+{
+	if (!IsValid(NewAbility))
+		return;
+
+	if (!CandidateAbilities.Contains(NewAbility))
+	{
+		CandidateAbilities.Add(NewAbility);
+	}
+}
+
+void AStandardPlayerState::DecideCandidateAbility(int32 SelectIndex)
+{
+	if (SelectIndex < 0 || SelectIndex >= CandidateAbilities.Num())
+	{
+		UE_LOG(LogDogFight, Error, TEXT("[StandardPlayerState] Invalid index [%d] for candidate ability selection."));
+		return;
+	}
+
+	// Add selected ability
+	AddAbility(CandidateAbilities[SelectIndex]);
+
+	// Clear all candidates
+	CandidateAbilities.Empty();
+
+	// Broadcast delegate
+	OnCandidateAbilitySelected.Broadcast(this);
+}
+
 void AStandardPlayerState::BeginPlay()
 {
 	Super::BeginPlay();

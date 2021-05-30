@@ -5,6 +5,7 @@
 
 #include "Card/CardBase.h"
 #include "DogFight.h"
+#include "Ability/AbilityBase.h"
 #include "Actors/Managers/BuffQueue.h"
 #include "Game/DogFightGameInstance.h"
 #include "Game/StandardGameState.h"
@@ -18,6 +19,7 @@
 #include "AI/StandardModeAIController.h"
 #include "Common/BitmaskOperation.h"
 #include "Actors/Weapons/WeaponBase.h"
+#include "Game/GameplayAbilityPool.h"
 
 namespace GamePhase
 {
@@ -27,6 +29,7 @@ namespace GamePhase
 	const FName SpawnAIs = FName(TEXT("SpawnAIs"));
 	const FName FreeMoving = FName(TEXT("FreeMoving"));
 	const FName DecideOrder = FName(TEXT("DecideOrder"));
+	const FName SelectAbility = FName(TEXT("SelectAbility"));
 	const FName PlayerRoundBegin = FName(TEXT("PlayerRoundBegin"));
 	const FName PlayerRound = FName(TEXT("PlayerRound"));
 	const FName CharacterReturn = FName(TEXT("CharacterReturn"));
@@ -59,6 +62,7 @@ AStandardGameMode::AStandardGameMode(const FObjectInitializer& ObjectInitializer
 	CardUsingCountRange = FInt32Range(1, 8);
 	DefaultCardGainPerRound = 2;
 	CardGainPerRoundRange = FInt32Range(1, 6);
+	InitialAbilityCandidateCount = 3;
 
 	// Enable the primary tick
 	PrimaryActorTick.bCanEverTick = true;
@@ -169,6 +173,12 @@ void AStandardGameMode::PreInitializeComponents()
 	if (CardPoolClass != nullptr)
 	{
 		CardPool = NewObject<UGameplayCardPool>(this, CardPoolClass, FName(TEXT("CardPool")));
+	}
+
+	// Spawn AbilityPool
+	if (AbilityPoolClass != nullptr)
+	{
+		AbilityPool = NewObject<UGameplayAbilityPool>(this, AbilityPoolClass, FName(TEXT("AbilityPool")));
 	}
 
 	// Set the joined player count to 1 since host is the first player
@@ -644,6 +654,20 @@ void AStandardGameMode::TransferCardBetweenPlayers_Internal(AStandardPlayerState
 	}
 }
 
+void AStandardGameMode::OnCandidateAbilitySelected(AStandardPlayerState* PlayerState)
+{
+	if (IsValid(PlayerState))
+	{
+		PlayerState->OnCandidateAbilitySelected.RemoveDynamic(this, &AStandardGameMode::OnCandidateAbilitySelected);
+	}
+
+	AbilitySelectingPlayerCount--;
+	if (AbilitySelectingPlayerCount <= 0)
+	{
+		SetGamePhase(GamePhase::PlayerRoundBegin);
+	}
+}
+
 void AStandardGameMode::BeginPlay()
 {
 	Super::BeginPlay();
@@ -735,6 +759,10 @@ void AStandardGameMode::OnGamePhaseChanged()
 	else if (CurrentGamePhase == GamePhase::DecideOrder)
 	{
 		HandlePhaseDecideOrder();
+	}
+	else if (CurrentGamePhase == GamePhase::SelectAbility)
+	{
+		HandlePhaseSelectAbility();
 	}
 	else if (CurrentGamePhase == GamePhase::PlayerRoundBegin)
 	{
@@ -918,7 +946,30 @@ void AStandardGameMode::OnWeaponEquipped(AActor* CarrierActor)
 	WeaponEquipWaitingCharacterCount--;
 	if (WeaponEquipWaitingCharacterCount == 0)
 	{
-		SetGamePhase(GamePhase::PlayerRoundBegin);
+		SetGamePhase(GamePhase::SelectAbility);
+	}
+}
+
+void AStandardGameMode::HandlePhaseSelectAbility()
+{
+	// Let all human players to select ability
+	for (AStandardModePlayerController* PlayerController : StandardPlayerControllerList)
+	{
+		AStandardPlayerState* StandardPlayerState = PlayerController->GetPlayerState<AStandardPlayerState>();
+		if (!IsValid(StandardPlayerState))
+			continue;
+
+		TArray<FAbilityDisplayInfo> AbilityDisplayInfos;
+		TArray<UAbilityBase*> CandidateAbilities = AbilityPool->GetRandomAbility(InitialAbilityCandidateCount);
+		for (int32 Index = 0; Index < CandidateAbilities.Num(); ++Index)
+		{
+			UAbilityBase* NewAbility = CandidateAbilities[Index];
+			StandardPlayerState->AddCandidateAbility(NewAbility);
+			AbilityDisplayInfos.Add(NewAbility->GetAbilityDisplayInfo());
+		}
+		AbilitySelectingPlayerCount++;
+		StandardPlayerState->OnCandidateAbilitySelected.AddDynamic(this, &AStandardGameMode::OnCandidateAbilitySelected);
+		PlayerController->ClientShowAbilitySelectWindow(AbilityDisplayInfos);
 	}
 }
 
