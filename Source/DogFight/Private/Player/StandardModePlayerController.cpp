@@ -573,6 +573,22 @@ void AStandardModePlayerController::ClientUpdateAbilityAvailability_Implementati
 	}
 }
 
+void AStandardModePlayerController::ReviveCharacter()
+{
+	if (IsValid(CharacterPawn))
+	{
+		CharacterPawn->Revive();
+
+		AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode());
+		AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>();
+		if (IsValid(StandardGameMode) && IsValid(StandardPlayerState))
+		{
+			StandardPlayerState->SetAlive(true);
+			StandardGameMode->RevivePlayer(StandardPlayerState->GetPlayerId());
+		}
+	}
+}
+
 void AStandardModePlayerController::BeginPlay()
 {
 	Super::BeginPlay();

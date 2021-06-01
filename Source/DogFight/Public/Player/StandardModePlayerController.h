@@ -146,6 +146,8 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 	UFUNCTION(Client, Reliable)
 	void ClientUpdateAbilityAvailability(int32 AbilitySlot, bool NewAvailability);
 
+	void ReviveCharacter();
+
 protected:
 	virtual void BeginPlay() override;
 

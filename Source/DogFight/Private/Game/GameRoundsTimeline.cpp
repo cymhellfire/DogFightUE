@@ -141,6 +141,65 @@ void AGameRoundsTimeline::RemovePlayer(int32 PlayerId)
 	}
 }
 
+void AGameRoundsTimeline::RevivePlayer(int32 PlayerId)
+{
+	int32 TargetIndex = -1;
+	for (int32 Index = 0; Index < DeadPlayerInfoList.Num(); ++Index)
+	{
+ 		if (DeadPlayerInfoList[Index].PlayerId == PlayerId)
+		{
+			TargetIndex = Index;
+			break;
+		}
+	}
+
+	// Handle found player
+	if (TargetIndex != -1)
+	{
+		FTimelinePlayerInfo ReAddPlayerInfo = DeadPlayerInfoList[TargetIndex];
+
+		// Remove player from dead buffer
+		DeadPlayerInfoList.RemoveAt(TargetIndex);
+
+		// Re-add player item to timeline
+		int32 MaxIndex = -1;
+		int32 AddIndex = -1;
+		for (int32 i = 0; i < TimelinePlayerInfoList.Num(); ++i)
+		{
+			bool bArrivedTail = false;
+			if (TimelinePlayerInfoList[i].TimelineIndex > MaxIndex)
+			{
+				MaxIndex = TimelinePlayerInfoList[i].TimelineIndex;
+			}
+			else
+			{
+				bArrivedTail = true;
+			}
+
+			// Stop once current player has larger TimelineIndex or arrived timeline tail
+			if (TimelinePlayerInfoList[i].TimelineIndex > ReAddPlayerInfo.TimelineIndex || bArrivedTail)
+			{
+				AddIndex = i;
+				break;
+			}
+		}
+
+		if (AddIndex != -1)
+		{
+			TimelinePlayerInfoList.Insert(ReAddPlayerInfo, AddIndex);
+		}
+		else
+		{
+			TimelinePlayerInfoList.Add(ReAddPlayerInfo);
+		}
+
+		if (GetNetMode() != NM_Client)
+		{
+			OnRep_TimelinePlayerInfoList();
+		}
+	}
+}
+
 void AGameRoundsTimeline::RandomizeOrder()
 {
 	if (TimelinePlayerInfoList.Num() < 2)
@@ -247,6 +306,9 @@ void AGameRoundsTimeline::OnRep_TimelinePlayerInfoList()
 void AGameRoundsTimeline::OnPlayerDead(int32 PlayerId)
 {
 	const int32 TargetIndex = GetIndexByPlayerId(PlayerId);
+
+	// Add dead player item to dead buffer
+	DeadPlayerInfoList.Add(TimelinePlayerInfoList[TargetIndex]);
 
 	// Remove item at target index
 	TimelinePlayerInfoList.RemoveAt(TargetIndex);

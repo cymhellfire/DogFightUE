@@ -205,6 +205,8 @@ public:
 
 	void RecoverStrength();
 
+	void Revive();
+
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastAddFloatingText(const FText& NewText);
 

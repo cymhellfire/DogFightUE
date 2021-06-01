@@ -53,6 +53,8 @@ public:
 
 	void RemovePlayer(int32 PlayerId);
 
+	void RevivePlayer(int32 PlayerId);
+
 	void RandomizeOrder();
 
 	void SortTimelineByIndex();
@@ -96,6 +98,9 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_TimelinePlayerInfoList)
 	TArray<FTimelinePlayerInfo> TimelinePlayerInfoList;
+
+	/** Data buffer for dead players. */
+	TArray<FTimelinePlayerInfo> DeadPlayerInfoList;
 
 	uint8 bShouldSkipNextStepForward : 1;
 };

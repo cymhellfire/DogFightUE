@@ -114,6 +114,8 @@ public:
 
 	void RegisterPlayerToTimeline(AStandardModePlayerController* PlayerController);
 
+	void RevivePlayer(int32 PlayerId);
+
 	AStandardModePlayerController* GetPlayerControllerById(int32 PlayerId);
 
 	AStandardModeAIController* GetAIControllerById(int32 PlayerId);

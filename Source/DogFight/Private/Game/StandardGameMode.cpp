@@ -242,6 +242,18 @@ void AStandardGameMode::RegisterPlayerToTimeline(AStandardModePlayerController* 
 	}
 }
 
+void AStandardGameMode::RevivePlayer(int32 PlayerId)
+{
+	if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())
+	{
+		StandardGameState->SetAlivePlayerCount(StandardGameState->GetAlivePlayerCount() + 1);
+		if (AGameRoundsTimeline* Timeline = StandardGameState->GetGameRoundsTimeline())
+		{
+			Timeline->RevivePlayer(PlayerId);
+		}
+	}
+}
+
 AStandardModePlayerController* AStandardGameMode::GetPlayerControllerById(int32 PlayerId)
 {
 	for (AStandardModePlayerController* PlayerController : StandardPlayerControllerList)

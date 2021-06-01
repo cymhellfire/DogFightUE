@@ -168,7 +168,7 @@ void AStandardModePlayerCharacter::SetMaxHealth(float NewMaxHealth)
 	const int32 DeltaHealth = CeilMaxHealth - MaxBaseHealth;
 	MaxBaseHealth = CeilMaxHealth;
 	// Also modify current health
-	SetCurrentHealth(FMath::Clamp<int32>(CurrentHealth + DeltaHealth, 1, MaxBaseHealth));
+	SetCurrentHealth(FMath::Clamp<int32>(CurrentHealth + DeltaHealth, bAlive ? 1 : 0, MaxBaseHealth));
 
 	MaxHealthChanged(MaxBaseHealth);
 }
@@ -195,7 +195,7 @@ void AStandardModePlayerCharacter::SetMaxStrength(float NewMaxStrength)
 	const int32 DeltaStrength = CeilMaxStrength - MaxStrength;
 	MaxStrength = CeilMaxStrength;
 	// Also modify current strength
-	SetCurrentStrength(FMath::Clamp<int32>(CurrentStrength + DeltaStrength, 1, MaxStrength));
+	SetCurrentStrength(FMath::Clamp<int32>(CurrentStrength + DeltaStrength, bRagdoll ? 0 : 1, MaxStrength));
 
 	MaxStrengthChanged(MaxStrength);
 }
@@ -764,6 +764,21 @@ void AStandardModePlayerCharacter::RecoverStrength()
 
 		OnRep_CurrentStrength();
 	}
+}
+
+void AStandardModePlayerCharacter::Revive()
+{
+	// Skip if character is not dead yet
+	if (bAlive)
+		return;
+
+	// Recover health point and strength
+	SetHealthPercentage(1);
+	RecoverStrength();
+	bAlive = true;
+
+	// Turn off ragdoll
+	MulticastSetRagdollActive(false);
 }
 
 void AStandardModePlayerCharacter::MulticastAddFloatingText_Implementation(const FText& NewText)
