@@ -186,9 +186,9 @@ void AStandardHUD::StartRequestResponseCard(int32 MaxCardCount)
 {
 	if (CardDisplayWidget != nullptr)
 	{
-		if (!CardDisplayWidget->IsInViewport())
+		if (CardDisplayWidget->Slot == nullptr)
 		{
-			CardDisplayWidget->AddToViewport();
+			InGameHudWidget->AddWidgetToSlotByName(CardDisplayWidget);
 		}
 
 		CardDisplayWidget->SetDesireSelectCount(MaxCardCount);

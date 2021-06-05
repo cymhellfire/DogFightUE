@@ -3,8 +3,6 @@
 
 #include "OperationHintMessageWidget.h"
 #include "Common/Localization.h"
-#include "Programs/UnrealLightmass/Private/ImportExport/3DVisualizer.h"
-#include "Programs/UnrealLightmass/Private/ImportExport/3DVisualizer.h"
 
 namespace EOperationHintMessageContent
 {
