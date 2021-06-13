@@ -105,6 +105,18 @@ void ADogFightGameModeBase::Logout(AController* Exiting)
 	Super::Logout(Exiting);
 }
 
+void ADogFightGameModeBase::PreInitializeComponents()
+{
+	Super::PreInitializeComponents();
+
+	UWorld* MyWorld = GetWorld();
+	if (IsValid(MyWorld) && !MyWorld->IsPreviewWorld())
+	{
+		// Create phase state machine
+		InitializeStateMachine();
+	}
+}
+
 void ADogFightGameModeBase::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();

@@ -13,6 +13,7 @@
 #include "UI/Widget/GameRoundsTimelineWidget.h"
 #include "UI/Widget/CardDisplayWidget.h"
 #include "Game/StandardGameMode.h"
+#include "Game/GameWorkflow/StandardGameMode/StandardGameModePhaseDefine.h"
 #include "UI/Widget/GameTitleMessageWidget.h"
 #include "UI/Widget/InGameHudWidget.h"
 #include "UI/Widget/AbilityPanelWidget.h"
@@ -339,7 +340,7 @@ void AStandardHUD::BeginPlay()
 
 bool AStandardHUD::ShouldPhaseMessageDisplay(FName GamePhase) const
 {
-	return GamePhase == GamePhase::EnteringMap || GamePhase == GamePhase::WaitingForStart || GamePhase == GamePhase::FreeMoving;
+	return GamePhase == StandardGameModePhase::EnteringMap || GamePhase == StandardGameModePhase::WaitingForStart || GamePhase == StandardGameModePhase::FreeMoving;
 }
 
 void AStandardHUD::DrawHUD()

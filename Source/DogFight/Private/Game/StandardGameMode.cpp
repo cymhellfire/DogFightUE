@@ -20,25 +20,22 @@
 #include "Common/BitmaskOperation.h"
 #include "Actors/Weapons/WeaponBase.h"
 #include "Game/GameplayAbilityPool.h"
-
-namespace GamePhase
-{
-	const FName EnteringMap = FName(TEXT("EnteringMap"));
-	const FName WaitingForStart = FName(TEXT("WaitingForStart"));
-	const FName SpawnPlayers = FName(TEXT("SpawnPlayers"));
-	const FName SpawnAIs = FName(TEXT("SpawnAIs"));
-	const FName FreeMoving = FName(TEXT("FreeMoving"));
-	const FName DecideOrder = FName(TEXT("DecideOrder"));
-	const FName SelectAbility = FName(TEXT("SelectAbility"));
-	const FName PlayerRoundBegin = FName(TEXT("PlayerRoundBegin"));
-	const FName PlayerRound = FName(TEXT("PlayerRound"));
-	const FName CharacterReturn = FName(TEXT("CharacterReturn"));
-	const FName DiscardCards = FName(TEXT("DiscardCards"));
-	const FName PlayerRoundEnd = FName(TEXT("PlayerRoundEnd"));
-	const FName CheckGameEnd = FName(TEXT("CheckGameEnd"));
-	const FName GameSummary = FName(TEXT("GameSummary"));
-	const FName WaitingPostMatch = FName(TEXT("WaitingPostMatch"));
-}
+#include "Game/GameWorkflow/GameModeStateMachine.h"
+#include "Game/GameWorkflow/StandardGameMode/StandardGameModeCharacterReturnPhase.h"
+#include "Game/GameWorkflow/StandardGameMode/StandardGameModeCheckGameEndPhase.h"
+#include "Game/GameWorkflow/StandardGameMode/StandardGameModeDecideOrderPhase.h"
+#include "Game/GameWorkflow/StandardGameMode/StandardGameModeDiscardCardsPhase.h"
+#include "Game/GameWorkflow/StandardGameMode/StandardGameModeEnteringMapPhase.h"
+#include "Game/GameWorkflow/StandardGameMode/StandardGameModeFreeMovingPhase.h"
+#include "Game/GameWorkflow/StandardGameMode/StandardGameModeGameSummaryPhase.h"
+#include "Game/GameWorkflow/StandardGameMode/StandardGameModePhaseBase.h"
+#include "Game/GameWorkflow/StandardGameMode/StandardGameModePhaseDefine.h"
+#include "Game/GameWorkflow/StandardGameMode/StandardGameModePlayerRoundBeginPhase.h"
+#include "Game/GameWorkflow/StandardGameMode/StandardGameModePlayerRoundEndPhase.h"
+#include "Game/GameWorkflow/StandardGameMode/StandardGameModePlayerRoundPhase.h"
+#include "Game/GameWorkflow/StandardGameMode/StandardGameModeSelectAbilityPhase.h"
+#include "Game/GameWorkflow/StandardGameMode/StandardGameModeSpawnPlayersPhase.h"
+#include "Game/GameWorkflow/StandardGameMode/StandardGameModeTimedPhase.h"
 
 AStandardGameMode::AStandardGameMode(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -49,7 +46,7 @@ AStandardGameMode::AStandardGameMode(const FObjectInitializer& ObjectInitializer
 	GameStateClass = AStandardGameState::StaticClass();
 	PlayerStateClass = AStandardPlayerState::StaticClass();
 
-	CurrentGamePhase = GamePhase::EnteringMap;
+	//CurrentGamePhase = GamePhase::EnteringMap;
 	GameStartDelay = 5;
 	SpawnPlayerInterval = 0.5f;
 	FreeMovingDuration = 5;
@@ -101,6 +98,12 @@ void AStandardGameMode::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
+	// Update state machine
+	if (IsValid(GameModeStateMachine))
+	{
+		GameModeStateMachine->StateMachineTick();
+	}
+
 	if (DelayActionQueue.Num() > 0)
 	{
 		for(EGameModeDelayAction DelayAction : DelayActionQueue)
@@ -122,6 +125,15 @@ void AStandardGameMode::Logout(AController* Exiting)
 			StandardPlayerControllerList.Remove(StandardModePlayerController);
 			
 			UE_LOG(LogDogFight, Log, TEXT("Remove controller [%s] from list."), *StandardModePlayerController->GetName());
+		}
+	}
+
+	// Remove player from list
+	if (APlayerState* PlayerState = Exiting->GetPlayerState<APlayerState>())
+	{
+		if (HumanPlayerIdList.Contains(PlayerState->GetPlayerId()))
+		{
+			HumanPlayerIdList.Remove(PlayerState->GetPlayerId());
 		}
 	}
 
@@ -152,8 +164,6 @@ void AStandardGameMode::PreInitializeComponents()
 {
 	Super::PreInitializeComponents();
 
-	GetWorldTimerManager().SetTimer(DefaultTimerHandle, this, &AStandardGameMode::DefaultTimer, GetWorldSettings()->GetEffectiveTimeDilation(), true);
-
 	// Spawn Timeline actor
 	if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())
 	{
@@ -181,17 +191,8 @@ void AStandardGameMode::PreInitializeComponents()
 		AbilityPool = NewObject<UGameplayAbilityPool>(this, AbilityPoolClass, FName(TEXT("AbilityPool")));
 	}
 
-	// Set the joined player count to 1 since host is the first player
-	PlayerJoinedGame = 1;
+	// Local player also trigger player count changed
 	OnJoinedPlayerCountChanged();
-}
-
-void AStandardGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
-{
-	Super::InitGame(MapName, Options, ErrorMessage);
-
-	// Set initial game state to 'EnteringMap'
-	SetGamePhase(GamePhase::EnteringMap);
 }
 
 float AStandardGameMode::CalculateDamage(AActor* DamageTaker, float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -218,6 +219,17 @@ float AStandardGameMode::CalculateDamage(AActor* DamageTaker, float Damage, FDam
 	return FinalDamage;
 }
 
+
+FName AStandardGameMode::GetGamePhase() const
+{
+	if (!IsValid(GameModeStateMachine))
+	{
+		return NAME_None; 
+	}
+
+	return GameModeStateMachine->GetCurrentGamePhaseName();
+}
+
 void AStandardGameMode::PlayerReadyForGame(const FString& PlayerName)
 {
 	// Broadcast player joined message
@@ -227,7 +239,6 @@ void AStandardGameMode::PlayerReadyForGame(const FString& PlayerName)
 	const FGameMessage NewMessage{TEXT("System"), EGameMessageType::GMT_System, TEXT("GameMsg_PlayerJoined"), Arguments};
 	BroadcastGameMessageToAllPlayers(NewMessage);
 
-	PlayerJoinedGame++;
 	OnJoinedPlayerCountChanged();
 }
 
@@ -239,6 +250,12 @@ void AStandardGameMode::RegisterPlayerToTimeline(AStandardModePlayerController* 
 		{
 			Timeline->RegisterPlayer(PlayerController);
 		}
+	}
+
+	// Record human player id
+	if (APlayerState* PlayerState = PlayerController->GetPlayerState<APlayerState>())
+	{
+		HumanPlayerIdList.AddUnique(PlayerState->GetPlayerId());
 	}
 }
 
@@ -322,8 +339,7 @@ void AStandardGameMode::GivePlayerCards(int32 PlayerId, int32 CardNum)
 		return;
 	}
 
-	
-	if (!bIsCurrentAIPlayer)
+	if (IsHumanPlayer(PlayerId))
 	{
 		// Handle human player
 		if (AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(PlayerId))
@@ -381,15 +397,6 @@ void AStandardGameMode::GivePlayerCardsByCardIndex(int32 PlayerId, int32 CardNum
 	}
 }
 
-void AStandardGameMode::StartGame()
-{
-	SetGamePhase(GamePhase::SpawnPlayers);
-
-	// Send GameStart message
-	const FGameMessage NewMessage{TEXT("Server"), EGameMessageType::GMT_System, TEXT("GameMsg_GameStart")};
-	BroadcastGameMessageToAllPlayers(NewMessage);
-}
-
 void AStandardGameMode::SendGameMessageToPlayer(FGameMessage Message, int32 PlayerId)
 {
 	if (AStandardModePlayerController* PlayerController = GetPlayerControllerById(PlayerId))
@@ -416,16 +423,7 @@ void AStandardGameMode::BroadcastGameTitleMessageToAllPlayers(FGameTitleMessage 
 
 void AStandardGameMode::EndCurrentPlayerRound()
 {
-	if (CurrentGamePhase == GamePhase::PlayerRound)
-	{
-		//SetGamePhase(GamePhase::PlayerRoundEnd);
-		//SetGamePhase(GamePhase::DiscardCards);
-		SetGamePhase(GamePhase::CharacterReturn);
-	}
-	else if (CurrentGamePhase == GamePhase::PlayerRoundBegin)
-	{
-		SetGamePhase(GamePhase::PlayerRoundEnd);
-	}
+	OnRequestEndCurrentPlayerRound.Broadcast();
 }
 
 AController* AStandardGameMode::GetRandomController()
@@ -666,1026 +664,99 @@ void AStandardGameMode::TransferCardBetweenPlayers_Internal(AStandardPlayerState
 	}
 }
 
-void AStandardGameMode::OnCandidateAbilitySelected(AStandardPlayerState* PlayerState)
+void AStandardGameMode::InitializeStateMachine()
 {
-	if (IsValid(PlayerState))
-	{
-		PlayerState->OnCandidateAbilitySelected.RemoveDynamic(this, &AStandardGameMode::OnCandidateAbilitySelected);
-	}
+	// Create state machine
+	GameModeStateMachine = NewObject<UGameModeStateMachine>(this, UGameModeStateMachine::StaticClass(), TEXT("GameModeStateMachine"));
+	GameModeStateMachine->SetOwnerGameMode(this);
 
-	AbilitySelectingPlayerCount--;
-	if (AbilitySelectingPlayerCount <= 0)
-	{
-		SetGamePhase(GamePhase::PlayerRoundBegin);
-	}
+	// Initialize all phases
+	TArray<UGamePhase*> AllGamePhases;
+
+	// Entering Map
+	AllGamePhases.Add(NewObject<UStandardGameModePhaseBase>(GameModeStateMachine, UStandardGameModeEnteringMapPhase::StaticClass(), TEXT("GamePhase_EnteringMap")));
+	AllGamePhases.Last()->InitializeGamePhase(StandardGameModePhase::EnteringMap, EGamePhaseType::GPT_Process, StandardGameModePhase::WaitingForStart);
+
+	// Waiting for start
+	UStandardGameModeTimedPhase* TimedPhase = NewObject<UStandardGameModeTimedPhase>(GameModeStateMachine, UStandardGameModeTimedPhase::StaticClass(), TEXT("GamePhase_WaitingForStart"));
+	TimedPhase->InitializeGamePhase(StandardGameModePhase::WaitingForStart, EGamePhaseType::GPT_Process, StandardGameModePhase::SpawnPlayers);
+	TimedPhase->SetPhaseDuration(GameStartDelay);
+	AllGamePhases.Add(TimedPhase);
+
+	// Spawn players
+	AllGamePhases.Add(NewObject<UStandardGameModePhaseBase>(GameModeStateMachine, UStandardGameModeSpawnPlayersPhase::StaticClass(), TEXT("GamePhase_SpawnPlayers")));
+	AllGamePhases.Last()->InitializeGamePhase(StandardGameModePhase::SpawnPlayers, EGamePhaseType::GPT_Process, StandardGameModePhase::FreeMoving);
+
+	// Free moving
+	UStandardGameModeFreeMovingPhase* FreeMovingPhase = NewObject<UStandardGameModeFreeMovingPhase>(GameModeStateMachine, UStandardGameModeFreeMovingPhase::StaticClass(),
+		TEXT("GamePhase_FreeMoving"));
+	FreeMovingPhase->InitializeGamePhase(StandardGameModePhase::FreeMoving, EGamePhaseType::GPT_Process, StandardGameModePhase::DecideOrder);
+	FreeMovingPhase->SetPhaseDuration(FreeMovingDuration);
+	AllGamePhases.Add(FreeMovingPhase);
+
+	// Decide order
+	AllGamePhases.Add(NewObject<UStandardGameModePhaseBase>(GameModeStateMachine, UStandardGameModeDecideOrderPhase::StaticClass(), TEXT("GamePhase_DecideOrder")));
+	AllGamePhases.Last()->InitializeGamePhase(StandardGameModePhase::DecideOrder, EGamePhaseType::GPT_Process, StandardGameModePhase::SelectAbility);
+
+	// Select ability
+	AllGamePhases.Add(NewObject<UStandardGameModePhaseBase>(GameModeStateMachine, UStandardGameModeSelectAbilityPhase::StaticClass(), TEXT("GamePhase_SelectAbility")));
+	AllGamePhases.Last()->InitializeGamePhase(StandardGameModePhase::SelectAbility, EGamePhaseType::GPT_Process, StandardGameModePhase::PlayerRoundBegin);
+
+	// Player round begin
+	UStandardGameModePlayerRoundBeginPhase* PlayerRoundBeginPhase = NewObject<UStandardGameModePlayerRoundBeginPhase>(GameModeStateMachine,
+		UStandardGameModePlayerRoundBeginPhase::StaticClass(),	TEXT("GamePhase_PlayerRoundBegin"));
+	PlayerRoundBeginPhase->InitializeGamePhase(StandardGameModePhase::PlayerRoundBegin, EGamePhaseType::GPT_Process, StandardGameModePhase::PlayerRound);
+	PlayerRoundBeginPhase->SetPhaseAfterRequestFinish(StandardGameModePhase::PlayerRoundEnd);
+	AllGamePhases.Add(PlayerRoundBeginPhase);
+
+	// Player round
+	UStandardGameModePlayerRoundPhase* PlayerRoundPhase = NewObject<UStandardGameModePlayerRoundPhase>(GameModeStateMachine, UStandardGameModePlayerRoundPhase::StaticClass(),
+		TEXT("GamePhase_PlayerRound"));
+	PlayerRoundPhase->InitializeGamePhase(StandardGameModePhase::PlayerRound, EGamePhaseType::GPT_Process, StandardGameModePhase::CharacterReturn);
+	PlayerRoundPhase->SetPhaseAfterRequestFinish(StandardGameModePhase::CharacterReturn);
+	AllGamePhases.Add(PlayerRoundPhase);
+
+	// Character return
+	AllGamePhases.Add(NewObject<UStandardGameModePhaseBase>(GameModeStateMachine, UStandardGameModeCharacterReturnPhase::StaticClass(), TEXT("GamePhase_CharacterReturn")));
+	AllGamePhases.Last()->InitializeGamePhase(StandardGameModePhase::CharacterReturn, EGamePhaseType::GPT_Process, StandardGameModePhase::DiscardCards);
+
+	// Discard cards
+	AllGamePhases.Add(NewObject<UStandardGameModePhaseBase>(GameModeStateMachine, UStandardGameModeDiscardCardsPhase::StaticClass(), TEXT("GamePhase_DiscardCards")));
+	AllGamePhases.Last()->InitializeGamePhase(StandardGameModePhase::DiscardCards, EGamePhaseType::GPT_Process, StandardGameModePhase::PlayerRoundEnd);
+
+	// Player round end
+	AllGamePhases.Add(NewObject<UStandardGameModePhaseBase>(GameModeStateMachine, UStandardGameModePlayerRoundEndPhase::StaticClass(), TEXT("GamePhase_PlayerRoundEnd")));
+	AllGamePhases.Last()->InitializeGamePhase(StandardGameModePhase::PlayerRoundEnd, EGamePhaseType::GPT_Process, StandardGameModePhase::CheckGameEnd);
+
+	// Check game end
+	UStandardGameModeCheckGameEndPhase* CheckGameEndPhase = NewObject<UStandardGameModeCheckGameEndPhase>(GameModeStateMachine, UStandardGameModeCheckGameEndPhase::StaticClass(),
+		TEXT("GamePhase_CheckGameEnd"));
+	CheckGameEndPhase->InitializeGamePhase(StandardGameModePhase::CheckGameEnd, EGamePhaseType::GPT_Process, StandardGameModePhase::PlayerRoundBegin);
+	CheckGameEndPhase->SetEndGamePhase(StandardGameModePhase::GameSummary);
+	AllGamePhases.Add(CheckGameEndPhase);
+
+	// Game summary
+	AllGamePhases.Add(NewObject<UStandardGameModePhaseBase>(GameModeStateMachine, UStandardGameModeGameSummaryPhase::StaticClass(), TEXT("GamePhase_GameSummary")));
+	AllGamePhases.Last()->InitializeGamePhase(StandardGameModePhase::GameSummary, EGamePhaseType::GPT_Process, NAME_None);
+
+	GameModeStateMachine->OnGamePhaseChangedEvent.AddDynamic(this, &AStandardGameMode::OnGamePhaseChanged);
+
+	GameModeStateMachine->RegisterGamePhase(AllGamePhases);
+	GameModeStateMachine->StartWithPhase(StandardGameModePhase::EnteringMap);
 }
 
-void AStandardGameMode::BeginPlay()
+void AStandardGameMode::OnGamePhaseChanged(FName NewPhase)
 {
-	Super::BeginPlay();
-
-	// Check if all players are already loaded map
-	if (UDogFightGameInstance* GameInstance = Cast<UDogFightGameInstance>(GetWorld()->GetGameInstance()))
-	{
-		if (GameInstance->GamePlayerCount == PlayerJoinedGame)
-		{
-			SetGamePhase(GamePhase::WaitingForStart);
-		}
-	}
-}
-
-void AStandardGameMode::DefaultTimer()
-{
-	AStandardGameState* StandardGameState = Cast<AStandardGameState>(GameState);
-	if (StandardGameState && StandardGameState->GetRemainingTime() > 0)
-	{
-		StandardGameState->SetRemainingTime(StandardGameState->GetRemainingTime() - 1);
-
-		if (StandardGameState->GetRemainingTime() <= 0)
-		{
-			if (CurrentGamePhase == GamePhase::WaitingForStart)
-			{
-				StartGame();
-			}
-			else if (CurrentGamePhase == GamePhase::FreeMoving)
-			{
-				// Disable click movement
-				DisablePlayerClickMovement();
-
-				SetGamePhase(GamePhase::DecideOrder);
-			}
-			else if (CurrentGamePhase == GamePhase::CheckGameEnd)
-			{
-				CheckGameEndAction();
-			}
-		}
-	}
-}
-
-void AStandardGameMode::SetGamePhase(FName NewPhase)
-{
-	if (CurrentGamePhase == NewPhase)
-	{
-		return;
-	}
-
-	UE_LOG(LogDogFight, Log, TEXT("GameMode [Player %d]: Changed to phase [%s]"), GetCurrentPlayerId(), *NewPhase.ToString());
-
-	CurrentGamePhase = NewPhase;
-
-	OnGamePhaseChanged();
-
 	// Sync game state
 	if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())
 	{
-		StandardGameState->SetCurrentGamePhase(CurrentGamePhase);
-	}
-}
-
-void AStandardGameMode::OnGamePhaseChanged()
-{
-	if (CurrentGamePhase == GamePhase::WaitingForStart)
-	{
-		HandlePhaseWaitingForStart();
-	}
-	else if (CurrentGamePhase == GamePhase::GameSummary)
-	{
-		HandlePhaseGameSummary();
-	}
-	else if (CurrentGamePhase == GamePhase::WaitingPostMatch)
-	{
-		HandlePhaseWaitingPostMatch();
-	}
-	else if (CurrentGamePhase == GamePhase::SpawnPlayers)
-	{
-		HandlePhaseSpawnPlayers();
-	}
-	else if (CurrentGamePhase == GamePhase::SpawnAIs)
-	{
-		HandlePhaseSpawnAIs();
-	}
-	else if (CurrentGamePhase == GamePhase::FreeMoving)
-	{
-		HandlePhaseFreeMoving();
-	}
-	else if (CurrentGamePhase == GamePhase::DecideOrder)
-	{
-		HandlePhaseDecideOrder();
-	}
-	else if (CurrentGamePhase == GamePhase::SelectAbility)
-	{
-		HandlePhaseSelectAbility();
-	}
-	else if (CurrentGamePhase == GamePhase::PlayerRoundBegin)
-	{
-		HandlePhasePlayerRoundBegin();
-	}
-	else if (CurrentGamePhase == GamePhase::PlayerRound)
-	{
-		HandlePhasePlayerRound();
-	}
-	else if (CurrentGamePhase == GamePhase::CharacterReturn)
-	{
-		HandlePhaseCharacterReturn();
-	}
-	else if (CurrentGamePhase == GamePhase::DiscardCards)
-	{
-		HandlePhaseDiscardCards();
-	}
-	else if (CurrentGamePhase == GamePhase::PlayerRoundEnd)
-	{
-		HandlePhasePlayerRoundEnd();
-	}
-	else if (CurrentGamePhase == GamePhase::CheckGameEnd)
-	{
-		HandlePhaseCheckGameEnd();
-	}
-}
-
-void AStandardGameMode::HandlePhaseWaitingForStart()
-{
-	AStandardGameState* StandardGameState = Cast<AStandardGameState>(GameState);
-	if (StandardGameState != nullptr && StandardGameState->GetRemainingTime() == 0)
-	{
-		if (GameStartDelay > 0)
-		{
-			StandardGameState->SetRemainingTime(GameStartDelay);
-		}
-	}
-}
-
-void AStandardGameMode::HandlePhaseGameSummary()
-{
-	// Let all player hide the card display widget
-	for (AStandardModePlayerController* StandardModePlayerController : StandardPlayerControllerList)
-	{
-		StandardModePlayerController->ClientHideCardDisplayWidget();
-	}
-
-	// Get the winner
-	AStandardGameState* StandardGameState = GetGameState<AStandardGameState>();
-	AStandardPlayerState* WinnerState = nullptr;
-	if (StandardGameState->GetAlivePlayerCount() > 0)
-	{
-		for (APlayerState* PlayerState: StandardGameState->PlayerArray)
-		{
-			if (AStandardPlayerState* StandardPlayerState = Cast<AStandardPlayerState>(PlayerState))
-			{
-				if (StandardPlayerState->IsAlive())
-				{
-					WinnerState = StandardPlayerState;
-					break;
-				}
-			}
-		}
-	}
-	// Broadcast winner message
-	TArray<FText> Arguments;
-	if (WinnerState != nullptr)
-	{
-		Arguments.Add(FText::FromString(FString::Printf(TEXT("<PlayerName>%s</>"),*WinnerState->GetPlayerName())));
-		const FGameMessage WinnerMessage{TEXT("System"), EGameMessageType::GMT_System, TEXT("GameMsg_Winner"), Arguments};
-		BroadcastGameMessageToAllPlayers(WinnerMessage);
-	}
-	else
-	{
-		// Consider no survivor as a draw
-		const FGameMessage DrawMessage{TEXT("System"), EGameMessageType::GMT_System, TEXT("GameMsg_Draw"), Arguments};
-		BroadcastGameMessageToAllPlayers(DrawMessage);
-	}
-}
-
-void AStandardGameMode::HandlePhaseWaitingPostMatch()
-{
-}
-
-void AStandardGameMode::HandlePhaseSpawnPlayers()
-{
-	CurrentSpawnPlayerIndex = 0;
-	// Setup timer for spawn all player characters with interval
-	GetWorldTimerManager().SetTimer(SecondaryTimerHandle, this, &AStandardGameMode::SpawnPlayerTick, SpawnPlayerInterval, true);
-}
-
-void AStandardGameMode::HandlePhaseSpawnAIs()
-{
-	CurrentSpawnPlayerIndex = 0;
-	// Setup timer for spawn all AI with interval
-	GetWorldTimerManager().SetTimer(SecondaryTimerHandle, this, &AStandardGameMode::SpawnAITick, SpawnPlayerInterval, true);
-}
-
-void AStandardGameMode::HandlePhaseDecideOrder()
-{
-	if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())
-	{
-		StandardGameState->GetGameRoundsTimeline()->RandomizeOrder();
-		StandardGameState->GetGameRoundsTimeline()->SortTimelineByIndex();
-
-		// Debug Timeline
-		StandardGameState->GetGameRoundsTimeline()->DebugTimeline();
-
-		// Check if current is AI player
-		bIsCurrentAIPlayer = StandardGameState->GetGameRoundsTimeline()->IsCurrentAIPlayer();
-		CachedCurrentPlayerId = StandardGameState->GetGameRoundsTimeline()->GetCurrentPlayerId();
-
-		// Let all clients setup their Timeline widget
-		for (AStandardModePlayerController* PlayerController : StandardPlayerControllerList)
-		{
-			PlayerController->ClientSetupTimelineDisplay();
-
-			// Register players statistic
-			if (AStandardPlayerState* StandardPlayerState = PlayerController->GetPlayerState<AStandardPlayerState>())
-			{
-				StandardPlayerState->RegisterPlayersForRelation();
-			}
-
-			// Equip default weapon
-			if (IsValid(CharacterDefaultWeapon))
-			{
-				if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(PlayerController->GetActualPawn()))
-				{
-					UWeaponBase* NewWeapon = NewObject<UWeaponBase>(StandardModePlayerCharacter, CharacterDefaultWeapon);
-					StandardModePlayerCharacter->OnWeaponEquippedEvent.AddDynamic(this, &AStandardGameMode::AStandardGameMode::OnWeaponEquipped);
-					StandardModePlayerCharacter->EquipWeapon(NewWeapon);
-
-					// Also update cache location
-					StandardModePlayerCharacter->CacheCurrentLocation();
-
-					WeaponEquipWaitingCharacterCount++;
-				}
-			}
-		}
-
-		// Register players statistic for AI
-		for (AStandardModeAIController* AIController : StandardAIControllerList)
-		{
-			if (AStandardPlayerState* StandardPlayerState = AIController->GetPlayerState<AStandardPlayerState>())
-			{
-				StandardPlayerState->RegisterPlayersForRelation();
-			}
-
-			// Equip default weapon
-			if (IsValid(CharacterDefaultWeapon))
-			{
-				if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(AIController->GetActualPawn()))
-				{
-					UWeaponBase* NewWeapon = NewObject<UWeaponBase>(StandardModePlayerCharacter, CharacterDefaultWeapon);
-					StandardModePlayerCharacter->OnWeaponEquippedEvent.AddDynamic(this, &AStandardGameMode::AStandardGameMode::OnWeaponEquipped);
-					StandardModePlayerCharacter->EquipWeapon(NewWeapon);
-
-					// Also update cache location
-					StandardModePlayerCharacter->CacheCurrentLocation();
-
-					WeaponEquipWaitingCharacterCount++;
-				}
-			}
-		}
-	}
-
-	// If no weapon to equip, just move to next phase
-	if (WeaponEquipWaitingCharacterCount == 0)
-	{
-		SetGamePhase(GamePhase::PlayerRoundBegin);
-	}
-}
-
-void AStandardGameMode::OnWeaponEquipped(AActor* CarrierActor)
-{
-	if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(CarrierActor))
-	{
-		StandardModePlayerCharacter->OnWeaponEquippedEvent.RemoveDynamic(this, &AStandardGameMode::OnWeaponEquipped);
-	}
-
-	WeaponEquipWaitingCharacterCount--;
-	if (WeaponEquipWaitingCharacterCount == 0)
-	{
-		SetGamePhase(GamePhase::SelectAbility);
-	}
-}
-
-void AStandardGameMode::HandlePhaseSelectAbility()
-{
-	// Let all human players to select ability
-	for (AStandardModePlayerController* PlayerController : StandardPlayerControllerList)
-	{
-		AStandardPlayerState* StandardPlayerState = PlayerController->GetPlayerState<AStandardPlayerState>();
-		if (!IsValid(StandardPlayerState))
-			continue;
-
-		TArray<FAbilityDisplayInfo> AbilityDisplayInfos;
-		TArray<UAbilityBase*> CandidateAbilities = AbilityPool->GetRandomAbility(InitialAbilityCandidateCount);
-		for (int32 Index = 0; Index < CandidateAbilities.Num(); ++Index)
-		{
-			UAbilityBase* NewAbility = CandidateAbilities[Index];
-			StandardPlayerState->AddCandidateAbility(NewAbility);
-			AbilityDisplayInfos.Add(NewAbility->GetAbilityDisplayInfo());
-		}
-		AbilitySelectingPlayerCount++;
-		StandardPlayerState->OnCandidateAbilitySelected.AddDynamic(this, &AStandardGameMode::OnCandidateAbilitySelected);
-		PlayerController->ClientShowAbilitySelectWindow(AbilityDisplayInfos);
-	}
-}
-
-void AStandardGameMode::HandlePhasePlayerRoundBegin()
-{
-	OnPrePlayerRoundBegin.Broadcast(GetCurrentPlayerId());
-
-	// Start Buff Queue process
-	if (!bIsCurrentAIPlayer)
-	{
-		// Handle human player
-		AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(GetCurrentPlayerId());
-		if (StandardModePlayerController == nullptr)
-		{
-			UE_LOG(LogDogFight, Error, TEXT("Failed to get PlayerController with Id %d"), GetCurrentPlayerId());
-			return;
-		}
-
-		// Camera focus event
-		const FVector CurrentLoc = StandardModePlayerController->GetActualPawn()->GetActorLocation();
-		BroadcastCameraFocusEvent(
-			FCameraFocusEvent
-			{
-				-1,
-				CurrentLoc.X,
-				CurrentLoc.Y,
-				ECameraFocusEventType::Type::Default
-			});
-
-		if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
-		{
-			if (UBuffQueue* BuffQueue = StandardPlayerState->GetBuffQueue())
-			{
-				if (BuffQueue->GetBuffCount() > 0)
-				{
-					BuffQueue->OnBuffQueueProcessFinished.AddDynamic(this, &AStandardGameMode::OnPlayerBuffQueueBeginRoundFinished);
-					BuffQueue->StartRoundBeginBuffCheckProcess();
-				}
-				else
-				{
-					OnPlayerBuffQueueBeginRoundFinished();
-				}
-			}
-		}
-	}
-	else
-	{
-		// Handle AI player
-		AStandardModeAIController* StandardModeAIController = GetAIControllerById(GetCurrentPlayerId());
-		if (StandardModeAIController == nullptr)
-		{
-			UE_LOG(LogDogFight, Error, TEXT("Failed to get AIController with Id %d"), GetCurrentPlayerId());
-			return;
-		}
-		
-		// Camera focus event
-		const FVector CurrentLoc = StandardModeAIController->GetActualPawn()->GetActorLocation();
-		BroadcastCameraFocusEvent(
-			FCameraFocusEvent
-			{
-				-1,
-				CurrentLoc.X,
-				CurrentLoc.Y,
-				ECameraFocusEventType::Type::Default
-			});
-
-		if (AStandardPlayerState* StandardPlayerState = StandardModeAIController->GetPlayerState<AStandardPlayerState>())
-		{
-			if (UBuffQueue* BuffQueue = StandardPlayerState->GetBuffQueue())
-			{
-				if (BuffQueue->GetBuffCount() > 0)
-				{
-					BuffQueue->OnBuffQueueProcessFinished.AddDynamic(this, &AStandardGameMode::OnPlayerBuffQueueBeginRoundFinished);
-					BuffQueue->StartRoundBeginBuffCheckProcess();
-				}
-				else
-				{
-					OnPlayerBuffQueueBeginRoundFinished();
-				}
-			}
-		}
-	}
-}
-
-void AStandardGameMode::OnPlayerBuffQueueBeginRoundFinished()
-{
-	TArray<FString> NewRoundMessageArgument;
-
-	if (!bIsCurrentAIPlayer)
-	{
-		// Handle human player
-		AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(GetCurrentPlayerId());
-		if (StandardModePlayerController == nullptr)
-		{
-			UE_LOG(LogDogFight, Error, TEXT("Failed to get PlayerController with Id %d"), GetCurrentPlayerId());
-			return;
-		}
-
-		if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
-		{
-			if (UBuffQueue* BuffQueue = StandardPlayerState->GetBuffQueue())
-			{
-				if (BuffQueue->OnBuffQueueProcessFinished.IsBound())
-				{
-					BuffQueue->OnBuffQueueProcessFinished.RemoveDynamic(this, &AStandardGameMode::OnPlayerBuffQueueBeginRoundFinished);
-				}
-			}
-
-			// Reset player state for new round
-			StandardPlayerState->InitializePlayerForNewRound();
-
-			// Skip give card if player is marked with SkipGiveCard
-			if (!TEST_SINGLE_FLAG(StandardPlayerState->GetSkipGamePhaseFlags(), ESGP_GiveCards))
-			{
-				// Give current player random cards
-				GivePlayerCards(GetCurrentPlayerId(), StandardPlayerState->GetCardGainNumByRound());
-			}
-
-			// Register card finished delegate
-			StandardPlayerState->OnUsingCardFinished.AddDynamic(this, &AStandardGameMode::OnPlayerUsingCardFinished);
-
-			NewRoundMessageArgument.Add(StandardPlayerState->GetPlayerName());
-		}
-	}
-	else
-	{
-		// Handle AI player
-		AStandardModeAIController* StandardModeAIController = GetAIControllerById(GetCurrentPlayerId());
-		if (StandardModeAIController == nullptr)
-		{
-			UE_LOG(LogDogFight, Error, TEXT("Failed to get AIController with Id %d"), GetCurrentPlayerId());
-			return;
-		}
-
-		if (AStandardPlayerState* StandardPlayerState = StandardModeAIController->GetPlayerState<AStandardPlayerState>())
-		{
-			if (UBuffQueue* BuffQueue = StandardPlayerState->GetBuffQueue())
-			{
-				if (BuffQueue->OnBuffQueueProcessFinished.IsBound())
-				{
-					BuffQueue->OnBuffQueueProcessFinished.RemoveDynamic(this, &AStandardGameMode::OnPlayerBuffQueueBeginRoundFinished);
-				}
-			}
-
-			// Reset player state for new round
-			StandardPlayerState->InitializePlayerForNewRound();
-
-			// Skip give card if player is marked with SkipGiveCard
-			if (!TEST_SINGLE_FLAG(StandardPlayerState->GetSkipGamePhaseFlags(), ESGP_GiveCards))
-			{
-				// Give current player random cards
-				GivePlayerCards(GetCurrentPlayerId(), StandardPlayerState->GetCardGainNumByRound());
-			}
-
-			// Register card finished delegate
-			StandardPlayerState->OnUsingCardFinished.AddDynamic(this, &AStandardGameMode::OnPlayerUsingCardFinished);
-
-			NewRoundMessageArgument.Add(StandardPlayerState->GetPlayerName());
-		}
-	}
-
-	// Broadcast title message
-	BroadcastGameTitleMessageToAllPlayers(FGameTitleMessage {FString(TEXT("TitleMsg_PlayerRoundBegin")), NewRoundMessageArgument});
-
-	SetGamePhase(GamePhase::PlayerRound);
-
-	OnPlayerRoundBegin.Broadcast(GetCurrentPlayerId());
-}
-
-void AStandardGameMode::HandlePhasePlayerRound()
-{
-	if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())
-	{
-		if (!bIsCurrentAIPlayer)
-		{
-			// Show card use Widget
-			AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(StandardGameState->GetGameRoundsTimeline()->GetCurrentPlayerId());
-			if (StandardModePlayerController != nullptr)
-			{
-				bool bSkipUsingCardPhase = false;
-				if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
-				{
-					bSkipUsingCardPhase = TEST_SINGLE_FLAG(StandardPlayerState->GetSkipGamePhaseFlags(), ESGP_UseCards);
-
-					if (!bSkipUsingCardPhase)
-					{
-						StandardPlayerState->SetCardSelectionPurpose(ECardSelectionPurpose::CSP_Use);
-						StandardPlayerState->ClearCardUsableFilter();
-						StandardPlayerState->ApplyCardUsableFilterByUseMethod(ECardUseMethod::CUM_Aggressive);
-					}
-				}
-
-				// Directly end current round if player is marked as SkipUsingCard
-				if (!bSkipUsingCardPhase)
-				{
-					// Enable card selection for new player
-					StandardModePlayerController->ClientSetCardDisplayWidgetSelectable(true);
-					StandardModePlayerController->ClientShowCardDisplayWidgetWithSelectMode(ECardSelectionMode::CSM_SingleNoConfirm);
-				}
-				else
-				{
-					EndCurrentPlayerRound();
-				}
-			}
-		}
-		else
-		{
-			AStandardModeAIController* StandardModeAIController = GetAIControllerById(StandardGameState->GetGameRoundsTimeline()->GetCurrentPlayerId());
-			if (StandardModeAIController != nullptr)
-			{
-				bool bSkipUsingCard = false;
-				if (AStandardPlayerState* StandardPlayerState = StandardModeAIController->GetPlayerState<AStandardPlayerState>())
-				{
-					bSkipUsingCard = TEST_SINGLE_FLAG(StandardPlayerState->GetSkipGamePhaseFlags(), ESGP_UseCards);
-
-					if (!bSkipUsingCard)
-					{
-						StandardPlayerState->SetCardSelectionPurpose(ECardSelectionPurpose::CSP_Use);
-						StandardPlayerState->ClearCardUsableFilter();
-						StandardPlayerState->ApplyCardUsableFilterByUseMethod(ECardUseMethod::CUM_Aggressive);
-					}
-				}
-
-				// Directly end current round if player is marked as SkipUsingCard
-				if (!bSkipUsingCard)
-				{
-					// Notify AIController round started
-					StandardModeAIController->StartAIRound();
-				}
-				else
-				{
-					EndCurrentPlayerRound();
-				}
-			}
-		}
-	}
-}
-
-void AStandardGameMode::HandlePhaseCharacterReturn()
-{
-	if (!bIsCurrentAIPlayer)
-	{
-		// Handle human player
-		AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(GetCurrentPlayerId());
-		if (StandardModePlayerController == nullptr)
-		{
-			UE_LOG(LogDogFight, Error, TEXT("Failed to get PlayerController with Id %d"), GetCurrentPlayerId());
-			return;
-		}
-
-		// Disable all cards for selecting
-		if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
-		{
-			StandardPlayerState->MarkAllCardUnUsable();
-		}
-	}
-
-	ReturnedCharacterCount = 0;
-
-	// Let all players return
-	for (AStandardModePlayerController* PlayerController : StandardPlayerControllerList)
-	{
-		if (AStandardPlayerState* StandardPlayerState = PlayerController->GetPlayerState<AStandardPlayerState>())
-		{
-			if (StandardPlayerState->IsAlive())
-			{
-				if (AStandardModePlayerCharacter* PlayerCharacter = Cast<AStandardModePlayerCharacter>(PlayerController->GetActualPawn()))
-				{
-					PlayerCharacter->GetCarrierReachActionDistanceEvent().AddDynamic(this, &AStandardGameMode::OnCharacterReturnFinished);
-					PlayerCharacter->ReturnToCachedLocation();
-				}
-			}
-		}
-	}
-
-	// Let all AI return
-	for (AStandardModeAIController* AIController : StandardAIControllerList)
-	{
-		if (AStandardPlayerState* StandardPlayerState = AIController->GetPlayerState<AStandardPlayerState>())
-		{
-			if (StandardPlayerState->IsAlive())
-			{
-				if (AStandardModePlayerCharacter* PlayerCharacter = Cast<AStandardModePlayerCharacter>(AIController->GetActualPawn()))
-				{
-					PlayerCharacter->GetCarrierReachActionDistanceEvent().AddDynamic(this, &AStandardGameMode::OnCharacterReturnFinished);
-					PlayerCharacter->ReturnToCachedLocation();
-				}
-			}
-		}
-	}
-}
-
-void AStandardGameMode::OnCharacterReturnFinished(AActor* Actor)
-{
-	if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(Actor))
-	{
-		StandardModePlayerCharacter->GetCarrierReachActionDistanceEvent().RemoveDynamic(this, &AStandardGameMode::OnCharacterReturnFinished);
-	}
-
-	ReturnedCharacterCount++;
-
-	if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())
-	{
-		if (StandardGameState->GetAlivePlayerCount() == ReturnedCharacterCount)
-		{
-			SetGamePhase(GamePhase::DiscardCards);
-		}
-	}
-	else
-	{
-		UE_LOG(LogDogFight, Error, TEXT("Failed to get StandardGameState."));
-	}
-}
-
-void AStandardGameMode::HandlePhaseDiscardCards()
-{
-	OnPlayerDiscardCard.Broadcast(GetCurrentPlayerId());
-
-	if (!bIsCurrentAIPlayer)
-	{
-		// Handle human player
-		AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(GetCurrentPlayerId());
-		if (StandardModePlayerController == nullptr)
-		{
-			UE_LOG(LogDogFight, Error, TEXT("Failed to get PlayerController with Id %d"), GetCurrentPlayerId());
-			return;
-		}
-
-		if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
-		{
-			// Check whether to discard cards
-			const int32 DiscardCount = TEST_SINGLE_FLAG(StandardPlayerState->GetSkipGamePhaseFlags(), ESGP_DropCards) ? 0 : StandardPlayerState->CardCountToDiscard();
-			if (DiscardCount > 0 && StandardPlayerState->IsAlive())
-			{
-				StandardPlayerState->SetCardSelectionPurpose(ECardSelectionPurpose::CSP_Discard);
-				// Enable card selection for discarding
-				StandardModePlayerController->ClientSetCardDisplayWidgetSelectable(true);
-				StandardPlayerState->ClearCardUsableFilter();
-				StandardPlayerState->SetDesireCardCountAfterDiscard(StandardPlayerState->GetMaxCardNum());
-				StandardModePlayerController->ClientStartDiscardCards(DiscardCount);
-
-				StandardPlayerState->OnDiscardCardFinished.AddDynamic(this, &AStandardGameMode::AStandardGameMode::OnPlayerDiscardCardFinished);
-			}
-			else
-			{
-				SetGamePhase(GamePhase::PlayerRoundEnd);
-			}
-		}
-	}
-	else
-	{
-		// Handle AI player
-		AStandardModeAIController* StandardModeAIController = GetAIControllerById(GetCurrentPlayerId());
-		if (StandardModeAIController == nullptr)
-		{
-			UE_LOG(LogDogFight, Error, TEXT("Failed to get AIController with Id %d"), GetCurrentPlayerId());
-			return;
-		}
-
-		if (AStandardPlayerState* StandardPlayerState = StandardModeAIController->GetPlayerState<AStandardPlayerState>())
-		{
-			// Check whether to discard cards
-			const int32 DiscardCount = TEST_SINGLE_FLAG(StandardPlayerState->GetSkipGamePhaseFlags(), ESGP_DropCards) ? 0 : StandardPlayerState->CardCountToDiscard();
-			if (DiscardCount > 0 && StandardPlayerState->IsAlive())
-			{
-				StandardModeAIController->DiscardRandomCards(DiscardCount);
-			}
-
-			SetGamePhase(GamePhase::PlayerRoundEnd);
-		}
-	}
-}
-
-void AStandardGameMode::HandlePhasePlayerRoundEnd()
-{
-	TArray<FString> NewRoundEndArguments;
-
-	if (!bIsCurrentAIPlayer)
-	{
-		// Handle human player
-		AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(GetCurrentPlayerId());
-		if (StandardModePlayerController == nullptr)
-		{
-			UE_LOG(LogDogFight, Error, TEXT("Failed to get PlayerController with Id %d"), GetCurrentPlayerId());
-			return;
-		}
-
-		// Disable card selection for ended player
-		StandardModePlayerController->ClientSetCardDisplayWidgetSelectable(false);
-
-		// Broadcast event
-		OnPlayerRoundEnd.Broadcast(GetCurrentPlayerId());
-
-		if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
-		{
-			// Disable all cards using
-			StandardPlayerState->MarkAllCardUnUsable();
-
-			// Remove the card finished delegate
-			StandardPlayerState->OnUsingCardFinished.RemoveDynamic(this, &AStandardGameMode::OnPlayerUsingCardFinished);
-
-			NewRoundEndArguments.Add(StandardPlayerState->GetPlayerName());
-
-			// Process buff queue
-			if (UBuffQueue* BuffQueue = StandardPlayerState->GetBuffQueue())
-			{
-				if (BuffQueue->GetBuffCount() > 0)
-				{
-					BuffQueue->OnBuffQueueProcessFinished.AddDynamic(this, &AStandardGameMode::AStandardGameMode::OnPlayerBuffQueueEndRoundFinished);
-					BuffQueue->StartRoundEndBuffCheckProcess();
-				}
-				else
-				{
-					OnPlayerBuffQueueEndRoundFinished();
-				}
-			}
-		}
-	}
-	else
-	{
-		// Handle AI player
-		AStandardModeAIController* StandardModeAIController = GetAIControllerById(GetCurrentPlayerId());
-		if (StandardModeAIController == nullptr)
-		{
-			UE_LOG(LogDogFight, Error, TEXT("Failed to get AIController with Id %d"), GetCurrentPlayerId());
-			return;
-		}
-
-		// End AI player round
-		StandardModeAIController->StopAIRound();
-
-		// Broadcast event
-		OnPlayerRoundEnd.Broadcast(GetCurrentPlayerId());
-
-		if (AStandardPlayerState* StandardPlayerState = StandardModeAIController->GetPlayerState<AStandardPlayerState>())
-		{
-			// Remove the card finished delegate
-			StandardPlayerState->OnUsingCardFinished.RemoveDynamic(this, &AStandardGameMode::OnPlayerUsingCardFinished);
-
-			NewRoundEndArguments.Add(StandardPlayerState->GetPlayerName());
-
-			// Process buff queue
-			if (UBuffQueue* BuffQueue = StandardPlayerState->GetBuffQueue())
-			{
-				if (BuffQueue->GetBuffCount() > 0)
-				{
-					BuffQueue->OnBuffQueueProcessFinished.AddDynamic(this, &AStandardGameMode::AStandardGameMode::OnPlayerBuffQueueEndRoundFinished);
-					BuffQueue->StartRoundEndBuffCheckProcess();
-				}
-				else
-				{
-					OnPlayerBuffQueueEndRoundFinished();
-				}
-			}
-		}
-	}
-
-	// Broadcast round end message
-	BroadcastGameTitleMessageToAllPlayers(FGameTitleMessage {FString(TEXT("TitleMsg_PlayerRoundEnd")), NewRoundEndArguments});
-}
-
-void AStandardGameMode::OnPlayerBuffQueueEndRoundFinished()
-{
-	if (!bIsCurrentAIPlayer)
-	{
-		// Handle human player
-		AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(GetCurrentPlayerId());
-		if (StandardModePlayerController == nullptr)
-		{
-			UE_LOG(LogDogFight, Error, TEXT("Failed to get PlayerController with Id %d"), GetCurrentPlayerId());
-			return;
-		}
-
-		if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
-		{
-			if (UBuffQueue* BuffQueue = StandardPlayerState->GetBuffQueue())
-			{
-				if (BuffQueue->OnBuffQueueProcessFinished.IsBound())
-				{
-					BuffQueue->OnBuffQueueProcessFinished.RemoveDynamic(this, &AStandardGameMode::OnPlayerBuffQueueEndRoundFinished);
-				}
-			}
-		}
-	}
-	else
-	{
-		// Handle AI player
-		AStandardModeAIController* StandardModeAIController = GetAIControllerById(GetCurrentPlayerId());
-		if (StandardModeAIController == nullptr)
-		{
-			UE_LOG(LogDogFight, Error, TEXT("Failed to get AIController with Id %d"), GetCurrentPlayerId());
-			return;
-		}
-
-		if (AStandardPlayerState* StandardPlayerState = StandardModeAIController->GetPlayerState<AStandardPlayerState>())
-		{
-			if (UBuffQueue* BuffQueue = StandardPlayerState->GetBuffQueue())
-			{
-				if (BuffQueue->OnBuffQueueProcessFinished.IsBound())
-				{
-					BuffQueue->OnBuffQueueProcessFinished.RemoveDynamic(this, &AStandardGameMode::OnPlayerBuffQueueEndRoundFinished);
-				}
-			}
-		}
-	}
-
-	// Goto check phase
-	SetGamePhase(GamePhase::CheckGameEnd);
-}
-
-void AStandardGameMode::HandlePhaseCheckGameEnd()
-{
-	AStandardGameState* StandardGameState = Cast<AStandardGameState>(GameState);
-	if (StandardGameState != nullptr && StandardGameState->GetRemainingTime() == 0)
-	{
-		if (GameRoundInterval > 0)
-		{
-			StandardGameState->SetRemainingTime(GameRoundInterval);
-		}
-		else
-		{
-			CheckGameEndAction();
-		}
-	}
-}
-
-void AStandardGameMode::CheckGameEndAction()
-{
-	// Check current alive players
-	if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())
-	{
-		if (StandardGameState->GetAlivePlayerCount() <= 1)
-		{
-			SetGamePhase(GamePhase::GameSummary);
-		}
-		else
-		{
-			StandardGameState->GetGameRoundsTimeline()->StepForward();
-			// Check AI
-			bIsCurrentAIPlayer = StandardGameState->GetGameRoundsTimeline()->IsCurrentAIPlayer();
-			CachedCurrentPlayerId = StandardGameState->GetGameRoundsTimeline()->GetCurrentPlayerId();
-
-			SetGamePhase(GamePhase::PlayerRoundBegin);
-		}
-	}
-}
-
-void AStandardGameMode::SpawnPlayerTick()
-{
-	// Skip and clear the timer if the index is out of range
-	if (CurrentSpawnPlayerIndex >= PlayerControllerList.Num())
-	{
-		GetWorldTimerManager().ClearTimer(SecondaryTimerHandle);
-
-		if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())
-		{
-			StandardGameState->SetAlivePlayerCount(StandardPlayerControllerList.Num());
-		}
-
-		// Go to next phase
-		if (UDogFightGameInstance* DogFightGameInstance = Cast<UDogFightGameInstance>(GetGameInstance()))
-		{
-			if (DogFightGameInstance->GameAICount > 0)
-			{
-				SetGamePhase(GamePhase::SpawnAIs);
-			}
-			else
-			{
-				SetGamePhase(GamePhase::FreeMoving);
-			}
-		}
-		else
-		{
-			UE_LOG(LogDogFight, Error, TEXT("Invalid GameInstance class. (Expects DogFightGameInstance or its subclass.)"));
-		}
-		return;
-	}
-
-	// Spawn character for current player
-	StandardPlayerControllerList[CurrentSpawnPlayerIndex]->GameStart();
-	CurrentSpawnPlayerIndex++;
-}
-
-void AStandardGameMode::SpawnAITick()
-{
-	int32 AICount = 0;
-	if (UDogFightGameInstance* DogFightGameInstance = Cast<UDogFightGameInstance>(GetGameInstance()))
-	{
-		AICount = DogFightGameInstance->GameAICount;
-	}
-	
-	if (CurrentSpawnPlayerIndex >= AICount)
-	{
-		GetWorldTimerManager().ClearTimer(SecondaryTimerHandle);
-		
-		if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())
-		{
-			StandardGameState->SetAlivePlayerCount(StandardGameState->GetAlivePlayerCount() + AICount);
-		}
-
-		SetGamePhase(GamePhase::FreeMoving);
-		return;
-	}
-
-	// Spawn AI Controller
-	if (IsValid(AIControllerClass))
-	{
-		GetWorld()->SpawnActor(AIControllerClass);
-	}
-	else
-	{
-		UE_LOG(LogDogFight, Error, TEXT("No valid AIController class specified."));
-	}
-	CurrentSpawnPlayerIndex++;
-}
-
-void AStandardGameMode::HandlePhaseFreeMoving()
-{
-	// Enable click move for all players
-	EnablePlayerClickMovement();
-
-	// Set the countdown
-	AStandardGameState* StandardGameState = Cast<AStandardGameState>(GameState);
-	if (StandardGameState != nullptr && StandardGameState->GetRemainingTime() == 0)
-	{
-		if (FreeMovingDuration > 0)
-		{
-			StandardGameState->SetRemainingTime(FreeMovingDuration);
-		}
+		StandardGameState->SetCurrentGamePhase(NewPhase);
 	}
 }
 
 void AStandardGameMode::OnJoinedPlayerCountChanged()
 {
-	if (UDogFightGameInstance* GameInstance = Cast<UDogFightGameInstance>(GetGameInstance()))
-	{
-		// Check if all players are loaded this map
-		if (GameInstance->GamePlayerCount == PlayerJoinedGame)
-		{
-			SetGamePhase(GamePhase::WaitingForStart);
-		}
-		else
-		{
-			// Update the countdown content string
-			AStandardGameState* StandardGameState = Cast<AStandardGameState>(GameState);
-			if (StandardGameState != nullptr)
-			{
-				StandardGameState->SetCountdownContentString(FString::Printf(TEXT("%d/%d"), PlayerJoinedGame, GameInstance->GamePlayerCount));
-			}
-		}
-	}
-}
-
-void AStandardGameMode::OnPlayerUsingCardFinished(bool bShouldEndRound)
-{
-	if (bShouldEndRound)
-	{
-		EndCurrentPlayerRound();
-	}
-	else
-	{
-		if (!bIsCurrentAIPlayer)
-		{
-			// Re-enable the card display widget using functionality
-			if (AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(GetCurrentPlayerId()))
-			{
-				StandardModePlayerController->ClientSetCardDisplayWidgetSelectable(true);
-				if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
-				{
-					StandardPlayerState->ClearCardUsableFilter();
-					StandardPlayerState->ApplyCardUsableFilterByUseMethod(ECardUseMethod::CUM_Aggressive);
-				}
-			}
-		}
-		else
-		{
-			if (AStandardModeAIController* StandardModeAIController = GetAIControllerById(GetCurrentPlayerId()))
-			{
-				if (AStandardPlayerState* StandardPlayerState = StandardModeAIController->GetPlayerState<AStandardPlayerState>())
-				{
-					StandardPlayerState->ClearCardUsableFilter();
-					StandardPlayerState->ApplyCardUsableFilterByUseMethod(ECardUseMethod::CUM_Aggressive);
-				}
-				StandardModeAIController->PrepareForUsingCard();
-			}
-		}
-	}
-}
-
-void AStandardGameMode::OnPlayerDiscardCardFinished()
-{
-	if (!bIsCurrentAIPlayer)
-	{
-		if (AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(GetCurrentPlayerId()))
-		{
-			StandardModePlayerController->ClientStopDiscardCards();
-			if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
-			{
-				StandardPlayerState->OnDiscardCardFinished.RemoveDynamic(this, &AStandardGameMode::AStandardGameMode::OnPlayerDiscardCardFinished);
-			}
-		}
-	}
-
-	SetGamePhase(GamePhase::PlayerRoundEnd);
+	OnPlayerReadyForGame.Broadcast();
 }
 
 void AStandardGameMode::OnPlayerDeadCallback(int32 PlayerId)
@@ -1753,7 +824,9 @@ void AStandardGameMode::HandleDelayAction(EGameModeDelayAction DelayAction)
 			// If no enough player to continue the game, jump to GameSummary phase.
 			if (StandardGameState->GetAlivePlayerCount() <= 1)
 			{
-				SetGamePhase(GamePhase::GameSummary);
+				//SetGamePhase(GamePhase::GameSummary);
+
+				GameModeStateMachine->ForceJumpToPhase(StandardGameModePhase::GameSummary);
 			}
 		}
 		break;

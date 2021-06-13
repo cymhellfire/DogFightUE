@@ -1,0 +1,382 @@
+<svg host="65bd71144e" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="1021px" height="642px" viewBox="-0.5 -0.5 1021 642" content="&lt;mxfile scale=&quot;1&quot; border=&quot;5&quot;&gt;&lt;diagram name=&quot;Page-1&quot; id=&quot;9f46799a-70d6-7492-0946-bef42562c5a5&quot;&gt;7Zxdb+I4FIZ/DdLsSh3lo1C4LLR0K7Wz1VBpL1cucUk0Js46ppT99Xuc2AnBhqbF4WKxNOqQE+fLz3vs42MnvXCyfL9jKIsfaYRJL/Ci91540wuC0WgAf4VhUxr6o1FpWLAkKk1+bZgl/2Jp9KR1lUQ4bxTklBKeZE3jnKYpnvOGDTFG181ir5Q0r5qhBdYMszkiuvWvJOKxtPqeV+/4AyeLWF562Jc7XtD814LRVSqvl9IUl3uWSJ1GFs1jFNH1lim87YUTRikvfy3fJ5iIWlU1Vh433bO3umWGU97mgKA84A2RlXzqaZImHM844vgRzeNE3XrON6pi8nWyJAh2hONXmvKZ3OPDNiLJIoXfc7g+ZmB4w4wnUKfXcgenGVjhvCR6QBu6EneZc6gwtTWOKUv+hdMiIs8JuxmX8ggGjRIzcSSYPbAynEOZJ/Xo/o7pEb03Cj6gnEvDnBKCsjx5qR5jidgiSceUc7qUhfSalZUtnhC/b5lkTd9husScbaCI3Bso5UiHuJKb61pdoSoSbwkr8KUnIanoRXXqGi38kHTNpEON9AVs3qElfopRjmVNXoPt+ZoxBOceEIFj+gOKwMaCV5WwJQV4cl4gYvQXnlBCgflNoXfQRkLIjknJg+BXvlcceYbmSbp4KMrcXNaWn7JKhInCsa+kcJ04iSKcCrAUVItKigJZRpOUF1XWH8M/qNmJ973f68ONT2Dbr7fhnyjO+ISm8CwoKRhjkMga59xIP2hNX9IOBi1pW4Dt9w/TfkSZZC1+NUlPtgv+7sibMRvEsJd8Pzgd+UsNvEaOJAWRkpzq2fwvYVsCAIJrTs8C482Fr7EMdZahgRtBL5g80TzhCRXnZ2XZHZ4ncNarYTtkw+OJ6a7aC+ARvBnmP8DHKlf8Jv3TE9bC8lvpw28UTnXe7nkU6+EJG+bBHthPqzw2kV470PZA+/4JG+KrfaRpVoN2YO2ADVs21zbADveAvcN8smLiKTS+2+GUo/xlyoPL01EeGSjDEMr7M61gTmKULnDknNhOlOyP2g6HbQyQPI1vxVWDeMb5jg+IHs53DPrNfEfgjTTCgNhE+EBcLS/3E885+B/BW9cbfJhf8dsIChFgmSKOxyKHl2u6qp60ndR8TWqyw1CCK6K9og2RgZ9rRA5IzjNrbn+WZY/ELDQiejQvsixTcC+6hqqsWxQH1wpcQyKlM7iGcXkjhfa8ySTX26bNAf46YEPapTPAoRlw2XtOZ4/SabXpkHOP4Y8j7Ht6EN9dA62P1ZQPi9nKkjCwTSPEImV1fI/iG+pBV3d8A42vBu9Mst1HUuu3DJss5Lt9fSZSJrzFuMflxaxyNaRMuvPGfSnP2zRyWK1iNaRKusNqSoUJrPci5cFWmfNZuyNY/4RDWLUOSYP7E+crN0thmezlKcevetrpg4HqgTTncflLgw7+LylNQ4rRSPTKQuCkgls9kfj0/PcTo3Oc584/D05AfHqFVnfuuS8KFjCnhCIO9eloHkHzpMlC07qOclXdi1pBN6HLpbh3aYdTvuxdXJfHSGQXb1ZLMmXF7MB4HYs8FJAR9jUTC/jGMV+qRlc95UiQqB4vDOw0eyO/2ewFXtsJ91FgoXZNU+5lLYqOqlF1g39WVO24yItOSMQu/jB7r3eqei8jGj2QrRGV51eUJFGmLPfpG/ihqIYYPCLweJzkol7LWUSv2EjUybG41IuoVMpjzGQeSmQcZfFslcdFITiEFg8FPeP3fW3AFntLzUGV3jBJrVjOjiN7PekoaEoqNHWlQ4OkVA98lKJMYxqLimpGz5+WE3rlhUBAJ7pMmoLakRwWkL5Xd1Cdo0AO/9FFMj8bSV2acpFdSSo0jaQsSmoridJWT2LuIo/h2FUGf+bl4iT4tSgFpTSDUnH+HPOiWCq0AG1UWmqtBhB4YlJEvN2SF8qjRYsHA4mz0VPon1JPpmUDFvXUyLa2VVRxUN3qGIWUqZGIbHqSNC0as/NqeyoNnEQrevi5O6ulh5huUdOXQO++xBUaOplwZABdJW2PIq3n2C969RzmE0EbzGBUBS5ECGYPiagf/aWufeXd6z6tFFL626fe9DIpwsr7PnrYsS2I6/v2Ytgu64RgQwimF786E4IeL6i1DsXqFX2xQ2F2qx2OAWx6TawzwOamX5B0q5U64mtardQZ4NCU5tqB51aztKHWNiSzMCkT7psdv8N8N7oab+6jb/DEoTig3HkfweDLa7bNhqDMufARYjhlG33g5bDt8KqlEnYiMqeCr6vA9O5YZyoINBVocZdG043H7YzH+wND429KvFQNw1Go9eZfBGW7L4JWnu3eAfkQd+k9nxpcm/DacOS+eUylOuhVkYYtwcrG3IH9MljTYLkrsJfmryFBRb9hR7cLuqaRcmd03Udw7EAzDn9N1Gz0pAe+gyO7U/dxlE5hm76OYslFYbP+pmH5DnX9ycjw9j8=&lt;/diagram&gt;&lt;/mxfile&gt;">
+    <defs>
+        <clipPath id="mx-clip-9-36-292-26-0">
+            <rect x="9" y="36" width="292" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-9-62-292-26-0">
+            <rect x="9" y="62" width="292" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-9-96-292-26-0">
+            <rect x="9" y="96" width="292" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-9-122-292-26-0">
+            <rect x="9" y="122" width="292" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-9-148-292-26-0">
+            <rect x="9" y="148" width="292" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-9-174-292-26-0">
+            <rect x="9" y="174" width="292" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-9-200-292-26-0">
+            <rect x="9" y="200" width="292" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-459-175-222-26-0">
+            <rect x="459" y="175" width="222" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-459-201-222-26-0">
+            <rect x="459" y="201" width="222" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-459-227-222-26-0">
+            <rect x="459" y="227" width="222" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-459-253-222-26-0">
+            <rect x="459" y="253" width="222" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-459-279-222-26-0">
+            <rect x="459" y="279" width="222" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-459-313-222-26-0">
+            <rect x="459" y="313" width="222" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-459-339-222-26-0">
+            <rect x="459" y="339" width="222" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-459-365-222-26-0">
+            <rect x="459" y="365" width="222" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-459-391-222-26-0">
+            <rect x="459" y="391" width="222" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-459-36-222-26-0">
+            <rect x="459" y="36" width="222" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-459-62-222-26-0">
+            <rect x="459" y="62" width="222" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-9-296-382-26-0">
+            <rect x="9" y="296" width="382" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-9-322-382-26-0">
+            <rect x="9" y="322" width="382" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-9-348-382-26-0">
+            <rect x="9" y="348" width="382" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-9-374-382-26-0">
+            <rect x="9" y="374" width="382" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-9-408-382-26-0">
+            <rect x="9" y="408" width="382" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-9-434-382-26-0">
+            <rect x="9" y="434" width="382" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-9-526-372-26-0">
+            <rect x="9" y="526" width="372" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-9-552-372-26-0">
+            <rect x="9" y="552" width="372" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-9-578-372-26-0">
+            <rect x="9" y="578" width="372" height="26"/>
+        </clipPath>
+        <clipPath id="mx-clip-9-612-372-26-0">
+            <rect x="9" y="612" width="372" height="26"/>
+        </clipPath>
+    </defs>
+    <g>
+        <path d="M 5 31 L 5 5 L 305 5 L 305 31" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="all"/>
+        <path d="M 5 31 L 5 221 L 305 221 L 305 31" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 5 31 L 305 31" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" font-weight="bold" pointer-events="none" text-anchor="middle" font-size="12px">
+            <text x="154.5" y="22.5">
+                FiniteStateMachine
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-9-36-292-26-0)" font-size="12px">
+            <text x="10.5" y="48.5">
+                - GamePhaseStack: TArray&lt;FName&gt;
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-9-62-292-26-0)" font-size="12px">
+            <text x="10.5" y="74.5">
+                - GamePhaseMap: TMap&lt;FName, GamePhase*&gt;
+            </text>
+        </g>
+        <path d="M 5 87 L 305 87" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-9-96-292-26-0)" font-size="12px">
+            <text x="10.5" y="108.5">
+                + SetNextGamePhase(FName NextPhase): void
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-9-122-292-26-0)" font-size="12px">
+            <text x="10.5" y="134.5">
+                + PushGamePhase(FName NewPhase): void
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-9-148-292-26-0)" font-size="12px">
+            <text x="10.5" y="160.5">
+                + PopGamePhase(): void
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-9-174-292-26-0)" font-size="12px">
+            <text x="10.5" y="186.5">
+                + GetCurrentGamePhase(): GamePhase*
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-9-200-292-26-0)" font-size="12px">
+            <text x="10.5" y="212.5">
+                # OnGamePhaseChanged(): void
+            </text>
+        </g>
+        <path d="M 455 170 L 455 144 L 685 144 L 685 170" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 455 170 L 455 412 L 685 412 L 685 170" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 455 170 L 685 170" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" font-weight="bold" pointer-events="none" text-anchor="middle" font-size="12px">
+            <text x="569.5" y="161.5">
+                GamePhase
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-459-175-222-26-0)" font-size="12px">
+            <text x="460.5" y="187.5">
+                + GamePhaseName: FName
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-459-201-222-26-0)" font-size="12px">
+            <text x="460.5" y="213.5">
+                - FollowingGamePhase: FName
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-459-227-222-26-0)" font-size="12px">
+            <text x="460.5" y="239.5">
+                - GamePhaseType: EGamePhaseType
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-459-253-222-26-0)" font-size="12px">
+            <text x="460.5" y="265.5">
+                - ParentFSM: FiniteStateMachine*
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-459-279-222-26-0)" font-size="12px">
+            <text x="460.5" y="291.5">
+                - GameMode: StandardGameMode*
+            </text>
+        </g>
+        <path d="M 455 304 L 685 304" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-459-313-222-26-0)" font-size="12px">
+            <text x="460.5" y="325.5">
+                + StartPhase(): void
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-459-339-222-26-0)" font-size="12px">
+            <text x="460.5" y="351.5">
+                + EndPhase(): void
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-459-365-222-26-0)" font-size="12px">
+            <text x="460.5" y="377.5">
+                + InterruptPhase(): void
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-459-391-222-26-0)" font-size="12px">
+            <text x="460.5" y="403.5">
+                + ResumePhase(): void
+            </text>
+        </g>
+        <path d="M 455 31 L 455 5 L 685 5 L 685 31" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 455 31 L 455 83 L 685 83 L 685 31" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 455 31 L 685 31" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" font-weight="bold" pointer-events="none" text-anchor="middle" font-size="12px">
+            <text x="569.5" y="22.5">
+                EGamePhaseType
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-459-36-222-26-0)" font-size="12px">
+            <text x="460.5" y="48.5">
+                + GPT_Process
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-459-62-222-26-0)" font-size="12px">
+            <text x="460.5" y="74.5">
+                + GPT_Floating
+            </text>
+        </g>
+        <path d="M 715 143 L 805 143 L 805 160 L 795 175 L 715 175 Z" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 805 143 L 1015 143 L 1015 435 L 715 435 L 715 175" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 88px; height: 1px; padding-top: 159px; margin-left: 716px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: center; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                <b>
+                                    Comment
+                                </b>
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="760" y="163" fill="#000000" font-family="Helvetica" font-size="12px" text-anchor="middle">
+                    Comment
+                </text>
+            </switch>
+        </g>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 278px; height: 1px; padding-top: 330px; margin-left: 727px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                <font style="font-size: 18px">
+                                    void InterruptPhase()
+                                </font>
+                                <br/>
+                                Invoke when this phase is interrupted by other Game Phase pushed into stack.
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="727" y="334" fill="#000000" font-family="Helvetica" font-size="12px">
+                    void InterruptPhase()...
+                </text>
+            </switch>
+        </g>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 278px; height: 1px; padding-top: 390px; margin-left: 727px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                <font style="font-size: 18px">
+                                    void ResumePhase()
+                                </font>
+                                <br/>
+                                Invoke after the Game Phase interrupted this phase ended. Resume the left logic.
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="727" y="394" fill="#000000" font-family="Helvetica" font-size="12px">
+                    void ResumePhase()...
+                </text>
+            </switch>
+        </g>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 278px; height: 1px; padding-top: 270px; margin-left: 727px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                <font style="font-size: 18px">
+                                    void EndPhase()
+                                </font>
+                                <br/>
+                                Finish up current game phase and setup next one in parent FSM based on type.
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="727" y="274" fill="#000000" font-family="Helvetica" font-size="12px">
+                    void EndPhase()...
+                </text>
+            </switch>
+        </g>
+        <g transform="translate(-0.5 -0.5)">
+            <switch>
+                <foreignObject style="overflow: visible; text-align: left;" pointer-events="none" width="100%" height="100%" requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe center; justify-content: unsafe flex-start; width: 278px; height: 1px; padding-top: 210px; margin-left: 727px;">
+                        <div style="box-sizing: border-box; font-size: 0; text-align: left; ">
+                            <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: #000000; line-height: 1.2; pointer-events: none; white-space: normal; word-wrap: normal; ">
+                                <font style="font-size: 18px">
+                                    void StartPhase()
+                                </font>
+                                <br/>
+                                Start this game phase and process the inner logic.
+                            </div>
+                        </div>
+                    </div>
+                </foreignObject>
+                <text x="727" y="214" fill="#000000" font-family="Helvetica" font-size="12px">
+                    void StartPhase()...
+                </text>
+            </switch>
+        </g>
+        <path d="M 5 291 L 5 265 L 395 265 L 395 291" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 5 291 L 5 455 L 395 455 L 395 291" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 5 291 L 395 291" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" font-weight="bold" pointer-events="none" text-anchor="middle" font-size="12px">
+            <text x="199.5" y="282.5">
+                StandardGameMode
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-9-296-382-26-0)" font-size="12px">
+            <text x="10.5" y="308.5">
+                - StandardPlayerControllerList: TArray&lt;StandardPlayerController*&gt;
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-9-322-382-26-0)" font-size="12px">
+            <text x="10.5" y="334.5">
+                - StandardAIControllerList: TArray&lt;StandardAIController*&gt;
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-9-348-382-26-0)" font-size="12px">
+            <text x="10.5" y="360.5">
+                - GameState: StandardGameState*
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-9-374-382-26-0)" font-size="12px">
+            <text x="10.5" y="386.5">
+                - GameFSM: FiniteStateMachine*
+            </text>
+        </g>
+        <path d="M 5 399 L 395 399" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-9-408-382-26-0)" font-size="12px">
+            <text x="10.5" y="420.5">
+                + GetPlayerControllerById(int32 PlayerId) : StandardPlayerController*
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-9-434-382-26-0)" font-size="12px">
+            <text x="10.5" y="446.5">
+                + GetAIControllerById(int32 PlayerId) : StandardAIController*
+            </text>
+        </g>
+        <path d="M 5 521 L 5 495 L 385 495 L 385 521" fill="#ffffff" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 5 521 L 5 633 L 385 633 L 385 521" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 5 521 L 385 521" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" font-weight="bold" pointer-events="none" text-anchor="middle" font-size="12px">
+            <text x="194.5" y="512.5">
+                StandardGameState
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-9-526-372-26-0)" font-size="12px">
+            <text x="10.5" y="538.5">
+                - CurrentGamePhase : FName
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-9-552-372-26-0)" font-size="12px">
+            <text x="10.5" y="564.5">
+                - PlayerCount : int32
+            </text>
+        </g>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-9-578-372-26-0)" font-size="12px">
+            <text x="10.5" y="590.5">
+                - AlivePlayerCount : int32
+            </text>
+        </g>
+        <path d="M 5 603 L 385 603" fill="none" stroke="#000000" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="#000000" font-family="Helvetica" pointer-events="none" clip-path="url(#mx-clip-9-612-372-26-0)" font-size="12px">
+            <text x="10.5" y="624.5">
+                + SetCurrentPhase(FName NewPhase): void
+            </text>
+        </g>
+    </g>
+    <switch>
+        <g requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"/>
+        <a transform="translate(0,-5)" xlink:href="https://www.diagrams.net/doc/faq/svg-export-text-problems" target="_blank">
+            <text text-anchor="middle" font-size="10px" x="50%" y="100%">
+                Viewer does not support full SVG 1.1
+            </text>
+        </a>
+    </switch>
+</svg>

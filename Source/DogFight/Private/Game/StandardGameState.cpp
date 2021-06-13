@@ -5,6 +5,7 @@
 
 #include "Game/StandardGameMode.h"
 #include "Game/GameRoundsTimeline.h"
+#include "Game/GameWorkflow/StandardGameMode/StandardGameModePhaseDefine.h"
 
 AStandardGameState::AStandardGameState(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -85,7 +86,7 @@ void AStandardGameState::BeginPlay()
 
 bool AStandardGameState::ShouldCountdownDisplay() const
 {
-	return CurrentGamePhase == GamePhase::WaitingForStart || CurrentGamePhase == GamePhase::FreeMoving;
+	return CurrentGamePhase == StandardGameModePhase::WaitingForStart || CurrentGamePhase == StandardGameModePhase::FreeMoving;
 }
 
 void AStandardGameState::OnRep_CurrentGamePhase()

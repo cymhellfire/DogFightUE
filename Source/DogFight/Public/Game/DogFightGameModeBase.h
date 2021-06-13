@@ -9,6 +9,7 @@
 
 class UDamageCalculatorBase;
 class AShieldManager;
+class UGameModeStateMachine;
 
 UENUM(BlueprintType)
 enum class EPlayerRelation : uint8
@@ -32,6 +33,8 @@ public:
 
 	virtual void Logout(AController* Exiting) override;
 
+	virtual void PreInitializeComponents() override;
+
 	virtual void PostInitializeComponents() override;
 
 	/** Finish current game and pump all players to main menu. */
@@ -46,9 +49,13 @@ public:
 
 	virtual AShieldManager* GetShieldManager() const { return ShieldManager; }
 
+	virtual UGameModeStateMachine* GetGameModeStateMachine() { return GameModeStateMachine; }
+
 protected:
 
 	virtual void BeginPlay() override;
+
+	virtual void InitializeStateMachine() {}
 
 protected:
 	
@@ -64,4 +71,7 @@ protected:
 
 	UPROPERTY()
 	AShieldManager* ShieldManager;
+
+	UPROPERTY(Transient)
+	UGameModeStateMachine* GameModeStateMachine;
 };
