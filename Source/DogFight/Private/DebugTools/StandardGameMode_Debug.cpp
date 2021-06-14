@@ -5,6 +5,9 @@
 
 #if WITH_IMGUI
 
+#define MAIN_WINDOW_BASE_INFO		0
+#define MAIN_WINDOW_RELATION_INFO	1
+
 FDebugPlayerRelationInfo::FDebugPlayerRelationInfo(FPlayerRelationStatistic PlayerRelationStatistic)
 {
 	PlayerId = PlayerRelationStatistic.PlayerId;
@@ -28,21 +31,38 @@ void AStandardGameMode::ImGuiTick()
 		return;
 	}
 
-	ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
+	//ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
+	ImGui::AlignTextToFramePadding();
 	ImGui::Text("This is GameMode administration page.");
-
-	DrawPlayerInfoWidget();
-	ImGui::End();
-
-	if (bShowPlayerRelationshipWindow)
+	ImGui::SameLine();
+	if (ImGui::Button("Close"))
 	{
-		DrawPlayerRelationWindow(&bShowPlayerRelationshipWindow);
+		ToggleGameModeAdmin();
 	}
+
+	if (ImGui::BeginTabBar("MainWindowTabBar", ImGuiTabBarFlags_None))
+	{
+		if (ImGui::BeginTabItem("PlayerBaseInfo"))
+		{
+			MainWindowTabIndex = MAIN_WINDOW_BASE_INFO;
+			DrawPlayerBaseInfoTab();
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("PlayerRelationInfo"))
+		{
+			MainWindowTabIndex = MAIN_WINDOW_RELATION_INFO;
+			DrawPlayerRelationInfoTab();
+			ImGui::EndTabItem();
+		}
+		ImGui::EndTabBar();
+	}
+
+	ImGui::End();
 }
 
-void AStandardGameMode::DrawPlayerInfoWidget()
+void AStandardGameMode::DrawPlayerBaseInfoTab()
 {
-	ImGui::Columns(7, "PlayerBaseInfo");
+	ImGui::Columns(6, "PlayerBaseInfo");
 	ImGui::Separator();
 	// Draw header
 	ImGui::Text("ID");
@@ -57,8 +77,6 @@ void AStandardGameMode::DrawPlayerInfoWidget()
 	ImGui::NextColumn();
 	ImGui::Text("Strength");
 	ImGui::NextColumn();
-	ImGui::Text("Relation");
-	ImGui::NextColumn();
 	// Fill in all player info
 	TArray<FDebugPlayerBaseInfo> PlayerBaseInfos;
 	PlayerBaseInfoMap.GenerateValueArray(PlayerBaseInfos);
@@ -69,7 +87,12 @@ void AStandardGameMode::DrawPlayerInfoWidget()
 		{
 			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 0, 1));
 		}
-		ImGui::Text("%03d", PlayerBaseInfo.PlayerId);
+		char IdLabel[32];
+		sprintf(IdLabel, "%03d", PlayerBaseInfo.PlayerId);
+		if (ImGui::Selectable(IdLabel, PlayerIdShowBaseInfo == PlayerBaseInfo.PlayerId, ImGuiSelectableFlags_SpanAllColumns))
+		{
+			PlayerIdShowBaseInfo = PlayerBaseInfo.PlayerId;
+		}
 		ImGui::NextColumn();
 		ImGui::Text("%ls", *PlayerBaseInfo.PlayerName);
 		ImGui::NextColumn();
@@ -85,31 +108,45 @@ void AStandardGameMode::DrawPlayerInfoWidget()
 		{
 			ImGui::PopStyleColor();
 		}
-		char buf[32];
-		sprintf(buf, "Player [%d]", PlayerBaseInfo.PlayerId);
-		if (ImGui::Button(buf))
-		{
-			GatherRelationshipInfo(PlayerBaseInfo.PlayerId);
-			bShowPlayerRelationshipWindow = true;
-			PlayerIdShowRelationship = PlayerBaseInfo.PlayerId;
-		}
-		ImGui::NextColumn();
 	}
 	ImGui::Separator();
 	ImGui::Columns(1);
 }
 
-void AStandardGameMode::DrawPlayerRelationWindow(bool* bOpen)
+void AStandardGameMode::DrawPlayerRelationInfoTab()
 {
-	ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
-	if (!ImGui::Begin("Player Relationship", bOpen))
+	// Construct player selecting list
+	ImGui::BeginGroup();
 	{
-		ImGui::End();
-		return;
+		ImGui::Text("Player List:");
+		if (ImGui::ListBoxHeader("", ImVec2(120,400)))
+		{
+			TArray<int32> PlayerIdList;
+			PlayerBaseInfoMap.GetKeys(PlayerIdList);
+			for (int32 PlayerId : PlayerIdList)
+			{
+				bool bSelected = (PlayerId == PlayerIdShowRelationship);
+				char SelectableLabel[32];
+				sprintf(SelectableLabel, "ID [%d]", PlayerId);
+
+				if (ImGui::Selectable(SelectableLabel, bSelected))
+				{
+					PlayerIdShowRelationship = PlayerId;
+					GatherRelationshipInfo(PlayerId);
+				}
+
+				if (bSelected)
+				{
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::ListBoxFooter();
+		}
 	}
+	ImGui::EndGroup();
+	ImGui::SameLine();
 
-	ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
-
+	ImGui::BeginGroup();
 	if (PlayerBaseInfoMap.Contains(PlayerIdShowRelationship))
 	{
 		ImGui::Text("Relationship record of [%ls]", *GetPlayerNameById(PlayerIdShowRelationship));
@@ -130,7 +167,9 @@ void AStandardGameMode::DrawPlayerRelationWindow(bool* bOpen)
 		// Draw data
 		for (int32 Index = 0; Index < ShowingPlayerRelationships.Num(); ++Index)
 		{
-			ImGui::Text("%03d", ShowingPlayerRelationships[Index].PlayerId);
+			char IdLabel[32];
+			sprintf(IdLabel, "%03d", ShowingPlayerRelationships[Index].PlayerId);
+			ImGui::Selectable(IdLabel, false, ImGuiSelectableFlags_SpanAllColumns);
 			ImGui::NextColumn();
 			ImGui::Text("%ls", *ShowingPlayerRelationships[Index].PlayerName);
 			ImGui::NextColumn();
@@ -148,8 +187,7 @@ void AStandardGameMode::DrawPlayerRelationWindow(bool* bOpen)
 	{
 		ImGui::Text("Invalid player id [%d] to check relationship.", PlayerIdShowRelationship);
 	}
-
-	ImGui::End();
+	ImGui::EndGroup();
 }
 
 void AStandardGameMode::SetupDebugTools()
@@ -234,7 +272,7 @@ void AStandardGameMode::OnPlayerRelationInfoChanged()
 {
 #if WITH_IMGUI
 	// Update the relation ship info
-	if (bShowPlayerRelationshipWindow)
+	if (MainWindowTabIndex == MAIN_WINDOW_RELATION_INFO)
 	{
 		GatherRelationshipInfo(PlayerIdShowRelationship);
 	}

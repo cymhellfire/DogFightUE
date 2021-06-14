@@ -169,6 +169,7 @@ protected:
 
 	void OnSetDestinationPressed();
 	void OnOpenInGameMenuPressed();
+	void OnToggleGameModeAdminPressed();
 
 	UFUNCTION(Server, Reliable)
 	void ServerMoveToMouseCursor(FVector Destination);

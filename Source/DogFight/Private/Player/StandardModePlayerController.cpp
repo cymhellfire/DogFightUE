@@ -650,6 +650,7 @@ void AStandardModePlayerController::SetupInputComponent()
 
 	InputComponent->BindAction("SetDestination", IE_Pressed, this, &AStandardModePlayerController::OnSetDestinationPressed);
 	InputComponent->BindAction("OpenInGameMenu", IE_Pressed, this, &AStandardModePlayerController::OnOpenInGameMenuPressed);
+	InputComponent->BindAction("ToggleGameModeAdmin", IE_Pressed, this, &AStandardModePlayerController::OnToggleGameModeAdminPressed);
 }
 
 void AStandardModePlayerController::ProcessPlayerInput(const float DeltaTime, const bool bGamePaused)
@@ -823,6 +824,14 @@ void AStandardModePlayerController::OnOpenInGameMenuPressed()
 		InGameMenuWidget->AddToViewport();
 
 		bInGameMenuShown = true;
+	}
+}
+
+void AStandardModePlayerController::OnToggleGameModeAdminPressed()
+{
+	if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		StandardGameMode->ToggleGameModeAdmin();
 	}
 }
 

@@ -373,13 +373,14 @@ protected:
 	void GatherRelationshipInfo(int32 PlayerId);
 	FString GetPlayerNameById(int32 PlayerId);
 
-	void DrawPlayerInfoWidget();
-	void DrawPlayerRelationWindow(bool* bOpen);
+	void DrawPlayerBaseInfoTab();
+	void DrawPlayerRelationInfoTab();
 
 protected:
 	uint8 bShowDebugTools : 1;
-	bool bShowPlayerRelationshipWindow;
 
+	int32 MainWindowTabIndex;
+	int32 PlayerIdShowBaseInfo;
 	int32 PlayerIdShowRelationship;
 
 	TMap<int32, FDebugPlayerBaseInfo> PlayerBaseInfoMap;

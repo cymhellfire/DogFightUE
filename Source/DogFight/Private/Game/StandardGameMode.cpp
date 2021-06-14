@@ -968,5 +968,6 @@ void AStandardGameMode::ToggleGameModeAdmin()
 {
 #if WITH_IMGUI
 	bShowDebugTools = !bShowDebugTools;
+	FImGuiModule::Get().GetProperties().ToggleInput();
 #endif
 }
