@@ -78,6 +78,7 @@ void AStandardModeAIController::InitPlayerState()
 		CharacterPawn->SetSupremeController(this);
 		CharacterPawn->OnCharacterDead.AddDynamic(this, &AStandardModeAIController::OnCharacterPawnDead);
 		CharacterPawn->OnCharacterHealthChanged.AddDynamic(this, &AStandardModeAIController::OnHealthChanged);
+		CharacterPawn->OnCharacterStrengthChanged.AddDynamic(this, &AStandardModeAIController::OnStrengthChanged);
 	}
 }
 
@@ -796,3 +797,10 @@ void AStandardModeAIController::OnHealthChanged(int32 NewHealth)
 	}
 }
 
+void AStandardModeAIController::OnStrengthChanged(int32 NewStrength)
+{
+	if (APlayerState* MyPlayerState = GetPlayerState<APlayerState>())
+	{
+		OnPlayerStrengthChanged.Broadcast(MyPlayerState->GetPlayerId(), NewStrength);
+	}
+}

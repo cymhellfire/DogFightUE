@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "DogFightGameModeBase.h"
 #include "DogFightTypes.h"
+#include "DebugTools/ImGuiCommon.h"
 #include "StandardGameMode.generated.h"
 
 class AStandardModePlayerController;
@@ -13,6 +14,57 @@ class AStandardPlayerState;
 class UGameplayCardPool;
 class UGameplayAbilityPool;
 class ADogFightAIController;
+
+#if WITH_IMGUI
+struct FDebugPlayerBaseInfo
+{
+	bool bActive;
+	int32 PlayerId;
+	FString PlayerName;
+	int32 HoldCards;
+	int32 MaxHoldCards;
+	int32 UsedCards;
+	int32 MaxUseCards;
+	int32 CurrentHealth;
+	int32 MaxHealth;
+	int32 CurrentStrength;
+	int32 MaxStrength;
+
+	FDebugPlayerBaseInfo()
+	{
+		// Fill with game default value
+		bActive = false;
+		PlayerId = -1;
+		PlayerName = TEXT("");
+		HoldCards = 0;
+		MaxHoldCards = 2;
+		UsedCards = 0;
+		MaxUseCards = 2;
+		MaxHealth = 100;
+		CurrentHealth = MaxHealth;
+		MaxStrength = 50;
+		CurrentStrength = MaxStrength;
+	}
+};
+
+struct FDebugPlayerRelationInfo
+{
+	int32 PlayerId;
+	FString PlayerName;
+	int32 RelationPoint;
+	int32 ReceiveDamage;
+	int32 CurrentHealth;
+
+	FDebugPlayerRelationInfo() :
+		PlayerId(-1), PlayerName(TEXT("")),
+		RelationPoint(0), ReceiveDamage(0),
+		CurrentHealth(0)
+	{
+	}
+
+	FDebugPlayerRelationInfo(struct FPlayerRelationStatistic PlayerRelationStatistic);
+};
+#endif
 
 enum EGameModeDelayAction : uint8
 {
@@ -159,7 +211,7 @@ public:
 
 	int32 GetCurrentPlayerId() const { return CachedCurrentPlayerId; }
 
-	void SetCurrentPlayerId(int32 NewId) { CachedCurrentPlayerId = NewId; }
+	void SetCurrentPlayerId(int32 NewId);
 
 	/** Get a random AController from game. */
 	AController* GetRandomController();
@@ -210,6 +262,9 @@ public:
 	 */
 	void BroadcastCameraFocusEvent(FCameraFocusEvent CameraEvent);
 protected:
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 	virtual void InitializeStateMachine() override;
 
 	/** All PlayerController instances in current game. */
@@ -240,6 +295,9 @@ protected:
 
 	UFUNCTION()
 	void OnCharacterHealthChangedCallback(int32 PlayerId, int32 NewHealth);
+
+	UFUNCTION()
+	void OnCharacterStrengthChangedCallback(int32 PlayerId, int32 NewStrength);
 
 	void HandleDelayAction(EGameModeDelayAction DelayAction);
 
@@ -295,5 +353,38 @@ public:
 
 	UFUNCTION(Exec)
 	void GivePlayerCard(int32 PlayerId, int32 CardNum, int32 CardIndex);
+
+	UFUNCTION(Exec)
+	void ToggleGameModeAdmin();
+
+	UFUNCTION()
+	void OnPlayerCardCountChanged(AStandardPlayerState* PlayerState);
+
+	UFUNCTION()
+	void OnPlayerRelationInfoChanged();
+
+#if WITH_IMGUI
+	void ImGuiTick();
+
+protected:
+	void SetupDebugTools();
+	void RemoveDebugTools();
+
+	void GatherRelationshipInfo(int32 PlayerId);
+	FString GetPlayerNameById(int32 PlayerId);
+
+	void DrawPlayerInfoWidget();
+	void DrawPlayerRelationWindow(bool* bOpen);
+
+protected:
+	uint8 bShowDebugTools : 1;
+	bool bShowPlayerRelationshipWindow;
+
+	int32 PlayerIdShowRelationship;
+
+	TMap<int32, FDebugPlayerBaseInfo> PlayerBaseInfoMap;
+	TArray<FDebugPlayerRelationInfo> ShowingPlayerRelationships;
+	FImGuiDelegateHandle ImGuiTickHandle;
+#endif
 #pragma endregion Debug
 };

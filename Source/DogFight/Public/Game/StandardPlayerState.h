@@ -230,9 +230,8 @@ public:
 #pragma endregion Ability
 
 #pragma region DebugInterface
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerCardCountChangeSignature, int32, CardCount);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerCardCountChangeSignature, AStandardPlayerState*, PlayerState);
 	/** Triggered when player card count changed. */
-	UPROPERTY(BlueprintAssignable, Category="StandardPlayerState")
 	FOnPlayerCardCountChangeSignature OnPlayerCardCountChanged;
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerRelationInfoChangedSignature);

@@ -155,6 +155,7 @@ void AStandardGameMode::PostLogin(APlayerController* NewPlayer)
 
 			StandardModePlayerController->OnPlayerDead.AddDynamic(this, &AStandardGameMode::OnPlayerDeadCallback);
 			StandardModePlayerController->OnPlayerHealthChanged.AddDynamic(this, &AStandardGameMode::OnCharacterHealthChangedCallback);
+			StandardModePlayerController->OnPlayerStrengthChanged.AddDynamic(this, &AStandardGameMode::OnCharacterStrengthChangedCallback);
 			UE_LOG(LogDogFight, Log, TEXT("Add controller [%s] to list."), *StandardModePlayerController->GetName());
 		}
 	}
@@ -253,9 +254,33 @@ void AStandardGameMode::RegisterPlayerToTimeline(AStandardModePlayerController* 
 	}
 
 	// Record human player id
-	if (APlayerState* PlayerState = PlayerController->GetPlayerState<APlayerState>())
+	if (AStandardPlayerState* PlayerState = PlayerController->GetPlayerState<AStandardPlayerState>())
 	{
-		HumanPlayerIdList.AddUnique(PlayerState->GetPlayerId());
+		const int32 PlayerId = PlayerState->GetPlayerId();
+		HumanPlayerIdList.AddUnique(PlayerId);
+
+#if WITH_IMGUI
+		// Create player base info struct
+		if (!PlayerBaseInfoMap.Contains(PlayerId))
+		{
+			FDebugPlayerBaseInfo NewPlayerInfo;
+			NewPlayerInfo.PlayerId = PlayerId;
+			NewPlayerInfo.PlayerName = PlayerState->GetPlayerName();
+			PlayerBaseInfoMap.Add(PlayerId, NewPlayerInfo);
+		}
+		else
+		{
+			FDebugPlayerBaseInfo* PlayerBaseInfo = PlayerBaseInfoMap.Find(PlayerId);
+			PlayerBaseInfo->PlayerName = PlayerState->GetPlayerName();
+		}
+
+		// Register listener
+		if (!PlayerState->OnPlayerCardCountChanged.IsAlreadyBound(this, &AStandardGameMode::OnPlayerCardCountChanged))
+		{
+			PlayerState->OnPlayerCardCountChanged.AddDynamic(this, &AStandardGameMode::OnPlayerCardCountChanged);
+			PlayerState->OnPlayerRelationInfoChanged.AddDynamic(this, &AStandardGameMode::OnPlayerRelationInfoChanged);
+		}
+#endif
 	}
 }
 
@@ -318,6 +343,26 @@ void AStandardGameMode::RegisterAIController(AStandardModeAIController* NewContr
 	// Register delegate
 	NewController->OnAIPlayerDead.AddDynamic(this, &AStandardGameMode::OnAIPlayerDeadCallback);
 	NewController->OnPlayerHealthChanged.AddDynamic(this, &AStandardGameMode::OnCharacterHealthChangedCallback);
+	NewController->OnPlayerStrengthChanged.AddDynamic(this, &AStandardGameMode::OnCharacterStrengthChangedCallback);
+
+#if WITH_IMGUI
+	if (AStandardPlayerState* PlayerState = NewController->GetPlayerState<AStandardPlayerState>())
+	{
+		const int32 PlayerId = PlayerState->GetPlayerId();
+		// Create player base info struct
+		FDebugPlayerBaseInfo NewPlayerInfo;
+		NewPlayerInfo.PlayerId = PlayerId;
+		NewPlayerInfo.PlayerName = PlayerState->GetPlayerName();
+		PlayerBaseInfoMap.Add(PlayerId, NewPlayerInfo);
+
+		// Register listener
+		if (!PlayerState->OnPlayerCardCountChanged.IsAlreadyBound(this, &AStandardGameMode::OnPlayerCardCountChanged))
+		{
+			PlayerState->OnPlayerCardCountChanged.AddDynamic(this, &AStandardGameMode::OnPlayerCardCountChanged);
+			PlayerState->OnPlayerRelationInfoChanged.AddDynamic(this, &AStandardGameMode::OnPlayerRelationInfoChanged);
+		}
+	}
+#endif
 }
 
 void AStandardGameMode::RegisterAIToTimeline(AStandardModeAIController* AIController)
@@ -424,6 +469,27 @@ void AStandardGameMode::BroadcastGameTitleMessageToAllPlayers(FGameTitleMessage 
 void AStandardGameMode::EndCurrentPlayerRound()
 {
 	OnRequestEndCurrentPlayerRound.Broadcast();
+}
+
+void AStandardGameMode::SetCurrentPlayerId(int32 NewId)
+{
+#if WITH_IMGUI
+	if (PlayerBaseInfoMap.Contains(CachedCurrentPlayerId))
+	{
+		FDebugPlayerBaseInfo* PlayerBaseInfo = PlayerBaseInfoMap.Find(CachedCurrentPlayerId);
+		PlayerBaseInfo->bActive = false;
+	}
+#endif
+
+	CachedCurrentPlayerId = NewId;
+
+#if WITH_IMGUI
+	if (PlayerBaseInfoMap.Contains(NewId))
+	{
+		FDebugPlayerBaseInfo* PlayerBaseInfo = PlayerBaseInfoMap.Find(NewId);
+		PlayerBaseInfo->bActive = true;
+	}
+#endif
 }
 
 AController* AStandardGameMode::GetRandomController()
@@ -608,6 +674,24 @@ int32 AStandardGameMode::TransferCardsBetweenPlayer(AStandardPlayerState* SrcPla
 void AStandardGameMode::BroadcastCameraFocusEvent(FCameraFocusEvent CameraEvent)
 {
 	OnCameraEventHappened.Broadcast(CameraEvent);
+}
+
+void AStandardGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+
+#if WITH_IMGUI
+	SetupDebugTools();
+#endif
+}
+
+void AStandardGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+#if WITH_IMGUI
+	RemoveDebugTools();
+#endif
+
+	Super::EndPlay(EndPlayReason);
 }
 
 void AStandardGameMode::OnResponseCardSelected(ACardBase* SelectedCard, AStandardPlayerState* ResponsePlayerState)
@@ -812,6 +896,27 @@ void AStandardGameMode::OnCharacterHealthChangedCallback(int32 PlayerId, int32 N
 			}
 		}
 	}
+
+#if WITH_IMGUI
+	// Update debug info
+	if (PlayerBaseInfoMap.Contains(PlayerId))
+	{
+		FDebugPlayerBaseInfo* PlayerBaseInfo = PlayerBaseInfoMap.Find(PlayerId);
+		PlayerBaseInfo->CurrentHealth = NewHealth;
+	}
+#endif
+}
+
+void AStandardGameMode::OnCharacterStrengthChangedCallback(int32 PlayerId, int32 NewStrength)
+{
+#if WITH_IMGUI
+	// Update debug info
+	if (PlayerBaseInfoMap.Contains(PlayerId))
+	{
+		FDebugPlayerBaseInfo* PlayerBaseInfo = PlayerBaseInfoMap.Find(PlayerId);
+		PlayerBaseInfo->CurrentStrength = NewStrength;
+	}
+#endif
 }
 
 void AStandardGameMode::HandleDelayAction(EGameModeDelayAction DelayAction)
@@ -859,3 +964,9 @@ void AStandardGameMode::GivePlayerCard(int32 PlayerId, int32 CardNum, int32 Card
 	GivePlayerCardsByCardIndex(PlayerId, CardNum, CardIndex);
 }
 
+void AStandardGameMode::ToggleGameModeAdmin()
+{
+#if WITH_IMGUI
+	bShowDebugTools = !bShowDebugTools;
+#endif
+}

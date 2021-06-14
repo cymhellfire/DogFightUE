@@ -723,7 +723,7 @@ void AStandardPlayerState::ValidateCardInstances()
 
 void AStandardPlayerState::OnRep_CardInfoList()
 {
-	OnPlayerCardCountChanged.Broadcast(GetCurrentCardCount());
+	OnPlayerCardCountChanged.Broadcast(this);
 
 	// Broadcast event
 	OnPlayerCardInfoListChanged.Broadcast();

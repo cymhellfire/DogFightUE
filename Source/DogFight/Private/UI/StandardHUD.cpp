@@ -311,14 +311,6 @@ void AStandardHUD::BeginPlay()
 		AbilitySelectWindowWidget = CreateWidget<UAbilitySelectWindowWidget>(PlayerController, AbilitySelectWindowWidgetClass, FName("AbilitySelectWindowWidget"));
 	}
 
-#if WITH_EDITOR
-	if (DebugUIWidget == nullptr && DebugUIClass != nullptr)
-	{
-		DebugUIWidget = CreateWidget<UUserWidget>(PlayerController, DebugUIClass, FName("DebugUI"));
-		DebugUIWidget->AddToViewport();
-	}
-#endif
-
 	// Listen the GamePhase change event
 	StandardGameState = GetWorld()->GetGameState<AStandardGameState>();
 	if (StandardGameState != nullptr)

@@ -134,9 +134,6 @@ public:
 	UPROPERTY(Category="UI", EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UAbilitySelectWindowWidget> AbilitySelectWindowWidgetClass;
 
-	UPROPERTY(Category="UI", EditDefaultsOnly, BlueprintReadOnly)
-	TSubclassOf<UUserWidget> DebugUIClass;
-
 protected:
 	void DrawMiniMap();
 

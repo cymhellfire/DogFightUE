@@ -233,6 +233,15 @@ void AStandardModePlayerController::OnHealthChanged(int32 NewHealth)
 	}
 }
 
+void AStandardModePlayerController::OnStrengthChanged(int32 NewStrength)
+{
+	// Delegate
+	if (APlayerState* MyPlayerState = GetPlayerState<APlayerState>())
+	{
+		OnPlayerStrengthChanged.Broadcast(MyPlayerState->GetPlayerId(), NewStrength);
+	}
+}
+
 void AStandardModePlayerController::OnCameraEventHappened(FCameraFocusEvent CameraFocusEvent)
 {
 	if (CameraFocusEvent.EventType == ECameraFocusEventType::Type::OwnerForced)
@@ -1190,6 +1199,7 @@ void AStandardModePlayerController::ServerSpawnCharacterPawn_Implementation()
 			// Register listener
 			CharacterPawn->OnCharacterDead.AddDynamic(this, &AStandardModePlayerController::OnCharacterDead);
 			CharacterPawn->OnCharacterHealthChanged.AddDynamic(this, &AStandardModePlayerController::OnHealthChanged);
+			CharacterPawn->OnCharacterStrengthChanged.AddDynamic(this, &AStandardModePlayerController::OnStrengthChanged);
 			UE_LOG(LogDogFight, Display, TEXT("Spawn location at %s"), *(StartPoint.ToString()));
 		}
 		else
