@@ -416,6 +416,10 @@ void AStandardGameMode::GivePlayerCards(AController* TargetController, AStandard
 		Card = CardPool->GetRandomCard();
 		Card->SetOwnerPlayerController(TargetController);
 		TargetPlayerState->AddCard(Card);
+
+#if WITH_IMGUI
+		GetCurrentGamePhaseRecord().AddGiveCardEvent(Card->GetCardDisplayInfo().CardName);
+#endif
 	}
 }
 
@@ -827,15 +831,31 @@ void AStandardGameMode::InitializeStateMachine()
 
 	GameModeStateMachine->RegisterGamePhase(AllGamePhases);
 	GameModeStateMachine->StartWithPhase(StandardGameModePhase::EnteringMap);
+
+#if WITH_IMGUI
+	GameStartTime = FDateTime::Now();
+#endif
 }
 
-void AStandardGameMode::OnGamePhaseChanged(FName NewPhase)
+void AStandardGameMode::OnGamePhaseChanged(FName NewPhase, uint8 SwitchMethod)
 {
 	// Sync game state
 	if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())
 	{
 		StandardGameState->SetCurrentGamePhase(NewPhase);
 	}
+
+#if WITH_IMGUI
+	// Make a new record
+	FDebugGamePhaseHistoryRecord NewRecord;
+	NewRecord.PlayerId = GetCurrentPlayerId();
+	NewRecord.GamePhaseName = NewPhase;
+	const FTimespan TimeExpired = FDateTime::Now() - GameStartTime;
+	NewRecord.TimeMinutes = FMath::Floor(TimeExpired.GetTotalMinutes());
+	NewRecord.TimeSeconds = TimeExpired.GetSeconds();
+	NewRecord.SwitchMethod = SwitchMethod;
+	StateMachineGamePhaseHistory.Add(NewRecord);
+#endif
 }
 
 void AStandardGameMode::OnJoinedPlayerCountChanged()

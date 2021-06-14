@@ -1,6 +1,8 @@
 ﻿#include "AI/StandardModeAIController.h"
+#include "Common/BitmaskOperation.h"
 #include "Game/StandardGameMode.h"
 #include "Game/StandardPlayerState.h"
+#include "Game/GameWorkflow/GamePhaseCommon.h"
 #include "Player/StandardModePlayerController.h"
 
 #if WITH_IMGUI
@@ -24,14 +26,28 @@ void AStandardGameMode::ImGuiTick()
 
 	ImGui::SetNextWindowSize(ImVec2(550, 400), ImGuiCond_FirstUseEver);
 
-	if (!ImGui::Begin("GameMode Admin", NULL, ImGuiWindowFlags_None))
+	ImGuiWindowFlags WindowFlags = 0;
+	WindowFlags |= ImGuiWindowFlags_MenuBar;
+
+	if (!ImGui::Begin("GameMode Admin", nullptr, WindowFlags))
 	{
 		// Return if the window is collapsed
 		ImGui::End();
 		return;
 	}
 
-	//ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
+	ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
+	// Main window menu
+	if (ImGui::BeginMenuBar())
+	{
+		if (ImGui::BeginMenu("Debuggers"))
+		{
+			ImGui::MenuItem("State Machine Debugger", nullptr, &bShowStateMachineDebugger);
+			ImGui::EndMenu();
+		}
+		ImGui::EndMenuBar();
+	}
+
 	ImGui::AlignTextToFramePadding();
 	ImGui::Text("This is GameMode administration page.");
 	ImGui::SameLine();
@@ -55,6 +71,12 @@ void AStandardGameMode::ImGuiTick()
 			ImGui::EndTabItem();
 		}
 		ImGui::EndTabBar();
+	}
+
+	// Draw state machine debugger
+	if (bShowStateMachineDebugger)
+	{
+		DrawStateMachineDebugger(&bShowStateMachineDebugger);
 	}
 
 	ImGui::End();
@@ -188,6 +210,103 @@ void AStandardGameMode::DrawPlayerRelationInfoTab()
 		ImGui::Text("Invalid player id [%d] to check relationship.", PlayerIdShowRelationship);
 	}
 	ImGui::EndGroup();
+}
+
+void AStandardGameMode::DrawStateMachineDebugger(bool* bOpen)
+{
+	ImGui::SetNextWindowSize(ImVec2(340, 200), ImGuiCond_FirstUseEver);
+	ImGui::Begin("State Machine Debugger", bOpen, ImGuiWindowFlags_None);
+
+	// Game phase history box
+	ImGui::BeginGroup();
+	{
+		ImGui::Text("Game Phase History:");
+		if (ImGui::ListBoxHeader("", ImVec2(200, 200)))
+		{
+			for (int32 Index = 0; Index < StateMachineGamePhaseHistory.Num(); ++Index)
+			{
+				FDebugGamePhaseHistoryRecord& Record = StateMachineGamePhaseHistory[Index];
+				char RecordLabel[32];
+				sprintf(RecordLabel, "[%05d] %ls", Index, *Record.GamePhaseName.ToString());
+				if (ImGui::Selectable(RecordLabel, GamePhaseHistorySelectIndex == Index))
+				{
+					GamePhaseHistorySelectIndex = Index;
+
+					bWasLastGamePhaseSelected = (Index == StateMachineGamePhaseHistory.Num() - 1);
+				}
+			}
+
+			if (CachedGamePhaseHistoryCount < StateMachineGamePhaseHistory.Num())
+			{
+				// Follow new create item if last one was selected
+				if (bWasLastGamePhaseSelected)
+				{
+					GamePhaseHistorySelectIndex = CachedGamePhaseHistoryCount;
+					ImGui::SetItemDefaultFocus();
+					ImGui::SetScrollHereY();
+				}
+				CachedGamePhaseHistoryCount = StateMachineGamePhaseHistory.Num();
+			}
+			ImGui::ListBoxFooter();
+		}
+	}
+	ImGui::EndGroup();
+	ImGui::SameLine();
+
+	// Game phase detail box
+	if (GamePhaseHistorySelectIndex < StateMachineGamePhaseHistory.Num())
+	{
+		FDebugGamePhaseHistoryRecord& Record = StateMachineGamePhaseHistory[GamePhaseHistorySelectIndex];
+		ImGui::BeginGroup();
+		{
+
+			ImGui::Columns(2);
+			// Phase name
+			ImGui::Text("Game Phase:");
+			ImGui::NextColumn();
+			ImGui::Text("%ls", *Record.GamePhaseName.ToString());
+			ImGui::NextColumn();
+			// Owner player
+			ImGui::Text("Owner Player:");
+			ImGui::NextColumn();
+			ImGui::Text("%ls [ID:%d]", *GetPlayerNameById(Record.PlayerId), Record.PlayerId);
+			ImGui::NextColumn();
+			// Time point
+			ImGui::Text("Time:");
+			ImGui::NextColumn();
+			ImGui::Text("%d:%d", Record.TimeMinutes, Record.TimeSeconds);
+			ImGui::NextColumn();
+			ImGui::Columns(1);
+		}
+
+		// More details
+		ImGui::Separator();
+		if (TEST_SINGLE_FLAG(Record.SwitchMethod, EGamePhaseSwitchFlags::SF_Interrupted))
+		{
+			ImGui::Text("Interrupted");
+		}
+		if (TEST_SINGLE_FLAG(Record.SwitchMethod, EGamePhaseSwitchFlags::SF_Resumed))
+		{
+			ImGui::Text("Resumed");
+		}
+
+		ImGui::Text("Extra Events:");
+		if (ImGui::ListBoxHeader("ExtraEvents", ImVec2(ImGui::GetContentRegionAvailWidth(), 200)))
+		{
+			for (int32 Index = 0; Index < Record.ExtraEvents.Num(); ++Index)
+			{
+				ImGui::Text("%ls", *Record.ExtraEvents[Index]);
+			}
+			ImGui::ListBoxFooter();
+		}
+		ImGui::EndGroup();
+	}
+	else
+	{
+		ImGui::Text("No game phase selected.");
+	}
+
+	ImGui::End();
 }
 
 void AStandardGameMode::SetupDebugTools()

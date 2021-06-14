@@ -1,6 +1,7 @@
 ﻿#include "Game/GameWorkflow/GameModeStateMachine.h"
 #include "Game/GameWorkflow/GamePhase.h"
 #include "DogFight.h"
+#include "Game/GameWorkflow/GamePhaseCommon.h"
 
 UGameModeStateMachine::UGameModeStateMachine(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -175,12 +176,14 @@ void UGameModeStateMachine::OnGamePhaseChanged()
 	if (NextGamePhase == ProcessingGamePhase)
 		return;
 
+	uint8 SwitchMethod = SF_None;
 	if (IsValid(ProcessingGamePhase))
 	{
 		// Interrupt origin game phase if not finished yet
 		if (!ProcessingGamePhase->bFinished)
 		{
 			ProcessingGamePhase->InterruptPhase();
+			SwitchMethod |= SF_Interrupted;
 		}
 		else
 		{
@@ -195,11 +198,12 @@ void UGameModeStateMachine::OnGamePhaseChanged()
 	if (ProcessingGamePhase->bInterrupted)
 	{
 		ProcessingGamePhase->ResumePhase();
+		SwitchMethod |= SF_Resumed;
 	}
 	else
 	{
 		ProcessingGamePhase->StartPhase();
 	}
 
-	OnGamePhaseChangedEvent.Broadcast(ProcessingGamePhase->GamePhaseName);
+	OnGamePhaseChangedEvent.Broadcast(ProcessingGamePhase->GamePhaseName, SwitchMethod);
 }

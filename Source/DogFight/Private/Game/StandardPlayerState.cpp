@@ -82,6 +82,10 @@ void AStandardPlayerState::ServerHandleSelectedCard_Implementation(int32 Index)
 		return;
 	}
 
+#if WITH_IMGUI
+	AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode());
+#endif
+
 	switch(CardSelectionPurpose)
 	{
 	case ECardSelectionPurpose::CSP_Use:
@@ -91,12 +95,26 @@ void AStandardPlayerState::ServerHandleSelectedCard_Implementation(int32 Index)
 			UsingCard->Use();
 			UsingCardIndex = Index;
 
+#if WITH_IMGUI
+			if (IsValid(StandardGameMode))
+			{
+				StandardGameMode->GetCurrentGamePhaseRecord().AddUseCardEvent(UsingCard->GetCardDisplayInfo().CardName);
+			}
+#endif
+
 			// Register to card's delegate
 			UsingCard->OnCardFinished.AddDynamic(this, &AStandardPlayerState::OnCardFinished);
 		}
 		break;
 	case ECardSelectionPurpose::CSP_Discard:
 		{
+#if WITH_IMGUI
+			if (IsValid(StandardGameMode))
+			{
+				StandardGameMode->GetCurrentGamePhaseRecord().AddDiscardCardEvent(CardInstanceList[Index]->GetCardDisplayInfo().CardName);
+			}
+#endif
+
 			// Discard specified card from list
 			RemoveCard(Index);
 

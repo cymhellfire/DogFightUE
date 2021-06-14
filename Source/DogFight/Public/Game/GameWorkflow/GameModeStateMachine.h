@@ -57,7 +57,7 @@ protected:
 	void OnGamePhaseChanged();
 
 public:
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGamePhaseChangedSignature, FName, NewGamePhase);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGamePhaseChangedSignature, FName, NewGamePhase, uint8, SwitchMethod);
 	FGamePhaseChangedSignature OnGamePhaseChangedEvent;
 
 protected:

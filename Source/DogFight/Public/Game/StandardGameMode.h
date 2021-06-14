@@ -6,6 +6,7 @@
 #include "DogFightGameModeBase.h"
 #include "DogFightTypes.h"
 #include "DebugTools/ImGuiCommon.h"
+#include "DebugTools/StandardGameMode_DT.h"
 #include "StandardGameMode.generated.h"
 
 class AStandardModePlayerController;
@@ -14,57 +15,6 @@ class AStandardPlayerState;
 class UGameplayCardPool;
 class UGameplayAbilityPool;
 class ADogFightAIController;
-
-#if WITH_IMGUI
-struct FDebugPlayerBaseInfo
-{
-	bool bActive;
-	int32 PlayerId;
-	FString PlayerName;
-	int32 HoldCards;
-	int32 MaxHoldCards;
-	int32 UsedCards;
-	int32 MaxUseCards;
-	int32 CurrentHealth;
-	int32 MaxHealth;
-	int32 CurrentStrength;
-	int32 MaxStrength;
-
-	FDebugPlayerBaseInfo()
-	{
-		// Fill with game default value
-		bActive = false;
-		PlayerId = -1;
-		PlayerName = TEXT("");
-		HoldCards = 0;
-		MaxHoldCards = 2;
-		UsedCards = 0;
-		MaxUseCards = 2;
-		MaxHealth = 100;
-		CurrentHealth = MaxHealth;
-		MaxStrength = 50;
-		CurrentStrength = MaxStrength;
-	}
-};
-
-struct FDebugPlayerRelationInfo
-{
-	int32 PlayerId;
-	FString PlayerName;
-	int32 RelationPoint;
-	int32 ReceiveDamage;
-	int32 CurrentHealth;
-
-	FDebugPlayerRelationInfo() :
-		PlayerId(-1), PlayerName(TEXT("")),
-		RelationPoint(0), ReceiveDamage(0),
-		CurrentHealth(0)
-	{
-	}
-
-	FDebugPlayerRelationInfo(struct FPlayerRelationStatistic PlayerRelationStatistic);
-};
-#endif
 
 enum EGameModeDelayAction : uint8
 {
@@ -283,7 +233,7 @@ protected:
 	TArray<int32> CurrentRagdollPlayerId;
 
 	UFUNCTION()
-	void OnGamePhaseChanged(FName NewPhase);
+	void OnGamePhaseChanged(FName NewPhase, uint8 SwitchMethod);
 
 	virtual void OnJoinedPlayerCountChanged();
 
@@ -366,6 +316,8 @@ public:
 #if WITH_IMGUI
 	void ImGuiTick();
 
+	FDebugGamePhaseHistoryRecord& GetCurrentGamePhaseRecord() { return StateMachineGamePhaseHistory.Last(); }
+
 protected:
 	void SetupDebugTools();
 	void RemoveDebugTools();
@@ -373,18 +325,29 @@ protected:
 	void GatherRelationshipInfo(int32 PlayerId);
 	FString GetPlayerNameById(int32 PlayerId);
 
+	// Main window tabs
 	void DrawPlayerBaseInfoTab();
 	void DrawPlayerRelationInfoTab();
 
+	// State machine debugger
+	void DrawStateMachineDebugger(bool* bOpen);
+
 protected:
 	uint8 bShowDebugTools : 1;
+	uint8 bWasLastGamePhaseSelected : 1;
+	bool bShowStateMachineDebugger;
 
 	int32 MainWindowTabIndex;
 	int32 PlayerIdShowBaseInfo;
 	int32 PlayerIdShowRelationship;
+	int32 GamePhaseHistorySelectIndex;
+	int32 CachedGamePhaseHistoryCount;
+
+	FDateTime GameStartTime;
 
 	TMap<int32, FDebugPlayerBaseInfo> PlayerBaseInfoMap;
 	TArray<FDebugPlayerRelationInfo> ShowingPlayerRelationships;
+	TArray<FDebugGamePhaseHistoryRecord> StateMachineGamePhaseHistory;
 	FImGuiDelegateHandle ImGuiTickHandle;
 #endif
 #pragma endregion Debug
