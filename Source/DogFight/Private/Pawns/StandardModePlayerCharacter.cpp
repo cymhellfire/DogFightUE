@@ -866,6 +866,8 @@ void AStandardModePlayerCharacter::SetRagdollActive(bool bActive)
 		// Re-cache location that character will leave here
 		CacheCurrentLocation();
 	}
+
+	OnCharacterRagdollStateChanged.Broadcast(bActive);
 }
 
 void AStandardModePlayerCharacter::AddForceToAllRagdollBodies(FVector Force)

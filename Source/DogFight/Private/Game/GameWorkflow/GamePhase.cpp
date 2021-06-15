@@ -42,12 +42,17 @@ void UGamePhase::FinishPhase()
 {
 	bFinished = true;
 
-	// Set next phase to state machine automatically if this is a process type phase
-	if (GamePhaseType == EGamePhaseType::GPT_Process)
+	if (IsValid(OwnerStateMachine))
 	{
-		if (IsValid(OwnerStateMachine))
+		if (GamePhaseType == EGamePhaseType::GPT_Process)
 		{
+			// Set next phase to state machine automatically if this is a process type phase
 			OwnerStateMachine->SetNextGamePhase(FollowingGamePhase);
+		}
+		else if (GamePhaseType == EGamePhaseType::GPT_Floating)
+		{
+			// Pop this phase from state machine automatically
+			OwnerStateMachine->PopGamePhase();
 		}
 	}
 }

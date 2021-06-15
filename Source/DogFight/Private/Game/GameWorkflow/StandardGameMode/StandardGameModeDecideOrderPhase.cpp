@@ -88,7 +88,7 @@ bool UStandardGameModeDecideOrderPhase::StartPhase()
 	}
 
 	// If no weapon to equip, just move to next phase
-	if (WeaponEquipWaitingCharacterCount)
+	if (WeaponEquipWaitingCharacterCount == 0)
 	{
 		FinishPhase();
 	}

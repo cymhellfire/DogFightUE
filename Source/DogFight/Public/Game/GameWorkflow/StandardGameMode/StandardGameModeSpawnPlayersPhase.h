@@ -12,6 +12,8 @@ class UStandardGameModeSpawnPlayersPhase : public UStandardGameModePhaseBase
 protected:
 	virtual bool StartPhase() override;
 
+	virtual void FinishPhase() override;
+
 	void StartSpawnAI();
 
 	UFUNCTION()

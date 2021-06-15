@@ -2,10 +2,10 @@
 
 namespace StandardGameModePhase
 {
+	// Process phases
 	const FName EnteringMap = FName(TEXT("EnteringMap"));
 	const FName WaitingForStart = FName(TEXT("WaitingForStart"));
 	const FName SpawnPlayers = FName(TEXT("SpawnPlayers"));
-	//const FName SpawnAIs = FName(TEXT("SpawnAIs"));
 	const FName FreeMoving = FName(TEXT("FreeMoving"));
 	const FName DecideOrder = FName(TEXT("DecideOrder"));
 	const FName SelectAbility = FName(TEXT("SelectAbility"));
@@ -17,4 +17,7 @@ namespace StandardGameModePhase
 	const FName CheckGameEnd = FName(TEXT("CheckGameEnd"));
 	const FName GameSummary = FName(TEXT("GameSummary"));
 	const FName WaitingPostMatch = FName(TEXT("WaitingPostMatch"));
+
+	// Floating phases
+	const FName WaitForRagdoll = FName(TEXT("WaitForRagdoll"));
 }

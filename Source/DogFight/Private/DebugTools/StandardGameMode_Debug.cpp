@@ -1,5 +1,4 @@
 ﻿#include "AI/StandardModeAIController.h"
-#include "Common/BitmaskOperation.h"
 #include "Game/StandardGameMode.h"
 #include "Game/StandardPlayerState.h"
 #include "Game/GameWorkflow/GamePhaseCommon.h"
@@ -282,11 +281,11 @@ void AStandardGameMode::DrawStateMachineDebugger(bool* bOpen)
 
 		// More details
 		ImGui::Separator();
-		if (TEST_SINGLE_FLAG(Record.SwitchMethod, EGamePhaseSwitchFlags::SF_Interrupted))
+		if ((Record.SwitchMethod & EGamePhaseSwitchFlags::SF_Interrupted) > 0)
 		{
-			ImGui::Text("Interrupted");
+			ImGui::Text("Interrupted %ls", *StateMachineGamePhaseHistory[GamePhaseHistorySelectIndex - 1].GamePhaseName.ToString());
 		}
-		if (TEST_SINGLE_FLAG(Record.SwitchMethod, EGamePhaseSwitchFlags::SF_Resumed))
+		if ((Record.SwitchMethod & EGamePhaseSwitchFlags::SF_Resumed) > 0)
 		{
 			ImGui::Text("Resumed");
 		}

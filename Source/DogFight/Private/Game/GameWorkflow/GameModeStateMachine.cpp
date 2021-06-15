@@ -2,6 +2,7 @@
 #include "Game/GameWorkflow/GamePhase.h"
 #include "DogFight.h"
 #include "Game/GameWorkflow/GamePhaseCommon.h"
+#include "Game/GameWorkflow/StandardGameMode/StandardGameModePhaseDefine.h"
 
 UGameModeStateMachine::UGameModeStateMachine(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

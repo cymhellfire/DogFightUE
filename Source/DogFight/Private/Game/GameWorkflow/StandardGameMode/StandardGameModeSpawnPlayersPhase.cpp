@@ -5,6 +5,9 @@
 #include "Game/StandardGameState.h"
 #include "Player/StandardModePlayerController.h"
 #include "AI/StandardModeAIController.h"
+#include "Game/GameWorkflow/GameModeStateMachine.h"
+#include "Game/GameWorkflow/StandardGameMode/StandardGameModePhaseDefine.h"
+#include "Game/GameWorkflow/StandardGameMode/StandardGameModeWaitForRagdollPhase.h"
 
 bool UStandardGameModeSpawnPlayersPhase::StartPhase()
 {
@@ -24,6 +27,25 @@ bool UStandardGameModeSpawnPlayersPhase::StartPhase()
 		ParentStandardGameMode->SpawnPlayerInterval, true);
 
 	return true;
+}
+
+void UStandardGameModeSpawnPlayersPhase::FinishPhase()
+{
+	// Try to setup 'WaitForRagdoll' game phase here
+	if (UStandardGameModeWaitForRagdollPhase* WaitForRagdollPhase = OwnerStateMachine->GetGamePhase<UStandardGameModeWaitForRagdollPhase>(StandardGameModePhase::WaitForRagdoll))
+	{
+		for (AStandardModePlayerController* PlayerController : ParentStandardGameMode->GetAllPlayerControllers())
+		{
+			WaitForRagdollPhase->RegisterListenCharacter(PlayerController->GetCharacterPawn());
+		}
+
+		for (AStandardModeAIController* AIController : ParentStandardGameMode->GetAllAIControllers())
+		{
+			WaitForRagdollPhase->RegisterListenCharacter(AIController->GetCharacterPawn());
+		}
+	}
+
+	Super::FinishPhase();
 }
 
 void UStandardGameModeSpawnPlayersPhase::StartSpawnAI()

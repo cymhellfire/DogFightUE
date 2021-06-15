@@ -36,6 +36,7 @@
 #include "Game/GameWorkflow/StandardGameMode/StandardGameModeSelectAbilityPhase.h"
 #include "Game/GameWorkflow/StandardGameMode/StandardGameModeSpawnPlayersPhase.h"
 #include "Game/GameWorkflow/StandardGameMode/StandardGameModeTimedPhase.h"
+#include "Game/GameWorkflow/StandardGameMode/StandardGameModeWaitForRagdollPhase.h"
 
 AStandardGameMode::AStandardGameMode(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -832,6 +833,10 @@ void AStandardGameMode::InitializeStateMachine()
 	// Game summary
 	AllGamePhases.Add(NewObject<UStandardGameModePhaseBase>(GameModeStateMachine, UStandardGameModeGameSummaryPhase::StaticClass(), TEXT("GamePhase_GameSummary")));
 	AllGamePhases.Last()->InitializeGamePhase(StandardGameModePhase::GameSummary, EGamePhaseType::GPT_Process, NAME_None);
+
+	// Waiting Ragdoll
+	AllGamePhases.Add(NewObject<UStandardGameModePhaseBase>(GameModeStateMachine, UStandardGameModeWaitForRagdollPhase::StaticClass(), TEXT("GamePhase_WaitForRagdoll")));
+	AllGamePhases.Last()->InitializeGamePhase(StandardGameModePhase::WaitForRagdoll, EGamePhaseType::GPT_Floating, NAME_None);
 
 	GameModeStateMachine->OnGamePhaseChangedEvent.AddDynamic(this, &AStandardGameMode::OnGamePhaseChanged);
 

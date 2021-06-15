@@ -46,6 +46,17 @@ public:
 
 	FName GetCurrentGamePhaseName() const;
 
+	template<typename T>
+	T* GetGamePhase(FName PhaseName)
+	{
+		if (GamePhaseMap.Contains(PhaseName))
+		{
+			return Cast<T>(GamePhaseMap[PhaseName]);
+		}
+
+		return nullptr;
+	};
+
 protected:
 	UGamePhase* GetNextProcessGamePhase();
 
