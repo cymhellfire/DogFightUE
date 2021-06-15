@@ -46,11 +46,6 @@ public:
 
 	FName GetCurrentGamePhaseName() const;
 
-	bool HasPendingGamePhase() const
-	{
-		return PendingProcessGamePhase != NAME_None;
-	}
-
 protected:
 	UGamePhase* GetNextProcessGamePhase();
 
@@ -61,7 +56,7 @@ public:
 	FGamePhaseChangedSignature OnGamePhaseChangedEvent;
 
 protected:
-	FName PendingProcessGamePhase;
+	bool bPendingSwitch;
 
 	UGamePhase* ProcessingGamePhase;
 

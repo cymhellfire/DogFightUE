@@ -31,6 +31,9 @@ public:
 	FPlayerHealthChangedSignature OnPlayerHealthChanged;
 	FPlayerHealthChangedSignature OnPlayerStrengthChanged;
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPlayerCardTargetAcquiredSignature, FCardInstructionTargetInfo&, TargetInfo, int32, PlayerId);
+	FPlayerCardTargetAcquiredSignature OnPlayerCardTargetAcquired;
+
 	AStandardModeAIController(const FObjectInitializer& ObjectInitializer);
 
 	virtual void InitPlayerState() override;

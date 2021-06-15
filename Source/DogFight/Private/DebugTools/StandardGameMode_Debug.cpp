@@ -3,6 +3,7 @@
 #include "Game/StandardGameMode.h"
 #include "Game/StandardPlayerState.h"
 #include "Game/GameWorkflow/GamePhaseCommon.h"
+#include "Pawns/StandardModePlayerCharacter.h"
 #include "Player/StandardModePlayerController.h"
 
 #if WITH_IMGUI
@@ -370,6 +371,21 @@ FString AStandardGameMode::GetPlayerNameById(int32 PlayerId)
 	return "";
 }
 
+void FDebugGamePhaseHistoryRecord::AddSelectActorEvent(AActor* Actor, int32 EventPlayerId)
+{
+	if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(Actor))
+	{
+		if (APlayerState* PlayerState = StandardModePlayerCharacter->GetSupremeController()->GetPlayerState<APlayerState>())
+		{
+			ExtraEvents.Add(FString::Printf(TEXT("Player[%d] targeting actor: Player [%d]"), EventPlayerId, PlayerState->GetPlayerId()));
+		}
+	}
+	else
+	{
+		ExtraEvents.Add(FString::Printf(TEXT("Player[%d] targeting actor: %s"), EventPlayerId, *Actor->GetName()));
+	}
+}
+
 #endif
 
 void AStandardGameMode::OnPlayerCardCountChanged(AStandardPlayerState* PlayerState)
@@ -397,3 +413,24 @@ void AStandardGameMode::OnPlayerRelationInfoChanged()
 	}
 #endif
 }
+
+void AStandardGameMode::OnPlayerCardTargetAcquired(FCardInstructionTargetInfo& TargetInfo, int32 PlayerId)
+{
+#if WITH_IMGUI
+	// Record into game phase history
+	switch(TargetInfo.TargetType)
+	{
+	case ECardInstructionTargetType::Actor:
+		GetCurrentGamePhaseRecord().AddSelectActorEvent(TargetInfo.ActorPtr, PlayerId);
+		break;
+	case ECardInstructionTargetType::Position:
+		GetCurrentGamePhaseRecord().AddSelectPointEvent(TargetInfo.PositionValue, PlayerId);
+		break;
+	case ECardInstructionTargetType::Direction:
+		GetCurrentGamePhaseRecord().AddSelectDirectionEvent(TargetInfo.DirectionValue, PlayerId);
+		break;
+	default: ;
+	}
+#endif
+}
+

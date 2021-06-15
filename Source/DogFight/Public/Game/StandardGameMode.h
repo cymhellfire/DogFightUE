@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "DogFightGameModeBase.h"
 #include "DogFightTypes.h"
+#include "Card/GameCardTypes.h"
 #include "DebugTools/ImGuiCommon.h"
 #include "DebugTools/StandardGameMode_DT.h"
 #include "StandardGameMode.generated.h"
@@ -312,6 +313,9 @@ public:
 
 	UFUNCTION()
 	void OnPlayerRelationInfoChanged();
+
+	UFUNCTION()
+	void OnPlayerCardTargetAcquired(FCardInstructionTargetInfo& TargetInfo, int32 PlayerId);
 
 #if WITH_IMGUI
 	void ImGuiTick();

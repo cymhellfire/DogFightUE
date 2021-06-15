@@ -63,19 +63,31 @@ struct FDebugGamePhaseHistoryRecord
 
 	TArray<FString> ExtraEvents;
 
-	void AddGiveCardEvent(FString CardName)
+	void AddGiveCardEvent(FString CardName, int32 EventPlayerId)
 	{
-		ExtraEvents.Add(FString::Printf(TEXT("Gain card: %s"), *CardName));
+		ExtraEvents.Add(FString::Printf(TEXT("Player[%d] gain card: %s"), EventPlayerId, *CardName));
 	}
 
-	void AddUseCardEvent(FString CardName)
+	void AddUseCardEvent(FString CardName, int32 EventPlayerId)
 	{
-		ExtraEvents.Add(FString::Printf(TEXT("Use card: %s"), *CardName));
+		ExtraEvents.Add(FString::Printf(TEXT("Player[%d] use card: %s"), EventPlayerId, *CardName));
 	}
 
-	void AddDiscardCardEvent(FString CardName)
+	void AddDiscardCardEvent(FString CardName, int32 EventPlayerId)
 	{
-		ExtraEvents.Add(FString::Printf(TEXT("Discard card: %s"), *CardName));
+		ExtraEvents.Add(FString::Printf(TEXT("Player[%d] discard card: %s"), EventPlayerId, *CardName));
+	}
+
+	void AddSelectActorEvent(AActor* Actor, int32 EventPlayerId);
+
+	void AddSelectPointEvent(FVector Point, int32 EventPlayerId)
+	{
+		ExtraEvents.Add(FString::Printf(TEXT("Player[%d] targeting point: %s"), EventPlayerId, *Point.ToString()));
+	}
+
+	void AddSelectDirectionEvent(FVector Direction, int32 EventPlayerId)
+	{
+		ExtraEvents.Add(FString::Printf(TEXT("Player[%d] targeting direction: %s"), EventPlayerId, *Direction.ToString()));
 	}
 };
 #endif

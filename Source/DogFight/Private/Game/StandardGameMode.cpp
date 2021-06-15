@@ -156,6 +156,7 @@ void AStandardGameMode::PostLogin(APlayerController* NewPlayer)
 			StandardModePlayerController->OnPlayerDead.AddDynamic(this, &AStandardGameMode::OnPlayerDeadCallback);
 			StandardModePlayerController->OnPlayerHealthChanged.AddDynamic(this, &AStandardGameMode::OnCharacterHealthChangedCallback);
 			StandardModePlayerController->OnPlayerStrengthChanged.AddDynamic(this, &AStandardGameMode::OnCharacterStrengthChangedCallback);
+			StandardModePlayerController->OnPlayerCardTargetAcquired.AddDynamic(this, &AStandardGameMode::OnPlayerCardTargetAcquired);
 			UE_LOG(LogDogFight, Log, TEXT("Add controller [%s] to list."), *StandardModePlayerController->GetName());
 		}
 	}
@@ -344,6 +345,7 @@ void AStandardGameMode::RegisterAIController(AStandardModeAIController* NewContr
 	NewController->OnAIPlayerDead.AddDynamic(this, &AStandardGameMode::OnAIPlayerDeadCallback);
 	NewController->OnPlayerHealthChanged.AddDynamic(this, &AStandardGameMode::OnCharacterHealthChangedCallback);
 	NewController->OnPlayerStrengthChanged.AddDynamic(this, &AStandardGameMode::OnCharacterStrengthChangedCallback);
+	NewController->OnPlayerCardTargetAcquired.AddDynamic(this, &AStandardGameMode::OnPlayerCardTargetAcquired);
 
 #if WITH_IMGUI
 	if (AStandardPlayerState* PlayerState = NewController->GetPlayerState<AStandardPlayerState>())
@@ -418,7 +420,7 @@ void AStandardGameMode::GivePlayerCards(AController* TargetController, AStandard
 		TargetPlayerState->AddCard(Card);
 
 #if WITH_IMGUI
-		GetCurrentGamePhaseRecord().AddGiveCardEvent(Card->GetCardDisplayInfo().CardName);
+		GetCurrentGamePhaseRecord().AddGiveCardEvent(Card->GetClass()->GetName(), TargetPlayerState->GetPlayerId());
 #endif
 	}
 }
@@ -754,6 +756,10 @@ void AStandardGameMode::TransferCardBetweenPlayers_Internal(AStandardPlayerState
 
 void AStandardGameMode::InitializeStateMachine()
 {
+#if WITH_IMGUI
+	GameStartTime = FDateTime::Now();
+#endif
+
 	// Create state machine
 	GameModeStateMachine = NewObject<UGameModeStateMachine>(this, UGameModeStateMachine::StaticClass(), TEXT("GameModeStateMachine"));
 	GameModeStateMachine->SetOwnerGameMode(this);
@@ -831,10 +837,6 @@ void AStandardGameMode::InitializeStateMachine()
 
 	GameModeStateMachine->RegisterGamePhase(AllGamePhases);
 	GameModeStateMachine->StartWithPhase(StandardGameModePhase::EnteringMap);
-
-#if WITH_IMGUI
-	GameStartTime = FDateTime::Now();
-#endif
 }
 
 void AStandardGameMode::OnGamePhaseChanged(FName NewPhase, uint8 SwitchMethod)
@@ -851,8 +853,11 @@ void AStandardGameMode::OnGamePhaseChanged(FName NewPhase, uint8 SwitchMethod)
 	NewRecord.PlayerId = GetCurrentPlayerId();
 	NewRecord.GamePhaseName = NewPhase;
 	const FTimespan TimeExpired = FDateTime::Now() - GameStartTime;
-	NewRecord.TimeMinutes = FMath::Floor(TimeExpired.GetTotalMinutes());
-	NewRecord.TimeSeconds = TimeExpired.GetSeconds();
+	if (TimeExpired.GetTicks() > 0)
+	{
+		NewRecord.TimeMinutes = FMath::Floor(TimeExpired.GetTotalMinutes());
+		NewRecord.TimeSeconds = TimeExpired.GetSeconds();
+	}
 	NewRecord.SwitchMethod = SwitchMethod;
 	StateMachineGamePhaseHistory.Add(NewRecord);
 #endif

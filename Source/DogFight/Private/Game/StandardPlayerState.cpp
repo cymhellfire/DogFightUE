@@ -98,7 +98,7 @@ void AStandardPlayerState::ServerHandleSelectedCard_Implementation(int32 Index)
 #if WITH_IMGUI
 			if (IsValid(StandardGameMode))
 			{
-				StandardGameMode->GetCurrentGamePhaseRecord().AddUseCardEvent(UsingCard->GetCardDisplayInfo().CardName);
+				StandardGameMode->GetCurrentGamePhaseRecord().AddUseCardEvent(UsingCard->GetClass()->GetName(), GetPlayerId());
 			}
 #endif
 
@@ -111,7 +111,7 @@ void AStandardPlayerState::ServerHandleSelectedCard_Implementation(int32 Index)
 #if WITH_IMGUI
 			if (IsValid(StandardGameMode))
 			{
-				StandardGameMode->GetCurrentGamePhaseRecord().AddDiscardCardEvent(CardInstanceList[Index]->GetCardDisplayInfo().CardName);
+				StandardGameMode->GetCurrentGamePhaseRecord().AddDiscardCardEvent(CardInstanceList[Index]->GetClass()->GetName(), GetPlayerId());
 			}
 #endif
 

@@ -40,6 +40,9 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 	FPlayerHealthChangedSignature OnPlayerHealthChanged;
 	FPlayerHealthChangedSignature OnPlayerStrengthChanged;
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPlayerCardTargetAcquiredSignature, FCardInstructionTargetInfo&, TargetInfo, int32, PlayerId);
+	FPlayerCardTargetAcquiredSignature OnPlayerCardTargetAcquired;
+
 	UFUNCTION(Client, Reliable)
 	void ClientSetClickMovementEnabled(bool bEnabled);
 

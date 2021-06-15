@@ -535,6 +535,7 @@ void AStandardModeAIController::RequestActorTarget()
 		NewTargetInfo.TargetType = ECardInstructionTargetType::Actor;
 
 		OnCardTargetInfoAcquired.Broadcast(NewTargetInfo);
+		OnPlayerCardTargetAcquired.Broadcast(NewTargetInfo, PlayerState->GetPlayerId());
 
 		// Let character facing target
 		const FVector AimingDirection = TargetCharacterPawn->GetActorLocation() - CharacterPawn->GetActorLocation();
@@ -569,6 +570,7 @@ void AStandardModeAIController::RequestActorTarget()
 		NewTargetInfo.TargetType = ECardInstructionTargetType::Actor;
 
 		OnCardTargetInfoAcquired.Broadcast(NewTargetInfo);
+		OnPlayerCardTargetAcquired.Broadcast(NewTargetInfo, PlayerState->GetPlayerId());
 
 		// Let character facing target
 		CharacterPawn->SetAimingDirection(CardUserPlayerController->GetActualPawn()->GetActorLocation() - CharacterPawn->GetActorLocation());
@@ -586,6 +588,7 @@ void AStandardModeAIController::RequestPositionTarget()
 		NewTargetInfo.TargetType = ECardInstructionTargetType::Position;
 
 		OnCardTargetInfoAcquired.Broadcast(NewTargetInfo);
+		OnPlayerCardTargetAcquired.Broadcast(NewTargetInfo, PlayerState->GetPlayerId());
 
 		// Let character facing target
 		const FVector AimingDirection = TargetCharacterPawn->GetActorLocation() - CharacterPawn->GetActorLocation();
@@ -606,6 +609,7 @@ void AStandardModeAIController::RequestPositionTarget()
 		NewTargetInfo.TargetType = ECardInstructionTargetType::Position;
 
 		OnCardTargetInfoAcquired.Broadcast(NewTargetInfo);
+		OnPlayerCardTargetAcquired.Broadcast(NewTargetInfo, PlayerState->GetPlayerId());
 
 		// Let character facing target
 		CharacterPawn->SetAimingDirection(CardUserPlayerController->GetActualPawn()->GetActorLocation() - CharacterPawn->GetActorLocation());
@@ -622,6 +626,7 @@ void AStandardModeAIController::RequestDirectionTarget()
 		NewTargetInfo.TargetType = ECardInstructionTargetType::Direction;
 
 		OnCardTargetInfoAcquired.Broadcast(NewTargetInfo);
+		OnPlayerCardTargetAcquired.Broadcast(NewTargetInfo, PlayerState->GetPlayerId());
 
 		// Let character facing target
 		const FVector AimingDirection = TargetCharacterPawn->GetActorLocation() - CharacterPawn->GetActorLocation();
@@ -642,6 +647,7 @@ void AStandardModeAIController::RequestDirectionTarget()
 		NewTargetInfo.TargetType = ECardInstructionTargetType::Direction;
 
 		OnCardTargetInfoAcquired.Broadcast(NewTargetInfo);
+		OnPlayerCardTargetAcquired.Broadcast(NewTargetInfo, PlayerState->GetPlayerId());
 
 		// Let character facing target
 		CharacterPawn->SetAimingDirection(CardUserPlayerController->GetActualPawn()->GetActorLocation() - CharacterPawn->GetActorLocation());

@@ -946,6 +946,7 @@ void AStandardModePlayerController::ServerSyncDirectionTarget_Implementation(FVe
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Selected direction %s"), *TargetDirection.ToString()));
 
 	OnCardTargetInfoAcquired.Broadcast(NewTargetInfo);
+	OnPlayerCardTargetAcquired.Broadcast(NewTargetInfo, PlayerState->GetPlayerId());
 
 	// Let the character aim at target
 	CharacterPawn->SetAimingDirection(TargetDirection);
@@ -973,6 +974,7 @@ void AStandardModePlayerController::ServerSyncPositionTarget_Implementation(FVec
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Selected position %s"), *TargetPosition.ToString()));
 
 	OnCardTargetInfoAcquired.Broadcast(NewTargetInfo);
+	OnPlayerCardTargetAcquired.Broadcast(NewTargetInfo, PlayerState->GetPlayerId());
 
 	// Let the character aim at target
 	const FVector AimingDirection = TargetPosition - CharacterPawn->GetActorLocation();
@@ -1014,6 +1016,7 @@ void AStandardModePlayerController::ServerSyncActorTarget_Implementation(AActor*
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Selected %s"), *TargetActor->GetName()));
 
 	OnCardTargetInfoAcquired.Broadcast(NewTargetInfo);
+	OnPlayerCardTargetAcquired.Broadcast(NewTargetInfo, PlayerState->GetPlayerId());
 
 	// Let the character aim at target
 	const FVector AimingDirection = TargetActor->GetActorLocation() - CharacterPawn->GetActorLocation();

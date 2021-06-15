@@ -6,7 +6,7 @@
 UGameModeStateMachine::UGameModeStateMachine(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	PendingProcessGamePhase = NAME_None;
+	bPendingSwitch = false;
 }
 
 void UGameModeStateMachine::BeginDestroy()
@@ -75,20 +75,20 @@ void UGameModeStateMachine::StartWithPhase(FName InitialPhase)
 
 void UGameModeStateMachine::ForceJumpToPhase(FName NewPhase)
 {
-	// Clear pending game phase to ensure next phase is given one
-	if (PendingProcessGamePhase != NAME_None)
-		PendingProcessGamePhase = NAME_None;
+	// Clear the stack
+	GamePhaseStack.Empty();
 
-	GamePhaseStack[0] = NewPhase;
+	GamePhaseStack.Add(NewPhase);
 	OnGamePhaseChanged();
 }
 
 void UGameModeStateMachine::SetNextGamePhase(FName NextPhaseName)
 {
-	if (PendingProcessGamePhase != NextPhaseName)
-	{
-		PendingProcessGamePhase = NextPhaseName;
-	}
+	// Replace the last record with new one
+	GamePhaseStack.Last() = NextPhaseName;
+
+	// Do switching next frame
+	bPendingSwitch = true;
 }
 
 void UGameModeStateMachine::SwitchToNextPhase()
@@ -99,11 +99,8 @@ void UGameModeStateMachine::SwitchToNextPhase()
 		return;
 	}
 
-	// Replace the game phase at bottom
-	GamePhaseStack[0] = PendingProcessGamePhase;
-
-	// Clear pending state name
-	PendingProcessGamePhase = NAME_None;
+	// Clear the switch flag
+	bPendingSwitch = false;
 
 	OnGamePhaseChanged();
 }
@@ -116,7 +113,8 @@ void UGameModeStateMachine::PushGamePhase(FName NewPhase)
 		GamePhaseStack.Push(NewPhase);
 	}
 
-	OnGamePhaseChanged();
+	// Do switching next frame
+	bPendingSwitch = true;
 }
 
 void UGameModeStateMachine::PopGamePhase()
@@ -130,12 +128,13 @@ void UGameModeStateMachine::PopGamePhase()
 	// Pop the last element
 	GamePhaseStack.Pop();
 
-	OnGamePhaseChanged();
+	// Do switching next frame
+	bPendingSwitch = true;
 }
 
 void UGameModeStateMachine::StateMachineTick()
 {
-	if (PendingProcessGamePhase != NAME_None)
+	if (bPendingSwitch)
 	{
 		SwitchToNextPhase();
 	}
@@ -191,19 +190,23 @@ void UGameModeStateMachine::OnGamePhaseChanged()
 		}
 	}
 
+	if (NextGamePhase->bInterrupted)
+	{
+		SwitchMethod |= SF_Resumed;
+	}
+
 	// Switch to next game phase
 	ProcessingGamePhase = NextGamePhase;
+
+	OnGamePhaseChangedEvent.Broadcast(ProcessingGamePhase->GamePhaseName, SwitchMethod);
 
 	// Resume new game phase if it has been interrupted before
 	if (ProcessingGamePhase->bInterrupted)
 	{
 		ProcessingGamePhase->ResumePhase();
-		SwitchMethod |= SF_Resumed;
 	}
 	else
 	{
 		ProcessingGamePhase->StartPhase();
 	}
-
-	OnGamePhaseChangedEvent.Broadcast(ProcessingGamePhase->GamePhaseName, SwitchMethod);
 }
