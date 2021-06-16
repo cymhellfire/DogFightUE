@@ -28,14 +28,6 @@ bool UCardInstructionBase::Tick(float DeltaSeconds)
 	return true;
 }
 
-void UCardInstructionBase::BeginDestroy()
-{
-	Super::BeginDestroy();
-
-	if (GEngine != nullptr)
-		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("Begin Destroy %s"), *InstructionName));
-}
-
 void UCardInstructionBase::ApplyMeta(const FInstructionMetaBase* MetaData)
 {
 	check(MetaData);

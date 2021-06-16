@@ -19,6 +19,8 @@ bool UStandardGameModePlayerRoundPhase::StartPhase()
 		return false;
 
 	bRequestFinish = false;
+	bPendingCardFinishEvent = false;
+	bPendingRoundFinishEvent = false;
 
 	// Listen request finish round message
 	ParentStandardGameMode->OnRequestEndCurrentPlayerRound.AddDynamic(this, &UStandardGameModePlayerRoundPhase::OnRequestFinishRound);
@@ -143,14 +145,18 @@ void UStandardGameModePlayerRoundPhase::FinishPhase()
 	}
 }
 
-void UStandardGameModePlayerRoundPhase::OnRequestFinishRound()
+void UStandardGameModePlayerRoundPhase::ResumePhase()
 {
-	bRequestFinish = true;
+	Super::ResumePhase();
 
-	FinishPhase();
+	// Execute card finish event after resume
+	if (bPendingCardFinishEvent)
+	{
+		HandleUsingCardFinishedEvent(bPendingRoundFinishEvent);
+	}
 }
 
-void UStandardGameModePlayerRoundPhase::OnPlayerUsingCardFinished(bool bShouldEndRound)
+void UStandardGameModePlayerRoundPhase::HandleUsingCardFinishedEvent(bool bShouldEndRound)
 {
 	if (bShouldEndRound)
 	{
@@ -184,5 +190,26 @@ void UStandardGameModePlayerRoundPhase::OnPlayerUsingCardFinished(bool bShouldEn
 				StandardModeAIController->PrepareForUsingCard();
 			}
 		}
+	}
+}
+
+void UStandardGameModePlayerRoundPhase::OnRequestFinishRound()
+{
+	bRequestFinish = true;
+
+	FinishPhase();
+}
+
+void UStandardGameModePlayerRoundPhase::OnPlayerUsingCardFinished(bool bShouldEndRound)
+{
+	if (bInterrupted)
+	{
+		// Record that a card finish event has been delayed
+		bPendingCardFinishEvent = true;
+		bPendingRoundFinishEvent = bShouldEndRound;
+	}
+	else
+	{
+		HandleUsingCardFinishedEvent(bShouldEndRound);
 	}
 }

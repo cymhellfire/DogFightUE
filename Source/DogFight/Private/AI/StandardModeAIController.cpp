@@ -55,7 +55,7 @@ void AStandardModeAIController::InitPlayerState()
 	// Register delegate
 	if (AStandardPlayerState* StandardPlayerState = Cast<AStandardPlayerState>(MyPlayerState))
 	{
-		StandardPlayerState->OnUsingCardFinished.AddDynamic(this, &AStandardModeAIController::OnCardFinished);
+		StandardPlayerState->OnPlayerCardUsableIndexChanged.AddDynamic(this, &AStandardModeAIController::OnPlayerCardUsableIndexChanged);
 	}
 
 	// Spawn character
@@ -87,7 +87,7 @@ void AStandardModeAIController::BeginDestroy()
 	// Unregister delegate
 	if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
 	{
-		StandardPlayerState->OnUsingCardFinished.RemoveDynamic(this, &AStandardModeAIController::OnCardFinished);
+		StandardPlayerState->OnPlayerCardUsableIndexChanged.RemoveDynamic(this, &AStandardModeAIController::OnPlayerCardUsableIndexChanged);
 	}
 
 	Super::BeginDestroy();
@@ -765,7 +765,7 @@ void AStandardModeAIController::FinishMyRound()
 	}
 }
 
-void AStandardModeAIController::OnCardFinished(bool bPlayerRoundFinished)
+void AStandardModeAIController::OnPlayerCardUsableIndexChanged()
 {
 	// Check available left
 	if (HasUsableCard())

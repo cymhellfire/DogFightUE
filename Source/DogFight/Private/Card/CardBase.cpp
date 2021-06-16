@@ -157,8 +157,6 @@ void ACardBase::Execute()
 
 void ACardBase::Finalize()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 4.f, FColor::Red, FString::Printf(TEXT("Card %s finished."), *GetName()));
-	
 	// Broadcast delegate
 	OnCardFinished.Broadcast();
 

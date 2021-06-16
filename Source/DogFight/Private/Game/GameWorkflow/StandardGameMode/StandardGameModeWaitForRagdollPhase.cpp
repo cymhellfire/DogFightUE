@@ -41,8 +41,12 @@ void UStandardGameModeWaitForRagdollPhase::BeginDestroy()
 	Super::BeginDestroy();
 }
 
-void UStandardGameModeWaitForRagdollPhase::OnCharacterRagdollStateChanged(bool bActive)
+void UStandardGameModeWaitForRagdollPhase::OnCharacterRagdollStateChanged(AStandardModePlayerCharacter* Character, bool bActive)
 {
+	// Skip counting if character is dead
+	if (!Character->IsAlive())
+		return;
+
 	if (bActive)
 	{
 		RagdollCount++;

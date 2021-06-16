@@ -10,7 +10,7 @@
 #define MAIN_WINDOW_BASE_INFO		0
 #define MAIN_WINDOW_RELATION_INFO	1
 
-FDebugPlayerRelationInfo::FDebugPlayerRelationInfo(FPlayerRelationStatistic PlayerRelationStatistic)
+FDebugPlayerRelationInfo::FDebugPlayerRelationInfo(FPlayerRelationStatistic& PlayerRelationStatistic)
 {
 	PlayerId = PlayerRelationStatistic.PlayerId;
 	PlayerName = "";

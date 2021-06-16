@@ -855,6 +855,8 @@ void AStandardModePlayerCharacter::SetRagdollActive(bool bActive)
 				StandardPlayerState->SetRagdollActive(true);
 			}
 		}
+
+		OnCharacterRagdollStateChanged.Broadcast(this, bActive);
 	}
 	else
 	{
@@ -866,8 +868,6 @@ void AStandardModePlayerCharacter::SetRagdollActive(bool bActive)
 		// Re-cache location that character will leave here
 		CacheCurrentLocation();
 	}
-
-	OnCharacterRagdollStateChanged.Broadcast(bActive);
 }
 
 void AStandardModePlayerCharacter::AddForceToAllRagdollBodies(FVector Force)
@@ -930,6 +930,8 @@ void AStandardModePlayerCharacter::PostCacheRagdollPose()
 
 	// Invoke Blueprint event
 	K2_OnPostCacheRagdollPose();
+
+	OnCharacterRagdollStateChanged.Broadcast(this, false);
 }
 
 void AStandardModePlayerCharacter::RagdollAutoRecoverTick()

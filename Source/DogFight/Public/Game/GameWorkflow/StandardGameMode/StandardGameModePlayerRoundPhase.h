@@ -22,6 +22,10 @@ protected:
 
 	virtual void FinishPhase() override;
 
+	virtual void ResumePhase() override;
+
+	void HandleUsingCardFinishedEvent(bool bShouldEndRound);
+
 	UFUNCTION()
 	void OnRequestFinishRound();
 
@@ -30,6 +34,9 @@ protected:
 
 protected:
 	FName PhaseAfterRequestFinish;
+
+	bool bPendingCardFinishEvent;
+	bool bPendingRoundFinishEvent;
 
 	bool bRequestFinish;
 };

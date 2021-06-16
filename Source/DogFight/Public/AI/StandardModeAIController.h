@@ -108,7 +108,7 @@ protected:
 	void FinishMyRound();
 
 	UFUNCTION()
-	void OnCardFinished(bool bPlayerRoundFinished);
+	void OnPlayerCardUsableIndexChanged();
 
 	UFUNCTION()
 	void OnCharacterPawnDead();

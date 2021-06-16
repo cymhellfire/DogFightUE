@@ -25,7 +25,7 @@ public:
 	FCharacterHealthChangedSignature OnCharacterHealthChanged;
 	FCharacterHealthChangedSignature OnCharacterStrengthChanged;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterRagdollStateChangedSignature, bool, bActive);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FCharacterRagdollStateChangedSignature, AStandardModePlayerCharacter*, Character, bool, bActive);
 	FCharacterRagdollStateChangedSignature OnCharacterRagdollStateChanged;
 
 	// Sets default values for this character's properties

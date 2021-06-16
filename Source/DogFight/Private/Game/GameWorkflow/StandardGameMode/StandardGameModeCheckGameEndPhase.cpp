@@ -16,6 +16,11 @@ void UStandardGameModeCheckGameEndPhase::SetEndGamePhase(FName PhaseName)
 	EndGamePhaseName = PhaseName;
 }
 
+void UStandardGameModeCheckGameEndPhase::SetPlayerRoundInterval(float Interval)
+{
+	PlayerRoundInterval = Interval;
+}
+
 bool UStandardGameModeCheckGameEndPhase::StartPhase()
 {
 	if (!Super::StartPhase())
@@ -41,13 +46,25 @@ void UStandardGameModeCheckGameEndPhase::FinishPhase()
 			}
 			else
 			{
-				StandardGameState->GetGameRoundsTimeline()->StepForward();
-				// Update game mode
-				ParentStandardGameMode->SetCurrentAIPlayer(StandardGameState->GetGameRoundsTimeline()->IsCurrentAIPlayer());
-				ParentStandardGameMode->SetCurrentPlayerId(StandardGameState->GetGameRoundsTimeline()->GetCurrentPlayerId());
-
-				OwnerStateMachine->SetNextGamePhase(FollowingGamePhase);
+				// Set a timer to insert a period between two player rounds
+				ParentStandardGameMode->GetWorldTimerManager().SetTimer(PlayerRoundIntervalTimerHandle, this,
+					&UStandardGameModeCheckGameEndPhase::OnPlayerRoundIntervalTimerExpired, PlayerRoundInterval);
 			}
 		}
+	}
+}
+
+void UStandardGameModeCheckGameEndPhase::OnPlayerRoundIntervalTimerExpired()
+{
+	ParentStandardGameMode->GetWorldTimerManager().ClearTimer(PlayerRoundIntervalTimerHandle);
+
+	if (AStandardGameState* StandardGameState = ParentStandardGameMode->GetGameState<AStandardGameState>())
+	{
+		StandardGameState->GetGameRoundsTimeline()->StepForward();
+		// Update game mode
+		ParentStandardGameMode->SetCurrentAIPlayer(StandardGameState->GetGameRoundsTimeline()->IsCurrentAIPlayer());
+		ParentStandardGameMode->SetCurrentPlayerId(StandardGameState->GetGameRoundsTimeline()->GetCurrentPlayerId());
+
+		OwnerStateMachine->SetNextGamePhase(FollowingGamePhase);
 	}
 }

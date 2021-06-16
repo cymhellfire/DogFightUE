@@ -156,8 +156,23 @@ void AStandardPlayerState::OnCardFinished()
 {
 	ACardBase* UsingCard = CardInstanceList[UsingCardIndex];
 	UsingCard->OnCardFinished.RemoveDynamic(this, &AStandardPlayerState::OnCardFinished);
+
+	CardInstanceList.RemoveAt(UsingCardIndex);
+	RefreshCardInfoList();
+
+	// Increase used card count
+	SetUsedCardCount(UsedCardNum + 1);
+	// Check if player round should be ended
+	const bool bFinishRound = (UsedCardNum >= MaxUseNum || CardInstanceList.Num() <= 0);
+	OnUsingCardFinished.Broadcast(bFinishRound);
+
+	UsingCardIndex = -1;
+
+	// Invoke OnRep on server side
+	OnRep_CardInfoList();
+
 	// Register tick for ragdoll check
-	GetWorldTimerManager().SetTimer(RagdollWaitingTimerHandle, this, &AStandardPlayerState::RagdollWaitingTick, 0.1f, true);
+	//GetWorldTimerManager().SetTimer(RagdollWaitingTimerHandle, this, &AStandardPlayerState::RagdollWaitingTick, 0.1f, true);
 }
 
 void AStandardPlayerState::RagdollWaitingTick()
@@ -176,19 +191,7 @@ void AStandardPlayerState::RagdollWaitingTick()
 
 void AStandardPlayerState::PostCardFinished()
 {
-	CardInstanceList.RemoveAt(UsingCardIndex);
-	RefreshCardInfoList();
-
-	// Increase used card count
-	SetUsedCardCount(UsedCardNum + 1);
-	// Check if player round should be ended
-	const bool bFinishRound = (UsedCardNum >= MaxUseNum || CardInstanceList.Num() <= 0);
-	OnUsingCardFinished.Broadcast(bFinishRound);
-
-	UsingCardIndex = -1;
-
-	// Invoke OnRep on server side
-	OnRep_CardInfoList();
+	
 }
 
 void AStandardPlayerState::OnAbilityCooldownChanged(int32 AbilitySlot, int32 CurrentCooldown)

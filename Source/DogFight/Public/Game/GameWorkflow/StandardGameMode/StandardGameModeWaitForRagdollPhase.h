@@ -24,7 +24,7 @@ public:
 	virtual void BeginDestroy() override;
 protected:
 	UFUNCTION()
-	void OnCharacterRagdollStateChanged(bool bActive);
+	void OnCharacterRagdollStateChanged(AStandardModePlayerCharacter* Character, bool bActive);
 
 protected:
 	int32 RagdollCount;

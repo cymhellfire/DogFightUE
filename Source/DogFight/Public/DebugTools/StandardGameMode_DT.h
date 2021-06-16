@@ -50,7 +50,7 @@ struct FDebugPlayerRelationInfo
 	{
 	}
 
-	FDebugPlayerRelationInfo(struct FPlayerRelationStatistic PlayerRelationStatistic);
+	FDebugPlayerRelationInfo(struct FPlayerRelationStatistic& PlayerRelationStatistic);
 };
 
 struct FDebugGamePhaseHistoryRecord

@@ -60,8 +60,6 @@ public:
 
 	virtual bool Tick(float DeltaSeconds);
 
-	virtual void BeginDestroy() override;
-
 	virtual void ApplyMeta(const FInstructionMetaBase* MetaData);
 
 	/** Let the Execute function run in next frame. */

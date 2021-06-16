@@ -827,6 +827,7 @@ void AStandardGameMode::InitializeStateMachine()
 	UStandardGameModeCheckGameEndPhase* CheckGameEndPhase = NewObject<UStandardGameModeCheckGameEndPhase>(GameModeStateMachine, UStandardGameModeCheckGameEndPhase::StaticClass(),
 		TEXT("GamePhase_CheckGameEnd"));
 	CheckGameEndPhase->InitializeGamePhase(StandardGameModePhase::CheckGameEnd, EGamePhaseType::GPT_Process, StandardGameModePhase::PlayerRoundBegin);
+	CheckGameEndPhase->SetPlayerRoundInterval(GameRoundInterval);
 	CheckGameEndPhase->SetEndGamePhase(StandardGameModePhase::GameSummary);
 	AllGamePhases.Add(CheckGameEndPhase);
 

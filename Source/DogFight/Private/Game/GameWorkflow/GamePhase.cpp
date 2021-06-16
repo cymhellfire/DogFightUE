@@ -30,7 +30,7 @@ void UGamePhase::SetOwnerStateMachine(UGameModeStateMachine* InStateMachine)
 
 bool UGamePhase::StartPhase()
 {
-	UE_LOG(LogDogFight, Log, TEXT("[GamePhase] Start Phase: %s"), *GamePhaseName.ToString());
+	//UE_LOG(LogDogFight, Log, TEXT("[GamePhase] Start Phase: %s"), *GamePhaseName.ToString());
 
 	bFinished = false;
 	bInterrupted = false;
@@ -59,19 +59,19 @@ void UGamePhase::FinishPhase()
 
 void UGamePhase::EndPhase()
 {
-	UE_LOG(LogDogFight, Log, TEXT("[GamePhase] End Phase: %s"), *GamePhaseName.ToString());
+	//UE_LOG(LogDogFight, Log, TEXT("[GamePhase] End Phase: %s"), *GamePhaseName.ToString());
 }
 
 void UGamePhase::InterruptPhase()
 {
 	bInterrupted = true;
 
-	UE_LOG(LogDogFight, Log, TEXT("[GamePhase] Interrupt Phase: %s"), *GamePhaseName.ToString());
+	//UE_LOG(LogDogFight, Log, TEXT("[GamePhase] Interrupt Phase: %s"), *GamePhaseName.ToString());
 }
 
 void UGamePhase::ResumePhase()
 {
 	bInterrupted = false;
 
-	UE_LOG(LogDogFight, Log, TEXT("[GamePhase] Resume Phase: %s"), *GamePhaseName.ToString());
+	//UE_LOG(LogDogFight, Log, TEXT("[GamePhase] Resume Phase: %s"), *GamePhaseName.ToString());
 }
