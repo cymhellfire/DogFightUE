@@ -324,11 +324,13 @@ protected:
 	void RemoveDebugTools();
 
 	void GatherRelationshipInfo(int32 PlayerId);
+	void GatherCardDisplayInfo(int32 PlayerId);
 	FString GetPlayerNameById(int32 PlayerId);
 
 	// Main window tabs
 	void DrawPlayerBaseInfoTab();
 	void DrawPlayerRelationInfoTab();
+	void DrawCardManageTab();
 
 	// State machine debugger
 	void DrawStateMachineDebugger(bool* bOpen);
@@ -341,6 +343,8 @@ protected:
 	int32 MainWindowTabIndex;
 	int32 PlayerIdShowBaseInfo;
 	int32 PlayerIdShowRelationship;
+	int32 PlayerIdManageCards;
+	int32 CardIndexShowDetails;
 	int32 GamePhaseHistorySelectIndex;
 	int32 CachedGamePhaseHistoryCount;
 
@@ -348,6 +352,7 @@ protected:
 
 	TMap<int32, FDebugPlayerBaseInfo> PlayerBaseInfoMap;
 	TArray<FDebugPlayerRelationInfo> ShowingPlayerRelationships;
+	TArray<FDebugCardDisplayInfo> SelectedPlayerCardInfoList;
 	TArray<FDebugGamePhaseHistoryRecord> StateMachineGamePhaseHistory;
 	FImGuiDelegateHandle ImGuiTickHandle;
 #endif

@@ -66,6 +66,10 @@ AStandardGameMode::AStandardGameMode(const FObjectInitializer& ObjectInitializer
 	// Enable the primary tick
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
+
+#if WITH_IMGUI
+	CardIndexShowDetails = -1;
+#endif
 }
 
 void AStandardGameMode::EnablePlayerClickMovement()

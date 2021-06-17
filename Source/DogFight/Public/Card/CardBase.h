@@ -102,6 +102,8 @@ public:
 
 	ECardUseMethod GetCardUseMethod() const { return CardUseMethod; }
 
+	TArray<UCardInstructionBase*> GetAllInstruction() const { return InstructionQueue; }
+
 protected:
 	/** Do prepare operations before card executing phase. */
 	virtual void Prepare() {};

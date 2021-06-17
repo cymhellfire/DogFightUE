@@ -1,4 +1,5 @@
 ﻿#include "AI/StandardModeAIController.h"
+#include "Card/CardBase.h"
 #include "Game/StandardGameMode.h"
 #include "Game/StandardPlayerState.h"
 #include "Game/GameWorkflow/GamePhaseCommon.h"
@@ -9,6 +10,7 @@
 
 #define MAIN_WINDOW_BASE_INFO		0
 #define MAIN_WINDOW_RELATION_INFO	1
+#define MAIN_WINDOW_CARD_MANAGE		2
 
 FDebugPlayerRelationInfo::FDebugPlayerRelationInfo(FPlayerRelationStatistic& PlayerRelationStatistic)
 {
@@ -68,6 +70,12 @@ void AStandardGameMode::ImGuiTick()
 		{
 			MainWindowTabIndex = MAIN_WINDOW_RELATION_INFO;
 			DrawPlayerRelationInfoTab();
+			ImGui::EndTabItem();
+		}
+		if (ImGui::BeginTabItem("PlayerCardManage"))
+		{
+			MainWindowTabIndex = MAIN_WINDOW_CARD_MANAGE;
+			DrawCardManageTab();
 			ImGui::EndTabItem();
 		}
 		ImGui::EndTabBar();
@@ -141,7 +149,7 @@ void AStandardGameMode::DrawPlayerRelationInfoTab()
 	ImGui::BeginGroup();
 	{
 		ImGui::Text("Player List:");
-		if (ImGui::ListBoxHeader("", ImVec2(120,400)))
+		if (ImGui::ListBoxHeader("##PlayerRelationInfoPlayerSelect", ImVec2(120,400)))
 		{
 			TArray<int32> PlayerIdList;
 			PlayerBaseInfoMap.GetKeys(PlayerIdList);
@@ -212,6 +220,119 @@ void AStandardGameMode::DrawPlayerRelationInfoTab()
 	ImGui::EndGroup();
 }
 
+void AStandardGameMode::DrawCardManageTab()
+{
+	// Construct player selecting list
+	ImGui::BeginGroup();
+	{
+		ImGui::Text("Player List:");
+		if (ImGui::ListBoxHeader("##CardManagePlayerSelect", ImVec2(120,400)))
+		{
+			TArray<int32> PlayerIdList;
+			PlayerBaseInfoMap.GetKeys(PlayerIdList);
+			for (int32 PlayerId : PlayerIdList)
+			{
+				bool bSelected = (PlayerId == PlayerIdManageCards);
+				char SelectableLabel[32];
+				sprintf_s(SelectableLabel, "ID [%d]", PlayerId);
+
+				if (ImGui::Selectable(SelectableLabel, bSelected))
+				{
+					PlayerIdManageCards = PlayerId;
+					GatherCardDisplayInfo(PlayerId);
+				}
+
+				if (bSelected)
+				{
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::ListBoxFooter();
+		}
+	}
+	ImGui::EndGroup();
+	ImGui::SameLine();
+
+	// Draw card list
+	ImGui::BeginGroup();
+	{
+		ImGui::Text("Card List:");
+		if (ImGui::ListBoxHeader("##CardManageCardSelect", ImVec2(150, 400)))
+		{
+			for (int32 Index = 0; Index < SelectedPlayerCardInfoList.Num(); ++Index)
+			{
+				FDebugCardDisplayInfo& CurrentInfo = SelectedPlayerCardInfoList[Index];
+				bool bSelected = Index == CardIndexShowDetails;
+				char CardItemLabel[32];
+				sprintf_s(CardItemLabel, "%ls##%d", *CurrentInfo.CardClassName, Index);
+				if (ImGui::Selectable(CardItemLabel, bSelected))
+				{
+					CardIndexShowDetails = Index;
+				}
+				if (bSelected)
+				{
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+
+			// Make select card index invalid if no card to show
+			if (SelectedPlayerCardInfoList.Num() == 0)
+			{
+				CardIndexShowDetails = -1;
+			}
+			// Shrink the index by list length
+			else if (CardIndexShowDetails >= SelectedPlayerCardInfoList.Num())
+			{
+				CardIndexShowDetails = SelectedPlayerCardInfoList.Num() - 1;
+			}
+			ImGui::ListBoxFooter();
+		}
+	}
+	ImGui::EndGroup();
+	ImGui::SameLine();
+
+	// Draw card detail panel
+	ImGui::BeginGroup();
+	{
+		if (CardIndexShowDetails != -1)
+		{
+			FDebugCardDisplayInfo& CurrentCardInfo = SelectedPlayerCardInfoList[CardIndexShowDetails];
+			ImGui::Text("Detail:");
+			ImGui::Columns(2);
+			ImGui::Separator();
+			// Card Details
+			ImGui::Text("CardClass:");
+			ImGui::NextColumn();
+			ImGui::Text("%ls", *CurrentCardInfo.CardClassName);
+			ImGui::NextColumn();
+
+			for (int32 i = 0; i < CurrentCardInfo.InstructionList.Num(); ++i)
+			{
+				if (i == 0)
+				{
+					ImGui::Text("Instruction:");
+					ImGui::NextColumn();
+				}
+				else
+				{
+					ImGui::Text("");
+					ImGui::NextColumn();
+				}
+				ImGui::Text("%ls", *CurrentCardInfo.InstructionList[i]);
+				ImGui::NextColumn();
+			}
+
+			ImGui::Separator();
+			ImGui::Columns(1);
+		}
+		else
+		{
+			ImGui::Text("Select any card to check detail.");
+		}
+	}
+	ImGui::EndGroup();
+}
+
 void AStandardGameMode::DrawStateMachineDebugger(bool* bOpen)
 {
 	ImGui::SetNextWindowSize(ImVec2(340, 200), ImGuiCond_FirstUseEver);
@@ -221,7 +342,7 @@ void AStandardGameMode::DrawStateMachineDebugger(bool* bOpen)
 	ImGui::BeginGroup();
 	{
 		ImGui::Text("Game Phase History:");
-		if (ImGui::ListBoxHeader("", ImVec2(200, 200)))
+		if (ImGui::ListBoxHeader("##PhaseHistory", ImVec2(200, 200)))
 		{
 			for (int32 Index = 0; Index < StateMachineGamePhaseHistory.Num(); ++Index)
 			{
@@ -291,7 +412,7 @@ void AStandardGameMode::DrawStateMachineDebugger(bool* bOpen)
 		}
 
 		ImGui::Text("Extra Events:");
-		if (ImGui::ListBoxHeader("ExtraEvents", ImVec2(ImGui::GetContentRegionAvailWidth(), 200)))
+		if (ImGui::ListBoxHeader("##ExtraEvents", ImVec2(ImGui::GetContentRegionAvailWidth(), 200)))
 		{
 			for (int32 Index = 0; Index < Record.ExtraEvents.Num(); ++Index)
 			{
@@ -360,6 +481,56 @@ void AStandardGameMode::GatherRelationshipInfo(int32 PlayerId)
 	}
 }
 
+void AStandardGameMode::GatherCardDisplayInfo(int32 PlayerId)
+{
+	SelectedPlayerCardInfoList.Empty();
+
+	if (IsHumanPlayer(PlayerId))
+	{
+		if (AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(PlayerId))
+		{
+			if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
+			{
+				TArray<ACardBase*> AllCards = StandardPlayerState->GetCardInstanceList();
+				for (ACardBase* Card : AllCards)
+				{
+					FDebugCardDisplayInfo NewCardInfo;
+					NewCardInfo.CardClassName = Card->GetClass()->GetName();
+					TArray<UCardInstructionBase*> InstructionList = Card->GetAllInstruction();
+					for (UCardInstructionBase* Instruction : InstructionList)
+					{
+						NewCardInfo.InstructionList.Add(Instruction->GetClass()->GetName());
+					}
+
+					SelectedPlayerCardInfoList.Add(NewCardInfo);
+				}
+			}
+		}
+	}
+	else
+	{
+		if (AStandardModeAIController* StandardModeAIController = GetAIControllerById(PlayerId))
+		{
+			if (AStandardPlayerState* StandardPlayerState = StandardModeAIController->GetPlayerState<AStandardPlayerState>())
+			{
+				TArray<ACardBase*> AllCards = StandardPlayerState->GetCardInstanceList();
+				for (ACardBase* Card : AllCards)
+				{
+					FDebugCardDisplayInfo NewCardInfo;
+					NewCardInfo.CardClassName = Card->GetClass()->GetName();
+					TArray<UCardInstructionBase*> InstructionList = Card->GetAllInstruction();
+					for (UCardInstructionBase* Instruction : InstructionList)
+					{
+						NewCardInfo.InstructionList.Add(Instruction->GetClass()->GetName());
+					}
+
+					SelectedPlayerCardInfoList.Add(NewCardInfo);
+				}
+			}
+		}
+	}
+}
+
 FString AStandardGameMode::GetPlayerNameById(int32 PlayerId)
 {
 	if (PlayerBaseInfoMap.Contains(PlayerId))
@@ -398,6 +569,15 @@ void AStandardGameMode::OnPlayerCardCountChanged(AStandardPlayerState* PlayerSta
 		PlayerBaseInfo->MaxHoldCards = PlayerState->GetMaxCardNum();
 		PlayerBaseInfo->UsedCards = PlayerState->GetUsedCardCount();
 		PlayerBaseInfo->MaxUseCards = PlayerState->GetCardUseCountPerRound();
+	}
+
+	// Refresh card info
+	if (MainWindowTabIndex == MAIN_WINDOW_CARD_MANAGE)
+	{
+		if (PlayerState->GetPlayerId() == PlayerIdManageCards)
+		{
+			GatherCardDisplayInfo(PlayerIdManageCards);
+		}
 	}
 #endif
 }

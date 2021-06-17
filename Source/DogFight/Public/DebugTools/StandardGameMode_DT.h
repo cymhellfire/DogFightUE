@@ -95,4 +95,10 @@ struct FDebugGamePhaseHistoryRecord
 		ExtraEvents.Add(FString::Printf(TEXT("Player[%d] targeting direction: %s"), EventPlayerId, *Direction.ToString()));
 	}
 };
+
+struct FDebugCardDisplayInfo
+{
+	FString CardClassName;
+	TArray<FString> InstructionList;
+};
 #endif
