@@ -78,6 +78,11 @@ struct FDebugGamePhaseHistoryRecord
 		ExtraEvents.Add(FString::Printf(TEXT("Player[%d] discard card: %s"), EventPlayerId, *CardName));
 	}
 
+	void AddResponseCardEvent(FString CardName, int32 EventPlayerId)
+	{
+		ExtraEvents.Add(FString::Printf(TEXT("Player[%d] use response card: %s"), EventPlayerId, *CardName));
+	}
+
 	void AddSelectActorEvent(AActor* Actor, int32 EventPlayerId);
 
 	void AddSelectPointEvent(FVector Point, int32 EventPlayerId)

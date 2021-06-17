@@ -283,10 +283,6 @@ protected:
 	UFUNCTION()
 	void OnAbilityAvailabilityChanged(int32 AbilitySlot, bool NewAvailability);
 
-	void PostCardFinished();
-
-	void RagdollWaitingTick();
-
 protected:
 
 	int32 UsingCardIndex;
@@ -325,8 +321,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState", Replicated)
 	bool bIsRagdoll;
-
-	FTimerHandle RagdollWaitingTimerHandle;
 
 	UPROPERTY(Transient)
 	UBuffQueue* PlayerBuffQueue;

@@ -121,6 +121,9 @@ protected:
 	UFUNCTION()
 	virtual void OnInstructionFinished();
 
+	UFUNCTION()
+	void OnCardFinalizeTimerExpired();
+
 	UFUNCTION(BlueprintCallable, Category="CustomizableCard")
 	FUpgradablePropertyDisplayInfo GetIntPropertyDisplayInfo(const FUpgradableIntProperty& Property) const;
 
@@ -157,12 +160,22 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="CustomizableCard")
 	ECardUseMethod CardUseMethod;
 
+	/**
+	 * Delay between last instruction finished and card finalize.
+	 * Note: Use this delay to ensure the Game Mode State Machine can switch to pending Game Phase before OnCardFinished
+	 *       delegate invoked.
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="CustomizableCard")
+	float CardFinishDelay;
+
 	int32 CurrentInstructionIndex;
 
 	/** Counter for executing instructions. */
 	int32 ExecutingInstructionCount;
 
 	AController* OwnerPlayerController;
+
+	FTimerHandle CardFinalizeTimerHandle;
 
 	/** Array of instruction are not directly executed by card. (AnimNotify_Delegate owning instruction and etc.) */
 	UPROPERTY()

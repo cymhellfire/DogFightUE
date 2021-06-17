@@ -12,6 +12,9 @@ ACardBase::ACardBase(const FObjectInitializer& ObjectInitializer)
 {
  	// Turn off tick
 	PrimaryActorTick.bCanEverTick = false;
+
+	// Set card finalize delay
+	CardFinishDelay = 0.1f;
 }
 
 void ACardBase::Use()
@@ -200,13 +203,21 @@ void ACardBase::OnInstructionFinished()
 		// Check if current card is finished
 		if (CurrentInstructionIndex >= InstructionQueue.Num())
 		{
-			Finalize();
+			//Finalize();
+			GetWorldTimerManager().SetTimer(CardFinalizeTimerHandle, this, &ACardBase::OnCardFinalizeTimerExpired, CardFinishDelay);
 		}
 		else
 		{
 			ExecuteNextInstruction();
 		}
 	}
+}
+
+void ACardBase::OnCardFinalizeTimerExpired()
+{
+	GetWorldTimerManager().ClearTimer(CardFinalizeTimerHandle);
+
+	Finalize();
 }
 
 FUpgradablePropertyDisplayInfo ACardBase::GetIntPropertyDisplayInfo(const FUpgradableIntProperty& Property) const

@@ -33,6 +33,7 @@
 #include "Game/GameWorkflow/StandardGameMode/StandardGameModePlayerRoundBeginPhase.h"
 #include "Game/GameWorkflow/StandardGameMode/StandardGameModePlayerRoundEndPhase.h"
 #include "Game/GameWorkflow/StandardGameMode/StandardGameModePlayerRoundPhase.h"
+#include "Game/GameWorkflow/StandardGameMode/StandardGameModeRequestResponseCardPhase.h"
 #include "Game/GameWorkflow/StandardGameMode/StandardGameModeSelectAbilityPhase.h"
 #include "Game/GameWorkflow/StandardGameMode/StandardGameModeSpawnPlayersPhase.h"
 #include "Game/GameWorkflow/StandardGameMode/StandardGameModeTimedPhase.h"
@@ -573,85 +574,13 @@ int32 AStandardGameMode::ClampCardGainPerRound(int32 InValue)
 
 void AStandardGameMode::RequestResponseCardFromPlayer(int32 PlayerId, TArray<TSubclassOf<ACardBase>> ResponseCardClasses, AActor* SourceActor, const FText& CardToResponse)
 {
-	const bool bTargetHumanPlayer = IsValid(GetPlayerControllerById(PlayerId));
-
-	if (bTargetHumanPlayer)
+	if (UStandardGameModeRequestResponseCardPhase* RequestResponseCardPhase =
+		GameModeStateMachine->GetGamePhase<UStandardGameModeRequestResponseCardPhase>(StandardGameModePhase::RequestResponseCard))
 	{
-		// Handle human player
-		AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(PlayerId);
-		if (StandardModePlayerController == nullptr)
-		{
-			UE_LOG(LogDogFight, Error, TEXT("Failed to get PlayerController with Id %d"), GetCurrentPlayerId());
-			return;
-		}
+		RequestResponseCardPhase->InitializeResponseCardPhase(PlayerId, ResponseCardClasses, SourceActor, CardToResponse);
 
-		if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
-		{
-			// Apply card using filter
-			StandardPlayerState->ClearCardUsableFilter();
-			StandardPlayerState->ApplyCardUsableFilterByClass(ResponseCardClasses);
-			StandardPlayerState->ApplyCardUsableFilterByUseMethod(ECardUseMethod::CUM_Passive);
-
-			// Check if there is any card can response
-			if (StandardPlayerState->GetUsableCardCount() > 0)
-			{
-				// Face to incoming enemy
-				if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(StandardModePlayerController->GetActualPawn()))
-				{
-					const FVector FacingDirection = SourceActor->GetActorLocation() - StandardModePlayerCharacter->GetActorLocation();
-					StandardModePlayerCharacter->SetAimingDirection(FacingDirection, [this, StandardPlayerState, StandardModePlayerController, CardToResponse]()
-					{
-						StandardPlayerState->SetCardSelectionPurpose(ECardSelectionPurpose::CSP_Response);
-						StandardPlayerState->OnResponseCardSelected.AddDynamic(this, &AStandardGameMode::OnResponseCardSelected);
-						StandardModePlayerController->ClientStartRequestResponseCard(1, CardToResponse);
-						StandardModePlayerController->ClientSetCardDisplayWidgetSelectable(true);
-					});
-				}
-			}
-			else
-			{
-				OnResponseCardSelected(nullptr, StandardPlayerState);
-			}
-		}
-	}
-	else
-	{
-		// Handle AI player
-		AStandardModeAIController* StandardModeAIController = GetAIControllerById(PlayerId);
-		if (StandardModeAIController == nullptr)
-		{
-			UE_LOG(LogDogFight, Error, TEXT("Failed to get AIController with Id %d"), GetCurrentPlayerId());
-			return;
-		}
-
-		if (AStandardPlayerState* StandardPlayerState = StandardModeAIController->GetPlayerState<AStandardPlayerState>())
-		{
-			// Apply card using filter
-			StandardPlayerState->ClearCardUsableFilter();
-			StandardPlayerState->ApplyCardUsableFilterByClass(ResponseCardClasses);
-			StandardPlayerState->ApplyCardUsableFilterByUseMethod(ECardUseMethod::CUM_Passive);
-
-			// Check if there is any card can response
-			if (StandardPlayerState->GetUsableCardCount() > 0)
-			{
-				// Face to incoming enemy
-				if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(StandardModeAIController->GetActualPawn()))
-				{
-					const FVector FacingDirection = SourceActor->GetActorLocation() - StandardModePlayerCharacter->GetActorLocation();
-					StandardModePlayerCharacter->SetAimingDirection(FacingDirection, [this, StandardPlayerState, StandardModeAIController]()
-					{
-						StandardPlayerState->SetCardSelectionPurpose(ECardSelectionPurpose::CSP_Response);
-						StandardPlayerState->OnResponseCardSelected.AddDynamic(this, &AStandardGameMode::OnResponseCardSelected);
-
-						StandardModeAIController->UseResponseCard();
-					});
-				}
-			}
-			else
-			{
-				OnResponseCardSelected(nullptr, StandardPlayerState);
-			}
-		}
+		// Push new phase into stack
+		GameModeStateMachine->PushGamePhase(StandardGameModePhase::RequestResponseCard);
 	}
 }
 
@@ -701,31 +630,6 @@ void AStandardGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
-void AStandardGameMode::OnResponseCardSelected(ACardBase* SelectedCard, AStandardPlayerState* ResponsePlayerState)
-{
-	// Unregister callback
-	if (ResponsePlayerState->OnResponseCardSelected.IsAlreadyBound(this, &AStandardGameMode::OnResponseCardSelected))
-	{
-		ResponsePlayerState->OnResponseCardSelected.RemoveDynamic(this, &AStandardGameMode::OnResponseCardSelected);
-	}
-
-	if (AStandardModePlayerController* StandardModePlayerController = GetPlayerControllerById(ResponsePlayerState->GetPlayerId()))
-	{
-		ResponsePlayerState->MarkAllCardUnUsable();
-		StandardModePlayerController->ClientSetCardDisplayWidgetSelectable(false);
-		StandardModePlayerController->ClientStopRequestResponseCard();
-	}
-
-	if (IsValid(SelectedCard))
-	{
-		// Use card here
-		SelectedCard->Use();
-	}
-
-	// Broadcast callback
-	OnPlayerResponseCardSelected.Broadcast();
-}
-
 void AStandardGameMode::TransferCardBetweenPlayers_Internal(AStandardPlayerState* SrcPlayerState, AStandardPlayerState* DestPlayerState, int32 CardIndex)
 {
 	ACardBase* TransferCard = SrcPlayerState->GetCardByIndex(CardIndex);
@@ -768,6 +672,7 @@ void AStandardGameMode::InitializeStateMachine()
 	// Initialize all phases
 	TArray<UGamePhase*> AllGamePhases;
 
+#pragma region Process Phases
 	// Entering Map
 	AllGamePhases.Add(NewObject<UStandardGameModePhaseBase>(GameModeStateMachine, UStandardGameModeEnteringMapPhase::StaticClass(), TEXT("GamePhase_EnteringMap")));
 	AllGamePhases.Last()->InitializeGamePhase(StandardGameModePhase::EnteringMap, EGamePhaseType::GPT_Process, StandardGameModePhase::WaitingForStart);
@@ -834,10 +739,17 @@ void AStandardGameMode::InitializeStateMachine()
 	// Game summary
 	AllGamePhases.Add(NewObject<UStandardGameModePhaseBase>(GameModeStateMachine, UStandardGameModeGameSummaryPhase::StaticClass(), TEXT("GamePhase_GameSummary")));
 	AllGamePhases.Last()->InitializeGamePhase(StandardGameModePhase::GameSummary, EGamePhaseType::GPT_Process, NAME_None);
+#pragma endregion Process Phases
 
+#pragma region Float Phases
 	// Waiting Ragdoll
 	AllGamePhases.Add(NewObject<UStandardGameModePhaseBase>(GameModeStateMachine, UStandardGameModeWaitForRagdollPhase::StaticClass(), TEXT("GamePhase_WaitForRagdoll")));
 	AllGamePhases.Last()->InitializeGamePhase(StandardGameModePhase::WaitForRagdoll, EGamePhaseType::GPT_Floating, NAME_None);
+
+	// Request Response Cards
+	AllGamePhases.Add(NewObject<UStandardGameModePhaseBase>(GameModeStateMachine, UStandardGameModeRequestResponseCardPhase::StaticClass(), TEXT("GamePhase_RequestResponseCard")));
+	AllGamePhases.Last()->InitializeGamePhase(StandardGameModePhase::RequestResponseCard, EGamePhaseType::GPT_Floating, NAME_None);
+#pragma endregion Float Phases
 
 	GameModeStateMachine->OnGamePhaseChangedEvent.AddDynamic(this, &AStandardGameMode::OnGamePhaseChanged);
 

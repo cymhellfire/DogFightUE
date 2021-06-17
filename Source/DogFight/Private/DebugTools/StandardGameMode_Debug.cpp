@@ -110,7 +110,7 @@ void AStandardGameMode::DrawPlayerBaseInfoTab()
 			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 0, 1));
 		}
 		char IdLabel[32];
-		sprintf(IdLabel, "%03d", PlayerBaseInfo.PlayerId);
+		sprintf_s(IdLabel, "%03d", PlayerBaseInfo.PlayerId);
 		if (ImGui::Selectable(IdLabel, PlayerIdShowBaseInfo == PlayerBaseInfo.PlayerId, ImGuiSelectableFlags_SpanAllColumns))
 		{
 			PlayerIdShowBaseInfo = PlayerBaseInfo.PlayerId;
@@ -149,7 +149,7 @@ void AStandardGameMode::DrawPlayerRelationInfoTab()
 			{
 				bool bSelected = (PlayerId == PlayerIdShowRelationship);
 				char SelectableLabel[32];
-				sprintf(SelectableLabel, "ID [%d]", PlayerId);
+				sprintf_s(SelectableLabel, "ID [%d]", PlayerId);
 
 				if (ImGui::Selectable(SelectableLabel, bSelected))
 				{
@@ -190,7 +190,7 @@ void AStandardGameMode::DrawPlayerRelationInfoTab()
 		for (int32 Index = 0; Index < ShowingPlayerRelationships.Num(); ++Index)
 		{
 			char IdLabel[32];
-			sprintf(IdLabel, "%03d", ShowingPlayerRelationships[Index].PlayerId);
+			sprintf_s(IdLabel, "%03d", ShowingPlayerRelationships[Index].PlayerId);
 			ImGui::Selectable(IdLabel, false, ImGuiSelectableFlags_SpanAllColumns);
 			ImGui::NextColumn();
 			ImGui::Text("%ls", *ShowingPlayerRelationships[Index].PlayerName);
@@ -227,7 +227,7 @@ void AStandardGameMode::DrawStateMachineDebugger(bool* bOpen)
 			{
 				FDebugGamePhaseHistoryRecord& Record = StateMachineGamePhaseHistory[Index];
 				char RecordLabel[32];
-				sprintf(RecordLabel, "[%05d] %ls", Index, *Record.GamePhaseName.ToString());
+				sprintf_s(RecordLabel, "[%05d] %ls", Index, *Record.GamePhaseName.ToString());
 				if (ImGui::Selectable(RecordLabel, GamePhaseHistorySelectIndex == Index))
 				{
 					GamePhaseHistorySelectIndex = Index;

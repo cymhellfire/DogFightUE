@@ -46,7 +46,7 @@ void UWeaponBase::Equip()
 	// Play equip montage
 	if (IsValid(EquipAnimMontage))
 	{
-		const float EquipDuration = EquipAnimMontage->SequenceLength;
+		const float EquipDuration = EquipAnimMontage->GetPlayLength();
 		StandardModePlayerCharacter->PlayMontage(EquipAnimMontage);
 		// Set the equip callback
 		GetWorld()->GetTimerManager().SetTimer(WeaponEquipTimerHandle, this, &UWeaponBase::OnWeaponEquipped, EquipDuration);
@@ -87,7 +87,7 @@ void UWeaponBase::UnEquip()
 	// Play UnEquip animation
 	if (IsValid(UnEquipAnimMontage))
 	{
-		const float UnEquipDuration = UnEquipAnimMontage->SequenceLength;
+		const float UnEquipDuration = UnEquipAnimMontage->GetPlayLength();
 		StandardModePlayerCharacter->PlayMontage(UnEquipAnimMontage);
 		// Set the equip callback
 		GetWorld()->GetTimerManager().SetTimer(WeaponUnEquipTimerHandle, this, &UWeaponBase::OnWeaponUnEquipped, UnEquipDuration);

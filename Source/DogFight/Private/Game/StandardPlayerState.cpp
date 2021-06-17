@@ -128,6 +128,12 @@ void AStandardPlayerState::ServerHandleSelectedCard_Implementation(int32 Index)
 	case ECardSelectionPurpose::CSP_Response:
 		{
 			ACardBase* ResponseCard = CardInstanceList[Index];
+#if WITH_IMGUI
+			if (IsValid(StandardGameMode))
+			{
+				StandardGameMode->GetCurrentGamePhaseRecord().AddResponseCardEvent(ResponseCard->GetClass()->GetName(), GetPlayerId());
+			}
+#endif
 			RemoveCard(Index);
 
 			// Callback
@@ -170,28 +176,6 @@ void AStandardPlayerState::OnCardFinished()
 
 	// Invoke OnRep on server side
 	OnRep_CardInfoList();
-
-	// Register tick for ragdoll check
-	//GetWorldTimerManager().SetTimer(RagdollWaitingTimerHandle, this, &AStandardPlayerState::RagdollWaitingTick, 0.1f, true);
-}
-
-void AStandardPlayerState::RagdollWaitingTick()
-{
-	// Check all alive players' character are out of Ragdoll state
-	if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
-	{
-		if (StandardGameMode->IsAllPlayerNotRagdoll())
-		{
-			GetWorldTimerManager().ClearTimer(RagdollWaitingTimerHandle);
-
-			PostCardFinished();
-		}
-	}
-}
-
-void AStandardPlayerState::PostCardFinished()
-{
-	
 }
 
 void AStandardPlayerState::OnAbilityCooldownChanged(int32 AbilitySlot, int32 CurrentCooldown)
@@ -325,14 +309,6 @@ void AStandardPlayerState::SetAlive(bool bIsAlive)
 			{
 				StandardGameMode->RemovePlayerInRagdoll(GetPlayerId());
 			}
-		}
-
-		// Stop the waiting tick timer if player dead
-		if (RagdollWaitingTimerHandle.IsValid())
-		{
-			GetWorldTimerManager().ClearTimer(RagdollWaitingTimerHandle);
-
-			PostCardFinished();
 		}
 	}
 }

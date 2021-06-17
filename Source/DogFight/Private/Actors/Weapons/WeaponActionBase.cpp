@@ -126,7 +126,7 @@ void UWeaponActionBase::PlayActionMontage(UAnimMontage* MontageToPlay)
 				}
 			}
 			
-			const float ActionDuration = MontageToPlay->SequenceLength;
+			const float ActionDuration = MontageToPlay->GetPlayLength();
 			StandardModePlayerCharacter->PlayMontage(MontageToPlay);
 			GetWorld()->GetTimerManager().SetTimer(ActionTimerHandle, this, &UWeaponActionBase::OnActionMontageFinished, ActionDuration);
 		}

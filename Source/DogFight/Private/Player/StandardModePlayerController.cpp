@@ -610,7 +610,7 @@ void AStandardModePlayerController::BeginPlay()
 	// Create the InGameMenu widget for local player
 	if (IsLocalController())
 	{
-		FStringClassReference WidgetClassRef(TEXT("/Game/DogFight/UI/InGame/BP_InGameMenu.BP_InGameMenu_C"));
+		FSoftClassPath WidgetClassRef(TEXT("/Game/DogFight/UI/InGame/BP_InGameMenu.BP_InGameMenu_C"));
 		if (UClass* WidgetClass = WidgetClassRef.TryLoadClass<UUserWidget>())
 		{
 			InGameMenuWidget = CreateWidget<UUserWidget>(this, WidgetClass);

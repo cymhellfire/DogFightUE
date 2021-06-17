@@ -415,7 +415,7 @@ void UDogFightGameInstance::GoToState(FName NewState)
 void UDogFightGameInstance::ShowLoadingScreen()
 {
 	// Create Loading screen widget
-	const FStringClassReference WidgetClassRef(TEXT("/Game/DogFight/UI/TransitionMap/BP_TransitionMapWidget.BP_TransitionMapWidget_C"));
+	const FSoftClassPath WidgetClassRef(TEXT("/Game/DogFight/UI/TransitionMap/BP_TransitionMapWidget.BP_TransitionMapWidget_C"));
 	if (UClass* WidgetClass = WidgetClassRef.TryLoadClass<UUserWidget>())
 	{
 		UUserWidget* NewWidget = CreateWidget<UUserWidget>(GetFirstLocalPlayerController(), WidgetClass);
