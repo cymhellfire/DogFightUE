@@ -52,12 +52,6 @@ void AStandardModeAIController::InitPlayerState()
 		StandardGameMode->RegisterAIToTimeline(this);
 	}
 
-	// Register delegate
-	if (AStandardPlayerState* StandardPlayerState = Cast<AStandardPlayerState>(MyPlayerState))
-	{
-		StandardPlayerState->OnPlayerCardUsableIndexChanged.AddDynamic(this, &AStandardModeAIController::OnPlayerCardUsableIndexChanged);
-	}
-
 	// Spawn character
 	if (World)
 	{
@@ -80,17 +74,6 @@ void AStandardModeAIController::InitPlayerState()
 		CharacterPawn->OnCharacterHealthChanged.AddDynamic(this, &AStandardModeAIController::OnHealthChanged);
 		CharacterPawn->OnCharacterStrengthChanged.AddDynamic(this, &AStandardModeAIController::OnStrengthChanged);
 	}
-}
-
-void AStandardModeAIController::BeginDestroy()
-{
-	// Unregister delegate
-	if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
-	{
-		StandardPlayerState->OnPlayerCardUsableIndexChanged.RemoveDynamic(this, &AStandardModeAIController::OnPlayerCardUsableIndexChanged);
-	}
-
-	Super::BeginDestroy();
 }
 
 void AStandardModeAIController::EnableFreeMovement()
@@ -762,20 +745,6 @@ void AStandardModeAIController::FinishMyRound()
 				StandardGameMode->EndCurrentPlayerRound();
 			}
 		}
-	}
-}
-
-void AStandardModeAIController::OnPlayerCardUsableIndexChanged()
-{
-	// Check available left
-	if (HasUsableCard())
-	{
-		SetState(EAIControllerState::ACS_CardFinished);
-	}
-	else
-	{
-		// Finish current round forcibly
-		FinishMyRound();
 	}
 }
 

@@ -38,8 +38,6 @@ public:
 
 	virtual void InitPlayerState() override;
 
-	virtual void BeginDestroy() override;
-
 	/** Enable the Free Movement of this AIController. */
 	void EnableFreeMovement();
 
@@ -106,9 +104,6 @@ protected:
 	virtual void OnStateChanged(EAIControllerState NewState);
 
 	void FinishMyRound();
-
-	UFUNCTION()
-	void OnPlayerCardUsableIndexChanged();
 
 	UFUNCTION()
 	void OnCharacterPawnDead();

@@ -51,8 +51,12 @@ void UGamePhase::FinishPhase()
 		}
 		else if (GamePhaseType == EGamePhaseType::GPT_Floating)
 		{
-			// Pop this phase from state machine automatically
-			OwnerStateMachine->PopGamePhase();
+			// Do nothing if this phase is not processed
+			if (OwnerStateMachine->GetCurrentGamePhaseName() == GamePhaseName)
+			{
+				// Pop this phase from state machine automatically
+				OwnerStateMachine->PopGamePhase();
+			}
 		}
 	}
 }

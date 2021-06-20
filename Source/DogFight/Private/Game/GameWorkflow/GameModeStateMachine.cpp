@@ -86,7 +86,7 @@ void UGameModeStateMachine::ForceJumpToPhase(FName NewPhase)
 void UGameModeStateMachine::SetNextGamePhase(FName NextPhaseName)
 {
 	// Replace the last record with new one
-	GamePhaseStack.Last() = NextPhaseName;
+	GamePhaseStack[0] = NextPhaseName;
 
 	// Do switching next frame
 	bPendingSwitch = true;
@@ -111,7 +111,10 @@ void UGameModeStateMachine::PushGamePhase(FName NewPhase)
 	// Check if new phase meet requirements
 	if (GamePhaseMap.Contains(NewPhase) && GamePhaseMap[NewPhase]->GamePhaseType == EGamePhaseType::GPT_Floating)
 	{
-		GamePhaseStack.Push(NewPhase);
+		if (!GamePhaseStack.Contains(NewPhase))
+		{
+			GamePhaseStack.Push(NewPhase);
+		}
 	}
 
 	// Do switching next frame

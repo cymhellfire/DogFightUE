@@ -22,4 +22,5 @@ namespace StandardGameModePhase
 
 	extern DOGFIGHT_API const FName WaitForRagdoll;			// Wait for all character in ragdoll recovered.
 	extern DOGFIGHT_API const FName RequestResponseCard;	// Request given type card from target player.
+	extern DOGFIGHT_API const FName PlayerRevive;			// Dedicated game phase for player revive.
 }

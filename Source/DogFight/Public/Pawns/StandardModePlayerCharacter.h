@@ -27,6 +27,7 @@ public:
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FCharacterRagdollStateChangedSignature, AStandardModePlayerCharacter*, Character, bool, bActive);
 	FCharacterRagdollStateChangedSignature OnCharacterRagdollStateChanged;
+	FCharacterRagdollStateChangedSignature OnCharacterReviveStateChanged;
 
 	// Sets default values for this character's properties
 	AStandardModePlayerCharacter();
@@ -110,6 +111,8 @@ protected:
 	void DoCacheRagdollPose();
 
 	void PostCacheRagdollPose();
+
+	void OnCharacterGetUp();
 
 	void RagdollAutoRecoverTick(); 
 

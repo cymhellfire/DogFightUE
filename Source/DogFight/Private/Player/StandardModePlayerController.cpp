@@ -175,11 +175,6 @@ void AStandardModePlayerController::OnCardSelectionConfirmed(TArray<int32>& Sele
 		SelectedIndexList.Sort([](const int32& A, const int32& B) { return A > B; });
 	}
 
-	if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
-	{
-		StandardPlayerState->MarkAllCardUnUsable();
-	}
-
 	ServerUploadSelectedCardIndex(SelectedIndexList);
 }
 
@@ -320,6 +315,9 @@ void AStandardModePlayerController::ServerUploadSelectedCardIndex_Implementation
 {
 	if (AStandardPlayerState* StandardPlayerState = GetPlayerState<AStandardPlayerState>())
 	{
+		// Mark all left card unusable
+		StandardPlayerState->MarkAllCardUnUsable();
+
 		if (SelectedIndexList.Num() > 0)
 		{
 			for (int32 Index : SelectedIndexList)

@@ -7,6 +7,7 @@
 #include "AI/StandardModeAIController.h"
 #include "Game/GameWorkflow/GameModeStateMachine.h"
 #include "Game/GameWorkflow/StandardGameMode/StandardGameModePhaseDefine.h"
+#include "Game/GameWorkflow/StandardGameMode/StandardGameModePlayerRevivePhase.h"
 #include "Game/GameWorkflow/StandardGameMode/StandardGameModeWaitForRagdollPhase.h"
 
 bool UStandardGameModeSpawnPlayersPhase::StartPhase()
@@ -42,6 +43,20 @@ void UStandardGameModeSpawnPlayersPhase::FinishPhase()
 		for (AStandardModeAIController* AIController : ParentStandardGameMode->GetAllAIControllers())
 		{
 			WaitForRagdollPhase->RegisterListenCharacter(AIController->GetCharacterPawn());
+		}
+	}
+
+	// Try to setup 'PlayerRevive' game phase here
+	if (UStandardGameModePlayerRevivePhase* PlayerRevivePhase = OwnerStateMachine->GetGamePhase<UStandardGameModePlayerRevivePhase>(StandardGameModePhase::PlayerRevive))
+	{
+		for (AStandardModePlayerController* PlayerController : ParentStandardGameMode->GetAllPlayerControllers())
+		{
+			PlayerRevivePhase->RegisterListenCharacter(PlayerController->GetCharacterPawn());
+		}
+
+		for (AStandardModeAIController* AIController : ParentStandardGameMode->GetAllAIControllers())
+		{
+			PlayerRevivePhase->RegisterListenCharacter(AIController->GetCharacterPawn());
 		}
 	}
 

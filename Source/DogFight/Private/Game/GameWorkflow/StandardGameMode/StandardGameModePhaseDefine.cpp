@@ -21,4 +21,5 @@ namespace StandardGameModePhase
 	// Floating phases
 	const FName WaitForRagdoll = FName(TEXT("WaitForRagdoll"));
 	const FName RequestResponseCard = FName(TEXT("RequestResponseCard"));
+	const FName PlayerRevive = FName(TEXT("PlayerRevive"));
 }

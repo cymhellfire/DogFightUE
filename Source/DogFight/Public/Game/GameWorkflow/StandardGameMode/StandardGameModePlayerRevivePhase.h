@@ -3,37 +3,30 @@
 
 #include "CoreMinimal.h"
 #include "StandardGameModePhaseBase.h"
-#include "StandardGameModeWaitForRagdollPhase.generated.h"
+#include "StandardGameModePlayerRevivePhase.generated.h"
 
 class AStandardModePlayerCharacter;
 
-/**
- * Game phase that waiting for all characters in ragdoll state.
- */
 UCLASS()
-class UStandardGameModeWaitForRagdollPhase : public UStandardGameModePhaseBase
+class UStandardGameModePlayerRevivePhase : public UStandardGameModePhaseBase
 {
 	GENERATED_BODY()
 public:
-	UStandardGameModeWaitForRagdollPhase(const FObjectInitializer& ObjectInitializer);
+	UStandardGameModePlayerRevivePhase(const FObjectInitializer& ObjectInitializer);
 
 	void RegisterListenCharacter(AStandardModePlayerCharacter* NewCharacter);
 
 	void ClearListeningCharacters();
 
 	virtual void BeginDestroy() override;
-
 protected:
 	virtual void ResumePhase() override;
 
 	UFUNCTION()
-	void OnCharacterDead();
-
-	UFUNCTION()
-	void OnCharacterRagdollStateChanged(AStandardModePlayerCharacter* Character, bool bActive);
+	void OnCharacterReviveStateChanged(AStandardModePlayerCharacter* NewCharacter, bool bActive);
 
 protected:
-	int32 RagdollCount;
+	int32 RevivingCharacters;
 
 	TArray<AStandardModePlayerCharacter*> ListeningCharacters;
 };

@@ -204,6 +204,8 @@ public:
 
 	void MarkAllCardUnUsable();
 
+	void SyncUsableCardIndex();
+
 	int32 GetUsableCardCount() const { return UsableCardIndex.Num(); }
 
 	TArray<int32> GetAllUsableCardIndex() const { return UsableCardIndex; }
@@ -240,6 +242,8 @@ public:
 	FOnPlayerRelationInfoChangedSignature OnPlayerRelationInfoChanged;
 #pragma endregion DebugInterface
 
+	virtual void Tick(float DeltaSeconds) override;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -256,8 +260,8 @@ protected:
 	UFUNCTION()
 	void OnRep_CardInfoList();
 
-	UFUNCTION()
-	void OnRep_UsableCardIndex();
+	UFUNCTION(Client, Reliable)
+	void ClientSyncUsableCardIndex(const TArray<int32>& CardIndex);
 
 	UFUNCTION()
 	void OnRep_SkipGamePhaseFlags();
@@ -290,7 +294,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState", ReplicatedUsing=OnRep_CardInfoList)
 	TArray<FCardInstanceDisplayInfo> CardInfoList;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState", ReplicatedUsing=OnRep_UsableCardIndex)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="StandardPlayerState")
 	TArray<int32> UsableCardIndex;
 
 	/** The list of card instances. (Server Only) */
@@ -335,4 +339,6 @@ protected:
 	TArray<UAbilityBase*> CandidateAbilities;
 
 	int32 DesireCardCount;
+
+	bool bUsableCardListDirty;
 };

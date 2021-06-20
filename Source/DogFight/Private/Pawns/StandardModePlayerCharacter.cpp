@@ -774,11 +774,15 @@ void AStandardModePlayerCharacter::Revive()
 
 	// Recover health point and strength
 	SetHealthPercentage(1);
-	RecoverStrength();
-	bAlive = true;
+
+	// Change alive flag after character stand up
+	//bAlive = true;
 
 	// Turn off ragdoll
 	MulticastSetRagdollActive(false);
+
+	// Broadcast the reviving state start
+	OnCharacterReviveStateChanged.Broadcast(this, true);
 }
 
 void AStandardModePlayerCharacter::MulticastAddFloatingText_Implementation(const FText& NewText)
@@ -918,6 +922,10 @@ void AStandardModePlayerCharacter::PostCacheRagdollPose()
 	{
 		UE_LOG(LogActor, Error, TEXT("Failed to play get up animation montage."));
 	}
+	else
+	{
+		GetWorldTimerManager().SetTimer(RagdollRecoverTimerHandle, this, &AStandardModePlayerCharacter::OnCharacterGetUp, Result);
+	}
 
 	GetCapsuleComponent()->SetCollisionProfileName(FName(TEXT("Pawn")));
 	bRagdoll = false;
@@ -932,6 +940,21 @@ void AStandardModePlayerCharacter::PostCacheRagdollPose()
 	K2_OnPostCacheRagdollPose();
 
 	OnCharacterRagdollStateChanged.Broadcast(this, false);
+}
+
+void AStandardModePlayerCharacter::OnCharacterGetUp()
+{
+	if (!bAlive)
+	{
+		// If character stand up when bAlive equals false, it must be revived
+		bAlive = true;
+
+		// Recover strength
+		RecoverStrength();
+
+		// Broadcast the reviving state end
+		OnCharacterReviveStateChanged.Broadcast(this, false);
+	}
 }
 
 void AStandardModePlayerCharacter::RagdollAutoRecoverTick()

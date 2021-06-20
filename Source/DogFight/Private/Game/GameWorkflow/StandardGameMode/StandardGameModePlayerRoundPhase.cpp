@@ -43,7 +43,10 @@ bool UStandardGameModePlayerRoundPhase::StartPhase()
 					if (!bSkipUsingCardPhase)
 					{
 						// Register card finished delegate
-						StandardPlayerState->OnUsingCardFinished.AddDynamic(this, &UStandardGameModePlayerRoundPhase::OnPlayerUsingCardFinished);
+						if (!StandardPlayerState->OnUsingCardFinished.IsAlreadyBound(this, &UStandardGameModePlayerRoundPhase::OnPlayerUsingCardFinished))
+						{
+							StandardPlayerState->OnUsingCardFinished.AddDynamic(this, &UStandardGameModePlayerRoundPhase::OnPlayerUsingCardFinished);
+						}
 						StandardPlayerState->SetCardSelectionPurpose(ECardSelectionPurpose::CSP_Use);
 						StandardPlayerState->ClearCardUsableFilter();
 						StandardPlayerState->ApplyCardUsableFilterByUseMethod(ECardUseMethod::CUM_Aggressive);
@@ -76,7 +79,10 @@ bool UStandardGameModePlayerRoundPhase::StartPhase()
 					if (!bSkipUsingCard)
 					{
 						// Register card finished delegate
-						StandardPlayerState->OnUsingCardFinished.AddDynamic(this, &UStandardGameModePlayerRoundPhase::OnPlayerUsingCardFinished);
+						if (!StandardPlayerState->OnUsingCardFinished.IsAlreadyBound(this, &UStandardGameModePlayerRoundPhase::OnPlayerUsingCardFinished))
+						{
+							StandardPlayerState->OnUsingCardFinished.AddDynamic(this, &UStandardGameModePlayerRoundPhase::OnPlayerUsingCardFinished);
+						}
 						StandardPlayerState->SetCardSelectionPurpose(ECardSelectionPurpose::CSP_Use);
 						StandardPlayerState->ClearCardUsableFilter();
 						StandardPlayerState->ApplyCardUsableFilterByUseMethod(ECardUseMethod::CUM_Aggressive);
@@ -111,7 +117,10 @@ void UStandardGameModePlayerRoundPhase::EndPhase()
 		{
 			if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
 			{
-				StandardPlayerState->OnUsingCardFinished.RemoveDynamic(this, &UStandardGameModePlayerRoundPhase::OnPlayerUsingCardFinished);
+				if (StandardPlayerState->OnUsingCardFinished.IsAlreadyBound(this, &UStandardGameModePlayerRoundPhase::OnPlayerUsingCardFinished))
+				{
+					StandardPlayerState->OnUsingCardFinished.RemoveDynamic(this, &UStandardGameModePlayerRoundPhase::OnPlayerUsingCardFinished);
+				}
 			}
 		}
 	}
@@ -122,7 +131,10 @@ void UStandardGameModePlayerRoundPhase::EndPhase()
 		{
 			if (AStandardPlayerState* StandardPlayerState = StandardModeAIController->GetPlayerState<AStandardPlayerState>())
 			{
-				StandardPlayerState->OnUsingCardFinished.RemoveDynamic(this, &UStandardGameModePlayerRoundPhase::OnPlayerUsingCardFinished);
+				if (StandardPlayerState->OnUsingCardFinished.IsAlreadyBound(this, &UStandardGameModePlayerRoundPhase::OnPlayerUsingCardFinished))
+				{
+					StandardPlayerState->OnUsingCardFinished.RemoveDynamic(this, &UStandardGameModePlayerRoundPhase::OnPlayerUsingCardFinished);
+				}
 			}
 		}
 	}

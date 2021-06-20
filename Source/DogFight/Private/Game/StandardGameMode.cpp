@@ -30,6 +30,7 @@
 #include "Game/GameWorkflow/StandardGameMode/StandardGameModeGameSummaryPhase.h"
 #include "Game/GameWorkflow/StandardGameMode/StandardGameModePhaseBase.h"
 #include "Game/GameWorkflow/StandardGameMode/StandardGameModePhaseDefine.h"
+#include "Game/GameWorkflow/StandardGameMode/StandardGameModePlayerRevivePhase.h"
 #include "Game/GameWorkflow/StandardGameMode/StandardGameModePlayerRoundBeginPhase.h"
 #include "Game/GameWorkflow/StandardGameMode/StandardGameModePlayerRoundEndPhase.h"
 #include "Game/GameWorkflow/StandardGameMode/StandardGameModePlayerRoundPhase.h"
@@ -753,6 +754,10 @@ void AStandardGameMode::InitializeStateMachine()
 	// Request Response Cards
 	AllGamePhases.Add(NewObject<UStandardGameModePhaseBase>(GameModeStateMachine, UStandardGameModeRequestResponseCardPhase::StaticClass(), TEXT("GamePhase_RequestResponseCard")));
 	AllGamePhases.Last()->InitializeGamePhase(StandardGameModePhase::RequestResponseCard, EGamePhaseType::GPT_Floating, NAME_None);
+
+	// Player Revive
+	AllGamePhases.Add(NewObject<UStandardGameModePhaseBase>(GameModeStateMachine, UStandardGameModePlayerRevivePhase::StaticClass(), TEXT("GamePhase_PlayerRevive")));
+	AllGamePhases.Last()->InitializeGamePhase(StandardGameModePhase::PlayerRevive, EGamePhaseType::GPT_Floating, NAME_None);
 #pragma endregion Float Phases
 
 	GameModeStateMachine->OnGamePhaseChangedEvent.AddDynamic(this, &AStandardGameMode::OnGamePhaseChanged);

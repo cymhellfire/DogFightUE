@@ -16,6 +16,9 @@
 AStandardPlayerState::AStandardPlayerState(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	// Enable Tick for sync usable card index
+	PrimaryActorTick.bCanEverTick = true;
+
 	// Initial value
 	bAlive = true;
 }
@@ -25,7 +28,6 @@ void AStandardPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AStandardPlayerState, CardInfoList);
-	DOREPLIFETIME(AStandardPlayerState, UsableCardIndex);
 	DOREPLIFETIME(AStandardPlayerState, MaxCardCount);
 	DOREPLIFETIME(AStandardPlayerState, MaxUseNum);
 	DOREPLIFETIME(AStandardPlayerState, UsedCardNum);
@@ -162,6 +164,12 @@ void AStandardPlayerState::OnCardFinished()
 {
 	ACardBase* UsingCard = CardInstanceList[UsingCardIndex];
 	UsingCard->OnCardFinished.RemoveDynamic(this, &AStandardPlayerState::OnCardFinished);
+
+	// Remove finished card index from usable list
+	if (UsableCardIndex.Contains(UsingCardIndex))
+	{
+		UsableCardIndex.Remove(UsingCardIndex);
+	}
 
 	CardInstanceList.RemoveAt(UsingCardIndex);
 	RefreshCardInfoList();
@@ -517,9 +525,12 @@ void AStandardPlayerState::ApplyCardUsableFilterByClass(TArray<TSubclassOf<ACard
 		}
 	}
 
-	if (GetNetMode() != NM_Client)
+	// Mark usable card list dirty
+	bUsableCardListDirty = true;
+
+	if (GetPlayerId() < 255)
 	{
-		OnRep_UsableCardIndex();
+		UE_LOG(LogDogFight, Log, TEXT("[PlayerState] ApplyCardUsableFilterByClass. "))
 	}
 }
 
@@ -535,9 +546,12 @@ void AStandardPlayerState::ApplyCardUsableFilterByUseMethod(ECardUseMethod NewUs
 		}
 	}
 
-	if (GetNetMode() != NM_Client)
+	// Mark usable card list dirty
+	bUsableCardListDirty = true;
+
+	if (GetPlayerId() < 255)
 	{
-		OnRep_UsableCardIndex();
+		UE_LOG(LogDogFight, Log, TEXT("[PlayerState] ApplyCardUsableFilterByUseMethod. "))
 	}
 }
 
@@ -550,9 +564,12 @@ void AStandardPlayerState::ClearCardUsableFilter()
 		UsableCardIndex.Add(Index);
 	}
 
-	if (GetNetMode() != NM_Client)
+	// Mark usable card list dirty
+	bUsableCardListDirty = true;
+
+	if (GetPlayerId() < 255)
 	{
-		OnRep_UsableCardIndex();
+		UE_LOG(LogDogFight, Log, TEXT("[PlayerState] ClearCardUsableFilter. "))
 	}
 }
 
@@ -561,9 +578,22 @@ void AStandardPlayerState::MarkAllCardUnUsable()
 	// Clear usable cards
 	UsableCardIndex.Empty();
 
+	// Mark usable card list dirty
+	bUsableCardListDirty = true;
+
+	if (GetPlayerId() < 255)
+	{
+		UE_LOG(LogDogFight, Log, TEXT("[PlayerState] MarkAllCardUnUsable. "))
+	}
+}
+
+void AStandardPlayerState::SyncUsableCardIndex()
+{
 	if (GetNetMode() != NM_Client)
 	{
-		OnRep_UsableCardIndex();
+		ClientSyncUsableCardIndex(UsableCardIndex);
+
+		OnPlayerCardUsableIndexChanged.Broadcast();
 	}
 }
 
@@ -664,6 +694,19 @@ void AStandardPlayerState::DecideCandidateAbility(int32 SelectIndex)
 	OnCandidateAbilitySelected.Broadcast(this);
 }
 
+void AStandardPlayerState::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (bUsableCardListDirty)
+	{
+		SyncUsableCardIndex();
+
+		// Restore after sync
+		bUsableCardListDirty = false;
+	}
+}
+
 void AStandardPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
@@ -729,8 +772,10 @@ void AStandardPlayerState::OnRep_CardInfoList()
 	OnPlayerCardUsingAbilityChanged.Broadcast();
 }
 
-void AStandardPlayerState::OnRep_UsableCardIndex()
+void AStandardPlayerState::ClientSyncUsableCardIndex_Implementation(const TArray<int32>& CardIndex)
 {
+	UsableCardIndex = CardIndex;
+
 	OnPlayerCardUsableIndexChanged.Broadcast();
 }
 

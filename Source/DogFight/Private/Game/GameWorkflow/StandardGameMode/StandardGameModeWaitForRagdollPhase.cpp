@@ -20,6 +20,7 @@ void UStandardGameModeWaitForRagdollPhase::RegisterListenCharacter(AStandardMode
 
 	// Register listener to new characters
 	NewCharacter->OnCharacterRagdollStateChanged.AddDynamic(this, &UStandardGameModeWaitForRagdollPhase::OnCharacterRagdollStateChanged);
+	NewCharacter->OnCharacterDead.AddDynamic(this, &UStandardGameModeWaitForRagdollPhase::OnCharacterDead);
 }
 
 void UStandardGameModeWaitForRagdollPhase::ClearListeningCharacters()
@@ -30,8 +31,11 @@ void UStandardGameModeWaitForRagdollPhase::ClearListeningCharacters()
 		if (IsValid(ListeningCharacters[Index]))
 		{
 			ListeningCharacters[Index]->OnCharacterRagdollStateChanged.RemoveDynamic(this, &UStandardGameModeWaitForRagdollPhase::OnCharacterRagdollStateChanged);
+			ListeningCharacters[Index]->OnCharacterDead.RemoveDynamic(this, &UStandardGameModeWaitForRagdollPhase::OnCharacterDead);
 		}
 	}
+
+	ListeningCharacters.Empty();
 }
 
 void UStandardGameModeWaitForRagdollPhase::BeginDestroy()
@@ -39,6 +43,27 @@ void UStandardGameModeWaitForRagdollPhase::BeginDestroy()
 	ClearListeningCharacters();
 
 	Super::BeginDestroy();
+}
+
+void UStandardGameModeWaitForRagdollPhase::ResumePhase()
+{
+	Super::ResumePhase();
+
+	// Do once check after resumed
+	if (RagdollCount <= 0)
+	{
+		FinishPhase();
+	}
+}
+
+void UStandardGameModeWaitForRagdollPhase::OnCharacterDead()
+{
+	// Dead player won't count
+	RagdollCount--;
+	if (RagdollCount <= 0)
+	{
+		FinishPhase();
+	}
 }
 
 void UStandardGameModeWaitForRagdollPhase::OnCharacterRagdollStateChanged(AStandardModePlayerCharacter* Character, bool bActive)
