@@ -38,6 +38,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Vfx")
 	AController* OwnerController;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Vfx Sound")
+	TArray<USoundBase*> VfxSoundList;
+
 protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Vfx")

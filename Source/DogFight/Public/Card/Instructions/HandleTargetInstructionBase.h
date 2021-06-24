@@ -23,9 +23,11 @@ public:
 	 * Process the target information store in owner card.
 	 * @return True if all targets are processed.
 	 */
-	virtual bool ProcessTarget();
+	virtual void ProcessTarget();
 
 	virtual void Execute() override;
+
+	virtual void Finish() override;
 protected:
 
 	/**
@@ -51,6 +53,16 @@ protected:
 
 	virtual void OnHandledAllTarget() {};
 
+	void OnHandleTargetIntervalTimerExpired();
+
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Instruction")
+	float HandleTargetInterval;
+
+	/** Only send one message when this option is on no matter how many targets. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Instruction")
+	bool bMergeTargetMessage;
+
 	int32 CurrentTargetIndex;
 
 	/** Does this instruction invoke Finish() automatically at the end of Execute()? (True as default)*/
@@ -58,4 +70,8 @@ protected:
 
 	/** Skip next broadcast game message. (Use this to suppress redundant message once.) */
 	bool bSkipOneBroadcast;
+
+	bool bUseMessageSent;
+
+	FTimerHandle HandleTargetIntervalTimerHandle;
 };

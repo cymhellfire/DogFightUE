@@ -28,6 +28,12 @@ void AVfxBase::BeginPlay()
 	// Set life span
 	SetLifeSpan(Lifetime);
 
+	// Randomize sound
+	if (VfxSoundList.Num() > 0)
+	{
+		AudioComponent->SetSound(VfxSoundList[FMath::RandRange(0, VfxSoundList.Num() - 1)]);
+	}
+
 	// Auto play audio clip as default
 	AudioComponent->Play();
 }

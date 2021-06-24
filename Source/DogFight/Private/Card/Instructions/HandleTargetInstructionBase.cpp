@@ -15,14 +15,17 @@ UHandleTargetInstructionBase::UHandleTargetInstructionBase(const FObjectInitiali
 {
 	bAutoFinish = true;
 	bSkipOneBroadcast = false;
+	HandleTargetInterval = 1.f;
+	bMergeTargetMessage = false;
+	bUseMessageSent = false;
 }
 
-bool UHandleTargetInstructionBase::ProcessTarget()
+void UHandleTargetInstructionBase::ProcessTarget()
 {
 	if (OwnerCard == nullptr)
 	{
 		UE_LOG(LogGameCards, Error, TEXT("No OwnerCard assigned to this instruction."));
-		return true;
+		return;
 	}
 
 	FVector CameraFocusPos;
@@ -30,6 +33,8 @@ bool UHandleTargetInstructionBase::ProcessTarget()
 	if (CurrentTargetIndex < OwnerCard->GetTargetInfoCount())
 	{
 		FCardInstructionTargetInfo TargetInfo = OwnerCard->GetTargetInfo(CurrentTargetIndex);
+		// Increase index here to avoid finish check triggered in HandleTarget function cannot pass
+		CurrentTargetIndex++;
 		AActor* ActorPtr = nullptr;
 		FVector Position, Direction;
 		int32 Type = ParseTargetInfo(TargetInfo, &ActorPtr, Position, Direction);
@@ -51,7 +56,6 @@ bool UHandleTargetInstructionBase::ProcessTarget()
 			UE_LOG(LogGameCards, Error, TEXT("Parsed an invalid target information for %s"), *OwnerCard->GetName());
 			break;;
 		}
-		CurrentTargetIndex++;
 	}
 
 	// Broadcast camera focus event
@@ -82,21 +86,45 @@ bool UHandleTargetInstructionBase::ProcessTarget()
 		}
 	}
 
-	return CurrentTargetIndex >= OwnerCard->GetTargetInfoCount();
+	// Setup timer for next target
+	if (CurrentTargetIndex < OwnerCard->GetTargetInfoCount())
+	{
+		if (HandleTargetInterval > 0.f)
+		{
+			OwnerCard->GetWorldTimerManager().SetTimer(HandleTargetIntervalTimerHandle, this,
+				&UHandleTargetInstructionBase::OnHandleTargetIntervalTimerExpired, HandleTargetInterval);
+		}
+		else
+		{
+			ProcessTarget();
+		}
+	}
+	else
+	{
+		// Finish when no target left
+		OnHandledAllTarget();
+
+		if (bAutoFinish)
+		{
+			Finish();
+		}
+	}
 }
 
 void UHandleTargetInstructionBase::Execute()
 {
 	Super::Execute();
 
-	while(!ProcessTarget()) { }
+	ProcessTarget();
+}
 
-	OnHandledAllTarget();
+void UHandleTargetInstructionBase::Finish()
+{
+	// Skip finish request if not all targets handled
+	if (CurrentTargetIndex < OwnerCard->GetTargetInfoCount())
+		return;
 
-	if (bAutoFinish)
-	{
-		Finish();
-	}
+	Super::Finish();
 }
 
 int32 UHandleTargetInstructionBase::ParseTargetInfo(FCardInstructionTargetInfo TargetInfo, AActor** ActorPtr, FVector& PositionValue, FVector& DirectionValue)
@@ -126,30 +154,35 @@ bool UHandleTargetInstructionBase::HandleActorTarget(AActor* Target)
 		return true;
 	}
 
-	// Broadcast game message
-	if (IGameCardUserPlayerControllerInterface* UserPlayerController = Cast<IGameCardUserPlayerControllerInterface>(OwnerCard->GetOwnerPlayerController()))
+	if (!(bMergeTargetMessage && bUseMessageSent))
 	{
-		// Check if it's self-selected
-		if (GetOwnerControlledPawn() == Target)
+		// Broadcast game message
+		if (IGameCardUserPlayerControllerInterface* UserPlayerController = Cast<IGameCardUserPlayerControllerInterface>(OwnerCard->GetOwnerPlayerController()))
 		{
-			UserPlayerController->BroadcastCardTargetingResult(OwnerCard->GetCardDisplayInfo().GetCardNameText(),
-				FText::FromStringTable(ST_INGAME_UI_LOC, TEXT("GameMsg_Self")), ECardInstructionTargetType::Actor);
-		}
-		else
-		{
-			FString TargetName = Target->GetName();
-
-			// Get owner player name if possible
-			if (APawn* TargetPawn = Cast<APawn>(Target))
+			// Check if it's self-selected
+			if (GetOwnerControlledPawn() == Target)
 			{
-				if (APlayerState* PlayerState = TargetPawn->GetPlayerState())
+				UserPlayerController->BroadcastCardTargetingResult(OwnerCard->GetCardDisplayInfo().GetCardNameText(),
+					FText::FromStringTable(ST_INGAME_UI_LOC, TEXT("GameMsg_Self")), ECardInstructionTargetType::Actor);
+			}
+			else
+			{
+				FString TargetName = Target->GetName();
+
+				// Get owner player name if possible
+				if (APawn* TargetPawn = Cast<APawn>(Target))
 				{
-					TargetName = FString::Printf(TEXT("<PlayerName>%s</>"), *PlayerState->GetPlayerName());
+					if (APlayerState* PlayerState = TargetPawn->GetPlayerState())
+					{
+						TargetName = FString::Printf(TEXT("<PlayerName>%s</>"), *PlayerState->GetPlayerName());
+					}
 				}
+
+				UserPlayerController->BroadcastCardTargetingResult(OwnerCard->GetCardDisplayInfo().GetCardNameText(),
+					FText::FromString(TargetName), ECardInstructionTargetType::Actor);
 			}
 
-			UserPlayerController->BroadcastCardTargetingResult(OwnerCard->GetCardDisplayInfo().GetCardNameText(),
-				FText::FromString(TargetName), ECardInstructionTargetType::Actor);
+			bUseMessageSent = true;
 		}
 	}
 
@@ -164,11 +197,16 @@ void UHandleTargetInstructionBase::HandlePositionTarget(FVector Position)
 		return;
 	}
 
-	// Broadcast game message
-	if (IGameCardUserPlayerControllerInterface* UserPlayerController = Cast<IGameCardUserPlayerControllerInterface>(OwnerCard->GetOwnerPlayerController()))
+	if (!(bMergeTargetMessage && bUseMessageSent))
 	{
-		UserPlayerController->BroadcastCardTargetingResult(OwnerCard->GetCardDisplayInfo().GetCardNameText(),
-			FText::FromString(Position.ToString()), ECardInstructionTargetType::Position);
+		// Broadcast game message
+		if (IGameCardUserPlayerControllerInterface* UserPlayerController = Cast<IGameCardUserPlayerControllerInterface>(OwnerCard->GetOwnerPlayerController()))
+		{
+			UserPlayerController->BroadcastCardTargetingResult(OwnerCard->GetCardDisplayInfo().GetCardNameText(),
+				FText::FromString(Position.ToString()), ECardInstructionTargetType::Position);
+		}
+
+		bUseMessageSent = true;
 	}
 }
 
@@ -180,11 +218,23 @@ void UHandleTargetInstructionBase::HandleDirectionTarget(FVector Direction)
 		return;
 	}
 
-	// Broadcast game message
-	if (IGameCardUserPlayerControllerInterface* UserPlayerController = Cast<IGameCardUserPlayerControllerInterface>(OwnerCard->GetOwnerPlayerController()))
+	if (!(bMergeTargetMessage && bUseMessageSent))
 	{
-		UserPlayerController->BroadcastCardTargetingResult(OwnerCard->GetCardDisplayInfo().GetCardNameText(),
-			FText::FromString(Direction.ToString()), ECardInstructionTargetType::Direction);
+		// Broadcast game message
+		if (IGameCardUserPlayerControllerInterface* UserPlayerController = Cast<IGameCardUserPlayerControllerInterface>(OwnerCard->GetOwnerPlayerController()))
+		{
+			UserPlayerController->BroadcastCardTargetingResult(OwnerCard->GetCardDisplayInfo().GetCardNameText(),
+				FText::FromString(Direction.ToString()), ECardInstructionTargetType::Direction);
+		}
+
+		bUseMessageSent = true;
 	}
+}
+
+void UHandleTargetInstructionBase::OnHandleTargetIntervalTimerExpired()
+{
+	OwnerCard->GetWorldTimerManager().ClearTimer(HandleTargetIntervalTimerHandle);
+
+	ProcessTarget();
 }
 

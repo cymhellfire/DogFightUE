@@ -38,8 +38,8 @@ void UInstructionSpawnDamageArea::HandlePositionTarget(FVector Position)
 		}
 	}
 	DamageArea->OnDamageAreaFinished.AddDynamic(this, &UInstructionSpawnDamageArea::OnDamageAreaFinished);
-	DamageArea->Activate(DamageDelay);
 	DamageAreaList.Add(DamageArea);
+	DamageArea->Activate(DamageDelay);
 
 	// Spawn vfx
 	if (IsValid(VfxClass))
