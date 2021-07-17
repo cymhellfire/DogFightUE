@@ -459,6 +459,19 @@ void AProjectileBase::SetIgnoreCollisionAtStart(bool bIgnore)
 	bIgnoreOwnerCollisionAtStart = bIgnore;
 }
 
+void AProjectileBase::SetIgnoreActor(AActor* NewActor)
+{
+	CollisionComponent->IgnoreActorWhenMoving(NewActor, true);
+}
+
+void AProjectileBase::SetIgnoreActors(TArray<AActor*> ActorList)
+{
+	for (AActor* IgnoreActor : ActorList)
+	{
+		CollisionComponent->IgnoreActorWhenMoving(IgnoreActor, true);
+	}
+}
+
 void AProjectileBase::LaunchAtDirection(const FVector& Direction)
 {
 	if (MovementComponent != nullptr && GetLocalRole() == ROLE_Authority)

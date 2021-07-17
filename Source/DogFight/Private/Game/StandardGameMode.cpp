@@ -617,6 +617,42 @@ void AStandardGameMode::BroadcastCameraFocusEvent(FCameraFocusEvent CameraEvent)
 	OnCameraEventHappened.Broadcast(CameraEvent);
 }
 
+FVector AStandardGameMode::GetCenterPointOfAllAlivePlayers() const
+{
+	FVector Result = FVector::ZeroVector;
+	int32 TotalCount = 0;
+
+	for (AStandardModePlayerController* StandardModePlayerController : StandardPlayerControllerList)
+	{
+		if (AStandardPlayerState* StandardPlayerState = StandardModePlayerController->GetPlayerState<AStandardPlayerState>())
+		{
+			if (StandardPlayerState->IsAlive())
+			{
+				Result += StandardModePlayerController->GetActualPawn()->GetActorLocation();
+				TotalCount++;
+			}
+		}
+	}
+
+	for (AStandardModeAIController* StandardModeAIController : StandardAIControllerList)
+	{
+		if (AStandardPlayerState* StandardPlayerState = StandardModeAIController->GetPlayerState<AStandardPlayerState>())
+		{
+			if (StandardPlayerState->IsAlive())
+			{
+				Result += StandardModeAIController->GetActualPawn()->GetActorLocation();
+				TotalCount++;
+			}
+		}
+	}
+
+	// Calculate the center
+	if (TotalCount > 1)
+		Result /= TotalCount;
+
+	return Result;
+}
+
 void AStandardGameMode::BeginPlay()
 {
 	Super::BeginPlay();

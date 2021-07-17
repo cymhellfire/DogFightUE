@@ -58,6 +58,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category="CustomizableCard|Card")
 	void PushTargetInfo(FCardInstructionTargetInfo TargetInfo);
 
+	void PushUniqueTargetInfo(FCardInstructionTargetInfo TargetInfo);
+
 	/**
 	 * Get the last target information pushed in and remove it from the list.
 	 */

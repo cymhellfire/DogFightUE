@@ -35,6 +35,10 @@ public:
 
 	virtual void SetIgnoreCollisionAtStart(bool bIgnore) {};
 
+	virtual void SetIgnoreActor(AActor* NewActor) {};
+
+	virtual void SetIgnoreActors(TArray<AActor*> ActorList) {};
+
 	virtual void LaunchAtDirection(const FVector& Direction) {};
 
 	virtual void SetOwnerController(AController* NewController) {};

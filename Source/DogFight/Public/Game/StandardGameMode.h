@@ -212,6 +212,8 @@ public:
 	 * @param CameraEvent			Information of camera event.
 	 */
 	void BroadcastCameraFocusEvent(FCameraFocusEvent CameraEvent);
+
+	FVector GetCenterPointOfAllAlivePlayers() const;
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;

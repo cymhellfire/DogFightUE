@@ -31,6 +31,7 @@ public class DogFight : ModuleRules
 				"SlateCore",
 				"GameplayTasks",
 				"GameplayTags",
+				"Niagara",
 				"ImGui"
 			}
 		);

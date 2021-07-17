@@ -92,6 +92,11 @@ void ACardBase::PushTargetInfo(FCardInstructionTargetInfo TargetInfo)
 	TargetInfoList.Push(TargetInfo);
 }
 
+void ACardBase::PushUniqueTargetInfo(FCardInstructionTargetInfo TargetInfo)
+{
+	TargetInfoList.AddUnique(TargetInfo);
+}
+
 FCardInstructionTargetInfo ACardBase::PopTargetInfo()
 {
 	return TargetInfoList.Pop();

@@ -46,10 +46,21 @@ struct FCardInstructionTargetInfo
 
 	friend bool operator==(const FCardInstructionTargetInfo& Lhs, const FCardInstructionTargetInfo& RHS)
 	{
-		return Lhs.TargetType == RHS.TargetType
-			&& Lhs.ActorPtr == RHS.ActorPtr
-			&& Lhs.PositionValue == RHS.PositionValue
-			&& Lhs.DirectionValue == RHS.DirectionValue;
+		if (Lhs.TargetType != RHS.TargetType)
+			return false;
+
+		switch (Lhs.TargetType)
+		{
+		case ECardInstructionTargetType::Actor:
+			return Lhs.ActorPtr == RHS.ActorPtr;
+		case ECardInstructionTargetType::Position: 
+			return Lhs.PositionValue == RHS.PositionValue;
+		case ECardInstructionTargetType::Direction: 
+			return Lhs.DirectionValue == RHS.DirectionValue;
+		default: ;
+		}
+
+		return false;
 	}
 
 	friend bool operator!=(const FCardInstructionTargetInfo& Lhs, const FCardInstructionTargetInfo& RHS)

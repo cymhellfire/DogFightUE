@@ -54,6 +54,8 @@ public:
 	virtual void SetInitialSpeed(float NewSpeed) override;
 	virtual void SetMaxSpeed(float NewSpeed) override;
 	virtual void SetIgnoreCollisionAtStart(bool bIgnore) override;
+	virtual void SetIgnoreActor(AActor* NewActor) override;
+	virtual void SetIgnoreActors(TArray<AActor*> ActorList) override;
 	virtual void LaunchAtDirection(const FVector& Direction) override;
 	virtual void SetOwnerController(AController* NewController) override;
 	virtual void SetOwnerCharacter(AActor* NewActor) override;

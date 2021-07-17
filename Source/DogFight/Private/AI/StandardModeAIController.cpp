@@ -476,16 +476,24 @@ AController* AStandardModeAIController::GetRandomTargetPlayer(bool bIgnoreSelf =
 		while(true)
 		{
 			TargetController = StandardGameMode->GetRandomController();
-			if (bIgnoreSelf)
+
+			if (AStandardPlayerState* TargetPlayerState = TargetController->GetPlayerState<AStandardPlayerState>())
 			{
-				// Check if selected myself
-				if (AStandardPlayerState* TargetPlayerState = TargetController->GetPlayerState<AStandardPlayerState>())
+				// Skip dead players
+				if (!TargetPlayerState->IsAlive())
+					continue;
+				if (bIgnoreSelf)
 				{
+					// Check if selected myself
 					AStandardPlayerState* MyPlayerState = GetPlayerState<AStandardPlayerState>();
 					if (MyPlayerState->GetPlayerId() != TargetPlayerState->GetPlayerId() && TargetPlayerState->IsAlive())
 					{
 						break;
 					}
+				}
+				else
+				{
+					break;
 				}
 			}
 		}
@@ -644,9 +652,8 @@ FCardInstructionTargetInfo AStandardModeAIController::RequestRandomActorTarget(b
 	if (IGameCardUserPlayerControllerInterface* CardUserPlayerController = Cast<IGameCardUserPlayerControllerInterface>(TargetController))
 	{
 		FCardInstructionTargetInfo NewTargetInfo;
-		NewTargetInfo.ActorPtr = nullptr;
-		NewTargetInfo.PositionValue = CardUserPlayerController->GetActualPawn()->GetActorLocation() - CharacterPawn->GetActorLocation();
-		NewTargetInfo.TargetType = ECardInstructionTargetType::Direction;
+		NewTargetInfo.ActorPtr = CardUserPlayerController->GetActualPawn();
+		NewTargetInfo.TargetType = ECardInstructionTargetType::Actor;
 
 		return NewTargetInfo;
 	}

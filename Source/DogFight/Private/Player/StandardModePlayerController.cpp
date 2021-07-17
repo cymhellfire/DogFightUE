@@ -187,16 +187,25 @@ APawn* AStandardModePlayerController::GetRandomPlayerPawn(bool bIgnoreSelf)
 		while(true)
 		{
 			TargetController = StandardGameMode->GetRandomController();
-			if (bIgnoreSelf)
+
+			if (AStandardPlayerState* TargetPlayerState = TargetController->GetPlayerState<AStandardPlayerState>())
 			{
-				// Check if selected myself
-				if (AStandardPlayerState* TargetPlayerState = TargetController->GetPlayerState<AStandardPlayerState>())
+				// Skip dead players
+				if (!TargetPlayerState->IsAlive())
+					continue;
+
+				if (bIgnoreSelf)
 				{
+					// Check if selected myself
 					AStandardPlayerState* MyPlayerState = GetPlayerState<AStandardPlayerState>();
 					if (MyPlayerState->GetPlayerId() != TargetPlayerState->GetPlayerId() && TargetPlayerState->IsAlive())
 					{
 						break;
 					}
+				}
+				else
+				{
+					break;
 				}
 			}
 		}
