@@ -7,7 +7,7 @@
 
 class UWeaponBase;
 
-UINTERFACE(MinimalAPI, Blueprintable, meta=(CannotImplementInterfaceInBlueprint))
+UINTERFACE(MinimalAPI, BlueprintType, meta=(CannotImplementInterfaceInBlueprint))
 class UWeaponCarrierInterface : public UInterface
 {
 	GENERATED_BODY()

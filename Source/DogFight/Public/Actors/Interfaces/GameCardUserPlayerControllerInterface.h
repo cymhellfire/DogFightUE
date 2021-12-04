@@ -4,7 +4,7 @@
 #include "Card/GameCardTypes.h"
 #include "GameCardUserPlayerControllerInterface.generated.h"
 
-UINTERFACE(MinimalAPI, Blueprintable, meta=(CannotImplementInterfaceInBlueprint))
+UINTERFACE(MinimalAPI, BlueprintType, meta=(CannotImplementInterfaceInBlueprint))
 class UGameCardUserPlayerControllerInterface : public UInterface
 {
 	GENERATED_BODY()

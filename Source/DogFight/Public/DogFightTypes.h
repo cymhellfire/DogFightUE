@@ -36,8 +36,8 @@ struct FCameraFocusEvent
 	GENERATED_BODY();
 
 	int32 OwnerPlayerId;
-	float LocationX;
-	float LocationY;
+	double LocationX;
+	double LocationY;
 
 	ECameraFocusEventType::Type EventType;
 };

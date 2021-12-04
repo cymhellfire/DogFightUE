@@ -12,7 +12,8 @@ bool FMathHelper::DeprojectScreenToWorld(const FVector2D& ScreenPosition, ULocal
 		&& Player->PlayerController != nullptr)
 	{
 		FSceneViewProjectionData ProjectionData;
-		if (Player->GetProjectionData(Player->ViewportClient->Viewport, eSSP_FULL, ProjectionData))
+		if (Player->GetProjectionData(Player->ViewportClient->Viewport, ProjectionData,
+			GEngine->IsStereoscopic3D() ? EStereoscopicEye::eSSE_LEFT_EYE : EStereoscopicEye::eSSE_MONOSCOPIC))
 		{
 			const FMatrix ViewMatrix = FTranslationMatrix(-ProjectionData.ViewOrigin) * ProjectionData.ViewRotationMatrix;
 			const FMatrix InvViewMatrix = ViewMatrix.InverseFast();
