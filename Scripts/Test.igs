@@ -1,0 +1,8 @@
+class FTest
+{
+    function BeginPlay
+    {
+        a = 5 + 15.525
+        "DogFight123"
+    }
+}

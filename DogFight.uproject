@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "{86986BCD-4185-36C9-24BD-228359493820}",
+	"EngineAssociation": "{5CAE5D51-45D8-6007-F309-0685BD1B0A13}",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -21,6 +21,10 @@
 	"Plugins": [
 		{
 			"Name": "PythonScriptPlugin",
+			"Enabled": true
+		},
+		{
+			"Name": "InGameScript",
 			"Enabled": true
 		}
 	]

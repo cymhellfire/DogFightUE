@@ -32,7 +32,8 @@ public class DogFight : ModuleRules
 				"GameplayTasks",
 				"GameplayTags",
 				"Niagara",
-				"ImGui"
+				"ImGui",
+				"InGameScript",
 			}
 		);
 		
