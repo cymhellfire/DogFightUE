@@ -37,6 +37,7 @@ void FScriptReader::Initialize()
 	CharNum = 0;
 
 	CurLine = FileContent[LineNum];
+	NextLine = LineNum + 1 < FileContent.Num() ? FileContent[LineNum + 1] : "";
 }
 
 void FScriptReader::IncreaseLineNumber()
@@ -51,6 +52,15 @@ void FScriptReader::IncreaseLineNumber()
 	{
 		// File is end
 		bFinished = true;
+	}
+
+	// Update next line if not finished
+	if (!bFinished)
+	{
+		if (LineNum + 1 < FileContent.Num())
+		{
+			NextLine = FileContent[LineNum + 1];
+		}
 	}
 }
 

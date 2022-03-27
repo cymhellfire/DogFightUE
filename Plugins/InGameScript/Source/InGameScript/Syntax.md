@@ -32,7 +32,9 @@ This document includes the syntax of in-game script.
 ## Syntax
 
 ```
-- block         -> {stmt}
+- program       -> block
+- scope         -> '{' block '}'
+- block         -> stmt [stmt]
 - stmt          -> if (expr) block | for (expr;expr;expr) block | while (expr) block | stmt expr | expr
 - expr          -> expr + term | expr - term | term
 - term          -> term * factor | term / factor | term % factor | factor
@@ -40,6 +42,13 @@ This document includes the syntax of in-game script.
 - atomicexp     -> id | (expr)
 - index         -> '[' expr ']'
 - suffixexp     -> atomicexp { '[' index ']' | '::' atomicexp funcargs | funcargs }
+```
+
+```
+- expr -> expr + term | term
+->
+- expr -> term rest 
+- rest -> + term rest
 ```
 
 ##Example
@@ -51,12 +60,13 @@ a = 1;
 ```
 - Binary operation statement
 ```
-// expr -> preexpr [binop expr] | preexpr
+// expr -> (preexpr | unop expr) [binop expr]
 a + b
+-a + b
 ```
 - Prefix operation
 ```
-// preexpr -> singleop expr
+// preexpr -> singleop atomic
 !a
 -a
 ```

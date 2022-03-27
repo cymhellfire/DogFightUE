@@ -37,6 +37,11 @@ public:
 		return CharNum;
 	}
 
+	FString GetCurrentLine() const
+	{
+		return CurLine;
+	}
+
 protected:
 	FScriptReader();
 	FScriptReader(FString InFilePath);

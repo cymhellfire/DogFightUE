@@ -81,11 +81,11 @@ struct FOperatorToken : FTokenBase
 struct FIDToken : FTokenBase
 {
 	FIDToken()
-		: FIDToken("")
+		: FIDToken(NAME_None)
 	{
 	}
 
-	FIDToken(FString InValue)
+	FIDToken(FName InValue)
 	{
 		IdName = InValue;
 		TokenType = ETokenType::TT_ID;
@@ -94,11 +94,34 @@ struct FIDToken : FTokenBase
 #if WITH_DEBUG_INFO
 	virtual FString ToString() const override
 	{
-		return FString::Printf(TEXT("%s: %s"), *FTokenBase::ToString(), *IdName);
+		return FString::Printf(TEXT("%s: %s"), *FTokenBase::ToString(), *IdName.ToString());
 	}
 #endif
 
-	FString IdName;
+	FName IdName;
+};
+
+struct FSingleSymbolToken : FTokenBase
+{
+	FSingleSymbolToken()
+		: FSingleSymbolToken(ESingleSymbolType::SST_None)
+	{
+	}
+
+	FSingleSymbolToken(ESingleSymbolType::Type InType)
+	{
+		TokenType = ETokenType::TT_SingleSymbol;
+		SymbolType = InType;
+	}
+
+#if WITH_DEBUG_INFO
+	virtual FString ToString() const override
+	{
+		return FString::Printf(TEXT("%s: %s"), *FTokenBase::ToString(), *ESingleSymbolType::SingleSymbolTypeName[SymbolType]);
+	}
+#endif
+
+	ESingleSymbolType::Type SymbolType;
 };
 
 struct FValueToken : FTokenBase
@@ -106,6 +129,13 @@ struct FValueToken : FTokenBase
 	FValueToken()
 		: FValueToken(0.f)
 	{
+	}
+
+	FValueToken(bool InValue)
+	{
+		TokenType = ETokenType::TT_Value;
+		ValueType = EValueType::VT_Boolean;
+		BoolValue = InValue;
 	}
 
 	FValueToken(float InValue)
@@ -140,6 +170,7 @@ struct FValueToken : FTokenBase
 
 	EValueType::Type ValueType;
 
+	bool BoolValue;
 	float NumberValue;
 	FString StringValue;
 };

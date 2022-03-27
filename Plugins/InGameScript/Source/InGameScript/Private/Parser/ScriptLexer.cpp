@@ -37,6 +37,10 @@ void FScriptLexer::InitializeParser()
 	ReservedMap.Add("continue", EReservedType::RT_Continue);
 	ReservedMap.Add("class", EReservedType::RT_Class);
 	ReservedMap.Add("function", EReservedType::RT_Function);
+	ReservedMap.Add("number", EReservedType::RT_Number);
+	ReservedMap.Add("string", EReservedType::RT_String);
+	ReservedMap.Add("bool", EReservedType::RT_Boolean);
+	ReservedMap.Add("return", EReservedType::RT_Return);
 }
 
 TSharedPtr<FTokenBase> FScriptLexer::GetNextToken()
@@ -60,6 +64,17 @@ TSharedPtr<FTokenBase> FScriptLexer::GetNextToken()
 			{
 				// Create a value token with string value
 				Result = MakeShareable(new FValueToken(StringValue));
+			}
+		}
+		break;
+	case '.': case '(': case ')': case '[':
+	case ']': case '{': case '}': case ';': case ',':
+		{
+			ESingleSymbolType::Type OutType;
+			if (ReadSingleSymbol(OutType))
+			{
+				// Create single symbol token
+				Result = MakeShareable(new FSingleSymbolToken(OutType));
 			}
 		}
 		break;
@@ -87,17 +102,30 @@ TSharedPtr<FTokenBase> FScriptLexer::GetNextToken()
 				else
 				{
 					// Create a id token with parsed value
-					Result = MakeShareable(new FIDToken(IdValue));
+					Result = MakeShareable(new FIDToken(FName(IdValue)));
 				}
 			}
 		}
 		else if (IsUnaryOperator(CurChar))
 		{
-			EUnaryOperatorType::Type UnaryType;
-			if (ReadUnaryOperator(UnaryType))
+			// Check if this is a negative number
+			if (IsDigit(OwningReader->GetNextChar()))
 			{
-				// Create a unary operator
-				Result = MakeShareable(new FOperatorToken(UnaryType));
+				float NumberValue = 0.f;
+				if (ReadNumber(NumberValue))
+				{
+					// Create a value token
+					Result = MakeShareable(new FValueToken(NumberValue));
+				}
+			}
+			else
+			{
+				EUnaryOperatorType::Type UnaryType;
+				if (ReadUnaryOperator(UnaryType))
+				{
+					// Create a unary operator
+					Result = MakeShareable(new FOperatorToken(UnaryType));
+				}
 			}
 		}
 		else if (IsBinaryOperator(CurChar))
@@ -123,12 +151,57 @@ TSharedPtr<FTokenBase> FScriptLexer::GetNextToken()
 	return Result;
 }
 
+TCHAR FScriptLexer::GetCurrentChar(bool bGetSkippable) const
+{
+	if (OwningReader.IsValid())
+	{
+		TCHAR CurrentChar = OwningReader->GetCurrentChar();
+		while (IsSkippableChar(CurrentChar) && !bGetSkippable)
+		{
+			CurrentChar = OwningReader->ConsumeAndGetNextChar();
+		}
+		return CurrentChar;
+	}
+	return INVALID_CHAR;
+}
+
+void FScriptLexer::ConsumeCurrentChar()
+{
+	if (OwningReader.IsValid())
+	{
+		OwningReader->ConsumeChar();
+	}
+}
+
+TCHAR FScriptLexer::GetNextChar() const
+{
+	return OwningReader.IsValid() ? OwningReader->GetNextChar() : INVALID_CHAR;
+}
+
+bool FScriptLexer::GetCurrentCharPosition(int32& LineNum, int32& CharNum) const
+{
+	if (!OwningReader.IsValid())
+		return false;
+
+	LineNum = OwningReader->GetLineNum() + 1;
+	CharNum = OwningReader->GetCharNum() + 1;
+	return !OwningReader->IsFinished();
+}
+
 bool FScriptLexer::ReadNumber(float& OutValue)
 {
 	bool bRead = false;
+	bool bNegative = false;
 	OutValue = 0;
-	// Handle integer part
+	// Check negative operator first
 	TCHAR CurChar = OwningReader->GetCurrentChar();
+	if (CurChar == '-')
+	{
+		bNegative = true;
+		CurChar = OwningReader->ConsumeAndGetNextChar();
+	}
+
+	// Handle integer part
 	while(IsDigit(CurChar))
 	{
 		bRead = true;
@@ -153,6 +226,12 @@ bool FScriptLexer::ReadNumber(float& OutValue)
 			// Move the offset toward right
 			Offset *= 0.1f;
 		}
+	}
+
+	// Apply the negative operator
+	if (bNegative)
+	{
+		OutValue *= -1;
 	}
 	return bRead;
 }
@@ -319,6 +398,47 @@ bool FScriptLexer::ReadBinaryOperator(EBinaryOperatorType::Type& OutType)
 	default:
 		UE_LOG(LogInGameScript, Error, TEXT("[ScriptLexer] Invalid binary operator %c"), CurChar);
 		break;
+	}
+
+	return bRead;
+}
+
+bool FScriptLexer::ReadSingleSymbol(ESingleSymbolType::Type& OutType)
+{
+	bool bRead = true;
+	TCHAR CurChar = OwningReader->GetAndConsumeCurrentChar();
+	switch(CurChar)
+	{
+	case '.':
+		OutType = ESingleSymbolType::SST_Period;
+		break;
+	case '(':
+		OutType = ESingleSymbolType::SST_OpenParen;
+		break;
+	case ')':
+		OutType = ESingleSymbolType::SST_CloseParen;
+		break;
+	case '[':
+		OutType = ESingleSymbolType::SST_OpenBracket;
+		break;
+	case ']':
+		OutType = ESingleSymbolType::SST_CloseBracket;
+		break;
+	case '{':
+		OutType = ESingleSymbolType::SST_OpenCurly;
+		break;
+	case '}':
+		OutType = ESingleSymbolType::SST_CloseCurly;
+		break;
+	case ';':
+		OutType = ESingleSymbolType::SST_Semicolon;
+		break;
+	case ',':
+		OutType = ESingleSymbolType::SST_Comma;
+		break;
+	default:
+		UE_LOG(LogInGameScript, Error, TEXT("[ScriptLexer] Invalid single symbol %c"), CurChar);
+		bRead = false;
 	}
 
 	return bRead;

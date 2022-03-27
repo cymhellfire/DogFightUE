@@ -1,8 +1,22 @@
 class FTest
 {
-    function BeginPlay
+    number b = 1;
+    number c;
+
+    function BeginPlay()
     {
-        a = 5 + 15.525
-        "DogFight123"
+        number a = 5 + 15.525 * 2;
+        b = "DogFight123";
+        c = a + 5 + 2;
+    }
+
+    function Sum(number a, number b)
+    {
+        return a + b;
     }
 }
+
+Test = FTest();
+Test.BeginPlay();
+c = Test.Sum(1, -1.5);
+Test[1].Sum(1, 2);

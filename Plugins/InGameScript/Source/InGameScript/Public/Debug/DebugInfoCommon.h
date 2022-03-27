@@ -10,6 +10,7 @@ namespace ETokenType
 		TEXT("Binary Operator"),
 		TEXT("ID"),
 		TEXT("Value"),
+		TEXT("Single Symbol"),
 	};
 }
 
@@ -26,6 +27,11 @@ namespace EReservedType
 		TEXT("Continue"),
 		TEXT("Class"),
 		TEXT("Function"),
+		TEXT("Return"),
+		TEXT("Number"),
+		TEXT("String"),
+		TEXT("Boolean"),
+		TEXT("Void"),
 	};
 }
 
@@ -59,11 +65,29 @@ namespace EBinaryOperatorType
 	};
 }
 
+namespace ESingleSymbolType
+{
+	inline FString SingleSymbolTypeName[] =
+	{
+		TEXT("None"),
+		TEXT("Period"),
+		TEXT("OpenParen"),
+		TEXT("CloseParen"),
+		TEXT("OpenBracket"),
+		TEXT("CloseBracket"),
+		TEXT("OpenCurly"),
+		TEXT("CloseCurly"),
+		TEXT("Semicolon"),
+		TEXT("Comma"),
+	};
+}
+
 namespace EValueType
 {
 	inline FString ValueTypeName[] =
 	{
 		TEXT("None"),
+		TEXT("Boolean"),
 		TEXT("Number"),
 		TEXT("String"),
 	};
