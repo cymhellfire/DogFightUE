@@ -90,5 +90,6 @@ namespace EValueType
 		TEXT("Boolean"),
 		TEXT("Number"),
 		TEXT("String"),
+		TEXT("Class"),
 	};
 }

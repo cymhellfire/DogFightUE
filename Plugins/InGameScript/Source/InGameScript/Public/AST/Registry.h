@@ -1,18 +1,37 @@
 ﻿#pragma once
 #include "Common.h"
+#include "Chaos/AABB.h"
+#include "Chaos/AABB.h"
 
+class FAbstractSyntaxTreeNodeBase;
 class FASTIDNode;
+class FASTFunctionNode;
+class FASTClassNode;
 
-struct INGAMESCRIPT_API FVariableDefinition
+namespace ERegistryEntryType
 {
-	explicit FVariableDefinition(EValueType::Type InType)
+	enum Type
 	{
-		ValueType = InType;
-		ValueNode = nullptr;
+		RET_None			= 0,
+		RET_Variable		= 1 << 0,
+		RET_Function		= 1 << 1,
+		RET_Class			= 1 << 2,
+		RET_All				= RET_Variable | RET_Function | RET_Class,
+	};
+}
+
+struct INGAMESCRIPT_API FRegistryEntry
+{
+	explicit FRegistryEntry(ERegistryEntryType::Type InEntryType)
+	{
+		EntryType = InEntryType;
+		ValueType = EValueType::VT_None;
+		ASTNode = nullptr;
 	}
 
+	ERegistryEntryType::Type EntryType;
 	EValueType::Type ValueType;
-	TSharedPtr<FASTIDNode> ValueNode;
+	TSharedPtr<FAbstractSyntaxTreeNodeBase> ASTNode;
 };
 
 // A table stores all defined variables in current code scope.
@@ -22,14 +41,15 @@ public:
 	FRegistry();
 	~FRegistry();
 
-	void RegisterNewVariable(FName VariableName, EValueType::Type ValueType);
 	void RegisterNewVariable(FName VariableName, TSharedPtr<FASTIDNode> VariableNode = nullptr);
 	void UnRegisterVariable(FName VariableName);
 
-	bool SetVariableValue(FName VariableName, TSharedPtr<FASTIDNode> VariableNode);
+	bool RegisterNewFunction(FName FunctionName, TSharedPtr<FASTFunctionNode> FunctionNode = nullptr);
 
-	TSharedPtr<FASTIDNode> GetVariableNode(FName VariableName);
+	bool RegisterNewClass(FName ClassName, TSharedPtr<FASTClassNode> ClassNode = nullptr);
+
+	FRegistryEntry* GetRegistryEntry(FName EntryName, int32 TypeMask = 0);
 
 protected:
-	TMap<FName, FVariableDefinition> RegistryMap;
+	TMap<FName, FRegistryEntry> RegistryMap;
 };

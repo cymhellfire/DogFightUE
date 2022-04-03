@@ -116,6 +116,7 @@ namespace EValueType
 		VT_Boolean,
 		VT_Number,
 		VT_String,
+		VT_Class,
 	};
 }
 

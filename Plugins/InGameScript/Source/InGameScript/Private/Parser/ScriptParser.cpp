@@ -69,6 +69,10 @@ bool FScriptParser::Execute()
 
 TSharedPtr<FAbstractSyntaxTree> FScriptParser::Program()
 {
+	// Create file scope registry first
+	TSharedPtr<FRegistry> FileRegistry = MakeShareable(new FRegistry);
+	RegistryStack.Push(FileRegistry);
+
 	EParseResult Result = StateList();
 
 	// Return nullptr if parser failed
@@ -203,9 +207,15 @@ EParseResult FScriptParser::ClassDefinition()
 	}
 	PopToken();
 
+	// Register new class
+	RegistryStack.Top()->RegisterNewClass(NewClass->GetClassID(), NewClass);
+
 	// Create local registry for new class
 	TSharedPtr<FRegistry> NewRegistry = MakeShareable(new FRegistry);
 	RegistryStack.Push(NewRegistry);
+
+	// Set registry
+	NewClass->SetClassRegistry(NewRegistry);
 
 	// Read class body
 	CurToken = GetUnHandledToken();
@@ -265,9 +275,6 @@ EParseResult FScriptParser::ClassDefinition()
 
 	// Pop registry
 	RegistryStack.Pop();
-
-	// Push class node
-	ASTNodeStack.Push(NewClass);
 
 	return EPR_Succeed;
 }
@@ -336,6 +343,9 @@ EParseResult FScriptParser::FunctionDefinition(TArray<int32>& FuncIndices)
 		}
 		PopToken();
 	}
+
+	// Register new function
+	RegistryStack.Top()->RegisterNewFunction(NewFunc->GetFunctionName(), NewFunc);
 
 	// Create local registry for new function
 	TSharedPtr<FRegistry> NewRegistry = MakeShareable(new FRegistry);
@@ -478,6 +488,11 @@ EParseResult FScriptParser::VariableInitialization(TArray<int32>& InitIndices)
 			return EPR_Failed;
 		}
 	}
+	else
+	{
+		// Pop variable definition node from stack to avoid ID node left after class node constructed
+		PopNodes();
+	}
 
 	// Check the tailing semicolon
 	CurToken = GetUnHandledToken();
@@ -493,6 +508,8 @@ EParseResult FScriptParser::VariableInitialization(TArray<int32>& InitIndices)
 
 EParseResult FScriptParser::VariableDefinition()
 {
+	StartTokenCache();
+
 	TSharedPtr<FTokenBase> CurToken = GetUnHandledToken();
 	if (CurToken->TokenType == ETokenType::TT_Reserved)
 	{
@@ -525,12 +542,15 @@ EParseResult FScriptParser::VariableDefinition()
 			switch(ReservedToken->ReservedType)
 			{
 			case EReservedType::RT_Boolean:
+				IDNode->SetValue(MakeShareable(new FASTBooleanNode));
 				IDNode->SetValueType(EValueType::VT_Boolean);
 				break;
 			case EReservedType::RT_Number:
+				IDNode->SetValue(MakeShareable(new FASTNumberNode));
 				IDNode->SetValueType(EValueType::VT_Number);
 				break;
 			case EReservedType::RT_String:
+				IDNode->SetValue(MakeShareable(new FASTStringNode));
 				IDNode->SetValueType(EValueType::VT_String);
 				break;
 			default:
@@ -545,11 +565,53 @@ EParseResult FScriptParser::VariableDefinition()
 			return EPR_Failed;
 		}
 	}
+	else if (CurToken->TokenType == ETokenType::TT_ID)
+	{
+		TSharedPtr<FIDToken> ClassIDToken = StaticCastSharedPtr<FIDToken>(CurToken);
+		if (ClassIDToken.IsValid())
+		{
+			PopToken();
+
+			// Validate class ID
+			FRegistryEntry* ClassEntry = FindIDNode(ClassIDToken->IdName, ERegistryEntryType::RET_Class);
+			if (ClassEntry == nullptr)
+			{
+				RecoverTokenFromCache();
+				return EPR_FallBack;
+			}
+
+			TSharedPtr<FASTClassNode> ClassNode = StaticCastSharedPtr<FASTClassNode>(ClassEntry->ASTNode);
+			TSharedPtr<FASTClassTypeNode> ClassTypeNode = MakeShareable(new FASTClassTypeNode);
+			ClassTypeNode->SetClassNode(ClassNode);
+
+			// Read variable ID
+			CurToken = GetUnHandledToken();
+			if (CurToken->TokenType != ETokenType::TT_ID)
+			{
+				RecoverTokenFromCache();
+				return EPR_FallBack;
+			}
+
+			if (!CreateIDNode())
+			{
+				return EPR_Failed;
+			}
+
+			TSharedPtr<FASTIDNode> IDNode = StaticCastSharedPtr<FASTIDNode>(ASTNodeStack.Top());
+			IDNode->SetValueType(EValueType::VT_Class);
+			IDNode->SetValue(ClassTypeNode);
+
+			// Register new variable
+			RegistryStack.Top()->RegisterNewVariable(IDNode->GetID(), IDNode);
+		}
+	}
 	else
 	{
+		RecoverTokenFromCache();
 		return EPR_Failed;
 	}
 
+	ClearTokenCache();
 	return EPR_Succeed;
 }
 
@@ -760,28 +822,31 @@ EParseResult FScriptParser::ReturnStatement()
 EParseResult FScriptParser::AssignStatement()
 {
 	// Enable token cache for fallback
-	bEnableTokenCache = true;
+	StartTokenCache();
 	// Left part
-	TSharedPtr<FTokenBase> CurToken = GetUnHandledToken();
-	if (CurToken->TokenType == ETokenType::TT_ID)
+	TSharedPtr<FTokenBase> CurToken = nullptr;
+	EParseResult Result = VariableDefinition();
+	if (Result == EPR_Failed)
 	{
-		TSharedPtr<FIDToken> IDToken = StaticCastSharedPtr<FIDToken>(CurToken);
-		TSharedPtr<FASTIDNode> TargetNode = FindIDNode(IDToken->IdName);
-		if (!TargetNode.IsValid())
-		{
-			LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Using undefined identifier."), OwningLexer);
-			return EPR_Failed;
-		}
-		PopToken();
-
-		// Push found ID node into stack for later usage
-		ASTNodeStack.Push(TargetNode);
+		return EPR_Failed;
 	}
-	else
+
+	if (Result == EPR_FallBack)
 	{
-		if (VariableDefinition() == EPR_Failed)
+		CurToken = GetUnHandledToken();
+		if (CurToken->TokenType == ETokenType::TT_ID)
 		{
-			return EPR_Failed;
+			TSharedPtr<FIDToken> IDToken = StaticCastSharedPtr<FIDToken>(CurToken);
+			FRegistryEntry* TargetNode = FindIDNode(IDToken->IdName, ERegistryEntryType::RET_Variable);
+			if (TargetNode == nullptr)
+			{
+				LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Using undefined identifier."), OwningLexer);
+				return EPR_Failed;
+			}
+			PopToken();
+
+			// Push found ID node into stack for later usage
+			ASTNodeStack.Push(TargetNode->ASTNode);
 		}
 	}
 
@@ -811,7 +876,7 @@ EParseResult FScriptParser::AssignStatement()
 		// Recover token from cache to parser again
 		RecoverTokenFromCache();
 		// Turn off token cache
-		bEnableTokenCache = false;
+		// bEnableTokenCache = false;
 		return EPR_FallBack;
 	}
 	PopToken();
@@ -1081,8 +1146,18 @@ EParseResult FScriptParser::SuffixExpression()
 				return EPR_Failed;
 			}
 			TSharedPtr<FIDToken> IDToken = StaticCastSharedPtr<FIDToken>(CurToken);
-			TSharedPtr<FASTIDNode> IDNode = FindIDNode(IDToken->IdName);
-			if (!IDNode.IsValid())
+
+			// Get outer node
+			TSharedPtr<FASTIDNode> ClassIDNode = StaticCastSharedPtr<FASTIDNode>(ASTNodeStack.Top());
+			if (!ClassIDNode.IsValid())
+			{
+				LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Expected class name here."), OwningLexer);
+				return EPR_Failed;
+			}
+			TSharedPtr<FASTClassTypeNode> ClassTypeNode = StaticCastSharedPtr<FASTClassTypeNode>(ClassIDNode->GetValue());
+			TSharedPtr<FASTClassNode> ClassNode = ClassTypeNode->GetClassNode();
+			FRegistryEntry* IDEntry = FindIDInClass(IDToken->IdName, ERegistryEntryType::RET_All, ClassNode);
+			if (IDEntry == nullptr)
 			{
 				LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Use undefined identifier."), OwningLexer);
 				return EPR_Failed;
@@ -1093,8 +1168,8 @@ EParseResult FScriptParser::SuffixExpression()
 
 			// Create member accessor
 			TSharedPtr<FASTMemberAccessorNode> MemberAccessor = MakeShareable(new FASTMemberAccessorNode);
-			MemberAccessor->SetMemberIDNode(IDNode);
-			MemberAccessor->SetOwningIDNode(OwnerNode);
+			MemberAccessor->Initialize(*IDEntry);
+			MemberAccessor->SetOwningNode(OwnerNode);
 
 			PopNodes();
 			ASTNodeStack.Push(MemberAccessor);
@@ -1218,8 +1293,8 @@ EParseResult FScriptParser::AtomicExpression()
 	else if (CurToken->TokenType == ETokenType::TT_ID)
 	{
 		TSharedPtr<FIDToken> IDToken = StaticCastSharedPtr<FIDToken>(CurToken);
-		TSharedPtr<FASTIDNode> IDNode = FindIDNode(IDToken->IdName);
-		if (!IDNode.IsValid())
+		FRegistryEntry* FoundEntry = FindIDNode(IDToken->IdName, ERegistryEntryType::RET_All);
+		if (FoundEntry == nullptr)
 		{
 			LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Use undefined identifier."), OwningLexer);
 			return EPR_Failed;
@@ -1227,7 +1302,7 @@ EParseResult FScriptParser::AtomicExpression()
 		PopToken();
 
 		// Push found node into stack
-		ASTNodeStack.Push(IDNode);
+		ASTNodeStack.Push(FoundEntry->ASTNode);
 	}
 	else
 	{
@@ -1271,23 +1346,34 @@ bool FScriptParser::CreateIDNode()
 	return true;
 }
 
-TSharedPtr<FASTIDNode> FScriptParser::FindIDNode(FName NodeName)
+FRegistryEntry* FScriptParser::FindIDNode(FName NodeName, int32 EntryType)
 {
 	// Search in current registry
 	int32 RegistryIndex = RegistryStack.Num() - 1;
 
-	TSharedPtr<FASTIDNode> Result;
+	FRegistryEntry* Result;
 	do
 	{
 		TSharedPtr<FRegistry> FindSource = RegistryStack[RegistryIndex];
-		Result = FindSource->GetVariableNode(NodeName);
+		Result = FindSource->GetRegistryEntry(NodeName, EntryType);
 
 		// Find in outer registries
 		RegistryIndex--;
 	}
-	while (RegistryIndex >= 0 && !Result.IsValid());
+	while (RegistryIndex >= 0 && Result == nullptr);
 
 	return Result;
+}
+
+FRegistryEntry* FScriptParser::FindIDInClass(FName NodeName, int32 EntryType, TSharedPtr<FASTClassNode> ClassNode)
+{
+	if (!ClassNode.IsValid())
+	{
+		return nullptr;
+	}
+
+	TSharedPtr<FRegistry> ClassRegistry = ClassNode->GetClassRegistry();
+	return ClassRegistry->GetRegistryEntry(NodeName, EntryType);
 }
 
 TSharedPtr<FTokenBase> FScriptParser::GetNextToken(bool bPushToStack)
@@ -1370,31 +1456,71 @@ void FScriptParser::PopToken(int32 PopCount)
 	}
 }
 
+void FScriptParser::StartTokenCache()
+{
+	bEnableTokenCache = true;
+
+	// Record current cache length
+	TokenCacheOrigin.Push(TokenCache.Num());
+}
+
 void FScriptParser::CacheToken(TSharedPtr<FTokenBase> InToken)
 {
 	if (!TokenCache.Contains(InToken))
 	{
 		// Insert new element at first position to remain the order
-		TokenCache.Insert(InToken, 0);
+		//TokenCache.Insert(InToken, 0);
+		TokenCache.Add(InToken);
 	}
 }
 
 void FScriptParser::RecoverTokenFromCache()
 {
-	if (TokenCache.Num() == 0)
+	if (TokenCacheOrigin.Num() == 0)
+	{
+		bEnableTokenCache = false;
+		return;
+	}
+
+	// Get the origin index of last cache
+	int32 Origin = TokenCacheOrigin.Pop();
+
+	// Append caches in range to the end of token stack (and avoid duplicated instances)
+	// Reverse order
+	for (int32 Index = TokenCache.Num() - 1; Index >= Origin; --Index)
+	{
+		TokenStack.AddUnique(TokenCache[Index]);
+		TokenCache.RemoveAt(Index);
+	}
+
+	// Set the pointer to end of stack
+	CurTokenPointer = TokenStack.Num() - 1;
+
+	if (TokenCacheOrigin.Num() == 0)
+	{
+		bEnableTokenCache = false;
+	}
+}
+
+void FScriptParser::ClearTokenCache()
+{
+	if (TokenCacheOrigin.Num() == 0)
 	{
 		return;
 	}
 
-	// Append cache to the end of token stack (and avoid duplicated instances)
-	for (auto Cache : TokenCache)
-	{
-		TokenStack.AddUnique(Cache);
-	}
-	TokenCache.Empty();
+	// Get the origin index of last cache
+	int32 Origin = TokenCacheOrigin.Pop();
 
-	// Set the pointer to end of stack
-	CurTokenPointer = TokenStack.Num() - 1;
+	for (int32 Index = TokenCache.Num() - 1; Index >= Origin; --Index)
+	{
+		TokenCache.RemoveAt(Index);
+	}
+
+	if (TokenCacheOrigin.Num() == 0)
+	{
+		bEnableTokenCache = false;
+	}
 }
 
 bool FScriptParser::CheckTokenSymbolType(TSharedPtr<FTokenBase> CheckToken, ESingleSymbolType::Type ExpectType) const

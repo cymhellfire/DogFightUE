@@ -2,6 +2,7 @@
 
 #include "ASTMacro.h"
 #include "Common.h"
+#include "Registry.h"
 
 // Base class of all AST node.
 class INGAMESCRIPT_API FAbstractSyntaxTreeNodeBase
@@ -79,6 +80,18 @@ public:
 	DEFINE_CHILD_VARIABLE(FString, Value);
 };
 
+class INGAMESCRIPT_API FASTClassTypeNode : public FASTSimpleExpressionNode
+{
+public:
+	FASTClassTypeNode()
+		: FASTSimpleExpressionNode()
+	{
+		ValueType = EValueType::VT_Class;
+	}
+
+	DEFINE_CHILD_SHARED_PTR(FASTClassNode, ClassNode);
+};
+
 class INGAMESCRIPT_API FASTPrefixExpressionNode : public FASTSimpleExpressionNode
 {
 public:
@@ -144,8 +157,11 @@ public:
 		NodeType = EASTNodeType::ANT_MemberAccessor;
 	}
 
-	DEFINE_CHILD_SHARED_PTR(FASTSuffixExpressionNode, OwningIDNode);
-	DEFINE_CHILD_SHARED_PTR(class FASTIDNode, MemberIDNode);
+	void Initialize(const FRegistryEntry& InEntry);
+
+	DEFINE_CHILD_VARIABLE(ERegistryEntryType::Type, EntryType);
+	DEFINE_CHILD_SHARED_PTR(FASTSuffixExpressionNode, OwningNode);
+	DEFINE_CHILD_SHARED_PTR(FAbstractSyntaxTreeNodeBase, MemberNode);
 };
 
 class INGAMESCRIPT_API FASTFunctionInvokerNode : public FASTSuffixExpressionNode
@@ -299,6 +315,7 @@ public:
 	}
 
 	DEFINE_CHILD_VARIABLE(FName, ClassID)
+	DEFINE_CHILD_SHARED_PTR(FRegistry, ClassRegistry);
 	// Member variable initialization statements
 	DEFINE_CHILD_SHARED_PTR_ARRAY(FASTAssignStatementNode, VariableInitialList)
 	DEFINE_CHILD_SHARED_PTR_ARRAY(FASTFunctionNode, FunctionNodeList)

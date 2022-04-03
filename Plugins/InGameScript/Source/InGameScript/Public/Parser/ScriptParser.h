@@ -7,9 +7,12 @@
 #include "Chaos/AABB.h"
 #include "Chaos/AABB.h"
 #include "Chaos/AABB.h"
+#include "Chaos/AABB.h"
+#include "Chaos/AABB.h"
 
 class FScriptLexer;
 struct FTokenBase;
+struct FRegistryEntry; 
 class FAbstractSyntaxTreeNodeBase;
 class FRegistry;
 
@@ -78,7 +81,7 @@ protected:
 	EParseResult VariableInitialization(TArray<int32>& InitIndices);
 
 	/**
-	 * @brief (string|number|bool) ID
+	 * @brief (string|number|bool|ClassID) ID
 	 */
 	EParseResult VariableDefinition();
 
@@ -147,10 +150,19 @@ protected:
 	bool CreateIDNode();
 
 	/**
-	 * Find existing ID node with specified NodeName.
+	 * Find existing registry entry with specified NodeName.
 	 * @param NodeName			Name to search with.
+	 * @param EntryType			Entry type mask for filtering.
 	 */
-	TSharedPtr<FASTIDNode> FindIDNode(FName NodeName);
+	FRegistryEntry* FindIDNode(FName NodeName, int32 EntryType);
+
+	/**
+	 * Find existing registry entry in given class with specified name.
+	 * @param NodeName			Name to search.
+	 * @param EntryType			Entry type mask for filtering.
+	 * @param ClassNode			Class node to search through.
+	 */
+	FRegistryEntry* FindIDInClass(FName NodeName, int32 EntryType, TSharedPtr<FASTClassNode> ClassNode);
 
 	/**
 	 * Get next token from lexer and push this token into stack.
@@ -202,6 +214,11 @@ protected:
 	}
 
 	/**
+	 * Start cache token from now on.
+	 */
+	void StartTokenCache();
+
+	/**
 	 * Push a token into cache for later recover.
 	 */
 	void CacheToken(TSharedPtr<FTokenBase> InToken);
@@ -214,10 +231,7 @@ protected:
 	/**
 	 * Clear all tokens in token cache.
 	 */
-	void ClearTokenCache()
-	{
-		TokenCache.Empty();
-	}
+	void ClearTokenCache();
 
 	/**
 	 * Check token with specified symbol type.
@@ -231,6 +245,7 @@ protected:
 	TArray<TSharedPtr<FAbstractSyntaxTreeNodeBase>> ASTNodeStack;
 	TArray<TSharedPtr<FRegistry>> RegistryStack;
 
+	TArray<int32> TokenCacheOrigin;
 	TArray<TSharedPtr<FTokenBase>> TokenCache;
 
 	int32 CurTokenPointer;

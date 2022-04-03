@@ -16,7 +16,7 @@ class FTest
     }
 }
 
-Test = FTest();
+FTest Test = FTest();
 Test.BeginPlay();
 c = Test.Sum(1, -1.5);
 Test[1].Sum(1, 2);
