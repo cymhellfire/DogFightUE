@@ -5,6 +5,34 @@
 #include "AST/Registry.h"
 #include "Parser/ScriptLexer.h"
 
+FScopeTokenCache::FScopeTokenCache(EParseResult* InResultAddress, TWeakPtr<FScriptParser> InOwner)
+{
+	Result = InResultAddress;
+	Owner = InOwner;
+
+	// Start token cache
+	Owner.Pin()->StartTokenCache();
+}
+
+FScopeTokenCache::~FScopeTokenCache()
+{
+	if (!Owner.IsValid())
+		return;
+
+	// Take different actions based on result
+	switch(*Result)
+	{
+	case EPR_FallBack:
+		Owner.Pin()->RecoverTokenFromCache();
+		break;
+	case EPR_Succeed:
+	case EPR_Failed:
+	case EPR_EOF:
+	default:
+		Owner.Pin()->ClearTokenCache();
+	}
+}
+
 FScriptParser::FScriptParser()
 {
 	CurTokenPointer = 0;
@@ -508,7 +536,9 @@ EParseResult FScriptParser::VariableInitialization(TArray<int32>& InitIndices)
 
 EParseResult FScriptParser::VariableDefinition()
 {
-	StartTokenCache();
+	EParseResult Result = EPR_Failed;
+	FScopeTokenCache ScopeTokenCache(&Result, TWeakPtr<FScriptParser>(SharedThis(this)));
+	//StartTokenCache();
 
 	TSharedPtr<FTokenBase> CurToken = GetUnHandledToken();
 	if (CurToken->TokenType == ETokenType::TT_Reserved)
@@ -576,8 +606,9 @@ EParseResult FScriptParser::VariableDefinition()
 			FRegistryEntry* ClassEntry = FindIDNode(ClassIDToken->IdName, ERegistryEntryType::RET_Class);
 			if (ClassEntry == nullptr)
 			{
-				RecoverTokenFromCache();
-				return EPR_FallBack;
+				Result = EPR_FallBack;
+				//RecoverTokenFromCache();
+				return Result;
 			}
 
 			TSharedPtr<FASTClassNode> ClassNode = StaticCastSharedPtr<FASTClassNode>(ClassEntry->ASTNode);
@@ -588,8 +619,9 @@ EParseResult FScriptParser::VariableDefinition()
 			CurToken = GetUnHandledToken();
 			if (CurToken->TokenType != ETokenType::TT_ID)
 			{
-				RecoverTokenFromCache();
-				return EPR_FallBack;
+				Result = EPR_FallBack;
+				//RecoverTokenFromCache();
+				return Result;
 			}
 
 			if (!CreateIDNode())
@@ -607,12 +639,13 @@ EParseResult FScriptParser::VariableDefinition()
 	}
 	else
 	{
-		RecoverTokenFromCache();
+		//RecoverTokenFromCache();
 		return EPR_Failed;
 	}
 
-	ClearTokenCache();
-	return EPR_Succeed;
+	Result = EPR_Succeed;
+	//ClearTokenCache();
+	return Result;
 }
 
 EParseResult FScriptParser::FuncArgs()
@@ -822,10 +855,12 @@ EParseResult FScriptParser::ReturnStatement()
 EParseResult FScriptParser::AssignStatement()
 {
 	// Enable token cache for fallback
-	StartTokenCache();
+	//StartTokenCache();
+	EParseResult Result = EPR_Failed;
+	FScopeTokenCache ScopeTokenCache(&Result, TWeakPtr<FScriptParser>(SharedThis(this)));
 	// Left part
 	TSharedPtr<FTokenBase> CurToken = nullptr;
-	EParseResult Result = VariableDefinition();
+	Result = VariableDefinition();
 	if (Result == EPR_Failed)
 	{
 		return EPR_Failed;
@@ -841,7 +876,8 @@ EParseResult FScriptParser::AssignStatement()
 			if (TargetNode == nullptr)
 			{
 				LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Using undefined identifier."), OwningLexer);
-				return EPR_Failed;
+				Result = EPR_Failed;
+				return Result;
 			}
 			PopToken();
 
@@ -860,13 +896,15 @@ EParseResult FScriptParser::AssignStatement()
 			if (OperatorToken->BinaryOperatorType != EBinaryOperatorType::BOT_Assign)
 			{
 				LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] '==' excepted.", OwningLexer);
-				return EPR_Failed;
+				Result = EPR_Failed;
+				return Result;
 			}
 		}
 		else
 		{
 			LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] Invalid binary operator token.", OwningLexer);
-			return EPR_Failed;
+			Result = EPR_Failed;
+			return Result;
 		}
 	}
 	else
@@ -874,15 +912,17 @@ EParseResult FScriptParser::AssignStatement()
 		// Pop out one node from stack because it will be rebuilt later
 		PopNodes(1);
 		// Recover token from cache to parser again
-		RecoverTokenFromCache();
+		//RecoverTokenFromCache();
 		// Turn off token cache
 		// bEnableTokenCache = false;
-		return EPR_FallBack;
+		Result = EPR_FallBack;
+		return Result;
 	}
 	PopToken();
 
 	// Right parts
-	if (ComplexExpression() == EPR_Failed)
+	Result = ComplexExpression();
+	if (Result == EPR_Failed)
 	{
 		return EPR_Failed;
 	}
@@ -900,8 +940,7 @@ EParseResult FScriptParser::AssignStatement()
 	ASTNodeStack.Push(AssignStatementNode);
 
 	// Turn off and clear cache
-	bEnableTokenCache = false;
-	ClearTokenCache();
+	//ClearTokenCache();
 	return EPR_Succeed;
 }
 

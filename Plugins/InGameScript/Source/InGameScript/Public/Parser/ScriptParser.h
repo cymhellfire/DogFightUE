@@ -15,6 +15,7 @@ struct FTokenBase;
 struct FRegistryEntry; 
 class FAbstractSyntaxTreeNodeBase;
 class FRegistry;
+class FScriptParser;
 
 enum EParseResult
 {
@@ -24,10 +25,24 @@ enum EParseResult
 	EPR_Failed,
 };
 
-class INGAMESCRIPT_API FScriptParser
+/**
+ * Cache tokens used in current scope and take different operations when destruct based on listening parse result.
+ */
+struct FScopeTokenCache
+{
+	explicit FScopeTokenCache(EParseResult* InResultAddress, TWeakPtr<FScriptParser> InOwner);
+	~FScopeTokenCache();
+
+private:
+	TWeakPtr<FScriptParser> Owner;
+	EParseResult* Result;
+};
+
+class INGAMESCRIPT_API FScriptParser : public TSharedFromThis<FScriptParser>
 {
 public:
 	friend class FScriptParserFactory;
+	friend FScopeTokenCache;
 	~FScriptParser();
 
 	bool Execute();
