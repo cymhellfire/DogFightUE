@@ -14,6 +14,10 @@ struct FTokenBase
 #endif
 
 	ETokenType::Type TokenType;
+
+	// Source file info
+	int32 LineNum, StartPos, TokenLength;
+	FString CurrentLine;
 };
 
 struct FReservedToken : FTokenBase

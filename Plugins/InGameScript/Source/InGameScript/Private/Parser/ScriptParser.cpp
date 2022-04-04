@@ -85,7 +85,7 @@ bool FScriptParser::Execute()
 		// 	TokenIndex++;
 		// }
 
-		LOG_WITH_CHAR_POS(ELogVerbosity::Log, TEXT("[ScriptParser] Parser start."), OwningLexer);
+		UE_LOG(LogInGameScript, Log, TEXT("[ScriptParser] Start parse."));
 
 		Initialize();
 		Program();
@@ -226,13 +226,13 @@ EParseResult FScriptParser::ClassDefinition()
 		}
 		else
 		{
-			LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Invalid ID token."), OwningLexer);
+			LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Invalid ID token."), CurToken);
 			return EPR_Failed;
 		}
 	}
 	else
 	{
-		LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Expect ID token."), OwningLexer);
+		LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Expect ID token."), CurToken);
 		return EPR_Failed;
 	}
 	PopToken();
@@ -264,7 +264,7 @@ EParseResult FScriptParser::ClassDefinition()
 		CurToken = GetUnHandledToken();
 		if (!CheckTokenSymbolType(CurToken, ESingleSymbolType::SST_CloseCurly))
 		{
-			LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] No tailing '}'", OwningLexer);
+			LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] No tailing '}'", CurToken);
 			return EPR_Failed;
 		}
 		PopToken();
@@ -336,13 +336,13 @@ EParseResult FScriptParser::ClassMemberList(TArray<int32>& FuncIndices, TArray<i
 			}
 			else
 			{
-				LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] Invalid ReservedToken detected.", OwningLexer);
+				LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] Invalid ReservedToken detected.", CurToken);
 				return EPR_Failed;
 			}
 		}
 		else
 		{
-			LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] ReservedToken expected.", OwningLexer);
+			LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] ReservedToken expected.", CurToken);
 			return EPR_Failed;
 		}
 		CurToken = GetUnHandledToken();
@@ -391,7 +391,7 @@ EParseResult FScriptParser::FunctionDefinition(TArray<int32>& FuncIndices)
 			}
 			break;
 		default:
-			LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[InGameScript] Invalid value type token."), OwningLexer);
+			LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[InGameScript] Invalid value type token."), CurToken);
 			return EPR_Failed;
 		}
 	}
@@ -410,13 +410,13 @@ EParseResult FScriptParser::FunctionDefinition(TArray<int32>& FuncIndices)
 		}
 		else
 		{
-			LOG_WITH_CHAR_POS(ELogVerbosity::Error, PARSE_ERROR_UNDEFINED_IDENTIFIER, OwningLexer);
+			LOG_WITH_CHAR_POS(ELogVerbosity::Error, PARSE_ERROR_UNDEFINED_IDENTIFIER, CurToken);
 			return EPR_Failed;
 		}
 	}
 	else
 	{
-		LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[InGameScript] Value type token expected."), OwningLexer);
+		LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[InGameScript] Value type token expected."), CurToken);
 		return EPR_Failed;
 	}
 
@@ -431,7 +431,7 @@ EParseResult FScriptParser::FunctionDefinition(TArray<int32>& FuncIndices)
 		}
 		else
 		{
-			LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] Invalid ID token detected.", OwningLexer);
+			LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] Invalid ID token detected.", CurToken);
 			return EPR_Failed;
 		}
 		PopToken();
@@ -460,7 +460,7 @@ EParseResult FScriptParser::FunctionDefinition(TArray<int32>& FuncIndices)
 		CurToken = GetUnHandledToken();
 		if (!CheckTokenSymbolType(CurToken, ESingleSymbolType::SST_CloseParen))
 		{
-			LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] No tailing ')'.", OwningLexer);
+			LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] No tailing ')'.", CurToken);
 			return EPR_Failed;
 		}
 		PopToken();
@@ -483,7 +483,7 @@ EParseResult FScriptParser::FunctionDefinition(TArray<int32>& FuncIndices)
 	}
 	else
 	{
-		LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] Expected '('.", OwningLexer);
+		LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] Expected '('.", CurToken);
 		return EPR_Failed;
 	}
 
@@ -503,7 +503,7 @@ EParseResult FScriptParser::FunctionDefinition(TArray<int32>& FuncIndices)
 		CurToken = GetUnHandledToken();
 		if (!CheckTokenSymbolType(CurToken, ESingleSymbolType::SST_CloseCurly))
 		{
-			LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] No tailing '}'.", OwningLexer);
+			LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] No tailing '}'.", CurToken);
 			return EPR_Failed;
 		}
 		PopToken();
@@ -535,7 +535,7 @@ EParseResult FScriptParser::VariableInitialization(TArray<int32>& InitIndices)
 	EParseResult Result = VariableDefinition();
 	if (Result == EPR_Failed)
 	{
-		LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Expected definition."), OwningLexer);
+		LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Expected definition."), GetUnHandledToken());
 		return Result;
 	}
 
@@ -562,7 +562,7 @@ EParseResult FScriptParser::VariableInitialization(TArray<int32>& InitIndices)
 
 			if (DestNode == nullptr || SourceNode == nullptr)
 			{
-				LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Failed to construct assign statement."), OwningLexer);
+				LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Failed to construct assign statement."), GetUnHandledToken());
 				return EPR_Failed;
 			}
 
@@ -577,7 +577,7 @@ EParseResult FScriptParser::VariableInitialization(TArray<int32>& InitIndices)
 		}
 		else
 		{
-			LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Only assign statement support here."), OwningLexer);
+			LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Only assign statement support here."), CurToken);
 			return EPR_Failed;
 		}
 	}
@@ -591,7 +591,7 @@ EParseResult FScriptParser::VariableInitialization(TArray<int32>& InitIndices)
 	CurToken = GetUnHandledToken();
 	if (!CheckTokenSymbolType(CurToken, ESingleSymbolType::SST_Semicolon))
 	{
-		LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Expected tailing ';'."), OwningLexer);
+		LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Expected tailing ';'."), CurToken);
 		return EPR_Failed;
 	}
 	PopToken();
@@ -617,7 +617,7 @@ EParseResult FScriptParser::VariableDefinition()
 			CurToken = GetUnHandledToken();
 			if (CurToken->TokenType != ETokenType::TT_ID)
 			{
-				LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] ID token expected.", OwningLexer);
+				LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] ID token expected.", CurToken);
 				return EPR_Failed;
 			}
 			if (!CreateIDNode())
@@ -649,14 +649,14 @@ EParseResult FScriptParser::VariableDefinition()
 				IDNode->SetValueType(EValueType::VT_String);
 				break;
 			default:
-				LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] Unsupported value type detected.", OwningLexer);
+				LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] Unsupported value type detected.", CurToken);
 				return EPR_Failed;
 			}
 			CurrentRegistry->RegisterNewVariable(IDNode->GetID(), IDNode);
 		}
 		else
 		{
-			LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] Reserved token expected.", OwningLexer);
+			LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] Reserved token expected.", CurToken);
 			return EPR_Failed;
 		}
 	}
@@ -792,7 +792,7 @@ EParseResult FScriptParser::FuncParam()
 		Result = SimpleExpression();
 		if (Result == EPR_Failed)
 		{
-			LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] Expected AtomicExpression.", OwningLexer);
+			LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] Expected AtomicExpression.", CurToken);
 			return EPR_Failed;
 		}
 
@@ -870,7 +870,7 @@ EParseResult FScriptParser::PrimaryStatement()
 	CurToken = GetUnHandledToken();
 	if (!CheckTokenSymbolType(CurToken, ESingleSymbolType::SST_Semicolon))
 	{
-		LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] Missing tailling ';'.", OwningLexer);
+		LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] Missing tailling ';'.", CurToken);
 		return EPR_Failed;
 	}
 	PopToken();
@@ -889,7 +889,7 @@ EParseResult FScriptParser::ReturnStatement()
 		{
 			if (ReservedToken->ReservedType != EReservedType::RT_Return)
 			{
-				LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] 'return'", OwningLexer);
+				LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] 'return'", CurToken);
 				return EPR_Failed;
 			}
 			PopToken();
@@ -940,7 +940,7 @@ EParseResult FScriptParser::AssignStatement()
 			FRegistryEntry* TargetNode = FindIDNode(IDToken->IdName, ERegistryEntryType::RET_Variable);
 			if (TargetNode == nullptr)
 			{
-				LOG_WITH_CHAR_POS(ELogVerbosity::Error, PARSE_ERROR_UNDEFINED_IDENTIFIER, OwningLexer);
+				LOG_WITH_CHAR_POS(ELogVerbosity::Error, PARSE_ERROR_UNDEFINED_IDENTIFIER, CurToken);
 				Result = EPR_Failed;
 				return Result;
 			}
@@ -960,14 +960,14 @@ EParseResult FScriptParser::AssignStatement()
 		{
 			if (OperatorToken->BinaryOperatorType != EBinaryOperatorType::BOT_Assign)
 			{
-				LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] '==' excepted.", OwningLexer);
+				LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] '==' excepted.", CurToken);
 				Result = EPR_Failed;
 				return Result;
 			}
 		}
 		else
 		{
-			LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] Invalid binary operator token.", OwningLexer);
+			LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] Invalid binary operator token.", CurToken);
 			Result = EPR_Failed;
 			return Result;
 		}
@@ -1052,7 +1052,7 @@ EParseResult FScriptParser::ComplexExpression()
 			// Pop nodes from stack and construct AST until CurrentOpPriority > LastOpPriority
 			if (!ConstructBinaryOperatorAST())
 			{
-				LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] Construct BinaryOperatorExpression failed.", OwningLexer);
+				//LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] Construct BinaryOperatorExpression failed.", OwningLexer);
 				return EPR_Failed;
 			}
 
@@ -1078,7 +1078,7 @@ EParseResult FScriptParser::ComplexExpression()
 	{
 		if (!ConstructBinaryOperatorAST())
 		{
-			LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] Construct BinaryOperatorExpression failed.", OwningLexer);
+			//LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] Construct BinaryOperatorExpression failed.", OwningLexer);
 			return EPR_Failed;
 		}
 	}
@@ -1248,7 +1248,7 @@ EParseResult FScriptParser::SuffixExpression()
 			CurToken = GetUnHandledToken();
 			if (CurToken->TokenType != ETokenType::TT_ID)
 			{
-				LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Expected ID token here."), OwningLexer);
+				LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Expected ID token here."), CurToken);
 				return EPR_Failed;
 			}
 			TSharedPtr<FIDToken> IDToken = StaticCastSharedPtr<FIDToken>(CurToken);
@@ -1257,7 +1257,7 @@ EParseResult FScriptParser::SuffixExpression()
 			TSharedPtr<FASTIDNode> ClassIDNode = StaticCastSharedPtr<FASTIDNode>(ASTNodeStack.Top());
 			if (!ClassIDNode.IsValid())
 			{
-				LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Expected class name here."), OwningLexer);
+				LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Expected class name here."), CurToken);
 				return EPR_Failed;
 			}
 			TSharedPtr<FASTClassTypeNode> ClassTypeNode = StaticCastSharedPtr<FASTClassTypeNode>(ClassIDNode->GetValue());
@@ -1265,7 +1265,7 @@ EParseResult FScriptParser::SuffixExpression()
 			FRegistryEntry* IDEntry = FindIDInClass(IDToken->IdName, ERegistryEntryType::RET_All, ClassNode);
 			if (IDEntry == nullptr)
 			{
-				LOG_WITH_CHAR_POS(ELogVerbosity::Error, PARSE_ERROR_UNDEFINED_IDENTIFIER, OwningLexer);
+				LOG_WITH_CHAR_POS(ELogVerbosity::Error, PARSE_ERROR_UNDEFINED_IDENTIFIER, CurToken);
 				return EPR_Failed;
 			}
 			PopToken();
@@ -1296,7 +1296,7 @@ EParseResult FScriptParser::SuffixExpression()
 			CurToken = GetUnHandledToken();
 			if (!CheckTokenSymbolType(CurToken, ESingleSymbolType::SST_CloseParen))
 			{
-				LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Expected ')'."), OwningLexer);
+				LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Expected ')'."), CurToken);
 				return EPR_Failed;
 			}
 			PopToken();
@@ -1337,7 +1337,7 @@ EParseResult FScriptParser::SuffixExpression()
 			CurToken = GetUnHandledToken();
 			if (!CheckTokenSymbolType(CurToken, ESingleSymbolType::SST_CloseBracket))
 			{
-				LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Expected ']'."), OwningLexer);
+				LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Expected ']'."), CurToken);
 				return EPR_Failed;
 			}
 			PopToken();
@@ -1382,7 +1382,7 @@ EParseResult FScriptParser::AtomicExpression()
 		CurToken = GetUnHandledToken();
 		if (!CheckTokenSymbolType(CurToken, ESingleSymbolType::SST_CloseParen))
 		{
-			LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] No tailing ')'.", OwningLexer);
+			LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] No tailing ')'.", CurToken);
 			return EPR_Failed;
 		}
 		PopToken();
@@ -1400,7 +1400,7 @@ EParseResult FScriptParser::AtomicExpression()
 		FRegistryEntry* FoundEntry = FindIDNode(IDToken->IdName, ERegistryEntryType::RET_All);
 		if (FoundEntry == nullptr)
 		{
-			LOG_WITH_CHAR_POS(ELogVerbosity::Error, PARSE_ERROR_UNDEFINED_IDENTIFIER, OwningLexer);
+			LOG_WITH_CHAR_POS(ELogVerbosity::Error, PARSE_ERROR_UNDEFINED_IDENTIFIER, CurToken);
 			return EPR_Failed;
 		}
 		PopToken();
@@ -1437,7 +1437,7 @@ bool FScriptParser::CreateIDNode()
 		}
 		else
 		{
-			LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] Invalid ID token detected.", OwningLexer);
+			LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] Invalid ID token detected.", CurToken);
 			return false;
 		}
 	}

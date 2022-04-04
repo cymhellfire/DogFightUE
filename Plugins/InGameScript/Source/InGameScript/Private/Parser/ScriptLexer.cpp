@@ -56,6 +56,8 @@ TSharedPtr<FTokenBase> FScriptLexer::GetNextToken()
 		CurChar = OwningReader->GetCurrentChar();
 	}
 
+	int32 StartPos = OwningReader->GetCharNum();
+	FString CurrentLine = OwningReader->GetCurrentLine();
 	switch(CurChar)
 	{
 	case '\"':
@@ -148,6 +150,12 @@ TSharedPtr<FTokenBase> FScriptLexer::GetNextToken()
 		UE_LOG(LogInGameScript, Error, TEXT("[ScriptLexer] Invalid token detected [%c] in file [%s] at position [%d:%d]"),
 			OwningReader->GetCurrentChar(), *FilePath, OwningReader->GetLineNum() + 1, OwningReader->GetCharNum() + 1);
 	}
+
+	int32 EndPos = OwningReader->GetCharNum();
+	Result->LineNum = OwningReader->GetLineNum() + 1;
+	Result->StartPos = StartPos + 1;
+	Result->TokenLength = EndPos - StartPos;
+	Result->CurrentLine = CurrentLine;
 
 	return Result;
 }

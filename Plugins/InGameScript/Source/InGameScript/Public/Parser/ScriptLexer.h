@@ -15,19 +15,19 @@ public:
 	TCHAR GetNextChar() const;
 	bool GetCurrentCharPosition(int32& LineNum, int32& CharNum) const;
 
-	static void LogWithCurrentPos(TSharedPtr<FScriptLexer> InLexer, FString LogContent, ELogVerbosity::Type InLogLevel)
+	static void LogWithToken(TSharedPtr<FTokenBase> InToken, FString LogContent, ELogVerbosity::Type InLogLevel)
 	{
 		switch(InLogLevel)
 		{
 		case ELogVerbosity::Warning:
-			WarningWithCurrentPos(InLexer, LogContent);
+			WarningWithToken(InToken, LogContent);
 			break;
 		case ELogVerbosity::Error:
-			ErrorWithCurrentPos(InLexer, LogContent);
+			ErrorWithToken(InToken, LogContent);
 			break;
 		case ELogVerbosity::Log:
 		default:
-			LogWithCurrentPos(InLexer, LogContent);
+			LogWithToken(InToken, LogContent);
 		}
 	}
 
@@ -72,72 +72,66 @@ protected:
 
 	int32 ToDigit(TCHAR InChar) const;
 
-	static void LogWithCurrentPos(TSharedPtr<FScriptLexer> InLexer, FString LogContent)
+	static void LogWithToken(TSharedPtr<FTokenBase> InToken, FString LogContent)
 	{
-		if (InLexer)
+		if (InToken)
 		{
-			int32 LineNum, CharNum;
-			if (InLexer->GetCurrentCharPosition(LineNum, CharNum))
+			int32 LineNum = InToken->LineNum;
+			int32 StartPos = InToken->StartPos;
+			UE_LOG(LogInGameScript, Log, TEXT("%s [%d, %d]"), *LogContent, LineNum, StartPos);
+			UE_LOG(LogInGameScript, Log, TEXT("%s"), *InToken->CurrentLine);
+			FString LocationString;
+			for (int32 i = 1; i < StartPos; ++i)
 			{
-				UE_LOG(LogInGameScript, Log, TEXT("%s [%d, %d]"), *LogContent, LineNum, CharNum);
-				UE_LOG(LogInGameScript, Log, TEXT("%s"), *InLexer->OwningReader->GetCurrentLine());
-				FString LocationString;
-				for (int32 i = 1; i < CharNum; ++i)
-				{
-					LocationString.AppendChar(' ');
-				}
-				UE_LOG(LogInGameScript, Log, TEXT("%s^"), *LocationString);
+				LocationString.AppendChar(' ');
 			}
-			else
+			for (int32 i = 0; i < InToken->TokenLength; ++i)
 			{
-				UE_LOG(LogInGameScript, Log, TEXT("%s"), *LogContent);
+				LocationString.AppendChar('^');
 			}
+			UE_LOG(LogInGameScript, Log, TEXT("%s"), *LocationString);
 		}
 	}
 
-	static void WarningWithCurrentPos(TSharedPtr<FScriptLexer> InLexer, FString LogContent)
+	static void WarningWithToken(TSharedPtr<FTokenBase> InToken, FString LogContent)
 	{
-		if (InLexer)
+		if (InToken)
 		{
-			int32 LineNum, CharNum;
-			if (InLexer->GetCurrentCharPosition(LineNum, CharNum))
+			int32 LineNum = InToken->LineNum;
+			int32 StartPos = InToken->StartPos;
+			UE_LOG(LogInGameScript, Warning, TEXT("%s [%d, %d]"), *LogContent, LineNum, StartPos);
+			UE_LOG(LogInGameScript, Warning, TEXT("%s"), *InToken->CurrentLine);
+			FString LocationString;
+			for (int32 i = 1; i < StartPos; ++i)
 			{
-				UE_LOG(LogInGameScript, Warning, TEXT("%s [%d, %d]"), *LogContent, LineNum, CharNum);
-				UE_LOG(LogInGameScript, Warning, TEXT("%s"), *InLexer->OwningReader->GetCurrentLine());
-				FString LocationString;
-				for (int32 i = 1; i < CharNum; ++i)
-				{
-					LocationString.AppendChar(' ');
-				}
-				UE_LOG(LogInGameScript, Warning, TEXT("%s^"), *LocationString);
+				LocationString.AppendChar(' ');
 			}
-			else
+			for (int32 i = 0; i < InToken->TokenLength; ++i)
 			{
-				UE_LOG(LogInGameScript, Warning, TEXT("%s"), *LogContent);
+				LocationString.AppendChar('^');
 			}
+			UE_LOG(LogInGameScript, Warning, TEXT("%s"), *LocationString);
 		}
 	}
 
-	static void ErrorWithCurrentPos(TSharedPtr<FScriptLexer> InLexer, FString LogContent)
+	static void ErrorWithToken(TSharedPtr<FTokenBase> InToken, FString LogContent)
 	{
-		if (InLexer)
+		if (InToken)
 		{
-			int32 LineNum, CharNum;
-			if (InLexer->GetCurrentCharPosition(LineNum, CharNum))
+			int32 LineNum = InToken->LineNum;
+			int32 StartPos = InToken->StartPos;
+			UE_LOG(LogInGameScript, Error, TEXT("%s [%d, %d]"), *LogContent, LineNum, StartPos);
+			UE_LOG(LogInGameScript, Error, TEXT("%s"), *InToken->CurrentLine);
+			FString LocationString;
+			for (int32 i = 1; i < StartPos; ++i)
 			{
-				UE_LOG(LogInGameScript, Error, TEXT("%s [%d, %d]"), *LogContent, LineNum, CharNum);
-				UE_LOG(LogInGameScript, Error, TEXT("%s"), *InLexer->OwningReader->GetCurrentLine());
-				FString LocationString;
-				for (int32 i = 1; i < CharNum; ++i)
-				{
-					LocationString.AppendChar(' ');
-				}
-				UE_LOG(LogInGameScript, Error, TEXT("%s^"), *LocationString);
+				LocationString.AppendChar(' ');
 			}
-			else
+			for (int32 i = 0; i < InToken->TokenLength; ++i)
 			{
-				UE_LOG(LogInGameScript, Error, TEXT("%s"), *LogContent);
+				LocationString.AppendChar('~');
 			}
+			UE_LOG(LogInGameScript, Error, TEXT("%s"), *LocationString);
 		}
 	}
 

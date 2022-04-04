@@ -1,10 +1,10 @@
 ﻿#pragma once
 
 /**
- * Print a log with current reading position of InLexer.
+ * Print a log with source file information of given token.
  */
-#define LOG_WITH_CHAR_POS(LogLevel, LogContent, InLexer) \
-	FScriptLexer::LogWithCurrentPos(InLexer, LogContent, LogLevel)
+#define LOG_WITH_CHAR_POS(LogLevel, LogContent, InToken) \
+	FScriptLexer::LogWithToken(InToken, LogContent, LogLevel)
 
 /**
  * Define a private member variable with getter and setter.
