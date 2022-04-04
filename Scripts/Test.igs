@@ -3,14 +3,14 @@ class FTest
     number b = 1;
     number c;
 
-    function BeginPlay()
+    function void BeginPlay()
     {
         number a = 5 + 15.525 * 2;
         b = "DogFight123";
         c = a + 5 + 2;
     }
 
-    function Sum(number a, number b)
+    function number Sum(number a, number b)
     {
         return a + b;
     }

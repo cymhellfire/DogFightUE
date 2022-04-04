@@ -2,8 +2,10 @@
 
 #include "InGameScript.h"
 #include "AST/AbstractSyntaxTree.h"
+#include "AST/NodeValueTypeHelper.h"
 #include "AST/Registry.h"
 #include "Parser/ScriptLexer.h"
+#include "AST/ASTErrorCode.h"
 
 FScopeTokenCache::FScopeTokenCache(EParseResult* InResultAddress, TWeakPtr<FScriptParser> InOwner)
 {
@@ -355,8 +357,71 @@ EParseResult FScriptParser::FunctionDefinition(TArray<int32>& FuncIndices)
 	PopToken();
 	TSharedPtr<FASTFunctionNode> NewFunc = MakeShareable(new FASTFunctionNode);
 
-	// Read function name
+	// Read function return value type
 	TSharedPtr<FTokenBase> CurToken = GetUnHandledToken();
+	if (CurToken->TokenType == ETokenType::TT_Reserved)
+	{
+		PopToken();
+
+		TSharedPtr<FReservedToken> ValueType = StaticCastSharedPtr<FReservedToken>(CurToken);
+		switch(ValueType->ReservedType)
+		{
+		case EReservedType::RT_Boolean:
+			{
+				TSharedPtr<FASTBooleanNode> BooleanNode = MakeShareable(new FASTBooleanNode);
+				NewFunc->SetReturnValueNode(BooleanNode);
+			}
+			break;
+		case EReservedType::RT_Number:
+			{
+				TSharedPtr<FASTNumberNode> NumberNode = MakeShareable(new FASTNumberNode);
+				NewFunc->SetReturnValueNode(NumberNode);
+			}
+			break;
+		case EReservedType::RT_String:
+			{
+				TSharedPtr<FASTStringNode> StringNode = MakeShareable(new FASTStringNode);
+				NewFunc->SetReturnValueNode(StringNode);
+			}
+			break;
+		case EReservedType::RT_Void:
+			{
+				TSharedPtr<FASTVoidNode> VoidNode = MakeShareable(new FASTVoidNode);
+				NewFunc->SetReturnValueNode(VoidNode);
+			}
+			break;
+		default:
+			LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[InGameScript] Invalid value type token."), OwningLexer);
+			return EPR_Failed;
+		}
+	}
+	else if (CurToken->TokenType == ETokenType::TT_ID)
+	{
+		TSharedPtr<FIDToken> ValueIDToken = StaticCastSharedPtr<FIDToken>(CurToken);
+		FRegistryEntry* IDEntry = FindIDNode(ValueIDToken->IdName, ERegistryEntryType::RET_Class);
+		if (IDEntry)
+		{
+			PopToken();
+
+			TSharedPtr<FASTClassNode> ClassNode = StaticCastSharedPtr<FASTClassNode>(IDEntry->ASTNode);
+			TSharedPtr<FASTClassTypeNode> ClassTypeNode = MakeShareable(new FASTClassTypeNode);
+			ClassTypeNode->SetClassNode(ClassNode);
+			NewFunc->SetReturnValueNode(ClassTypeNode);
+		}
+		else
+		{
+			LOG_WITH_CHAR_POS(ELogVerbosity::Error, PARSE_ERROR_UNDEFINED_IDENTIFIER, OwningLexer);
+			return EPR_Failed;
+		}
+	}
+	else
+	{
+		LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[InGameScript] Value type token expected."), OwningLexer);
+		return EPR_Failed;
+	}
+
+	// Read function name
+	CurToken = GetUnHandledToken();
 	if (CurToken->TokenType == ETokenType::TT_ID)
 	{
 		TSharedPtr<FIDToken> IDToken = StaticCastSharedPtr<FIDToken>(CurToken);
@@ -875,7 +940,7 @@ EParseResult FScriptParser::AssignStatement()
 			FRegistryEntry* TargetNode = FindIDNode(IDToken->IdName, ERegistryEntryType::RET_Variable);
 			if (TargetNode == nullptr)
 			{
-				LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Using undefined identifier."), OwningLexer);
+				LOG_WITH_CHAR_POS(ELogVerbosity::Error, PARSE_ERROR_UNDEFINED_IDENTIFIER, OwningLexer);
 				Result = EPR_Failed;
 				return Result;
 			}
@@ -1042,6 +1107,7 @@ bool FScriptParser::ConstructBinaryOperatorAST()
 		// Construct AST based on operator
 		OperatorNode->SetLeftChildNode(LeftChild);
 		OperatorNode->SetRightChildNode(RightChild);
+		FNodeValueTypeHelper::UpdateASTNodeValueType(OperatorNode);
 
 		// Pop out nodes that used to construct AST
 		if (PopNodes(3))
@@ -1145,6 +1211,7 @@ EParseResult FScriptParser::PrefixExpression()
 			TSharedPtr<FASTPrefixExpressionNode> NewPrefixExpressionNode = MakeShareable(new FASTPrefixExpressionNode);
 			NewPrefixExpressionNode->SetUnaryOperatorNode(NewUnaryOpNode);
 			NewPrefixExpressionNode->SetChildExpression(SuffixExpressionNode);
+			FNodeValueTypeHelper::UpdateASTNodeValueType(NewPrefixExpressionNode);
 
 			// Pop used nodes and push new created one
 			ASTNodeStack.Pop();
@@ -1198,7 +1265,7 @@ EParseResult FScriptParser::SuffixExpression()
 			FRegistryEntry* IDEntry = FindIDInClass(IDToken->IdName, ERegistryEntryType::RET_All, ClassNode);
 			if (IDEntry == nullptr)
 			{
-				LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Use undefined identifier."), OwningLexer);
+				LOG_WITH_CHAR_POS(ELogVerbosity::Error, PARSE_ERROR_UNDEFINED_IDENTIFIER, OwningLexer);
 				return EPR_Failed;
 			}
 			PopToken();
@@ -1209,6 +1276,7 @@ EParseResult FScriptParser::SuffixExpression()
 			TSharedPtr<FASTMemberAccessorNode> MemberAccessor = MakeShareable(new FASTMemberAccessorNode);
 			MemberAccessor->Initialize(*IDEntry);
 			MemberAccessor->SetOwningNode(OwnerNode);
+			FNodeValueTypeHelper::UpdateASTNodeValueType(MemberAccessor);
 
 			PopNodes();
 			ASTNodeStack.Push(MemberAccessor);
@@ -1251,6 +1319,7 @@ EParseResult FScriptParser::SuffixExpression()
 			}
 			PopNodes();
 
+			FNodeValueTypeHelper::UpdateASTNodeValueType(FunctionInvoker);
 			ASTNodeStack.Push(FunctionInvoker);
 		}
 		// Index accessor
@@ -1283,6 +1352,7 @@ EParseResult FScriptParser::SuffixExpression()
 			IndexAccessor->SetOuterNode(OuterNode);
 
 			PopNodes(2);
+			FNodeValueTypeHelper::UpdateASTNodeValueType(IndexAccessor);
 			ASTNodeStack.Push(IndexAccessor);
 		}
 		else
@@ -1317,17 +1387,12 @@ EParseResult FScriptParser::AtomicExpression()
 		}
 		PopToken();
 
-		TSharedPtr<FASTValueNode> ValueNode = StaticCastSharedPtr<FASTValueNode>(ASTNodeStack.Top());
-		if (ValueNode == nullptr)
-		{
-			UE_LOG(LogInGameScript, Error, TEXT("[ScriptParser] Failed to construct AST. ValueNode expected."));
-			return EPR_Failed;
-		}
-
-		// Create node for expression
-		TSharedPtr<FASTBracketExpressionNode> NewBracketExpressionNode = MakeShareable(new FASTBracketExpressionNode);
-		NewBracketExpressionNode->SetChildNode(ValueNode);
-		ASTNodeStack.Push(NewBracketExpressionNode);
+		// TSharedPtr<FASTValueNode> ValueNode = StaticCastSharedPtr<FASTValueNode>(ASTNodeStack.Top());
+		// if (ValueNode == nullptr)
+		// {
+		// 	UE_LOG(LogInGameScript, Error, TEXT("[ScriptParser] Failed to construct AST. ValueNode expected."));
+		// 	return EPR_Failed;
+		// }
 	}
 	else if (CurToken->TokenType == ETokenType::TT_ID)
 	{
@@ -1335,7 +1400,7 @@ EParseResult FScriptParser::AtomicExpression()
 		FRegistryEntry* FoundEntry = FindIDNode(IDToken->IdName, ERegistryEntryType::RET_All);
 		if (FoundEntry == nullptr)
 		{
-			LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Use undefined identifier."), OwningLexer);
+			LOG_WITH_CHAR_POS(ELogVerbosity::Error, PARSE_ERROR_UNDEFINED_IDENTIFIER, OwningLexer);
 			return EPR_Failed;
 		}
 		PopToken();
@@ -1349,7 +1414,7 @@ EParseResult FScriptParser::AtomicExpression()
 		// {
 		// 	return EPR_Failed;
 		// }
-		LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Unsupported token."), OwningLexer);
+		//LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Unsupported token."), OwningLexer);
 		return EPR_Failed;
 	}
 

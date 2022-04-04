@@ -2,6 +2,8 @@
 
 #include "InGameScript.h"
 
+#include "AST/NodeValueTypeHelper.h"
+
 #define LOCTEXT_NAMESPACE "FInGameScriptModule"
 
 DEFINE_LOG_CATEGORY(LogInGameScript);
@@ -10,6 +12,9 @@ void FInGameScriptModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 	UE_LOG(LogInGameScript, Log, TEXT("[InGameScript] Module startup."));
+
+	// Initialize static classes
+	FNodeValueTypeHelper::InitializeConvertMap();
 }
 
 void FInGameScriptModule::ShutdownModule()

@@ -117,6 +117,7 @@ namespace EValueType
 		VT_Number,
 		VT_String,
 		VT_Class,
+		VT_Void,
 	};
 }
 

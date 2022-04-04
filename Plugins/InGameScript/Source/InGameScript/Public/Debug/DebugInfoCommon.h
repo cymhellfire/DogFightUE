@@ -91,5 +91,6 @@ namespace EValueType
 		TEXT("Number"),
 		TEXT("String"),
 		TEXT("Class"),
+		TEXT("Void"),
 	};
 }

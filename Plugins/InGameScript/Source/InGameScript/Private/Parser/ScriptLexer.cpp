@@ -40,6 +40,7 @@ void FScriptLexer::InitializeParser()
 	ReservedMap.Add("number", EReservedType::RT_Number);
 	ReservedMap.Add("string", EReservedType::RT_String);
 	ReservedMap.Add("bool", EReservedType::RT_Boolean);
+	ReservedMap.Add("void", EReservedType::RT_Void);
 	ReservedMap.Add("return", EReservedType::RT_Return);
 }
 

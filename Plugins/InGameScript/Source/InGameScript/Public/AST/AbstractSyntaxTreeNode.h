@@ -80,6 +80,16 @@ public:
 	DEFINE_CHILD_VARIABLE(FString, Value);
 };
 
+class INGAMESCRIPT_API FASTVoidNode : public FASTSimpleExpressionNode
+{
+public:
+	FASTVoidNode()
+		: FASTSimpleExpressionNode()
+	{
+		ValueType = EValueType::VT_Void;
+	}
+};
+
 class INGAMESCRIPT_API FASTClassTypeNode : public FASTSimpleExpressionNode
 {
 public:
@@ -159,6 +169,8 @@ public:
 
 	void Initialize(const FRegistryEntry& InEntry);
 
+	
+
 	DEFINE_CHILD_VARIABLE(ERegistryEntryType::Type, EntryType);
 	DEFINE_CHILD_SHARED_PTR(FASTSuffixExpressionNode, OwningNode);
 	DEFINE_CHILD_SHARED_PTR(FAbstractSyntaxTreeNodeBase, MemberNode);
@@ -198,17 +210,6 @@ public:
 
 	DEFINE_CHILD_VARIABLE(FName, ID);
 	DEFINE_CHILD_SHARED_PTR(FASTSimpleExpressionNode, Value);
-};
-
-class INGAMESCRIPT_API FASTBracketExpressionNode : public FASTAtomicExpression
-{
-public:
-	FASTBracketExpressionNode()
-	{
-		
-	}
-
-	DEFINE_CHILD_SHARED_PTR(FASTValueNode, ChildNode);
 };
 
 class INGAMESCRIPT_API FASTFuncParamNode : public FAbstractSyntaxTreeNodeBase
@@ -303,7 +304,7 @@ public:
 	DEFINE_CHILD_VARIABLE(FName, FunctionName)
 	DEFINE_CHILD_SHARED_PTR(FASTFuncArgsNode, ArgsNode)
 	DEFINE_CHILD_SHARED_PTR(FASTStateListNode, StateListNode)
-	DEFINE_CHILD_SHARED_PTR(FASTReturnStatementNode, ReturnNode);
+	DEFINE_CHILD_SHARED_PTR(FASTSimpleExpressionNode, ReturnValueNode);
 };
 
 class INGAMESCRIPT_API FASTClassNode : public FAbstractSyntaxTreeNodeBase
