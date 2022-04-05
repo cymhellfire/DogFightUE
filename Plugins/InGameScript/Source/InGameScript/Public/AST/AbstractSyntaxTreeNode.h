@@ -93,11 +93,7 @@ public:
 class INGAMESCRIPT_API FASTClassTypeNode : public FASTSimpleExpressionNode
 {
 public:
-	FASTClassTypeNode()
-		: FASTSimpleExpressionNode()
-	{
-		ValueType = EValueType::VT_Class;
-	}
+	explicit FASTClassTypeNode(TSharedPtr<FASTClassNode> ClassNode);
 
 	DEFINE_CHILD_SHARED_PTR(FASTClassNode, ClassNode);
 };
@@ -205,7 +201,7 @@ class INGAMESCRIPT_API FASTIDNode : public FASTAtomicExpression
 public:
 	FASTIDNode()
 	{
-		
+		NodeType = EASTNodeType::ANT_ID;
 	}
 
 	DEFINE_CHILD_VARIABLE(FName, ID);

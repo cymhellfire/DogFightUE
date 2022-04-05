@@ -404,8 +404,7 @@ EParseResult FScriptParser::FunctionDefinition(TArray<int32>& FuncIndices)
 			PopToken();
 
 			TSharedPtr<FASTClassNode> ClassNode = StaticCastSharedPtr<FASTClassNode>(IDEntry->ASTNode);
-			TSharedPtr<FASTClassTypeNode> ClassTypeNode = MakeShareable(new FASTClassTypeNode);
-			ClassTypeNode->SetClassNode(ClassNode);
+			TSharedPtr<FASTClassTypeNode> ClassTypeNode = MakeShareable(new FASTClassTypeNode(ClassNode));
 			NewFunc->SetReturnValueNode(ClassTypeNode);
 		}
 		else
@@ -638,15 +637,12 @@ EParseResult FScriptParser::VariableDefinition()
 			{
 			case EReservedType::RT_Boolean:
 				IDNode->SetValue(MakeShareable(new FASTBooleanNode));
-				IDNode->SetValueType(EValueType::VT_Boolean);
 				break;
 			case EReservedType::RT_Number:
 				IDNode->SetValue(MakeShareable(new FASTNumberNode));
-				IDNode->SetValueType(EValueType::VT_Number);
 				break;
 			case EReservedType::RT_String:
 				IDNode->SetValue(MakeShareable(new FASTStringNode));
-				IDNode->SetValueType(EValueType::VT_String);
 				break;
 			default:
 				LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] Unsupported value type detected.", CurToken);
@@ -677,8 +673,7 @@ EParseResult FScriptParser::VariableDefinition()
 			}
 
 			TSharedPtr<FASTClassNode> ClassNode = StaticCastSharedPtr<FASTClassNode>(ClassEntry->ASTNode);
-			TSharedPtr<FASTClassTypeNode> ClassTypeNode = MakeShareable(new FASTClassTypeNode);
-			ClassTypeNode->SetClassNode(ClassNode);
+			TSharedPtr<FASTClassTypeNode> ClassTypeNode = MakeShareable(new FASTClassTypeNode(ClassNode));
 
 			// Read variable ID
 			CurToken = GetUnHandledToken();
@@ -695,8 +690,8 @@ EParseResult FScriptParser::VariableDefinition()
 			}
 
 			TSharedPtr<FASTIDNode> IDNode = StaticCastSharedPtr<FASTIDNode>(ASTNodeStack.Top());
-			IDNode->SetValueType(EValueType::VT_Class);
 			IDNode->SetValue(ClassTypeNode);
+			IDNode->SetValueType(ClassTypeNode->GetValueType());
 
 			// Register new variable
 			RegistryStack.Top()->RegisterNewVariable(IDNode->GetID(), IDNode);
@@ -910,6 +905,7 @@ EParseResult FScriptParser::ReturnStatement()
 	}
 	TSharedPtr<FASTReturnStatementNode> ReturnStatementNode = MakeShareable(new FASTReturnStatementNode);
 	ReturnStatementNode->SetChildNode(BinaryOperatorNode);
+	ReturnStatementNode->SetValueType(BinaryOperatorNode->GetValueType());
 
 	PopNodes();
 	ASTNodeStack.Push(ReturnStatementNode);
@@ -976,10 +972,6 @@ EParseResult FScriptParser::AssignStatement()
 	{
 		// Pop out one node from stack because it will be rebuilt later
 		PopNodes(1);
-		// Recover token from cache to parser again
-		//RecoverTokenFromCache();
-		// Turn off token cache
-		// bEnableTokenCache = false;
 		Result = EPR_FallBack;
 		return Result;
 	}
@@ -1211,7 +1203,7 @@ EParseResult FScriptParser::PrefixExpression()
 			TSharedPtr<FASTPrefixExpressionNode> NewPrefixExpressionNode = MakeShareable(new FASTPrefixExpressionNode);
 			NewPrefixExpressionNode->SetUnaryOperatorNode(NewUnaryOpNode);
 			NewPrefixExpressionNode->SetChildExpression(SuffixExpressionNode);
-			FNodeValueTypeHelper::UpdateASTNodeValueType(NewPrefixExpressionNode);
+			NewPrefixExpressionNode->SetValueType(SuffixExpressionNode->GetValueType());
 
 			// Pop used nodes and push new created one
 			ASTNodeStack.Pop();
@@ -1276,7 +1268,35 @@ EParseResult FScriptParser::SuffixExpression()
 			TSharedPtr<FASTMemberAccessorNode> MemberAccessor = MakeShareable(new FASTMemberAccessorNode);
 			MemberAccessor->Initialize(*IDEntry);
 			MemberAccessor->SetOwningNode(OwnerNode);
-			FNodeValueTypeHelper::UpdateASTNodeValueType(MemberAccessor);
+			switch (IDEntry->EntryType)
+			{
+			case ERegistryEntryType::RET_Variable:
+				{
+					TSharedPtr<FASTValueNode> MemberValue = StaticCastSharedPtr<FASTValueNode>(IDEntry->ASTNode);
+					if (MemberValue.IsValid())
+					{
+						MemberAccessor->SetValueType(MemberValue->GetValueType());
+					}
+				} break;
+			case ERegistryEntryType::RET_Function:
+				{
+					TSharedPtr<FASTFunctionNode> FunctionNode = StaticCastSharedPtr<FASTFunctionNode>(IDEntry->ASTNode);
+					if (FunctionNode.IsValid())
+					{
+						TSharedPtr<FASTValueNode> ReturnValueNode = FunctionNode->GetReturnValueNode();
+						MemberAccessor->SetValueType(ReturnValueNode->GetValueType());
+					}
+				} break;
+			case ERegistryEntryType::RET_Class:
+				{
+					TSharedPtr<FASTClassNode> InnerClassNode = StaticCastSharedPtr<FASTClassNode>(IDEntry->ASTNode);
+					if (InnerClassNode.IsValid())
+					{
+						MemberAccessor->SetValueType(EValueType::GetValueTypeFromClassName(InnerClassNode->GetClassID()));
+					}
+				} break;
+			default: ;
+			}
 
 			PopNodes();
 			ASTNodeStack.Push(MemberAccessor);
@@ -1304,22 +1324,23 @@ EParseResult FScriptParser::SuffixExpression()
 			// Create function invoker
 			TSharedPtr<FASTFunctionInvokerNode> FunctionInvoker = MakeShareable(new FASTFunctionInvokerNode);
 			int32 StackTop = ASTNodeStack.Num() - 1;
+			TSharedPtr<FASTSuffixExpressionNode> FuncPathNode;
 			if (Result == EPR_Succeed)
 			{
 				TSharedPtr<FASTFuncParamNode> FuncParam = StaticCastSharedPtr<FASTFuncParamNode>(ASTNodeStack.Top());
-				TSharedPtr<FASTSuffixExpressionNode> FuncPathNode = StaticCastSharedPtr<FASTSuffixExpressionNode>(ASTNodeStack[StackTop - 1]);
+				FuncPathNode = StaticCastSharedPtr<FASTSuffixExpressionNode>(ASTNodeStack[StackTop - 1]);
 				FunctionInvoker->SetFuncParamNode(FuncParam);
 				FunctionInvoker->SetFuncPathNode(FuncPathNode);
 				PopNodes();
 			}
 			else
 			{
-				TSharedPtr<FASTSuffixExpressionNode> FuncPathNode = StaticCastSharedPtr<FASTSuffixExpressionNode>(ASTNodeStack[StackTop]);
+				FuncPathNode = StaticCastSharedPtr<FASTSuffixExpressionNode>(ASTNodeStack[StackTop]);
 				FunctionInvoker->SetFuncPathNode(FuncPathNode);
 			}
+			FunctionInvoker->SetValueType(FuncPathNode->GetValueType());
 			PopNodes();
 
-			FNodeValueTypeHelper::UpdateASTNodeValueType(FunctionInvoker);
 			ASTNodeStack.Push(FunctionInvoker);
 		}
 		// Index accessor
@@ -1350,9 +1371,9 @@ EParseResult FScriptParser::SuffixExpression()
 			TSharedPtr<FASTIndexAccessorNode> IndexAccessor = MakeShareable(new FASTIndexAccessorNode);
 			IndexAccessor->SetIndexNode(ValueNode);
 			IndexAccessor->SetOuterNode(OuterNode);
+			IndexAccessor->SetValueType(OuterNode->GetValueType());
 
 			PopNodes(2);
-			FNodeValueTypeHelper::UpdateASTNodeValueType(IndexAccessor);
 			ASTNodeStack.Push(IndexAccessor);
 		}
 		else
@@ -1629,6 +1650,11 @@ void FScriptParser::ClearTokenCache()
 
 bool FScriptParser::CheckTokenSymbolType(TSharedPtr<FTokenBase> CheckToken, ESingleSymbolType::Type ExpectType) const
 {
+	if (CheckToken->TokenType != ETokenType::TT_SingleSymbol)
+	{
+		return false;
+	}
+
 	TSharedPtr<FSingleSymbolToken> SymbolToken = StaticCastSharedPtr<FSingleSymbolToken>(CheckToken);
 	if (!SymbolToken.IsValid())
 		return false;

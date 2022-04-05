@@ -151,11 +151,14 @@ TSharedPtr<FTokenBase> FScriptLexer::GetNextToken()
 			OwningReader->GetCurrentChar(), *FilePath, OwningReader->GetLineNum() + 1, OwningReader->GetCharNum() + 1);
 	}
 
-	int32 EndPos = OwningReader->GetCharNum();
-	Result->LineNum = OwningReader->GetLineNum() + 1;
-	Result->StartPos = StartPos + 1;
-	Result->TokenLength = EndPos - StartPos;
-	Result->CurrentLine = CurrentLine;
+	if (Result)
+	{
+		int32 EndPos = OwningReader->GetCharNum();
+		Result->LineNum = OwningReader->GetLineNum() + 1;
+		Result->StartPos = StartPos + 1;
+		Result->TokenLength = EndPos - StartPos;
+		Result->CurrentLine = CurrentLine;
+	}
 
 	return Result;
 }

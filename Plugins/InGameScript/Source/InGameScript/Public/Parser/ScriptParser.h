@@ -1,14 +1,6 @@
 ﻿#pragma once
 #include "Common.h"
 #include "AST/AbstractSyntaxTree.h"
-#include "Chaos/AABB.h"
-#include "Chaos/AABB.h"
-#include "Chaos/AABB.h"
-#include "Chaos/AABB.h"
-#include "Chaos/AABB.h"
-#include "Chaos/AABB.h"
-#include "Chaos/AABB.h"
-#include "Chaos/AABB.h"
 
 class FScriptLexer;
 struct FTokenBase;
@@ -43,6 +35,7 @@ class INGAMESCRIPT_API FScriptParser : public TSharedFromThis<FScriptParser>
 public:
 	friend class FScriptParserFactory;
 	friend FScopeTokenCache;
+	friend class FNodeValueTypeHelper;
 	~FScriptParser();
 
 	bool Execute();

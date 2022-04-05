@@ -1,5 +1,9 @@
 ﻿#include "AST/NodeValueTypeHelper.h"
 
+#include "Chaos/AABB.h"
+#include "Chaos/AABB.h"
+#include "Parser/ScriptParser.h"
+
 void FNodeValueTypeHelper::UpdateASTNodeValueType(TSharedPtr<FASTValueNode> UpdateNode)
 {
 	if (!UpdateNode.IsValid())
@@ -49,53 +53,9 @@ void FNodeValueTypeHelper::UpdateASTNodeValueType(TSharedPtr<FASTValueNode> Upda
 				UnaryOperatorNode->SetValueType(ChildNode->GetValueType());
 			}
 		}break;
-	case EASTNodeType::ANT_SimpleExpression: break;
-	case EASTNodeType::ANT_PrefixExpression:
-		// Use child expression value type
-		{
-			TSharedPtr<FASTPrefixExpressionNode> PrefixExpressionNode = StaticCastSharedPtr<FASTPrefixExpressionNode>(UpdateNode);
-			TSharedPtr<FASTValueNode> ChildNode = PrefixExpressionNode->GetChildExpression();
-			if (ChildNode.IsValid())
-			{
-				PrefixExpressionNode->SetValueType(ChildNode->GetValueType());
-			}
-		}break;
+	case EASTNodeType::ANT_SimpleExpression:
 	case EASTNodeType::ANT_Return:
-		// Use child node value type
-		{
-			TSharedPtr<FASTReturnStatementNode> ReturnStatementNode = StaticCastSharedPtr<FASTReturnStatementNode>(UpdateNode);
-			TSharedPtr<FASTValueNode> ChildNode = ReturnStatementNode->GetChildNode();
-			if (ChildNode.IsValid())
-			{
-				ReturnStatementNode->SetValueType(ChildNode->GetValueType());
-			}
-		}break;
-	case EASTNodeType::ANT_FunctionInvoker:
-		// Use return value type
-		{
-			TSharedPtr<FASTFunctionInvokerNode> FunctionInvokerNode = StaticCastSharedPtr<FASTFunctionInvokerNode>(UpdateNode);
-			// Find 
-		}break;
-	case EASTNodeType::ANT_MemberAccessor:
-		// Use member value type
-		{
-			TSharedPtr<FASTMemberAccessorNode> MemberAccessorNode = StaticCastSharedPtr<FASTMemberAccessorNode>(UpdateNode);
-			TSharedPtr<FASTValueNode> ValueNode = StaticCastSharedPtr<FASTValueNode>(MemberAccessorNode->GetMemberNode());
-			if (ValueNode.IsValid())
-			{
-				MemberAccessorNode->SetValueType(ValueNode->GetValueType());
-			}
-		}break;
-	case EASTNodeType::ANT_IndexAccessor:
-		// Use outer node value type
-		{
-			TSharedPtr<FASTIndexAccessorNode> IndexAccessorNode = StaticCastSharedPtr<FASTIndexAccessorNode>(UpdateNode);
-			TSharedPtr<FASTValueNode> OuterNode = IndexAccessorNode->GetOuterNode();
-			if (OuterNode.IsValid())
-			{
-				IndexAccessorNode->SetValueType(OuterNode->GetValueType());
-			}
-		}break;
+	case EASTNodeType::ANT_ID:
 	case EASTNodeType::ANT_None:
 	case EASTNodeType::ANT_If:
 	case EASTNodeType::ANT_For:
@@ -103,6 +63,10 @@ void FNodeValueTypeHelper::UpdateASTNodeValueType(TSharedPtr<FASTValueNode> Upda
 	case EASTNodeType::ANT_SuffixExpression:
 	case EASTNodeType::ANT_Class:				// Class node doesn't have ValueType property
 	case EASTNodeType::ANT_Assign:				// Assign statement is not derived from FASTValueNode
+	case EASTNodeType::ANT_MemberAccessor:		// Member Accessor get value type when construct
+	case EASTNodeType::ANT_FunctionInvoker:
+	case EASTNodeType::ANT_IndexAccessor:
+	case EASTNodeType::ANT_PrefixExpression:
 	default: ;
 	}
 }

@@ -16,7 +16,16 @@ class FTest
     }
 }
 
+class Other
+{
+    function void Add()
+    {
+        number a = 1;
+    }
+}
+
 FTest Test = FTest();
 Test.BeginPlay();
 number c = Test.Sum(1, -1.5);
-Test[1].Sum(1, 2);
+Test.Sum(1, 2);
+Other d = Other();

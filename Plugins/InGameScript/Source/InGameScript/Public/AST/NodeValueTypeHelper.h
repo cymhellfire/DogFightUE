@@ -2,6 +2,8 @@
 
 #include "AbstractSyntaxTreeNode.h"
 
+class FScriptParser;
+
 // Helper class to decide value type of a AST node.
 class INGAMESCRIPT_API FNodeValueTypeHelper
 {

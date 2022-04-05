@@ -41,8 +41,11 @@ bool FRegistry::RegisterNewFunction(FName FunctionName, TSharedPtr<FASTFunctionN
 		return false;
 	}
 
+	TSharedPtr<FASTValueNode> ReturnValueNode = FunctionNode->GetReturnValueNode();
+
 	FRegistryEntry NewFunction(ERegistryEntryType::RET_Function);
 	NewFunction.ASTNode = FunctionNode;
+	NewFunction.ValueType = ReturnValueNode->GetValueType();
 	RegistryMap.Add(FunctionName, NewFunction);
 	return true;
 }
@@ -56,6 +59,7 @@ bool FRegistry::RegisterNewClass(FName ClassName, TSharedPtr<FASTClassNode> Clas
 	}
 
 	FRegistryEntry NewClass(ERegistryEntryType::RET_Class);
+	NewClass.ValueType = EValueType::GetValueTypeFromClassName(ClassNode->GetClassID());
 	NewClass.ASTNode = ClassNode;
 	RegistryMap.Add(ClassName, NewClass);
 	return true;
