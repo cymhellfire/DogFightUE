@@ -1,6 +1,7 @@
 ﻿#include "AST/Registry.h"
 
 #include "AST/AbstractSyntaxTreeNode.h"
+#include "AST/ASTType.h"
 
 FRegistry::FRegistry()
 {
@@ -59,7 +60,7 @@ bool FRegistry::RegisterNewClass(FName ClassName, TSharedPtr<FASTClassNode> Clas
 	}
 
 	FRegistryEntry NewClass(ERegistryEntryType::RET_Class);
-	NewClass.ValueType = EValueType::GetValueTypeFromClassName(ClassNode->GetClassID());
+	NewClass.ValueType = EValueType::FValueTypeManager::GetInstance()->GetValueTypeFromClassName(ClassNode->GetClassID());
 	NewClass.ASTNode = ClassNode;
 	RegistryMap.Add(ClassName, NewClass);
 	return true;

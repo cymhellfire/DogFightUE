@@ -27,5 +27,5 @@ class Other
 FTest Test = FTest();
 Test.BeginPlay();
 number c = Test.Sum(1, -1.5);
-Test.Sum(1, 2);
+Test[1].Sum(1, 2);
 Other d = Other();

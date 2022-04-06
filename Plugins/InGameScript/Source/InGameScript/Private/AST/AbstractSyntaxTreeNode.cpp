@@ -1,4 +1,5 @@
 ﻿#include "AST/AbstractSyntaxTreeNode.h"
+#include "AST/ASTType.h"
 
 FAbstractSyntaxTreeNodeBase::FAbstractSyntaxTreeNodeBase()
 	: NodeType(EASTNodeType::ANT_None)
@@ -8,7 +9,7 @@ FAbstractSyntaxTreeNodeBase::FAbstractSyntaxTreeNodeBase()
 FASTClassTypeNode::FASTClassTypeNode(TSharedPtr<FASTClassNode> ClassNode)
 	: FASTSimpleExpressionNode()
 {
-	ValueType = EValueType::GetValueTypeFromClassName(ClassNode->GetClassID());
+	ValueType = EValueType::FValueTypeManager::GetInstance()->GetValueTypeFromClassName(ClassNode->GetClassID());
 	SetClassNode(ClassNode);
 }
 

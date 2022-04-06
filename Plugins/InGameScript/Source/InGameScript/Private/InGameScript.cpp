@@ -1,7 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "InGameScript.h"
-
+#include "AST/ASTType.h"
 #include "AST/NodeValueTypeHelper.h"
 
 #define LOCTEXT_NAMESPACE "FInGameScriptModule"
@@ -15,6 +15,7 @@ void FInGameScriptModule::StartupModule()
 
 	// Initialize static classes
 	FNodeValueTypeHelper::InitializeConvertMap();
+	EValueType::FValueTypeManager::Initialize();
 }
 
 void FInGameScriptModule::ShutdownModule()
@@ -22,6 +23,9 @@ void FInGameScriptModule::ShutdownModule()
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
 	UE_LOG(LogInGameScript, Log, TEXT("[InGameScript] Module shutdown."));
+
+	// Un-initialize static classes
+	EValueType::FValueTypeManager::Uninitialize();
 }
 
 #undef LOCTEXT_NAMESPACE

@@ -6,6 +6,7 @@
 #include "AST/Registry.h"
 #include "Parser/ScriptLexer.h"
 #include "AST/ASTErrorCode.h"
+#include "AST/ASTType.h"
 
 FScopeTokenCache::FScopeTokenCache(EParseResult* InResultAddress, TWeakPtr<FScriptParser> InOwner)
 {
@@ -1246,14 +1247,27 @@ EParseResult FScriptParser::SuffixExpression()
 			TSharedPtr<FIDToken> IDToken = StaticCastSharedPtr<FIDToken>(CurToken);
 
 			// Get outer node
-			TSharedPtr<FASTIDNode> ClassIDNode = StaticCastSharedPtr<FASTIDNode>(ASTNodeStack.Top());
-			if (!ClassIDNode.IsValid())
+			TSharedPtr<FASTValueNode> OuterNode = StaticCastSharedPtr<FASTValueNode>(ASTNodeStack.Top());
+			if (!OuterNode.IsValid())
 			{
 				LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Expected class name here."), CurToken);
 				return EPR_Failed;
 			}
-			TSharedPtr<FASTClassTypeNode> ClassTypeNode = StaticCastSharedPtr<FASTClassTypeNode>(ClassIDNode->GetValue());
-			TSharedPtr<FASTClassNode> ClassNode = ClassTypeNode->GetClassNode();
+			// Member accessor only support Class as outer for now
+			FName OuterClassName = EValueType::FValueTypeManager::GetInstance()->
+				GetClassNameFromValueType(OuterNode->GetValueType());
+			if (OuterClassName == NAME_None)
+			{
+				LOG_WITH_CHAR_POS(ELogVerbosity::Error, PARSE_ERROR_UNDEFINED_IDENTIFIER, CurToken);
+				return EPR_Failed;
+			}
+			FRegistryEntry* OuterEntry = FindIDNode(OuterClassName, ERegistryEntryType::RET_Class);
+			if (OuterEntry == nullptr)
+			{
+				LOG_WITH_CHAR_POS(ELogVerbosity::Error, PARSE_ERROR_UNDEFINED_IDENTIFIER, CurToken);
+				return EPR_Failed;
+			}
+			TSharedPtr<FASTClassNode> ClassNode = StaticCastSharedPtr<FASTClassNode>(OuterEntry->ASTNode);
 			FRegistryEntry* IDEntry = FindIDInClass(IDToken->IdName, ERegistryEntryType::RET_All, ClassNode);
 			if (IDEntry == nullptr)
 			{
@@ -1292,7 +1306,8 @@ EParseResult FScriptParser::SuffixExpression()
 					TSharedPtr<FASTClassNode> InnerClassNode = StaticCastSharedPtr<FASTClassNode>(IDEntry->ASTNode);
 					if (InnerClassNode.IsValid())
 					{
-						MemberAccessor->SetValueType(EValueType::GetValueTypeFromClassName(InnerClassNode->GetClassID()));
+						MemberAccessor->SetValueType(EValueType::FValueTypeManager::GetInstance()->
+							GetValueTypeFromClassName(InnerClassNode->GetClassID()));
 					}
 				} break;
 			default: ;
@@ -1407,13 +1422,6 @@ EParseResult FScriptParser::AtomicExpression()
 			return EPR_Failed;
 		}
 		PopToken();
-
-		// TSharedPtr<FASTValueNode> ValueNode = StaticCastSharedPtr<FASTValueNode>(ASTNodeStack.Top());
-		// if (ValueNode == nullptr)
-		// {
-		// 	UE_LOG(LogInGameScript, Error, TEXT("[ScriptParser] Failed to construct AST. ValueNode expected."));
-		// 	return EPR_Failed;
-		// }
 	}
 	else if (CurToken->TokenType == ETokenType::TT_ID)
 	{
@@ -1431,11 +1439,6 @@ EParseResult FScriptParser::AtomicExpression()
 	}
 	else
 	{
-		// if (!CreateIDNode())
-		// {
-		// 	return EPR_Failed;
-		// }
-		//LOG_WITH_CHAR_POS(ELogVerbosity::Error, TEXT("[ScriptParser] Unsupported token."), OwningLexer);
 		return EPR_Failed;
 	}
 
@@ -1464,7 +1467,6 @@ bool FScriptParser::CreateIDNode()
 	}
 	else
 	{
-		//LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] ID token expected.", OwningLexer);
 		return false;
 	}
 
