@@ -638,12 +638,15 @@ EParseResult FScriptParser::VariableDefinition()
 			{
 			case EReservedType::RT_Boolean:
 				IDNode->SetValue(MakeShareable(new FASTBooleanNode));
+				IDNode->SetValueType(EValueType::VT_Boolean);
 				break;
 			case EReservedType::RT_Number:
 				IDNode->SetValue(MakeShareable(new FASTNumberNode));
+				IDNode->SetValueType(EValueType::VT_Number);
 				break;
 			case EReservedType::RT_String:
 				IDNode->SetValue(MakeShareable(new FASTStringNode));
+				IDNode->SetValueType(EValueType::VT_String);
 				break;
 			default:
 				LOG_WITH_CHAR_POS(ELogVerbosity::Error, "[ScriptParser] Unsupported value type detected.", CurToken);
