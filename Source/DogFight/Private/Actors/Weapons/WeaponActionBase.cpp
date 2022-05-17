@@ -237,12 +237,13 @@ void UWeaponActionBase::OnResponseCardSelected()
 	PrepareActionMontage();
 }
 
-void UWeaponActionBase::OnHitDetectSwitched(UAnimNotify_SwitchHitDetect* Notify, bool bTurnOn, float DamageRatio, FName ParentSocketName)
+void UWeaponActionBase::OnHitDetectSwitched(const UAnimNotify_SwitchHitDetect* Notify, bool bTurnOn, float DamageRatio, FName ParentSocketName)
 {
 	// Unregister callback
 	if (Notify)
 	{
-		Notify->OnHitDetectSwitched.RemoveDynamic(this, &UWeaponActionBase::OnHitDetectSwitched);
+		auto MutableNotify = const_cast<UAnimNotify_SwitchHitDetect*>(Notify);
+		MutableNotify->OnHitDetectSwitched.RemoveDynamic(this, &UWeaponActionBase::OnHitDetectSwitched);
 	}
 
 	if (ParentSocketName.IsNone())
@@ -259,12 +260,13 @@ void UWeaponActionBase::OnHitDetectSwitched(UAnimNotify_SwitchHitDetect* Notify,
 	}
 }
 
-void UWeaponActionBase::OnInvincibleFrameChanged(UAnimNotify_InvincibleFrame* Notify, bool bInvincible)
+void UWeaponActionBase::OnInvincibleFrameChanged(const UAnimNotify_InvincibleFrame* Notify, bool bInvincible)
 {
 	// Unregister callback after invincible disable
 	if (Notify && !bInvincible)
 	{
-		Notify->OnInvincibleStateChanged.RemoveDynamic(this, &UWeaponActionBase::OnInvincibleFrameChanged);
+		auto MutableNotify = const_cast<UAnimNotify_InvincibleFrame*>(Notify);
+		MutableNotify->OnInvincibleStateChanged.RemoveDynamic(this, &UWeaponActionBase::OnInvincibleFrameChanged);
 	}
 
 	if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(OwnerWeapon->GetWeaponOwnerCharacter()))

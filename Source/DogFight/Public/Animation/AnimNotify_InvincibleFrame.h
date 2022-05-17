@@ -17,7 +17,7 @@ class DOGFIGHT_API UAnimNotify_InvincibleFrame : public UAnimNotify
 public:
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FInvincibleFrameStateSiguature, UAnimNotify_InvincibleFrame*, Notify, bool, bEnableInvincible);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FInvincibleFrameStateSiguature, const UAnimNotify_InvincibleFrame*, Notify, bool, bEnableInvincible);
 	FInvincibleFrameStateSiguature OnInvincibleStateChanged;
 
 protected:

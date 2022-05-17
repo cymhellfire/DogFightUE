@@ -18,7 +18,7 @@ public:
 
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHitDetectSwitchedSignature, UAnimNotify_SwitchHitDetect*, Notify, bool, bTurnOn, float, DamageRatio, FName, ParentSocketName);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHitDetectSwitchedSignature, const UAnimNotify_SwitchHitDetect*, Notify, bool, bTurnOn, float, DamageRatio, FName, ParentSocketName);
 	FOnHitDetectSwitchedSignature OnHitDetectSwitched;
 public:
 	/** The factor used to calculated final damage apply to target. */
