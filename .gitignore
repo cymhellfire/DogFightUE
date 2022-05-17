@@ -4,6 +4,9 @@
 # Rider project files
 .idea/
 
+# RiderLink plugin
+Plugins/Developer/RiderLink/
+
 # Compiled Object files
 *.slo
 *.lo
