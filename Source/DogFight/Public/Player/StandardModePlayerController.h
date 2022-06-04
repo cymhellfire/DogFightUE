@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DogFightPlayerController.h"
+#include "Player/DogFightPlayerController.h"
 #include "DogFightTypes.h"
 #include "Ability/AbilityDisplayInfo.h"
 #include "UI/UIType.h"

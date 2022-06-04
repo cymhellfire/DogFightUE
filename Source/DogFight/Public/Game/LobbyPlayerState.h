@@ -5,7 +5,6 @@
 #include "DogFight.h"
 #include "GameFramework/PlayerState.h"
 #include "UObject/ObjectMacros.h"
-#include "UObject/ObjectMacros.h"
 
 #include "LobbyPlayerState.generated.h"
 

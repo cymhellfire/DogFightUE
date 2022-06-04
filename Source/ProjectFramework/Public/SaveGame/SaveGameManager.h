@@ -11,7 +11,7 @@
  * 
  */
 UCLASS(BlueprintType)
-class DOGFIGHT_API USaveGameManager : public UObject
+class PROJECTFRAMEWORK_API USaveGameManager : public UObject
 {
 	GENERATED_BODY()
 

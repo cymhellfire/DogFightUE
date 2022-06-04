@@ -3,7 +3,7 @@
 #pragma once
 
 #include "DogFight.h"
-#include "DogFightGameStateBase.h"
+#include "GameMode/DogFightGameStateBase.h"
 
 #include "LobbyPlayerState.h"
 #include "LobbyGameState.generated.h"

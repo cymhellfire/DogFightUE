@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DogFightGameModeBase.h"
+#include "GameMode/DogFightGameModeBase.h"
 #include "DogFightTypes.h"
 #include "Card/GameCardTypes.h"
 #include "DebugTools/ImGuiCommon.h"
@@ -16,6 +16,7 @@ class AStandardPlayerState;
 class UGameplayCardPool;
 class UGameplayAbilityPool;
 class ADogFightAIController;
+class UDamageCalculatorBase;
 
 enum EGameModeDelayAction : uint8
 {
@@ -214,11 +215,19 @@ public:
 	void BroadcastCameraFocusEvent(FCameraFocusEvent CameraEvent);
 
 	FVector GetCenterPointOfAllAlivePlayers() const;
+
+	virtual void BeginDestroy() override;
+
+	virtual void PostInitializeComponents() override;
+
+	virtual AShieldManager* GetShieldManager() const { return ShieldManager; }
+
+	virtual UGameModeStateMachine* GetGameModeStateMachine() { return GameModeStateMachine; }
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-	virtual void InitializeStateMachine() override;
+	virtual void InitializeStateMachine();
 
 	/** All PlayerController instances in current game. */
 	TArray<AStandardModePlayerController*> StandardPlayerControllerList;
@@ -292,9 +301,22 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="PlayerSettings")
 	int32 InitialAbilityCandidateCount;
 
+	/** Class to calculate the damage to apply during game. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="DogFightGameMode")
+	TSubclassOf<UDamageCalculatorBase> DamageCalculatorClass;
+
 protected:
 
 	TArray<int32> HumanPlayerIdList;
+
+	UPROPERTY()
+	UDamageCalculatorBase* DamageCalculator;
+
+	UPROPERTY()
+	AShieldManager* ShieldManager;
+
+	UPROPERTY(Transient)
+	UGameModeStateMachine* GameModeStateMachine;
 
 #pragma region Debug
 public:

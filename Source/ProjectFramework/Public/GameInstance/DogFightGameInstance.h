@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "DogFight.h"
+#include "ProjectFramework.h"
 #include "Common/MainMenuMessage.h"
 #include "Engine/GameInstance.h"
 #include "DogFightGameInstance.generated.h"
@@ -18,7 +18,7 @@ namespace DogFightGameInstanceState
  * 
  */
 UCLASS()
-class DOGFIGHT_API UDogFightGameInstance : public UGameInstance
+class PROJECTFRAMEWORK_API UDogFightGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 

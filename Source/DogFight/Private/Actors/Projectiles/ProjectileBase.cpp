@@ -6,13 +6,13 @@
 #include "Card/GameCardTypes.h"
 #include "DamageStructures.h"
 #include "Actors/Common/BlastwaveArea.h"
-#include "Game/DogFightGameModeBase.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/AudioComponent.h"
 #include "Actors/Vfx/VfxBase.h"
 #include "Actors/Shield/ShieldBase.h"
 #include "Actors/Managers/ShieldManager.h"
+#include "Game/StandardGameMode.h"
 
 // Sets default values
 AProjectileBase::AProjectileBase()
@@ -80,7 +80,7 @@ void AProjectileBase::SetupShield()
 	if (GetNetMode() == NM_Client)
 		return;
 
-	if (ADogFightGameModeBase* GameModeBase = Cast<ADogFightGameModeBase>(GetWorld()->GetAuthGameMode()))
+	if (AStandardGameMode* GameModeBase = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
 	{
 		if (AShieldManager* ShieldManager = GameModeBase->GetShieldManager())
 		{
@@ -201,7 +201,7 @@ void AProjectileBase::OnDecayTimerFinished()
 
 void AProjectileBase::OnShieldRegistered(AShieldBase* NewShield)
 {
-	if (ADogFightGameModeBase* GameModeBase = Cast<ADogFightGameModeBase>(GetWorld()->GetAuthGameMode()))
+	if (AStandardGameMode* GameModeBase = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
 	{
 		if (GameModeBase->GetPlayersRelation(OwnerController, NewShield->OwnerController) == EPlayerRelation::PR_Ally)
 		{
@@ -212,7 +212,7 @@ void AProjectileBase::OnShieldRegistered(AShieldBase* NewShield)
 
 void AProjectileBase::OnShieldUnregistered(AShieldBase* Shield)
 {
-	if (ADogFightGameModeBase* GameModeBase = Cast<ADogFightGameModeBase>(GetWorld()->GetAuthGameMode()))
+	if (AStandardGameMode* GameModeBase = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
 	{
 		if (GameModeBase->GetPlayersRelation(OwnerController, Shield->OwnerController) == EPlayerRelation::PR_Ally)
 		{
@@ -362,7 +362,7 @@ void AProjectileBase::BeginDestroy()
 	{
 		if (UWorld* MyWorld = GetWorld())
 		{
-			if (ADogFightGameModeBase* GameModeBase = Cast<ADogFightGameModeBase>(MyWorld->GetAuthGameMode()))
+			if (AStandardGameMode* GameModeBase = Cast<AStandardGameMode>(MyWorld->GetAuthGameMode()))
 			{
 				if (AShieldManager* ShieldManager = GameModeBase->GetShieldManager())
 				{
@@ -381,7 +381,7 @@ float AProjectileBase::TakeDamage(float DamageAmount, FDamageEvent const& Damage
 
 	float ActualDamage = 0;
 	// Modify the damage by current GameMode
-	if (ADogFightGameModeBase* DogFightGameModeBase = Cast<ADogFightGameModeBase>(GetWorld()->GetAuthGameMode()))
+	if (AStandardGameMode* DogFightGameModeBase = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
 	{
 		ActualDamage = DogFightGameModeBase->CalculateDamage(this, DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	}

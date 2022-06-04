@@ -12,7 +12,7 @@
  * 
  */
 UCLASS()
-class DOGFIGHT_API UFrameworkLibrary : public UBlueprintFunctionLibrary
+class PROJECTFRAMEWORK_API UFrameworkLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 

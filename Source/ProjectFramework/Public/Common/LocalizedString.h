@@ -6,7 +6,7 @@
 #define ST_LOC_PATH			TEXT("/Game/DogFight/Localization/")
 
 USTRUCT(BlueprintType)
-struct FLocalizedString
+struct PROJECTFRAMEWORK_API FLocalizedString
 {
 	GENERATED_BODY()
 

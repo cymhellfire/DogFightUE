@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 
-#include "DogFightGameModeBase.h"
+#include "Gamemode/DogFightGameModeBase.h"
 #include "LobbyPlayerState.h"
 #include "LobbyGameMode.generated.h"
 

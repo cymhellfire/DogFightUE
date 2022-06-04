@@ -4,7 +4,7 @@
 #include "MainMenuMessage.generated.h"
 
 USTRUCT(BlueprintType)
-struct FMainMenuMessage
+struct PROJECTFRAMEWORK_API FMainMenuMessage
 {
 	GENERATED_BODY()
 

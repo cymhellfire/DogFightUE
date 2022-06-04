@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class DOGFIGHT_API ADogFightGameStateBase : public AGameStateBase
+class PROJECTFRAMEWORK_API ADogFightGameStateBase : public AGameStateBase
 {
 	GENERATED_BODY()
 

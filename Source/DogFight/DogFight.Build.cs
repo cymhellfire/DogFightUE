@@ -37,6 +37,13 @@ public class DogFight : ModuleRules
 			}
 		);
 		
+		PrivateDependencyModuleNames.AddRange(
+			new string[]
+			{
+				"ProjectFramework",
+			}
+		);
+		
 		DynamicallyLoadedModuleNames.Add("OnlineSubsystemNull");
 	}
 }

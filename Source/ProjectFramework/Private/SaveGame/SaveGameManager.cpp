@@ -1,10 +1,10 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "Game/SaveGameManager.h"
+#include "SaveGame/SaveGameManager.h"
 
-#include "DogFight.h"
-#include "Game/DogFightSaveGame.h"
+#include "ProjectFramework.h"
+#include "SaveGame/DogFightSaveGame.h"
 #include "Kismet/GameplayStatics.h"
 
 TArray<FString> USaveGameManager::GetAllSaveGame()
@@ -81,7 +81,7 @@ bool USaveGameManager::SaveAtSlot(FString PlayerName, FString OldSlotName)
 		}
 		else
 		{
-			UE_LOG(LogDogFight, Error, TEXT("Failed to create new SaveGame at slot: %s"), *PlayerName);
+			UE_LOG(LogProjectFramework, Error, TEXT("Failed to create new SaveGame at slot: %s"), *PlayerName);
 		}
 	}
 	
@@ -92,7 +92,7 @@ void USaveGameManager::DeleteAtSlot(FString SlotName)
 {
 	if (!CacheSlotList.Contains(SlotName))
 	{
-		UE_LOG(LogDogFight, Error, TEXT("No save game in slot: %s"), *SlotName);
+		UE_LOG(LogProjectFramework, Error, TEXT("No save game in slot: %s"), *SlotName);
 		return;
 	}
 
@@ -104,7 +104,7 @@ void USaveGameManager::DeleteAtSlot(FString SlotName)
 
 	if (!UGameplayStatics::DeleteGameInSlot(SlotName, 0))
 	{
-		UE_LOG(LogDogFight, Error, TEXT("Failed to delete game in slot: %s"), *SlotName);
+		UE_LOG(LogProjectFramework, Error, TEXT("Failed to delete game in slot: %s"), *SlotName);
 	}
 }
 
@@ -112,7 +112,7 @@ void USaveGameManager::SelectSaveGame(FString SlotName)
 {
 	if (!CacheSlotList.Contains(SlotName))
 	{
-		UE_LOG(LogDogFight, Error, TEXT("No such save game %s."), *SlotName);
+		UE_LOG(LogProjectFramework, Error, TEXT("No such save game %s."), *SlotName);
 		return;
 	}
 
@@ -172,7 +172,7 @@ void USaveGameManager::SetProperty(FString Key, FString Value)
 	}
 	else
 	{
-		UE_LOG(LogDogFight, Error, TEXT("Invalid SaveGameOption property: %s"), *Key);
+		UE_LOG(LogProjectFramework, Error, TEXT("Invalid SaveGameOption property: %s"), *Key);
 	}
 }
 
@@ -201,11 +201,11 @@ void USaveGameManager::LoadSaveGameAtSlot(FString SlotName)
 	{
 		CurrentSaveGameInstance = LoadedGame;
 
-		UE_LOG(LogDogFight, Log, TEXT("Load save game %s successfully."), *SlotName);
+		UE_LOG(LogProjectFramework, Log, TEXT("Load save game %s successfully."), *SlotName);
 	}
 	else
 	{
-		UE_LOG(LogDogFight, Error, TEXT("Failed load save game at slot: %s"), *SlotName);
+		UE_LOG(LogProjectFramework, Error, TEXT("Failed load save game at slot: %s"), *SlotName);
 
 		// Clear the selected slot name
 		SelectedSlotName = "";

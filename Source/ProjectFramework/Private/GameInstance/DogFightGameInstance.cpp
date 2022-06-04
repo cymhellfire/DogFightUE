@@ -1,14 +1,15 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "Game/DogFightGameInstance.h"
+#include "GameInstance/DogFightGameInstance.h"
 
-#include "Game/DogFightGameModeBase.h"
-#include "Game/DogFightGameStateBase.h"
-#include "DogFightTypes.h"
-#include "Game/SaveGameManager.h"
+#include "GameMode/DogFightGameModeBase.h"
+#include "GameMode/DogFightGameStateBase.h"
+#include "Common/FrameworkType.h"
+#include "SaveGame/SaveGameManager.h"
 #include "Blueprint/UserWidget.h"
 #include "Common/Localization.h"
+#include "Kismet/GameplayStatics.h"
 
 namespace DogFightGameInstanceState
 {
@@ -39,7 +40,7 @@ bool UDogFightGameInstance::HostSession(TSharedPtr<const FUniqueNetId> UserId, F
 	// Validate map name
 	if (InMapName.IsEmpty())
 	{
-		UE_LOG(LogDogFight, Error, TEXT("Invalid map name to create a session."));
+		UE_LOG(LogProjectFramework, Error, TEXT("Invalid map name to create a session."));
 		return false;
 	}
 
@@ -553,14 +554,14 @@ void UDogFightGameInstance::DirectlyConnectToHost(FString IpAddress)
 	IpAddress.ParseIntoArray(Parts, TEXT("."));
 	if (Parts.Num() != 4)
 	{
-		UE_LOG(LogDogFight, Error, TEXT("Invalid Ip address to connect: %s"), *IpAddress);
+		UE_LOG(LogProjectFramework, Error, TEXT("Invalid Ip address to connect: %s"), *IpAddress);
 		return;
 	}
 
 	APlayerController* PlayerController = GetFirstLocalPlayerController();
 	if (PlayerController == nullptr)
 	{
-		UE_LOG(LogDogFight, Error, TEXT("No available local player controller."));
+		UE_LOG(LogProjectFramework, Error, TEXT("No available local player controller."));
 		return;
 	}
 	const FString Cmd = FString::Printf(TEXT("open %s"), *IpAddress);

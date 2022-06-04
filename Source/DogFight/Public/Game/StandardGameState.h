@@ -4,7 +4,7 @@
 
 #include "DogFight.h"
 
-#include "DogFightGameStateBase.h"
+#include "GameMode/DogFightGameStateBase.h"
 #include "Common/StandardMiniMapCapture.h"
 #include "StandardGameState.generated.h"
 

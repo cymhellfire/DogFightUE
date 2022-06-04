@@ -3,7 +3,6 @@
 
 #include "Actors/Shield/ShieldBase.h"
 
-#include "Game/DogFightGameModeBase.h"
 #include "Game/GameRoundsTimeline.h"
 #include "Actors/Projectiles/ProjectileBase.h"
 #include "Actors/Managers/ShieldManager.h"
@@ -31,7 +30,7 @@ bool AShieldBase::CheckShouldBlockProjectile(AProjectileBase* TestProjectile)
 		return false;
 	}
 
-	if (ADogFightGameModeBase* GameModeBase = Cast<ADogFightGameModeBase>(GetWorld()->GetAuthGameMode()))
+	if (AStandardGameMode* GameModeBase = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
 	{
 		switch (BlockType)
 		{
@@ -106,7 +105,7 @@ void AShieldBase::BeginPlay()
 	// Register
 	if (GetNetMode() != NM_Client)
 	{
-		if (ADogFightGameModeBase* GameModeBase = Cast<ADogFightGameModeBase>(GetWorld()->GetAuthGameMode()))
+		if (AStandardGameMode* GameModeBase = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
 		{
 			if (AShieldManager* ShieldManager = GameModeBase->GetShieldManager())
 			{
@@ -131,7 +130,7 @@ void AShieldBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	{
 		if (UWorld* MyWorld = GetWorld())
 		{
-			if (ADogFightGameModeBase* GameModeBase = Cast<ADogFightGameModeBase>(MyWorld->GetAuthGameMode()))
+			if (AStandardGameMode* GameModeBase = Cast<AStandardGameMode>(MyWorld->GetAuthGameMode()))
 			{
 				if (AShieldManager* ShieldManager = GameModeBase->GetShieldManager())
 				{

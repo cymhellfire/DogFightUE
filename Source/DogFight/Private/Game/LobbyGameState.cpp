@@ -3,7 +3,7 @@
 
 #include "Game/LobbyGameState.h"
 
-#include "Game/DogFightGameInstance.h"
+#include "GameInstance/DogFightGameInstance.h"
 
 ALobbyGameState::ALobbyGameState(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

@@ -4,10 +4,10 @@
 #include "Player/LobbyPlayerController.h"
 
 #include "DogFight.h"
-#include "Game/DogFightGameInstance.h"
+#include "GameInstance/DogFightGameInstance.h"
 #include "Game/LobbyPlayerState.h"
-#include "Game/SaveGameManager.h"
-#include "Game/DogFightSaveGame.h"
+#include "SaveGame/SaveGameManager.h"
+#include "SaveGame/DogFightSaveGame.h"
 #include "Game/LobbyGameMode.h"
 
 void ALobbyPlayerController::GatherPlayerInfo()

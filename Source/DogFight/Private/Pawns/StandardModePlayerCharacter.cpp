@@ -4,7 +4,7 @@
 #include "Pawns/StandardModePlayerCharacter.h"
 
 #include "DogFight.h"
-#include "Game/DogFightGameModeBase.h"
+#include "GameMode/DogFightGameModeBase.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "NavigationPath.h"
 #include "Actors/Projectiles/ProjectileBase.h"

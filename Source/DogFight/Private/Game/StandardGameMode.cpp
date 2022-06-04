@@ -7,7 +7,8 @@
 #include "DogFight.h"
 #include "Ability/AbilityBase.h"
 #include "Actors/Managers/BuffQueue.h"
-#include "Game/DogFightGameInstance.h"
+#include "Actors/Managers/ShieldManager.h"
+#include "GameInstance/DogFightGameInstance.h"
 #include "Game/StandardGameState.h"
 #include "UI/StandardHUD.h"
 #include "Player/StandardModePlayerController.h"
@@ -19,6 +20,7 @@
 #include "AI/StandardModeAIController.h"
 #include "Common/BitmaskOperation.h"
 #include "Actors/Weapons/WeaponBase.h"
+#include "Game/DamageCalculatorBase.h"
 #include "Game/GameplayAbilityPool.h"
 #include "Game/GameWorkflow/GameModeStateMachine.h"
 #include "Game/GameWorkflow/StandardGameMode/StandardGameModeCharacterReturnPhase.h"
@@ -173,6 +175,13 @@ void AStandardGameMode::PreInitializeComponents()
 {
 	Super::PreInitializeComponents();
 
+	UWorld* MyWorld = GetWorld();
+	if (IsValid(MyWorld) && !MyWorld->IsPreviewWorld())
+	{
+		// Create phase state machine
+		InitializeStateMachine();
+	}
+
 	// Spawn Timeline actor
 	if (AStandardGameState* StandardGameState = GetGameState<AStandardGameState>())
 	{
@@ -206,7 +215,11 @@ void AStandardGameMode::PreInitializeComponents()
 
 float AStandardGameMode::CalculateDamage(AActor* DamageTaker, float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	const float FinalDamage = Super::CalculateDamage(DamageTaker, Damage, DamageEvent, EventInstigator, DamageCauser); 
+	float FinalDamage = Damage;
+	if (DamageCalculator != nullptr)
+	{
+		FinalDamage = DamageCalculator->CalculateActualDamage(DamageTaker, Damage, DamageEvent, EventInstigator, DamageCauser);
+	}
 
 	// Record the damage to PlayerState if taker and source are both PlayerCharacter
 	AStandardModePlayerCharacter* PlayerCharacter = Cast<AStandardModePlayerCharacter>(DamageTaker);
@@ -653,9 +666,41 @@ FVector AStandardGameMode::GetCenterPointOfAllAlivePlayers() const
 	return Result;
 }
 
+void AStandardGameMode::BeginDestroy()
+{
+	Super::BeginDestroy();
+
+	// Destroy damage calculator
+	if (DamageCalculator != nullptr)
+	{
+		DamageCalculator->ConditionalBeginDestroy();
+	}
+}
+
+void AStandardGameMode::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	if (UWorld* MyWorld = GetWorld())
+	{
+		// Create Shield Manager
+		ShieldManager = MyWorld->SpawnActor<AShieldManager>(AShieldManager::StaticClass());
+		if (ShieldManager)
+		{
+			ShieldManager->Rename(TEXT("ShieldManager"));
+		}
+	}
+}
+
 void AStandardGameMode::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// Create damage calculator
+	if (IsValid(DamageCalculatorClass))
+	{
+		DamageCalculator = NewObject<UDamageCalculatorBase>(this, DamageCalculatorClass, FName(TEXT("DamageCalculator")));
+	}
 
 #if WITH_IMGUI
 	SetupDebugTools();

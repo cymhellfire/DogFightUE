@@ -1,11 +1,9 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "Game/DogFightGameModeBase.h"
+#include "GameMode/DogFightGameModeBase.h"
 
 #include "Player/DogFightPlayerController.h"
-#include "Game/DamageCalculatorBase.h"
-#include "Actors/Managers/ShieldManager.h"
 
 void ADogFightGameModeBase::RequestFinishAndExitToMainMenu()
 {
@@ -41,11 +39,6 @@ void ADogFightGameModeBase::NotifyClientGameWillStart()
 
 float ADogFightGameModeBase::CalculateDamage(AActor* DamageTaker, float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	if (DamageCalculator != nullptr)
-	{
-		return DamageCalculator->CalculateActualDamage(DamageTaker, Damage, DamageEvent, EventInstigator, DamageCauser);
-	}
-
 	return Damage;
 }
 
@@ -57,23 +50,6 @@ EPlayerRelation ADogFightGameModeBase::GetPlayersRelation(AController* PlayerA, 
 void ADogFightGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// Create damage calculator
-	if (IsValid(DamageCalculatorClass))
-	{
-		DamageCalculator = NewObject<UDamageCalculatorBase>(this, DamageCalculatorClass, FName(TEXT("DamageCalculator")));
-	}
-}
-
-void ADogFightGameModeBase::BeginDestroy()
-{
-	Super::BeginDestroy();
-
-	// Destroy damage calculator
-	if (DamageCalculator != nullptr)
-	{
-		DamageCalculator->ConditionalBeginDestroy();
-	}
 }
 
 void ADogFightGameModeBase::PostLogin(APlayerController* NewPlayer)
@@ -103,31 +79,4 @@ void ADogFightGameModeBase::Logout(AController* Exiting)
 	}
 
 	Super::Logout(Exiting);
-}
-
-void ADogFightGameModeBase::PreInitializeComponents()
-{
-	Super::PreInitializeComponents();
-
-	UWorld* MyWorld = GetWorld();
-	if (IsValid(MyWorld) && !MyWorld->IsPreviewWorld())
-	{
-		// Create phase state machine
-		InitializeStateMachine();
-	}
-}
-
-void ADogFightGameModeBase::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
-
-	if (UWorld* MyWorld = GetWorld())
-	{
-		// Create Shield Manager
-		ShieldManager = MyWorld->SpawnActor<AShieldManager>(AShieldManager::StaticClass());
-		if (ShieldManager)
-		{
-			ShieldManager->Rename(TEXT("ShieldManager"));
-		}
-	}
 }

@@ -1,9 +1,9 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "BlueprintLibrary/FrameworkLibrary.h"
+#include "FunctionLibrary/FrameworkLibrary.h"
 
-#include "Game/DogFightGameInstance.h"
+#include "GameInstance/DogFightGameInstance.h"
 
 USaveGameManager* UFrameworkLibrary::GetSaveGameManager(const UObject* WorldContextObject)
 {
@@ -11,7 +11,7 @@ USaveGameManager* UFrameworkLibrary::GetSaveGameManager(const UObject* WorldCont
 	UDogFightGameInstance* GameInstance = Cast<UDogFightGameInstance>(World->GetGameInstance());
 	if (GameInstance == nullptr)
 	{
-		UE_LOG(LogDogFight, Error, TEXT("Invalid GameInstance class: %s"), *World->GetGameInstance()->StaticClass()->GetName());
+		UE_LOG(LogProjectFramework, Error, TEXT("Invalid GameInstance class: %s"), *World->GetGameInstance()->StaticClass()->GetName());
 		return nullptr;
 	}
 

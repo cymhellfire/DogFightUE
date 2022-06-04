@@ -1,6 +1,6 @@
 ﻿#include "Game/GameWorkflow/StandardGameMode/StandardGameModeEnteringMapPhase.h"
 
-#include "Game/DogFightGameInstance.h"
+#include "GameInstance/DogFightGameInstance.h"
 #include "Game/StandardGameMode.h"
 #include "Game/StandardGameState.h"
 

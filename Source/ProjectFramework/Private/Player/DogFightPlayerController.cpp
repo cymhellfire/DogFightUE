@@ -3,7 +3,7 @@
 
 #include "Player/DogFightPlayerController.h"
 
-#include "Game/DogFightGameInstance.h"
+#include "GameInstance/DogFightGameInstance.h"
 #include "Common/Localization.h"
 
 void ADogFightPlayerController::ClientReturnToMainMenuWithReason_Implementation(EReturnToMainMenuReason::Type Reason)
@@ -26,7 +26,7 @@ void ADogFightPlayerController::ClientReturnToMainMenuWithReason_Implementation(
 #else
 			const FString ErrorContextString = FString::Printf(TEXT("NetError_%s"),*UEnum::GetDisplayValueAsText(Reason).ToString());
 #endif
-			UE_LOG(LogDogFight, Log, TEXT("DisplayValueAsText: %s"), *ErrorContextString);
+			UE_LOG(LogProjectFramework, Log, TEXT("DisplayValueAsText: %s"), *ErrorContextString);
 			
 			DogFightGameInstance->AddPendingMessage(FText::FromStringTable(ST_UI_LOC, TEXT("NetErrorTitle")),
 				FText::FromStringTable(ST_UI_LOC, ErrorContextString));

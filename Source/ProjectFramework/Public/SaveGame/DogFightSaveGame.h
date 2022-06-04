@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class DOGFIGHT_API UDogFightSaveGame : public USaveGame
+class PROJECTFRAMEWORK_API UDogFightSaveGame : public USaveGame
 {
 	GENERATED_BODY()
 
