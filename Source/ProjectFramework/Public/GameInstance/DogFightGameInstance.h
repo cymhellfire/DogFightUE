@@ -5,6 +5,7 @@
 #include "ProjectFramework.h"
 #include "Common/MainMenuMessage.h"
 #include "Engine/GameInstance.h"
+#include "Online.h"
 #include "DogFightGameInstance.generated.h"
 
 namespace DogFightGameInstanceState
@@ -13,6 +14,8 @@ namespace DogFightGameInstanceState
 	extern const FName MainMenu;
 	extern const FName Playing;
 }
+
+class UGameService;
 
 /**
  * 
@@ -66,6 +69,8 @@ public:
 	virtual void Shutdown() override;
 
 	class USaveGameManager* GetSaveGameManager() { return SaveGameManager; };
+
+	UGameService* GetGameService(FName ClassName);
 protected:
 
 	/* Delegate triggered when session created. */
@@ -128,6 +133,9 @@ private:
 	UPROPERTY(Transient)
 	class USaveGameManager* SaveGameManager;
 
+	UPROPERTY(Transient)
+	TMap<FName, UGameService*> GameServiceMap; 
+
 public:
 	/** Initialize Game Instance. */
 	virtual void Init() override;
@@ -163,6 +171,8 @@ private:
 
 	/** Register the handler to network failure. */
 	void SetupNetworkFailureHandler();
+
+	void StartupGameService();
 
 	FDelegateHandle NetworkFailureHandle;
 

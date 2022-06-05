@@ -41,6 +41,7 @@ public class DogFight : ModuleRules
 			new string[]
 			{
 				"ProjectFramework",
+				"CardSystem",
 			}
 		);
 		

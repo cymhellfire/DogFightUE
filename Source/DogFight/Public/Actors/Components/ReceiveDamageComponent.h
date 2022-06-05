@@ -5,7 +5,6 @@
 #include "DogFight.h"
 #include "Components/ActorComponent.h"
 #include "DamageStructures.h"
-#include "Common/BitmaskOperation.h"
 #include "ReceiveDamageComponent.generated.h"
 
 UENUM(BlueprintType, meta=(BitFlags, UseEnumValuesAsMaskValuesInEditor = "true"))

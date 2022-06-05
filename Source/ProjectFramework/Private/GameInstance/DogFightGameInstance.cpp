@@ -9,6 +9,7 @@
 #include "SaveGame/SaveGameManager.h"
 #include "Blueprint/UserWidget.h"
 #include "Common/Localization.h"
+#include "GameService/GameService.h"
 #include "Kismet/GameplayStatics.h"
 
 namespace DogFightGameInstanceState
@@ -181,6 +182,16 @@ void UDogFightGameInstance::Shutdown()
 	FTicker::GetCoreTicker().RemoveTicker(TickDelegateHandle);
 }
 
+UGameService* UDogFightGameInstance::GetGameService(FName ClassName)
+{
+	if (GameServiceMap.Contains(ClassName))
+	{
+		return GameServiceMap[ClassName];
+	}
+
+	return nullptr;
+}
+
 void UDogFightGameInstance::OnFindSessionsComplete(bool bWasSuccessful)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("OnFindSessionsComplete %d"), bWasSuccessful));
@@ -349,6 +360,9 @@ void UDogFightGameInstance::Init()
 	// Register delegate for ticker callback
 	TickDelegate = FTickerDelegate::CreateUObject(this, &UDogFightGameInstance::Tick);
 	TickDelegateHandle = FTicker::GetCoreTicker().AddTicker(TickDelegate);
+
+	// Startup game services
+	StartupGameService();
 }
 
 bool UDogFightGameInstance::Tick(float DeltaSeconds)
@@ -404,6 +418,19 @@ void UDogFightGameInstance::SetupNetworkFailureHandler()
 void UDogFightGameInstance::RemoveNetworkFailureHandler() const
 {
 	GEngine->OnNetworkFailure().Remove(NetworkFailureHandle);
+}
+
+void UDogFightGameInstance::StartupGameService()
+{
+	// Instantiate all game service classes
+	for (TObjectIterator<UClass> It; It; ++It)
+	{
+		if (It->IsChildOf(UGameService::StaticClass()) && !It->HasAnyClassFlags(CLASS_Abstract))
+		{
+			UGameService* NewGameService = NewObject<UGameService>(this, *It, It->GetFName());
+			GameServiceMap.Add(It->GetFName(), NewGameService);
+		}
+	}
 }
 
 void UDogFightGameInstance::GoToState(FName NewState)

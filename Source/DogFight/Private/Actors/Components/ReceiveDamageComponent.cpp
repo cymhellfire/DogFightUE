@@ -1,7 +1,7 @@
 // Dog Fight Game Code By CYM.
 
-
 #include "Actors/Components/ReceiveDamageComponent.h"
+#include "Common/BitmaskOperation.h"
 
 // Sets default values for this component's properties
 UReceiveDamageComponent::UReceiveDamageComponent()

@@ -13,6 +13,7 @@ public class ProjectFramework : ModuleRules
 			new []
 			{
 				"Core",
+				"OnlineSubsystem",
 			}
 		);
 		
@@ -21,7 +22,6 @@ public class ProjectFramework : ModuleRules
 			{
 				"CoreUObject",
 				"Engine",
-				"OnlineSubsystem",
 				"OnlineSubsystemUtils",
 				"Slate",
 				"UMG",

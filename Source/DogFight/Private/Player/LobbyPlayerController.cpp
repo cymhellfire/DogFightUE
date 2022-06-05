@@ -9,6 +9,8 @@
 #include "SaveGame/SaveGameManager.h"
 #include "SaveGame/DogFightSaveGame.h"
 #include "Game/LobbyGameMode.h"
+#include "GameService/CardGameService.h"
+#include "GameService/GameService.h"
 
 void ALobbyPlayerController::GatherPlayerInfo()
 {
@@ -64,5 +66,14 @@ void ALobbyPlayerController::ToggleReadyStatus()
 	{
 		LobbyPlayerState->SetLobbyStatus(LobbyPlayerState->GetLobbyStatus() == EPlayerLobbyStatus::Preparing ?
 			EPlayerLobbyStatus::Ready : EPlayerLobbyStatus::Preparing);
+	}
+}
+
+void ALobbyPlayerController::ExecSpawnCard(FString CardName)
+{
+	UCardGameService* CardGameService = UGameService::GetGameService<UCardGameService>();
+	if (CardGameService)
+	{
+		CardGameService->UseCard(CardName, this);
 	}
 }

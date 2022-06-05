@@ -4,7 +4,6 @@
 #include "Modules/ModuleManager.h"
 
 #include "Net/UnrealNetwork.h"
-#include "Online.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogProjectFramework, Log, All);
 
