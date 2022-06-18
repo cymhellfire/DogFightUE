@@ -162,7 +162,9 @@ namespace UnLua
     template <typename T1, typename... T2>
     FORCEINLINE int32 PushNonConstRefParam(lua_State *L, T1 &&V1, T2&&... V2)
     {
-        return PushNonConstRefParam(L, Forward<T1>(V1)) + PushNonConstRefParam(L, Forward<T2>(V2)...);
+        const auto Ret1 = PushNonConstRefParam(L, Forward<T1>(V1));
+        const auto Ret2 = PushNonConstRefParam(L, Forward<T2>(V2)...); 
+        return Ret1 + Ret2;
     }
 
     template <typename... ArgType, uint32... N>
@@ -188,8 +190,13 @@ namespace UnLua
         static int32 Invoke(lua_State *L, const TFunction<RetType(ArgType...)> &Func, TTuple<typename TArgTypeTraits<ArgType>::Type...> &Args, TIndices<N...> ParamIndices)
         {
             RetType RetVal = UnLua::Invoke(Func, Args, typename TZeroBasedIndices<sizeof...(ArgType)>::Type());
-            UnLua::Push(L, Forward<RetType>(RetVal), true);
+#if UNLUA_LEGACY_RETURN_ORDER
             int32 Num = PushNonConstRefParam<ArgType...>(L, Args, ParamIndices);
+#endif
+            UnLua::Push(L, Forward<RetType>(RetVal), true);
+#if !UNLUA_LEGACY_RETURN_ORDER
+            int32 Num = PushNonConstRefParam<ArgType...>(L, Args, ParamIndices);
+#endif
             return Num + 1;
         }
     };
@@ -211,8 +218,13 @@ namespace UnLua
             else
             {
                 RetType RetVal = UnLua::Invoke(Func, Args, typename TZeroBasedIndices<sizeof...(ArgType)>::Type());
-                UnLua::Push(L, Forward<typename std::add_lvalue_reference<RetType>::type>(RetVal), true);
+#if UNLUA_LEGACY_RETURN_ORDER
                 Num = PushNonConstRefParam<ArgType...>(L, Args, ParamIndices);
+#endif
+                UnLua::Push(L, Forward<typename std::add_lvalue_reference<RetType>::type>(RetVal), true);
+#if !UNLUA_LEGACY_RETURN_ORDER
+                Num = PushNonConstRefParam<ArgType...>(L, Args, ParamIndices);
+#endif
             }
             return Num + 1;
         }
@@ -291,9 +303,9 @@ namespace UnLua
         {
             Type = GetFieldFromSuperClass(L, lua_upvalueindex(1), 2);
         }
-        if (Type == LUA_TLIGHTUSERDATA)
+        if (Type == LUA_TUSERDATA)
         {
-            IExportedProperty *Property = (IExportedProperty*)lua_touserdata(L, -1);
+            TSharedPtr<IExportedProperty> Property = *(TSharedPtr<IExportedProperty>*)lua_touserdata(L, -1);
             void *ContainerPtr = UnLua::GetPointer(L, 1);
             if (ContainerPtr)
             {
@@ -312,9 +324,9 @@ namespace UnLua
         {
             Type = GetFieldFromSuperClass(L, lua_upvalueindex(1), 2);
         }
-        if (Type == LUA_TLIGHTUSERDATA)
+        if (Type == LUA_TUSERDATA)
         {
-            IExportedProperty *Property = (IExportedProperty*)lua_touserdata(L, -1);
+            TSharedPtr<IExportedProperty> Property = *(TSharedPtr<IExportedProperty>*)lua_touserdata(L, -1);
             void *ContainerPtr = UnLua::GetPointer(L, 1);
             if (ContainerPtr)
             {
@@ -767,35 +779,18 @@ namespace UnLua
      */
     template <bool bIsReflected>
     TExportedClassBase<bIsReflected>::TExportedClassBase(const char *InName, const char *InSuperClassName)
-        : Name(InName), ClassFName(InName), SuperClassName(InSuperClassName)
+        : Name(InName), SuperClassName(InSuperClassName)
     {}
-
-    template <bool bIsReflected>
-    TExportedClassBase<bIsReflected>::~TExportedClassBase()
-    {
-        for (IExportedProperty *Property : Properties)
-        {
-            delete Property;
-        }
-        for (IExportedFunction *MemberFunc : Functions)
-        {
-            delete MemberFunc;
-        }
-        for (IExportedFunction *Func : GlueFunctions)
-        {
-            delete Func;
-        }
-    }
 
     template <bool bIsReflected>
     void TExportedClassBase<bIsReflected>::Register(lua_State *L)
     {
         // make sure the meta table is on the top of the stack if 'bIsReflected' is true
 
-        TStringConversion<TStringConvert<TCHAR, ANSICHAR>> ClassName(*Name);
+        const auto ClassName = TCHAR_TO_UTF8(*Name);
         if (!bIsReflected)
         {
-            int32 Type = luaL_getmetatable(L, ClassName.Get());
+            int32 Type = luaL_getmetatable(L, ClassName);
             lua_pop(L, 1);
             if (Type == LUA_TTABLE)
             {
@@ -803,7 +798,7 @@ namespace UnLua
             }
             else
             {
-                if (SuperClassName != NAME_None)
+                if (!SuperClassName.IsEmpty())
                 {
                     IExportedClass *SuperClass = UnLua::FindExportedClass(SuperClassName);
                     if (SuperClass)
@@ -812,23 +807,23 @@ namespace UnLua
                     }
                     else
                     {
-                        SuperClassName = NAME_None;
+                        SuperClassName = "";
                     }
                 }
 
-                luaL_newmetatable(L, ClassName.Get());
+                luaL_newmetatable(L, ClassName);
 
-                if (SuperClassName != NAME_None)
+                if (!SuperClassName.IsEmpty())
                 {
                     lua_pushstring(L, "Super");
-                    Type = luaL_getmetatable(L, TCHAR_TO_UTF8(*SuperClassName.ToString()));
+                    Type = luaL_getmetatable(L, TCHAR_TO_UTF8(*SuperClassName));
                     check(Type == LUA_TTABLE);
                     lua_rawset(L, -3);
                 }
 
                 lua_pushstring(L, "__index");
                 lua_pushvalue(L, -2);
-                if (Properties.Num() > 0 || SuperClassName != NAME_None)
+                if (Properties.Num() > 0 || !SuperClassName.IsEmpty())
                 {
                     lua_pushcclosure(L, UnLua::Index, 1);
                 }
@@ -836,7 +831,7 @@ namespace UnLua
 
                 lua_pushstring(L, "__newindex");
                 lua_pushvalue(L, -2);
-                if (Properties.Num() > 0 || SuperClassName != NAME_None)
+                if (Properties.Num() > 0 || !SuperClassName.IsEmpty())
                 {
                     lua_pushcclosure(L, UnLua::NewIndex, 1);
                 }
@@ -847,32 +842,22 @@ namespace UnLua
             }
         }
 
-        for (IExportedProperty *Property : Properties)
-        {
+        for (const auto& Property : Properties)
             Property->Register(L);
-        }
 
-        for (IExportedFunction *MemberFunc : Functions)
-        {
+        for (const auto& MemberFunc : Functions)
             MemberFunc->Register(L);
-        }
 
-        for (IExportedFunction *Func : GlueFunctions)
-        {
+        for (const auto& Func : GlueFunctions)
             Func->Register(L);
-        }
 
         if (!bIsReflected)
         {
-#if WITH_UE4_NAMESPACE
             lua_getglobal(L, "UE");
-            lua_pushstring(L, ClassName.Get());
+            lua_pushstring(L, ClassName);
             lua_pushvalue(L, -3);
             lua_rawset(L, -3);
             lua_pop(L, 2);
-#else
-            lua_setglobal(L, ClassName.Get());
-#endif
         }
     }
 
@@ -900,16 +885,19 @@ namespace UnLua
     void TExportedClassBase<bIsReflected>::GenerateIntelliSenseInternal(FString &Buffer, FFalse NotReflected) const
     {
         // class name
-        Buffer = FString::Printf(TEXT("---@class %s\r\n"), *Name);
+        Buffer = FString::Printf(TEXT("---@class %s"), *Name);
+        if (!SuperClassName.IsEmpty())
+            Buffer += TEXT(": ") + SuperClassName;
+        Buffer += TEXT("\r\n");
 
         // fields
-        for (IExportedProperty *Property : Properties)
+        for (const auto& Property : Properties)
         {
             Property->GenerateIntelliSense(Buffer);
         }
 
         // definition
-        Buffer += FString::Printf(TEXT("local %s = {}\r\n"), *Name);
+        Buffer += TEXT("local M = {}\r\n");
 
         // functions
         for (IExportedFunction *Function : Functions)
@@ -918,7 +906,7 @@ namespace UnLua
         }
 
         // return
-        Buffer += FString::Printf(TEXT("\r\n\r\nreturn %s\r\n"), *Name);
+        Buffer += TEXT("\r\n\r\nreturn M\r\n");
     }
 
     template <bool bIsReflected>
@@ -926,10 +914,10 @@ namespace UnLua
     {
         // class name
         Buffer = FString::Printf(TEXT("---@type %s\r\n"), *Name);
-        Buffer += FString::Printf(TEXT("local %s = {}\r\n"), *Name);
+        Buffer += TEXT("local M = {}\r\n");
 
         // fields
-        for (IExportedProperty *Property : Properties)
+        for (const auto& Property : Properties)
         {
             FString Field;
             TArray<FString> OutArray;
@@ -949,7 +937,7 @@ namespace UnLua
         }
 
         // return
-        Buffer += FString::Printf(TEXT("\r\n\r\nreturn %s\r\n"), *Name);
+        Buffer += TEXT("\r\n\r\nreturn M\r\n");
     }
 #endif
 
@@ -971,7 +959,7 @@ namespace UnLua
         {
             if (uint8 Mask = Buffer[Offset])
             {
-                FExportedClassBase::Properties.Add(new FExportedBitFieldBoolProperty(InName, Offset, Mask));
+                FExportedClassBase::Properties.Add(MakeShared<FExportedBitFieldBoolProperty>(InName, Offset, Mask));
                 return true;
             }
         }
@@ -982,20 +970,20 @@ namespace UnLua
     template <typename T> void TExportedClass<bIsReflected, ClassType, CtorArgType...>::AddProperty(const FString &InName, T ClassType::*Property)
     {
         TPropertyOffset<ClassType, T> PropertyOffset(Property);
-        FExportedClassBase::Properties.Add(new TExportedProperty<T>(InName, PropertyOffset.Offset));
+        FExportedClassBase::Properties.Add(MakeShared<TExportedProperty<T>>(InName, PropertyOffset.Offset));
     }
 
     template <bool bIsReflected, typename ClassType, typename... CtorArgType>
     template <typename T, int32 N> void TExportedClass<bIsReflected, ClassType, CtorArgType...>::AddProperty(const FString &InName, T (ClassType::*Property)[N])
     {
         TArrayPropertyOffset<ClassType, T, N> PropertyOffset(Property);
-        FExportedClassBase::Properties.Add(new TExportedArrayProperty<T>(InName, PropertyOffset.Offset, N));
+        FExportedClassBase::Properties.Add(MakeShared<TExportedArrayProperty<T>>(InName, PropertyOffset.Offset, N));
     }
 
     template <bool bIsReflected, typename ClassType, typename... CtorArgType>
     template <typename T> void TExportedClass<bIsReflected, ClassType, CtorArgType...>::AddStaticProperty(const FString &InName, T *Property)
     {
-        FExportedClassBase::Properties.Add(new TExportedStaticProperty<T>(InName, Property));
+        FExportedClassBase::Properties.Add(MakeShared<TExportedStaticProperty<T>>(InName, Property));
     }
     
     template <bool bIsReflected, typename ClassType, typename... CtorArgType>

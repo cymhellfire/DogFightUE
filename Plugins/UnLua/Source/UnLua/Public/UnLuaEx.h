@@ -15,6 +15,7 @@
 #pragma once
 
 #include "UnLua.h"
+#include "Binding.h"
 
 namespace UnLua
 {
@@ -195,13 +196,14 @@ namespace UnLua
     /**
      * Exported property
      */
-    struct FExportedProperty : public IExportedProperty
+    struct FExportedProperty : public IExportedProperty, public TSharedFromThis<FExportedProperty>
     {
         virtual void Register(lua_State *L) override
         {
             // make sure the meta table is on the top of the stack
             lua_pushstring(L, TCHAR_TO_UTF8(*Name));
-            lua_pushlightuserdata(L, this);
+            const auto Userdata = NewSmartPointer(L, sizeof(TSharedPtr<FExportedProperty>), "TSharedPtr");
+            new(Userdata) TSharedPtr<FExportedProperty>(this->AsShared());
             lua_rawset(L, -3);
         }
 
@@ -213,8 +215,6 @@ namespace UnLua
         FExportedProperty(const FString &InName, uint32 InOffset)
             : Name(InName), Offset(InOffset)
         {}
-
-        virtual ~FExportedProperty() {}
 
         FString Name;
         uint32 Offset;
@@ -312,12 +312,11 @@ namespace UnLua
     struct TExportedClassBase : public IExportedClass
     {
         TExportedClassBase(const char *InName, const char *InSuperClassName = nullptr);
-        virtual ~TExportedClassBase();
 
         virtual void Register(lua_State *L) override;
         virtual void AddLib(const luaL_Reg *InLib) override;
         virtual bool IsReflected() const override { return bIsReflected; }
-        virtual FName GetName() const override { return ClassFName; }
+        virtual FString GetName() const override { return Name; }
 
 #if WITH_EDITOR
         virtual void GenerateIntelliSense(FString &Buffer) const override;
@@ -331,9 +330,8 @@ namespace UnLua
 
     protected:
         FString Name;
-        FName ClassFName;
-        FName SuperClassName;
-        TArray<IExportedProperty*> Properties;
+        FString SuperClassName;
+        TArray<TSharedPtr<IExportedProperty>> Properties;
         TArray<IExportedFunction*> Functions;
         TArray<IExportedFunction*> GlueFunctions;
     };
@@ -399,6 +397,21 @@ namespace UnLua
     };
 
 } // namespace UnLua
+
+/**
+ * Macros to add type interfaces
+ */
+#define ADD_TYPE_INTERFACE(Type) \
+ADD_NAMED_TYPE_INTERFACE(Type, Type)
+
+#define ADD_NAMED_TYPE_INTERFACE(Name, Type) \
+static struct FTypeInterface##Name \
+{ \
+FTypeInterface##Name() \
+{ \
+UnLua::AddType(#Name, UnLua::GetTypeInterface<Type>()); \
+} \
+} TypeInterface##Name;
 
 /**
  * Export a class
@@ -559,6 +572,16 @@ namespace UnLua
     { \
         typedef Enum EnumType; \
         FExported##Enum(const FString &InName) \
+            : UnLua::FExportedEnum(InName) \
+        { \
+            UnLua::ExportEnum(this);
+
+#define BEGIN_EXPORT_ENUM_EX(Enum, Name) \
+    DEFINE_NAMED_TYPE(#Name, Enum) \
+    static struct FExported##Name : public UnLua::FExportedEnum \
+    { \
+        typedef Enum EnumType; \
+        FExported##Name(const FString &InName) \
             : UnLua::FExportedEnum(InName) \
         { \
             UnLua::ExportEnum(this);

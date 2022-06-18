@@ -21,6 +21,8 @@
 #include "Ability/AbilityBase.h"
 #include "Actors/Managers/BuffQueue.h"
 #include "Blueprint/UserWidget.h"
+#include "GameService/CardGameService.h"
+#include "Player/ControllerComponent/CardTargetProviderComponent.h"
 #include "UI/Widget/AbilityPanelWidget.h"
 #include "UI/Widget/AbilitySelectWindowWidget.h"
 
@@ -34,6 +36,9 @@ AStandardModePlayerController::AStandardModePlayerController(const FObjectInitia
 	PrimaryActorTick.bCanEverTick = true;
 	bInGameMenuShown = false;
 	bListenAllCameraEvent = false;
+
+	CardTargetProviderComponent = CreateDefaultSubobject<UCardTargetProviderComponent>("CardTargetProviderComponent");
+	CardTargetProviderComponent->OnCardTargetAcquired.AddDynamic(this, &AStandardModePlayerController::OnCardTargetAcquired);
 }
 
 void AStandardModePlayerController::ClientSetClickMovementEnabled_Implementation(bool bEnabled)
@@ -610,6 +615,32 @@ void AStandardModePlayerController::ReviveCharacter()
 	}
 }
 
+void AStandardModePlayerController::StartAcquireTargets(FTargetAcquireSettings Settings,
+	TFunction<void(bool bSuccess, TArray<FAcquiredTargetInfo>)> Callback)
+{
+	AcquireTargetCallback = Callback;
+
+	CardTargetProviderComponent->AcquireTarget(Settings);
+}
+
+void AStandardModePlayerController::OnCardTargetAcquired(bool bSuccess)
+{
+	if (AcquireTargetCallback)
+	{
+		if (bSuccess)
+		{
+			AcquireTargetCallback(bSuccess, CardTargetProviderComponent->GetLastTargetInfoList());
+		}
+		else
+		{
+			AcquireTargetCallback(bSuccess, TArray<FAcquiredTargetInfo>());
+		}
+
+		// The callback should be clear once invoked
+		AcquireTargetCallback.Reset();
+	}
+}
+
 void AStandardModePlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -663,6 +694,8 @@ void AStandardModePlayerController::SetupInputComponent()
 	InputComponent->BindAction("SetDestination", IE_Pressed, this, &AStandardModePlayerController::OnSetDestinationPressed);
 	InputComponent->BindAction("OpenInGameMenu", IE_Pressed, this, &AStandardModePlayerController::OnOpenInGameMenuPressed);
 	InputComponent->BindAction("ToggleGameModeAdmin", IE_Pressed, this, &AStandardModePlayerController::OnToggleGameModeAdminPressed);
+
+	CardTargetProviderComponent->InitializeInput();
 }
 
 void AStandardModePlayerController::ProcessPlayerInput(const float DeltaTime, const bool bGamePaused)
@@ -1148,6 +1181,15 @@ void AStandardModePlayerController::ExecEnqueueInput(uint8 InputIndex, int32 Inp
 void AStandardModePlayerController::ExecFocusTo(float X, float Y)
 {
 	SetCameraFocusPoint(X, Y);
+}
+
+void AStandardModePlayerController::ExecSpawnCard(FString CardName)
+{
+	UCardGameService* CardGameService = UGameService::GetGameService<UCardGameService>();
+	if (CardGameService)
+	{
+		CardGameService->UseCard(CardName, this);
+	}
 }
 
 void AStandardModePlayerController::ExecAddTestAbility(int32 Index)

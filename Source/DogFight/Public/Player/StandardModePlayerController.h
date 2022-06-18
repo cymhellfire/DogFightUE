@@ -9,11 +9,13 @@
 #include "UI/UIType.h"
 #include "Actors/Interfaces/GameCardUserPlayerControllerInterface.h"
 #include "Actors/Interfaces/GameTargetProviderInterface.h"
+#include "Player/CardTargetProviderInterface.h"
 
 #include "StandardModePlayerController.generated.h"
 
 class ACardBase;
 class AStandardModePlayerCharacter;
+class UCardTargetProviderComponent;
 
 UENUM(BlueprintType)
 enum class EStandardModePlayerControllerInputMode : uint8
@@ -30,6 +32,7 @@ enum class EStandardModePlayerControllerInputMode : uint8
  */
 UCLASS()
 class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerController, public IGameTargetProviderInterface, public IGameCardUserPlayerControllerInterface
+	, public ICardTargetProviderInterface
 {
 	GENERATED_UCLASS_BODY()
 
@@ -152,6 +155,8 @@ class DOGFIGHT_API AStandardModePlayerController : public ADogFightPlayerControl
 
 	void ReviveCharacter();
 
+	virtual void StartAcquireTargets(FTargetAcquireSettings Settings, TFunction<void(bool bSuccess, TArray<FAcquiredTargetInfo>)> Callback) override;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -271,6 +276,9 @@ protected:
 
 #pragma endregion Ability
 
+	UFUNCTION()
+	void OnCardTargetAcquired(bool bSuccess);
+
 private:
 	FCardTargetInfoAcquiredSignature OnCardTargetInfoAcquired;
 
@@ -294,6 +302,11 @@ private:
 
 	UPROPERTY()
 	UUserWidget* InGameMenuWidget;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess))
+	UCardTargetProviderComponent* CardTargetProviderComponent;
+
+	TFunction<void(bool, TArray<FAcquiredTargetInfo>)> AcquireTargetCallback;
 
 #pragma region DebugCommand
 public:
@@ -330,6 +343,9 @@ public:
 
 	UFUNCTION(Exec)
 	void ExecFocusTo(float X, float Y);
+
+	UFUNCTION(Exec)
+	void ExecSpawnCard(FString CardName);
 
 	UFUNCTION(Exec)
 	void ExecAddTestAbility(int32 Index);

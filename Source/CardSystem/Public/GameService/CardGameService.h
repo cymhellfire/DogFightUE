@@ -2,10 +2,9 @@
 
 #include "CoreMinimal.h"
 #include "UnLuaInterface.h"
+#include "Card/Card.h"
 #include "GameService/GameService.h"
 #include "CardGameService.generated.h"
-
-class UCard;
 
 UCLASS()
 class CARDSYSTEM_API UCardGameService : public UGameService, public IUnLuaInterface
@@ -25,6 +24,11 @@ public:
 	{
 		return TEXT("CardSystem.Services.CardGameService");
 	}
+
+protected:
+
+	UFUNCTION()
+	void OnCardFinished(ECardExecutionResult Result, UCard* Card);
 
 protected:
 	TWeakObjectPtr<UClass> CardBlueprintClass; 

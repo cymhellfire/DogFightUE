@@ -1,6 +1,5 @@
 ﻿#include "GameService/CardGameService.h"
 
-#include "Card/Card.h"
 #include "Common/CardSystemConst.h"
 
 void UCardGameService::UseCard(FString CardName, UObject* Instigator)
@@ -25,9 +24,18 @@ void UCardGameService::UseCard(FString CardName, UObject* Instigator)
 
 		if (NewCard)
 		{
+			APlayerController* Owner = Cast<APlayerController>(Instigator);
+			if (Owner)
+			{
+				NewCard->SetOwnerController(Owner);
+			}
+			NewCard->OnCardExecutionFinished.AddDynamic(this, &UCardGameService::OnCardFinished);
 			NewCard->Execute();
-
-			DestroyCard(NewCard);
 		}
 	}
+}
+
+void UCardGameService::OnCardFinished(ECardExecutionResult Result, UCard* Card)
+{
+	DestroyCard(Card);
 }

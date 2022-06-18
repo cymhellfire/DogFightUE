@@ -22,9 +22,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category="DogFight|Lobby")
 	void ToggleReadyStatus();
 
-	UFUNCTION(Exec)
-	void ExecSpawnCard(FString CardName);
-
 protected:
 	UFUNCTION(Server, Reliable)
 	void ServerSendPlayerInfo(FLobbyPlayerInfo PlayerInfo);
