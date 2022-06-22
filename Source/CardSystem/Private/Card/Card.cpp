@@ -1,10 +1,14 @@
 ﻿#include "Card/Card.h"
 
 #include "CardSystem.h"
+#include "Card/CardAsyncCommand.h"
+#include "Card/CardCommand.h"
 
 UCard::UCard()
 {
 	WaitingTargetBatch = -1;
+	bWaitAsyncCommand = false;
+	ExecutingIndex = 0;
 }
 
 /**
@@ -202,10 +206,27 @@ void UCard::OnCardCancel()
 	OnCardExecutionFinished.Broadcast(ECardExecutionResult::CER_Cancelled, this);
 }
 
+/**
+ * Instructions in card logic can be synchronous or asynchronous. So all the instructions will be queued and executed
+ * one by one. CardLogicImplementation() function will be overwritten by Lua and executed synchronously. All function
+ * call in it should be a wrapper version and created a queued command. 
+ */
 void UCard::StartCardLogic()
 {
 	// Invoke logic implementation
 	CardLogicImplementation();
+}
+
+void UCard::OnAsyncCommandFinished(UCardAsyncCommand* Command, bool bSuccess)
+{
+	// Unregister callback
+	Command->OnCommandFinished.RemoveDynamic(this, &UCard::OnAsyncCommandFinished);
+
+	// Unblock commands
+	bWaitAsyncCommand = false;
+
+	// Continue to execute left commands
+	ConsumeCommand();
 }
 
 TArray<FVector> UCard::GetPointTargetListByBatch(int32 BatchIndex) const
@@ -247,6 +268,53 @@ TArray<AActor*> UCard::GetActorTargetListByBatch(int32 BatchIndex) const
 
 	UE_LOG(LogCardSystem, Error, TEXT("[Card] Batch Index [%d] is not recorded as Actor type."), BatchIndex);
 	return TArray<AActor*>();
+}
+
+/**
+ * Synchronous commands will be executed immediately once be queued until any asynchronous command arrived.
+ * Asynchronous command causes all commands adds after it holding in the queue until the command is finished.
+ */
+void UCard::QueueCommand(UCardCommand* NewCommand)
+{
+	CommandQueue.AddUnique(NewCommand);
+
+	// Try to execute commands after enqueue
+	ConsumeCommand();
+}
+
+/**
+ * Execute next command in queue.
+ */
+void UCard::ConsumeCommand()
+{
+	// Stop if any asynchronous command is executing
+	if (bWaitAsyncCommand)
+		return;
+
+	// Check if command queue is finished
+	if (ExecutingIndex >= CommandQueue.Num())
+		return;
+
+	UCardCommand* NextCommand = CommandQueue[ExecutingIndex];
+	NextCommand->Run();
+	ExecutingIndex++;
+
+	// Block commands after any asynchronous command
+	if (NextCommand->GetExecuteType() == ECardCommandExecuteType::CCET_Asynchronous)
+	{
+		bWaitAsyncCommand = true;
+
+		// Register finish callback
+		UCardAsyncCommand* AsyncCommand = Cast<UCardAsyncCommand>(NextCommand);
+		if (AsyncCommand)
+		{
+			AsyncCommand->OnCommandFinished.AddDynamic(this, &UCard::OnAsyncCommandFinished);
+		}
+		else
+		{
+			UE_LOG(LogCardSystem, Error, TEXT("[Card] Command %s has Asynchronous type but cannot be converted to AsyncCommand."), *NextCommand->GetClass()->GetName());
+		}
+	}
 }
 
 void UCard::OnCardFinished()

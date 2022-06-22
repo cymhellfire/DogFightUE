@@ -4,6 +4,9 @@
 #include "Player/CardTargetProviderInterface.h"
 #include "Card.generated.h"
 
+class UCardCommand;
+class UCardAsyncCommand;
+
 UENUM()
 enum class ECardExecutionResult : uint8
 {
@@ -63,11 +66,22 @@ public:
 	void CardLogicImplementation();
 
 	UFUNCTION()
+	void OnAsyncCommandFinished(UCardAsyncCommand* Command, bool bSuccess);
+
+	UFUNCTION()
 	TArray<FVector> GetPointTargetListByBatch(int32 BatchIndex) const;
 	UFUNCTION()
 	TArray<FVector> GetDirectionTargetListByBatch(int32 BatchIndex) const;
 	UFUNCTION()
 	TArray<AActor*> GetActorTargetListByBatch(int32 BatchIndex) const;
+
+	void QueueCommand(UCardCommand* NewCommand);
+
+protected:
+
+	void ConsumeCommand();
+
+public:
 
 	// ----------------- Card Finished ----------------------
 
@@ -87,4 +101,12 @@ protected:
 	TMap<int32, TArray<FVector>> PointTargetMap;
 	TMap<int32, TArray<FVector>> DirectionTargetMap;
 	TMap<int32, TArray<TWeakObjectPtr<AActor>>> ActorTargetMap;
+
+	// Command
+	bool bWaitAsyncCommand;
+
+	int32 ExecutingIndex;
+
+	UPROPERTY()
+	TArray<UCardCommand*> CommandQueue;
 };

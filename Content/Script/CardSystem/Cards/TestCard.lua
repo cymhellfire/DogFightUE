@@ -11,13 +11,18 @@ function UTestCard:AcquireCardTargetsImplementation()
 end
 
 function UTestCard:CardLogicImplementation()
-    local TargetList = self:GetActorTargetListByBatch(0)
-    if TargetList:Length() > 0 then
-        for i = 1, TargetList:Length() do
-            local Target = TargetList:Get(i)
-            print("Get target: " .. Target:GetName())
-        end
-    end
+    -- local TargetList = self:GetActorTargetListByBatch(0)
+    -- if TargetList:Length() > 0 then
+    --     for i = 1, TargetList:Length() do
+    --         local Target = TargetList:Get(i)
+    --         print("Get target: " .. Target:GetName())
+    --     end
+    -- end
+    local Param = UE.FPrintTargetNameCardCommandParam()
+    Param.TargetBatch = 0
+
+    UE.UCardCommandLibrary.PrintTargetName(self, Param)
+
     -- Invoke when card finished
     self:OnCardFinished()
 end
