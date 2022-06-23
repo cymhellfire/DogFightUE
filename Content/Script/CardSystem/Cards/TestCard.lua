@@ -18,13 +18,27 @@ function UTestCard:CardLogicImplementation()
     --         print("Get target: " .. Target:GetName())
     --     end
     -- end
-    local Param = UE.FPrintTargetNameCardCommandParam()
-    Param.TargetBatch = 0
+    local WFTParam = UE.FWaitForTimeCardCommandParam()
+    WFTParam.Time = 2
+    UE.UCardCommandLibrary.WaitForTime(self, WFTParam)
 
-    UE.UCardCommandLibrary.PrintTargetName(self, Param)
+    local PTNParam = UE.FPrintTargetNameCardCommandParam()
+    PTNParam.TargetBatch = 0
+    UE.UCardCommandLibrary.PrintTargetName(self, PTNParam)
+
+    local WARParam = UE.FWaitAndRandomCallbackCardCommandParam()
+    WARParam.Time = 1
+    WARParam.RandomRange = UE.FVector2D(1, 4)
+    UE.UCardCommandLibrary.WaitAndRandomCallback(self, WARParam)
 
     -- Invoke when card finished
-    self:OnCardFinished()
+    --self:OnCardFinished()
+end
+
+function UTestCard:OnCallbackResult(CommandIndex, Result)
+    if CommandIndex == 2 then
+        print("Random result: " .. Result)
+    end
 end
 
 return UTestCard

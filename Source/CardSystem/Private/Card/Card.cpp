@@ -1,6 +1,7 @@
 ﻿#include "Card/Card.h"
 
 #include "CardSystem.h"
+#include "Card/CardConcurrentCallbackCommand.h"
 #include "Card/CardAsyncCommand.h"
 #include "Card/CardCommand.h"
 
@@ -8,7 +9,9 @@ UCard::UCard()
 {
 	WaitingTargetBatch = -1;
 	bWaitAsyncCommand = false;
+	bAutoConsume = false;
 	ExecutingIndex = 0;
+	WaitingConcurrentCommands = 0;
 }
 
 /**
@@ -225,8 +228,29 @@ void UCard::OnAsyncCommandFinished(UCardAsyncCommand* Command, bool bSuccess)
 	// Unblock commands
 	bWaitAsyncCommand = false;
 
+	// Enable auto consume when resume from async command
+	bAutoConsume = true;
+
 	// Continue to execute left commands
 	ConsumeCommand();
+}
+
+void UCard::OnConcurrentCallbackCommandFinished(UCardConcurrentCallbackCommand* Command, int32 Result)
+{
+	Command->OnCommandFinished.RemoveDynamic(this, &UCard::UCard::OnConcurrentCallbackCommandFinished);
+
+	WaitingConcurrentCommands--;
+
+	int32 CommandIndex = CommandQueue.Find(Command);
+
+	// Notify lua side
+	OnCallbackResult(CommandIndex, Result);
+
+	// If all waiting command are finished check card finish
+	if (WaitingConcurrentCommands <= 0)
+	{
+		CheckCardFinished();
+	}
 }
 
 TArray<FVector> UCard::GetPointTargetListByBatch(int32 BatchIndex) const
@@ -278,6 +302,9 @@ void UCard::QueueCommand(UCardCommand* NewCommand)
 {
 	CommandQueue.AddUnique(NewCommand);
 
+	// Disable auto consume when enqueue new command
+	bAutoConsume = false;
+
 	// Try to execute commands after enqueue
 	ConsumeCommand();
 }
@@ -291,9 +318,10 @@ void UCard::ConsumeCommand()
 	if (bWaitAsyncCommand)
 		return;
 
-	// Check if command queue is finished
-	if (ExecutingIndex >= CommandQueue.Num())
+	if (CheckCardFinished())
+	{
 		return;
+	}
 
 	UCardCommand* NextCommand = CommandQueue[ExecutingIndex];
 	NextCommand->Run();
@@ -312,9 +340,50 @@ void UCard::ConsumeCommand()
 		}
 		else
 		{
-			UE_LOG(LogCardSystem, Error, TEXT("[Card] Command %s has Asynchronous type but cannot be converted to AsyncCommand."), *NextCommand->GetClass()->GetName());
+			UE_LOG(LogCardSystem, Error, TEXT("[Card] Command %s has Asynchronous type but cannot be converted to AsyncCommand."),
+				*NextCommand->GetClass()->GetName());
 		}
 	}
+	else if (NextCommand->GetExecuteType() == ECardCommandExecuteType::CCET_ConcurrentCallback)
+	{
+		WaitingConcurrentCommands++;
+
+		// Register callback
+		UCardConcurrentCallbackCommand* ConcurrentCallbackCommand = Cast<UCardConcurrentCallbackCommand>(NextCommand);
+		if (ConcurrentCallbackCommand)
+		{
+			ConcurrentCallbackCommand->OnCommandFinished.AddDynamic(this, &UCard::UCard::OnConcurrentCallbackCommandFinished);
+		}
+		else
+		{
+			UE_LOG(LogCardSystem, Error, TEXT("[Card] Command %s has ConcurrentCallback type but cannot be converted to ConcurrentCallbackCommand."),
+				*NextCommand->GetClass()->GetName());
+		}
+	}
+
+	// Auto consume next one
+	if (bAutoConsume)
+	{
+		ConsumeCommand();
+	}
+}
+
+bool UCard::CheckCardFinished()
+{
+	// Check if command queue is finished
+	if (ExecutingIndex >= CommandQueue.Num())
+	{
+		// Check if any concurrent command is not finished
+		// Return true although there might some concurrent commands executing, since this command also affect the
+		// command queue iterating. Return true to avoid the ExecutingIndex getting out of range.
+		if (WaitingConcurrentCommands == 0)
+		{
+			OnCardFinished();
+		}
+		return true;
+	}
+
+	return false;
 }
 
 void UCard::OnCardFinished()

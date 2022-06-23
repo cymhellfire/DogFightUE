@@ -6,6 +6,7 @@
 
 class UCardCommand;
 class UCardAsyncCommand;
+class UCardConcurrentCallbackCommand;
 
 UENUM()
 enum class ECardExecutionResult : uint8
@@ -69,6 +70,12 @@ public:
 	void OnAsyncCommandFinished(UCardAsyncCommand* Command, bool bSuccess);
 
 	UFUNCTION()
+	void OnConcurrentCallbackCommandFinished(UCardConcurrentCallbackCommand* Command, int32 Result);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnCallbackResult(int32 CommandIndex, int32 Result);
+
+	UFUNCTION()
 	TArray<FVector> GetPointTargetListByBatch(int32 BatchIndex) const;
 	UFUNCTION()
 	TArray<FVector> GetDirectionTargetListByBatch(int32 BatchIndex) const;
@@ -80,6 +87,8 @@ public:
 protected:
 
 	void ConsumeCommand();
+
+	bool CheckCardFinished();
 
 public:
 
@@ -103,9 +112,11 @@ protected:
 	TMap<int32, TArray<TWeakObjectPtr<AActor>>> ActorTargetMap;
 
 	// Command
-	bool bWaitAsyncCommand;
+	uint8 bWaitAsyncCommand : 1;
+	uint8 bAutoConsume : 1;
 
 	int32 ExecutingIndex;
+	int32 WaitingConcurrentCommands;
 
 	UPROPERTY()
 	TArray<UCardCommand*> CommandQueue;

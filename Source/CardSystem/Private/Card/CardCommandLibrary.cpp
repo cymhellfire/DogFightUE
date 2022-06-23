@@ -27,10 +27,3 @@ void UCardCommandLibrary::CreateCommand(UCard* Owner, void* CreateParams)
 	Owner->QueueCommand(NewCommand);
 }
 
-void UCardCommandLibrary::PrintTargetName(UCard* Card, const FPrintTargetNameCardCommandParam& Param)
-{
-	if (!IsValid(Card))
-		return;
-
-	CreateCommand<UPrintTargetNameCardCommand>(Card, (void*)(&Param));
-}
