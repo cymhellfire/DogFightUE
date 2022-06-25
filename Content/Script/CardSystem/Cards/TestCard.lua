@@ -1,6 +1,6 @@
 require("UnLua")
 
-local UTestCard = Class()
+local UTestCard = Class("CardSystem.Cards.CardBase")
 
 function UTestCard:AcquireCardTargetsImplementation()
     local NewSettings = UE.FTargetAcquireSettings()
@@ -30,15 +30,14 @@ function UTestCard:CardLogicImplementation()
     WARParam.Time = 1
     WARParam.RandomRange = UE.FVector2D(1, 4)
     UE.UCardCommandLibrary.WaitAndRandomCallback(self, WARParam)
+    self:RegisterCallback(2, self.OnWaitAndRandomCallback)
 
     -- Invoke when card finished
     --self:OnCardFinished()
 end
 
-function UTestCard:OnCallbackResult(CommandIndex, Result)
-    if CommandIndex == 2 then
-        print("Random result: " .. Result)
-    end
+function UTestCard:OnWaitAndRandomCallback(Result)
+    print(self:GetName() .. " Random result: " .. Result)
 end
 
 return UTestCard
