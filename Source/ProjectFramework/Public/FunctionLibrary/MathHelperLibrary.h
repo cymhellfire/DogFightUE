@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class DOGFIGHT_API UMathHelperLibrary : public UBlueprintFunctionLibrary
+class PROJECTFRAMEWORK_API UMathHelperLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 

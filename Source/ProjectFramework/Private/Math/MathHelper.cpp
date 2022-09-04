@@ -1,7 +1,7 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "MathHelper.h"
+#include "Math/MathHelper.h"
 
 #include "DogFight/DogFight.h"
 

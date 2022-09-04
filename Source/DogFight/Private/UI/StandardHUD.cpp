@@ -5,7 +5,7 @@
 
 #include "Game/StandardGameState.h"
 #include "Player/StandardModePlayerController.h"
-#include "MathHelper.h"
+#include "Math/MathHelper.h"
 #include "DogFight.h"
 #include "UI/Widget/GamePhaseMessageWidget.h"
 #include "UI/Widget/OperationHintMessageWidget.h"

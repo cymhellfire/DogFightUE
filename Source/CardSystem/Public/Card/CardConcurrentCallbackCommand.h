@@ -3,7 +3,7 @@
 #include "CardCommand.h"
 #include "CardConcurrentCallbackCommand.generated.h"
 
-UCLASS()
+UCLASS(Abstract)
 class UCardConcurrentCallbackCommand : public UCardCommand
 {
 	GENERATED_BODY()

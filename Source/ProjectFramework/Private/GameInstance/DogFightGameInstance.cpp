@@ -192,6 +192,21 @@ UGameService* UDogFightGameInstance::GetGameService(FName ClassName)
 	return nullptr;
 }
 
+UGameService* UDogFightGameInstance::GetGameServiceBySuperClass(UClass* SuperClass)
+{
+	TArray<UGameService*> AllServices;
+	GameServiceMap.GenerateValueArray(AllServices);
+	for (auto Service : AllServices)
+	{
+		if (Service->GetClass()->IsChildOf(SuperClass))
+		{
+			return Service;
+		}
+	}
+
+	return nullptr;
+}
+
 void UDogFightGameInstance::OnFindSessionsComplete(bool bWasSuccessful)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("OnFindSessionsComplete %d"), bWasSuccessful));
@@ -422,14 +437,43 @@ void UDogFightGameInstance::RemoveNetworkFailureHandler() const
 
 void UDogFightGameInstance::StartupGameService()
 {
+	TArray<UClass*> InstantiatedClasses;
 	// Instantiate all game service classes
 	for (TObjectIterator<UClass> It; It; ++It)
 	{
 		if (It->IsChildOf(UGameService::StaticClass()) && !It->HasAnyClassFlags(CLASS_Abstract))
 		{
-			UGameService* NewGameService = NewObject<UGameService>(this, *It, It->GetFName());
+			UClass* NewServiceClass = *It;
+			if (NewServiceClass->HasAnyClassFlags(CLASS_CompiledFromBlueprint))
+			{
+				continue;
+			}
+			
+			UGameService* NewGameService = NewObject<UGameService>(this, NewServiceClass, It->GetFName());
 			GameServiceMap.Add(It->GetFName(), NewGameService);
+
+			// Invoke Startup function
+			NewGameService->Startup();
+
+			UE_LOG(LogProjectFramework, Log, TEXT("[GameService] %s startup."), *It->GetName());
+			InstantiatedClasses.Add(*It);
 		}
+	}
+
+	// Instantiate blueprinted services
+	for (auto Blueprint : ServiceBlueprints)
+	{
+		if (InstantiatedClasses.Contains(Blueprint))
+			continue;
+
+		UGameService* NewGameService = NewObject<UGameService>(this, Blueprint, Blueprint->GetFName());
+		GameServiceMap.Add(Blueprint->GetFName(), NewGameService);
+
+		// Startup
+		NewGameService->Startup();
+
+		UE_LOG(LogProjectFramework, Log, TEXT("[GameService] %s startup."), *Blueprint->GetName());
+		InstantiatedClasses.Add(Blueprint);
 	}
 }
 

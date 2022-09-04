@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "Common/CardSystemType.h"
 #include "CardCommand.generated.h"
 
 UENUM()
@@ -37,8 +38,17 @@ public:
 		return ExecuteType;
 	}
 
+	// Visual relative
+	FString GetNameString() const;
+
+	FString GetDescString() const;
+
+	ECardCommandType GetCommandType() const;
+
 protected:
 	ECardCommandExecuteType ExecuteType;
 
 	TWeakObjectPtr<UCard> OwnerCard;
+
+	ECardCommandType CommandType;
 };

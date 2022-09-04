@@ -7,7 +7,7 @@
 /**
  * 
  */
-class DOGFIGHT_API FMathHelper
+class PROJECTFRAMEWORK_API FMathHelper
 {
 public:
 	/* Convert point in screen space to ray in world space. */

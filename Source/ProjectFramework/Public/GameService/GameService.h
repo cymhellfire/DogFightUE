@@ -29,6 +29,21 @@ public:
 		return nullptr;
 	}
 
+	template<typename T>
+	static T* GetGameServiceBySuperClass()
+	{
+		if (UWorld* CurrentWorld = GEngine->GetCurrentPlayWorld())
+		{
+			UDogFightGameInstance* DogFightGameInstance = Cast<UDogFightGameInstance>(CurrentWorld->GetGameInstance());
+			if (DogFightGameInstance)
+			{
+				return Cast<T>(DogFightGameInstance->GetGameServiceBySuperClass(T::StaticClass()));
+			}
+		}
+
+		return nullptr;
+	}
+
 	virtual TStatId GetStatId() const override
 	{
 		return Super::GetStatID();

@@ -1,8 +1,8 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "BlueprintLibrary/MathHelperLibrary.h"
-#include "MathHelper.h"
+#include "FunctionLibrary/MathHelperLibrary.h"
+#include "Math/MathHelper.h"
 
 int32 UMathHelperLibrary::GetMinMissingPositiveNumber(TArray<int32> InArray, int32 MinNumber)
 {

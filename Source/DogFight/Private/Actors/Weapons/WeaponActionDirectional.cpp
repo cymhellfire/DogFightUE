@@ -2,8 +2,6 @@
 
 
 #include "Actors/Weapons/WeaponActionDirectional.h"
-
-#include "MathHelper.h"
 #include "Actors/Weapons/WeaponBase.h"
 
 UWeaponActionDirectional::UWeaponActionDirectional()

@@ -71,6 +71,8 @@ public:
 	class USaveGameManager* GetSaveGameManager() { return SaveGameManager; };
 
 	UGameService* GetGameService(FName ClassName);
+
+	UGameService* GetGameServiceBySuperClass(UClass* SuperClass);
 protected:
 
 	/* Delegate triggered when session created. */
@@ -155,6 +157,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category="DogFight|Game")
 	int32 GameAICount;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category="DogFight|Service")
+	TArray<TSubclassOf<UGameService>> ServiceBlueprints;
 private:
 
 	void CheckChangeState();
