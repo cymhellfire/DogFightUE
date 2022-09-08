@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "EditorMultiTabWidgetBase.h"
 #include "CardEditorTabWidget.generated.h"
 
 class FEditingCard;
@@ -12,7 +12,7 @@ class URichTextBlock;
 class UCardFunctionVisual;
 
 UCLASS(Abstract)
-class CARDSYSTEM_API UCardEditorTabWidget : public UUserWidget
+class CARDSYSTEM_API UCardEditorTabWidget : public UEditorMultiTabWidgetBase
 {
 	GENERATED_BODY()
 public:

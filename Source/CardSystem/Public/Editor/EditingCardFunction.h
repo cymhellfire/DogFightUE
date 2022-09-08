@@ -25,6 +25,10 @@ public:
 
 	TWeakPtr<FEditingCardCommand> AddCommand();
 
+public:
+	DECLARE_MULTICAST_DELEGATE_OneParam(FEditingFunctionNameChangedSignature, FString)
+	FEditingFunctionNameChangedSignature OnEditingFunctionNameChanged;
+
 private:
 	int32 ID;
 

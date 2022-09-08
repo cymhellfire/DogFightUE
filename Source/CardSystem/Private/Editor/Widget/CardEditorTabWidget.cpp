@@ -103,10 +103,13 @@ void UCardEditorTabWidget::OnCardFunctionAdded(TWeakPtr<FEditingCardFunction> In
 
 	auto PinnedFunction = InFunction.Pin();
 	UCardFunctionVisual* NewFunctionVisual = NewObject<UCardFunctionVisual>();
-	NewFunctionVisual->Initialize(PinnedFunction->GetID(), PinnedFunction->GetName());
+	NewFunctionVisual->Initialize(PinnedFunction->GetID(), PinnedFunction->GetName(), InFunction);
 
 	CardFunctionVisualList.Add(NewFunctionVisual);
 	CardFunctionsListView->AddItem(NewFunctionVisual);
+
+	// Add new function tab
+	AddNewTab(NewFunctionVisual);
 }
 
 void UCardEditorTabWidget::OnCardRenameButtonClicked()

@@ -8,29 +8,11 @@
 #include "Editor/Widget/EditorTextInputPopupWidget.h"
 #include "GameService/CardEditorService.h"
 
-bool UCardEditorTabItemWidget::Initialize()
-{
-	if (!Super::Initialize())
-	{
-		return false;
-	}
-
-	if (CloseTabButton)
-	{
-		CloseTabButton->OnClicked.AddDynamic(this, &UCardEditorTabItemWidget::OnCloseTabButtonClicked);
-	}
-	return true;
-}
-
 void UCardEditorTabItemWidget::BeginDestroy()
 {
 	if (BoundCard.IsValid())
 	{
 		ClearCardListener(BoundCard.Pin().Get());
-	}
-	if (CloseTabButton)
-	{
-		CloseTabButton->OnClicked.RemoveDynamic(this, &UCardEditorTabItemWidget::OnCloseTabButtonClicked);
 	}
 
 	Super::BeginDestroy();

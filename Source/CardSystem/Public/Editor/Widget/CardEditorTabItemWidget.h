@@ -1,9 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "EditorSelectableListItemBase.h"
-#include "Chaos/AABB.h"
-#include "Chaos/AABB.h"
+#include "EditorTabItemBase.h"
 #include "CardEditorTabItemWidget.generated.h"
 
 class URichTextBlock;
@@ -11,11 +9,10 @@ class UButton;
 class FEditingCard;
 
 UCLASS(Abstract)
-class CARDSYSTEM_API UCardEditorTabItemWidget : public UEditorSelectableListItemBase
+class CARDSYSTEM_API UCardEditorTabItemWidget : public UEditorTabItemBase
 {
 	GENERATED_BODY()
 public:
-	virtual bool Initialize() override;
 	virtual void BeginDestroy() override;
 
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
@@ -29,15 +26,11 @@ private:
 
 	void OnCardNameChanged(FString InName);
 
-	UFUNCTION()
-	void OnCloseTabButtonClicked();
+	virtual void OnCloseTabButtonClicked() override;
 
 private:
 	UPROPERTY(meta=(BindWidget))
 	URichTextBlock* CardNameTextBlock;
-
-	UPROPERTY(meta=(BindWidget))
-	UButton* CloseTabButton;
 
 	int32 BoundId;
 	TWeakPtr<FEditingCard> BoundCard;

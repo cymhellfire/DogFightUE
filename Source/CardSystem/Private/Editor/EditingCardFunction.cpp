@@ -8,7 +8,11 @@ FEditingCardFunction::FEditingCardFunction()
 
 void FEditingCardFunction::SetName(FString InName)
 {
+	if (FunctionName == InName)
+		return;
+
 	FunctionName = InName;
+	OnEditingFunctionNameChanged.Broadcast(FunctionName);
 }
 
 void FEditingCardFunction::SetID(int32 InId)
