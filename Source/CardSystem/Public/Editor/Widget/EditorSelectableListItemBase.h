@@ -12,6 +12,8 @@ class UEditorSelectableListItemBase : public UUserWidget, public IUserObjectList
 {
 	GENERATED_BODY()
 public:
+	virtual bool Initialize() override;
+
 	virtual void NativeOnItemSelectionChanged(bool bIsSelected) override;
 
 protected:

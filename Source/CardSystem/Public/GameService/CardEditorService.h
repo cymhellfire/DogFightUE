@@ -26,7 +26,7 @@ public:
 	void CloseCardEditor();
 
 	UFUNCTION(BlueprintCallable, Category="CardEditor")
-	void OpenCommandListPopupWidget();
+	UCommandListPopupWidget* OpenCommandListPopupWidget();
 
 	UEditorTextInputPopupWidget* OpenTextInputPopupWidget(const FTextInputPopupParameter& InParam);
 

@@ -11,7 +11,7 @@ UCommandListItemWidget::UCommandListItemWidget(const FObjectInitializer& ObjectI
 	
 }
 
-void UCommandListItemWidget::Initialize(UCardCommandVisual* InCommand)
+void UCommandListItemWidget::InitializeWithCommand(UCardCommandVisual* InCommand)
 {
 	if (InCommand == nullptr)
 	{
@@ -32,5 +32,5 @@ void UCommandListItemWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 		return;
 	}
 
-	Initialize(CommandVisual);
+	InitializeWithCommand(CommandVisual);
 }

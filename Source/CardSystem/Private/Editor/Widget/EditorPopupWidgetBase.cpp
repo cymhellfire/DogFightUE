@@ -47,5 +47,5 @@ void UEditorPopupWidgetBase::OnCancelButtonClicked()
 
 void UEditorPopupWidgetBase::Close()
 {
-	RemoveFromParent();
+	RemoveFromViewport();
 }

@@ -3,7 +3,7 @@
 
 #include "Pawns/StandardModeCameraComponent.h"
 
-#include "MathHelper.h"
+#include "Math/MathHelper.h"
 #include "Game/StandardGameState.h"
 #include "Pawns/StandardModePlayerPawn.h"
 #include "DogFight/DogFight.h"

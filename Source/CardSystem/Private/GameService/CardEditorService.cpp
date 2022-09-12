@@ -52,11 +52,11 @@ void UCardEditorService::CloseCardEditor()
 	}
 }
 
-void UCardEditorService::OpenCommandListPopupWidget()
+UCommandListPopupWidget* UCardEditorService::OpenCommandListPopupWidget()
 {
 	if (!IsValid(CommandListPopupWidgetClass))
 	{
-		return;
+		return nullptr;
 	}
 
 	APlayerController* OwnerPC = nullptr;
@@ -68,7 +68,7 @@ void UCardEditorService::OpenCommandListPopupWidget()
 	if (!OwnerPC)
 	{
 		UE_LOG(LogCardSystem, Error, TEXT("[CardEditorService] Failed to get player controller."));
-		return;
+		return nullptr;
 	}
 
 	UCommandListPopupWidget* Popup = Cast<UCommandListPopupWidget>(CreateWidget(OwnerPC, CommandListPopupWidgetClass, "CommandListPopup"));
@@ -78,6 +78,8 @@ void UCardEditorService::OpenCommandListPopupWidget()
 		Popup->SetClassList(CommandManagerService->GetAllCommandVisualItems());
 	}
 	Popup->AddToViewport();
+
+	return Popup;
 }
 
 UEditorTextInputPopupWidget* UCardEditorService::OpenTextInputPopupWidget(const FTextInputPopupParameter& InParam)

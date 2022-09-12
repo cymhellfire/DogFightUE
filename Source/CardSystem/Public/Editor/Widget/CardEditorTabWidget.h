@@ -21,6 +21,7 @@ public:
 
 	void BindEditingCard(TWeakPtr<FEditingCard> InCard);
 protected:
+	virtual void InitializeTabWidget(UUserWidget* InWidget, UObject* InParam) override;
 
 	void BindCardListener(TWeakPtr<FEditingCard> InCard);
 	void ClearCardListener(TWeakPtr<FEditingCard> InCard);

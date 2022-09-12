@@ -17,7 +17,7 @@ public:
 	template <typename T>
 	static T* GetGameService()
 	{
-		if (UWorld* CurrentWorld = GEngine->GetCurrentPlayWorld())
+		if (UWorld* CurrentWorld = GetActiveWorld())
 		{
 			UDogFightGameInstance* DogFightGameInstance = Cast<UDogFightGameInstance>(CurrentWorld->GetGameInstance());
 			if (DogFightGameInstance)
@@ -32,13 +32,24 @@ public:
 	template<typename T>
 	static T* GetGameServiceBySuperClass()
 	{
-		if (UWorld* CurrentWorld = GEngine->GetCurrentPlayWorld())
+		if (UWorld* CurrentWorld = GetActiveWorld())
 		{
 			UDogFightGameInstance* DogFightGameInstance = Cast<UDogFightGameInstance>(CurrentWorld->GetGameInstance());
 			if (DogFightGameInstance)
 			{
 				return Cast<T>(DogFightGameInstance->GetGameServiceBySuperClass(T::StaticClass()));
 			}
+		}
+
+		return nullptr;
+	}
+
+	static UWorld* GetActiveWorld()
+	{
+		const FWorldContext* Context = GEngine->GetWorldContextFromGameViewport(GEngine->GameViewport);
+		if (Context)
+		{
+			return Context->World();
 		}
 
 		return nullptr;

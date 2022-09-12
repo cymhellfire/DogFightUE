@@ -37,6 +37,8 @@ void UCommandListPopupWidget::BeginDestroy()
 	{
 		CommandListViewTrigger->OnClicked.RemoveDynamic(this, &UCommandListPopupWidget::OnCommandListTriggerClicked);
 	}
+
+	OnCommandItemConfirm.Clear();
 }
 
 void UCommandListPopupWidget::SetClassList(TArray<UCardCommandVisual*> InClassList)
@@ -78,7 +80,7 @@ void UCommandListPopupWidget::OnCommandListItemSelectedChanged(UObject* Item)
 	{
 		if (UCardCommandVisual* CardCommandVisual = Cast<UCardCommandVisual>(Item))
 		{
-			SelectedItemVisual->Initialize(CardCommandVisual);
+			SelectedItemVisual->InitializeWithCommand(CardCommandVisual);
 
 			CommandDescTextBlock->SetText(CardCommandVisual->GetCommandDesc());
 

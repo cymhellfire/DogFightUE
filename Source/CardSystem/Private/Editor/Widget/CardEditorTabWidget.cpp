@@ -6,6 +6,7 @@
 #include "Editor/CardFunctionVisual.h"
 #include "Editor/EditingCard.h"
 #include "Editor/EditingCardFunction.h"
+#include "Editor/Widget/CardFunctionTabWidget.h"
 #include "Editor/Widget/EditorTextInputPopupWidget.h"
 #include "GameService/CardEditorService.h"
 
@@ -55,6 +56,18 @@ void UCardEditorTabWidget::BindEditingCard(TWeakPtr<FEditingCard> InCard)
 	if (CardNameTextBlock)
 	{
 		CardNameTextBlock->SetText(FText::FromString(InCard.Pin()->GetCardName()));
+	}
+}
+
+void UCardEditorTabWidget::InitializeTabWidget(UUserWidget* InWidget, UObject* InParam)
+{
+	Super::InitializeTabWidget(InWidget, InParam);
+
+	UCardFunctionVisual* FunctionVisual = Cast<UCardFunctionVisual>(InParam);
+	UCardFunctionTabWidget* FunctionTabWidget = Cast<UCardFunctionTabWidget>(InWidget);
+	if (FunctionVisual && FunctionTabWidget)
+	{
+		FunctionTabWidget->InitializeWithFunction(FunctionVisual->GetFunction());
 	}
 }
 

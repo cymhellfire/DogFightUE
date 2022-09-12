@@ -16,7 +16,7 @@ class CARDSYSTEM_API UCommandListItemWidget : public UEditorSelectableListItemBa
 public:
 	UCommandListItemWidget(const FObjectInitializer& ObjectInitializer);
 
-	void Initialize(UCardCommandVisual* InCommand);
+	void InitializeWithCommand(UCardCommandVisual* InCommand);
 
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 
