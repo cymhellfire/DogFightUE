@@ -24,9 +24,6 @@ protected:
 	virtual void InitializeTabWidget(UUserWidget* InWidget, UObject* InParam) override;
 
 	UFUNCTION()
-	void OnOpenCommandListPopupButtonClicked();
-
-	UFUNCTION()
 	void OnCreateNewCardButtonClicked();
 
 	void OnNewCardCreated(TWeakPtr<FEditingCard> NewCard, int32 FocusId);
@@ -35,9 +32,6 @@ protected:
 private:
 	UPROPERTY(meta=(BindWidget))
 	UButton* CreateNewCardButton;
-
-	UPROPERTY(meta=(BindWidget))
-	UButton* OpenCommandListPopupButton;
 
 	UPROPERTY(Transient)
 	TArray<UCardVisual*> CardVisualList;

@@ -26,6 +26,7 @@ public class CardSystem : ModuleRules
 				"UnrealTinyXml",
 				"UMG",
 				"SlateCore",
+				"InputCore",
 			}
 		);
 	}

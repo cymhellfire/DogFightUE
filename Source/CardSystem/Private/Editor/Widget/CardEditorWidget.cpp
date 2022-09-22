@@ -22,10 +22,6 @@ bool UCardEditorWidget::Initialize()
 	if (!Super::Initialize())
 		return false;
 
-	if (OpenCommandListPopupButton)
-	{
-		OpenCommandListPopupButton->OnClicked.AddDynamic(this, &UCardEditorWidget::OnOpenCommandListPopupButtonClicked);
-	}
 	if (CreateNewCardButton)
 	{
 		CreateNewCardButton->OnClicked.AddDynamic(this, &UCardEditorWidget::OnCreateNewCardButtonClicked);
@@ -38,10 +34,6 @@ void UCardEditorWidget::BeginDestroy()
 {
 	Super::BeginDestroy();
 
-	if (OpenCommandListPopupButton)
-	{
-		OpenCommandListPopupButton->OnClicked.RemoveDynamic(this, &UCardEditorWidget::OnOpenCommandListPopupButtonClicked);
-	}
 	if (CreateNewCardButton)
 	{
 		CreateNewCardButton->OnClicked.RemoveDynamic(this, &UCardEditorWidget::OnCreateNewCardButtonClicked);
@@ -81,15 +73,6 @@ void UCardEditorWidget::InitializeTabWidget(UUserWidget* InWidget, UObject* InPa
 	if (EditorTabWidget && CardVisual)
 	{
 		EditorTabWidget->BindEditingCard(CardVisual->GetCard());
-	}
-}
-
-void UCardEditorWidget::OnOpenCommandListPopupButtonClicked()
-{
-	UCardEditorService* EditorService = UGameService::GetGameServiceBySuperClass<UCardEditorService>();
-	if (EditorService)
-	{
-		EditorService->OpenCommandListPopupWidget();
 	}
 }
 

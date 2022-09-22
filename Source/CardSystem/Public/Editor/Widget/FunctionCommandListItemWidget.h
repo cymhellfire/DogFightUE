@@ -17,13 +17,16 @@ public:
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 
 protected:
-
 	void InitializeWithEditingCommand(UCardCommandEditingData* InData);
 
 	void BindCommandListener(FEditingCardCommand* InCommand);
 	void ClearCommandListener(FEditingCardCommand* InCommand);
 
 	void OnCommandIdChanged(int32 InId);
+
+	void OnContextMenuItemClicked();
+
+	virtual void OnContextMenuOpened() override;
 
 private:
 	UPROPERTY(meta=(BindWidget))
@@ -32,4 +35,5 @@ private:
 	TWeakPtr<FEditingCardCommand> EditingCommand;
 
 	FDelegateHandle CommandIdChangedHandle;
+	FDelegateHandle ContextMenuItemClickedHandle;
 };
