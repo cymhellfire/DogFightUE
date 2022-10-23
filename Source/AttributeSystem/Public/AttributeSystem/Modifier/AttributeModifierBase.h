@@ -29,7 +29,7 @@ protected:
 };
 
 template<typename T>
-class ATTRIBUTESYSTEM_API TAttributeModifierBase : FAttributeModifierBase
+class ATTRIBUTESYSTEM_API TAttributeModifierBase : public FAttributeModifierBase
 {
 public:
 	virtual ~TAttributeModifierBase() override;
@@ -51,7 +51,7 @@ public:
 	}
 
 protected:
-	TAttributeModifierBase(T InValue);
+	TAttributeModifierBase(const FModifierCreateArgument& InArgument, T InValue);
 
 	virtual void UpdateModifiedValue();
 
@@ -81,9 +81,9 @@ template<typename T>
 class ATTRIBUTESYSTEM_API TAttributeModifierNumeric : public TAttributeModifierBase<T>
 {
 protected:
-	TAttributeModifierNumeric(T InValue, EModifierOperatorType InOpType)
-		: TAttributeModifierBase<T>(InValue)
-		, OperatorType(InOpType)
+	TAttributeModifierNumeric(const FModifierCreateArgument& InArgument, T InValue)
+		: TAttributeModifierBase<T>(InArgument, InValue)
+		, OperatorType(InArgument.OperatorType)
 	{}
 
 	virtual void UpdateModifiedValue() override;

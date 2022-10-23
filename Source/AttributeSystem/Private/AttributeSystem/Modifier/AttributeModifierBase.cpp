@@ -4,7 +4,7 @@
 #include "AttributeSystem/Attribute/AttributeBase.h"
 
 template <typename T>
-TAttributeModifierBase<T>::TAttributeModifierBase(T InValue)
+TAttributeModifierBase<T>::TAttributeModifierBase(const FModifierCreateArgument& InArgument, T InValue)
 	: ModifyFactor(InValue)
 {
 	bDirty = false;

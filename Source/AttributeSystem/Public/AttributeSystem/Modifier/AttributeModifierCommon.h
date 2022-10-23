@@ -11,3 +11,12 @@ enum class EModifierOperatorType
 	MOT_Multiply,
 	MOT_Divide,
 };
+
+USTRUCT(BlueprintType)
+struct ATTRIBUTESYSTEM_API FModifierCreateArgument
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="ModifierArgument")
+	EModifierOperatorType OperatorType;
+};

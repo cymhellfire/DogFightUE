@@ -9,5 +9,5 @@ class ATTRIBUTESYSTEM_API FAttributeFunctionLibrary
 public:
 	static TSharedPtr<FAttributeBase> CreateAttribute(EAttributeDataType AttributeType, const FAttributeCreateArgument& InArgument);
 
-	static TSharedPtr<FAttributeModifierBase> CreateAttributeModifier(EAttributeDataType ModifierType);
+	static TSharedPtr<FAttributeModifierBase> CreateAttributeModifier(EAttributeDataType ModifierType, const FModifierCreateArgument& InArgument);
 };
