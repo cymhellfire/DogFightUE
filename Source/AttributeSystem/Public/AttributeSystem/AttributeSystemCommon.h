@@ -2,7 +2,7 @@
 
 #include "AttributeSystemCommon.generated.h"
 
-UENUM()
+UENUM(BlueprintType)
 enum EAttributeDataType
 {
 	ADT_None		UMETA(DisplayName="None"),

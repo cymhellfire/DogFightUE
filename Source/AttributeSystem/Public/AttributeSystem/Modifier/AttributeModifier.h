@@ -5,43 +5,31 @@
 
 class FAttributeFunctionLibrary;
 
-class ATTRIBUTESYSTEM_API FAttributeModifierBoolean : public FAttributeModifierBase<bool>
+class ATTRIBUTESYSTEM_API FAttributeModifierBoolean : public TAttributeModifierBase<bool>
 {
 	friend FAttributeFunctionLibrary;
 protected:
-	FAttributeModifierBoolean()
-		: FAttributeModifierBoolean(false)
-	{}
-
 	FAttributeModifierBoolean(bool InValue)
-		: FAttributeModifierBase<bool>(InValue)
+		: TAttributeModifierBase<bool>(InValue)
 	{}
 
 	virtual void UpdateModifiedValue() override;
 };
 
-class FAttributeModifierInteger : public FAttributeModifierNumeric<int32>
+class FAttributeModifierInteger : public TAttributeModifierNumeric<int32>
 {
 	friend FAttributeFunctionLibrary;
 protected:
 	FAttributeModifierInteger()
-		: FAttributeModifierInteger(0, EModifierOperatorType::MOT_Equal)
-	{}
-
-	FAttributeModifierInteger(int32 InFactor, EModifierOperatorType InOpType)
-		: FAttributeModifierNumeric<int32>(InFactor, InOpType)
+		: TAttributeModifierNumeric<int32>()
 	{}
 };
 
-class FAttributeModifierFloat : public FAttributeModifierNumeric<float>
+class FAttributeModifierFloat : public TAttributeModifierNumeric<float>
 {
 	friend FAttributeFunctionLibrary;
 protected:
 	FAttributeModifierFloat()
-		: FAttributeModifierFloat(0.f, EModifierOperatorType::MOT_Equal)
-	{}
-
-	FAttributeModifierFloat(float InFactor, EModifierOperatorType InOpType)
-		: FAttributeModifierNumeric<float>(InFactor, InOpType)
+		: TAttributeModifierNumeric<float>()
 	{}
 };

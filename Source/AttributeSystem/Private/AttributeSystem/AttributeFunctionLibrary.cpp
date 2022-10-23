@@ -3,8 +3,7 @@
 #include "AttributeSystem/Attribute/Attribute.h"
 #include "AttributeSystem/Modifier/AttributeModifier.h"
 
-template <typename T>
-TSharedPtr<FAttributeBase<T>> FAttributeFunctionLibrary::CreateAttribute(EAttributeDataType AttributeType, const FAttributeCreateArgument& InArgument)
+TSharedPtr<FAttributeBase> FAttributeFunctionLibrary::CreateAttribute(EAttributeDataType AttributeType, const FAttributeCreateArgument& InArgument)
 {
 	switch (AttributeType)
 	{
@@ -20,13 +19,12 @@ TSharedPtr<FAttributeBase<T>> FAttributeFunctionLibrary::CreateAttribute(EAttrib
 	}
 }
 
-template <typename T>
-TSharedPtr<FAttributeModifierBase<T>> FAttributeFunctionLibrary::CreateAttributeModifier(EAttributeDataType ModifierType)
+TSharedPtr<FAttributeModifierBase> FAttributeFunctionLibrary::CreateAttributeModifier(EAttributeDataType ModifierType)
 {
 	switch (ModifierType)
 	{
 	case ADT_Boolean:
-		return MakeShareable(new FAttributeModifierBoolean);
+		return MakeShareable(new FAttributeModifierBoolean(false, false));
 	case ADT_Integer:
 		return MakeShareable(new FAttributeModifierInteger);
 	case ADT_Float:

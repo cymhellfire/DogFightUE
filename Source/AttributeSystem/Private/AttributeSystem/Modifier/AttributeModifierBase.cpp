@@ -1,9 +1,11 @@
 #include "AttributeSystem/Modifier/AttributeModifierBase.h"
+
+#include "AttributeSystem.h"
 #include "AttributeSystem/Attribute/AttributeBase.h"
 
 template <typename T>
-FAttributeModifierBase<T>::FAttributeModifierBase(T InFactor)
-	: ModifyFactor(InFactor)
+TAttributeModifierBase<T>::TAttributeModifierBase(T InValue)
+	: ModifyFactor(InValue)
 {
 	bDirty = false;
 
@@ -11,7 +13,7 @@ FAttributeModifierBase<T>::FAttributeModifierBase(T InFactor)
 }
 
 template <typename T>
-FAttributeModifierBase<T>::~FAttributeModifierBase()
+TAttributeModifierBase<T>::~TAttributeModifierBase()
 {
 	if (PreviousModifier.IsValid())
 	{
@@ -21,18 +23,29 @@ FAttributeModifierBase<T>::~FAttributeModifierBase()
 }
 
 template <typename T>
-void FAttributeModifierBase<T>::Apply(TWeakPtr<FAttributeBase<T>> InAttribute)
+void TAttributeModifierBase<T>::Apply(TWeakPtr<FAttributeBase> InAttribute)
 {
-	if (InAttribute == nullptr)
+	if (!InAttribute.IsValid())
 	{
 		return;
 	}
 
-	ModifiedTarget = InAttribute;
+	// Convert passed in attribute to expected type
+	auto PinnedAttribute = InAttribute.Pin();
+	TSharedPtr<TAttributeBase<T>> ConvertedAttribute = StaticCastSharedPtr<TAttributeBase<T>>(PinnedAttribute);
+
+	if (ConvertedAttribute.IsValid())
+	{
+		ModifiedTarget = ConvertedAttribute;
+	}
+	else
+	{
+		UE_LOG(LogAttributeSystem, Error, TEXT("[TAttributeModifierBase] AttributeBase type converting failed."));
+	}
 }
 
 template <typename T>
-void FAttributeModifierBase<T>::Remove()
+void TAttributeModifierBase<T>::Remove()
 {
 	if (!ModifiedTarget.IsValid())
 	{
@@ -43,7 +56,7 @@ void FAttributeModifierBase<T>::Remove()
 }
 
 template <typename T>
-T FAttributeModifierBase<T>::GetOriginValue() const
+T TAttributeModifierBase<T>::GetOriginValue() const
 {
 	if (PreviousModifier.IsValid())
 	{
@@ -61,7 +74,7 @@ T FAttributeModifierBase<T>::GetOriginValue() const
 }
 
 template <typename T>
-T FAttributeModifierBase<T>::GetModifiedValue()
+T TAttributeModifierBase<T>::GetModifiedValue()
 {
 	if (bDirty)
 	{
@@ -72,7 +85,7 @@ T FAttributeModifierBase<T>::GetModifiedValue()
 }
 
 template <typename T>
-void FAttributeModifierBase<T>::RegisterPreviousModifier(TWeakPtr<FAttributeModifierBase<T>> InModifier)
+void TAttributeModifierBase<T>::RegisterPreviousModifier(TWeakPtr<TAttributeModifierBase<T>> InModifier)
 {
 	if (!InModifier.IsValid())
 	{
@@ -83,13 +96,13 @@ void FAttributeModifierBase<T>::RegisterPreviousModifier(TWeakPtr<FAttributeModi
 
 	PreviousModifier = InModifier;
 	auto PinnedModifier = InModifier.Pin();
-	PreviousModifierDirtyHandle = PinnedModifier->OnModifierDirty.AddRaw(this, &FAttributeModifierBase::OnPreviousModifierDirty);
+	PreviousModifierDirtyHandle = PinnedModifier->OnModifierDirty.AddRaw(this, &TAttributeModifierBase::OnPreviousModifierDirty);
 
 	MarkAsDirty();
 }
 
 template <typename T>
-void FAttributeModifierBase<T>::ClearPreviousModifier()
+void TAttributeModifierBase<T>::ClearPreviousModifier()
 {
 	if (!PreviousModifier.IsValid())
 	{
@@ -106,7 +119,7 @@ void FAttributeModifierBase<T>::ClearPreviousModifier()
 }
 
 template <typename T>
-void FAttributeModifierBase<T>::SetFactor(T InValue)
+void TAttributeModifierBase<T>::SetFactor(T InValue)
 {
 	ModifyFactor = InValue;
 
@@ -114,7 +127,7 @@ void FAttributeModifierBase<T>::SetFactor(T InValue)
 }
 
 template <typename T>
-void FAttributeModifierBase<T>::UpdateModifiedValue()
+void TAttributeModifierBase<T>::UpdateModifiedValue()
 {
 	ModifiedValue = GetOriginValue();
 
@@ -122,16 +135,16 @@ void FAttributeModifierBase<T>::UpdateModifiedValue()
 }
 
 template <typename T>
-void FAttributeModifierBase<T>::OnPreviousModifierDirty()
+void TAttributeModifierBase<T>::OnPreviousModifierDirty()
 {
 	// Once previous modifier is marked as dirty, this modifier also need update later
 	MarkAsDirty();
 }
 
 template <typename T>
-void FAttributeModifierNumeric<T>::UpdateModifiedValue()
+void TAttributeModifierNumeric<T>::UpdateModifiedValue()
 {
-	using Super = FAttributeModifierBase<T>;
+	using Super = TAttributeModifierBase<T>;
 
 	const T OriginValue = Super::GetOriginValue();
 	switch (OperatorType)

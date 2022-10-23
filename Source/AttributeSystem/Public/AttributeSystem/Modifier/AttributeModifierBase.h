@@ -1,20 +1,43 @@
 #pragma once
 
+#include "AttributeSystem/AttributeSystemCommon.h"
 #include "AttributeSystem/Modifier/AttributeModifierCommon.h"
 
-template<typename T>
 class FAttributeBase;
-
 template<typename T>
+class TAttributeBase;
+
 class ATTRIBUTESYSTEM_API FAttributeModifierBase
 {
 public:
-	virtual ~FAttributeModifierBase();
+	virtual ~FAttributeModifierBase() {}
 
-	virtual void Apply(TWeakPtr<FAttributeBase<T>> InAttribute);
-	virtual void Remove();
+	virtual void Apply(TWeakPtr<FAttributeBase> InAttribute) = 0;
+	virtual void Remove() = 0;
 
-	virtual void RegisterPreviousModifier(TWeakPtr<FAttributeModifierBase<T>> InModifier);
+	virtual EAttributeDataType GetDataType() const
+	{
+		return DataType;
+	}
+
+protected:
+	FAttributeModifierBase()
+		: DataType(EAttributeDataType::ADT_None)
+	{}
+
+	EAttributeDataType DataType;
+};
+
+template<typename T>
+class ATTRIBUTESYSTEM_API TAttributeModifierBase : FAttributeModifierBase
+{
+public:
+	virtual ~TAttributeModifierBase() override;
+
+	virtual void Apply(TWeakPtr<FAttributeBase> InAttribute) override;
+	virtual void Remove() override;
+
+	virtual void RegisterPreviousModifier(TWeakPtr<TAttributeModifierBase<T>> InModifier);
 	virtual void ClearPreviousModifier();
 
 	virtual void SetFactor(T InValue);
@@ -28,7 +51,7 @@ public:
 	}
 
 protected:
-	FAttributeModifierBase(T InFactor);
+	TAttributeModifierBase(T InValue);
 
 	virtual void UpdateModifiedValue();
 
@@ -48,18 +71,18 @@ protected:
 
 	FDelegateHandle PreviousModifierDirtyHandle;
 
-	TWeakPtr<FAttributeBase<T>> ModifiedTarget;
+	TWeakPtr<TAttributeBase<T>> ModifiedTarget;
 
 	/** The modifier instance applied before. */
-	TWeakPtr<FAttributeModifierBase<T>> PreviousModifier;
+	TWeakPtr<TAttributeModifierBase<T>> PreviousModifier;
 };
 
 template<typename T>
-class ATTRIBUTESYSTEM_API FAttributeModifierNumeric : public FAttributeModifierBase<T>
+class ATTRIBUTESYSTEM_API TAttributeModifierNumeric : public TAttributeModifierBase<T>
 {
 protected:
-	FAttributeModifierNumeric(T InFactor, EModifierOperatorType InOpType)
-		: FAttributeModifierBase<T>(InFactor)
+	TAttributeModifierNumeric(T InValue, EModifierOperatorType InOpType)
+		: TAttributeModifierBase<T>(InValue)
 		, OperatorType(InOpType)
 	{}
 

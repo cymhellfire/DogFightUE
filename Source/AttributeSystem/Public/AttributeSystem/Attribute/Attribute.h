@@ -5,29 +5,29 @@
 
 class FAttributeFunctionLibrary;
 
-class ATTRIBUTESYSTEM_API FAttributeBoolean : public FAttributeBase<bool>
+class ATTRIBUTESYSTEM_API FAttributeBoolean : public TAttributeBase<bool>
 {
 	friend FAttributeFunctionLibrary;
 protected:
 	FAttributeBoolean(const FAttributeCreateArgument& InArgument, bool InValue = false)
-		: FAttributeBase<bool>(InArgument, InValue)
+		: TAttributeBase<bool>(InArgument, InValue)
 	{}
 };
 
-class ATTRIBUTESYSTEM_API FAttributeInteger : public FAttributeBase<int32>
+class ATTRIBUTESYSTEM_API FAttributeInteger : public TAttributeBase<int32>
 {
 	friend FAttributeFunctionLibrary;
 protected:
 	FAttributeInteger(const FAttributeCreateArgument& InArgument, int32 InValue = 0)
-		: FAttributeBase<int32>(InArgument, InValue)
+		: TAttributeBase<int32>(InArgument, InValue)
 	{}
 };
 
-class ATTRIBUTESYSTEM_API FAttributeFloat : public FAttributeBase<float>
+class ATTRIBUTESYSTEM_API FAttributeFloat : public TAttributeBase<float>
 {
 	friend FAttributeFunctionLibrary;
 protected:
 	FAttributeFloat(const FAttributeCreateArgument& InArgument, float InValue = 0.f)
-		: FAttributeBase<float>(InArgument, InValue)
+		: TAttributeBase<float>(InArgument, InValue)
 	{}
 };

@@ -14,6 +14,7 @@ public class CardSystem : ModuleRules
 			{
 				"Core",
 				"UnLua",
+				"AttributeSystem",
 			}
 		);
 		
@@ -27,7 +28,6 @@ public class CardSystem : ModuleRules
 				"UMG",
 				"SlateCore",
 				"InputCore",
-				"AttributeSystem",
 			}
 		);
 	}

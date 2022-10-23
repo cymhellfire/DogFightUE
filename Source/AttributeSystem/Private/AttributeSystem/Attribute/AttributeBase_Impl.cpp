@@ -1,5 +1,5 @@
 #include "AttributeBase.cpp"
 
-template class FAttributeBase<bool>;
-template class FAttributeBase<int32>;
-template class FAttributeBase<float>;
+template class TAttributeBase<bool>;
+template class TAttributeBase<int32>;
+template class TAttributeBase<float>;

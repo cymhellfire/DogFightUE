@@ -1,12 +1,14 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "AttributeSystem/Attribute/AttributeCommon.h"
 #include "Player/CardTargetProviderInterface.h"
 #include "Card.generated.h"
 
 class UCardCommand;
 class UCardAsyncCommand;
 class UCardConcurrentCallbackCommand;
+class FAttributeBase;
 
 UENUM()
 enum class ECardExecutionResult : uint8
@@ -22,6 +24,17 @@ class CARDSYSTEM_API UCard : public UObject
 public:
 	UCard();
 
+	// ---------------- Card Attribute ---------------------
+	UFUNCTION(BlueprintCallable, Category="Card")
+	bool AddAttribute(const FAttributeCreateArgument& InArgument);
+
+	UFUNCTION(BlueprintCallable, Category="Card")
+	bool RemoveAttribute(FName InName);
+
+protected:
+	TMap<FName, TSharedPtr<FAttributeBase>> AttributeMap;
+
+public:
 	/**
 	 * Execute this card logic flow.
 	 */

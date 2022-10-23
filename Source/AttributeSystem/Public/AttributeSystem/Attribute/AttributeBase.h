@@ -1,17 +1,37 @@
 #pragma once
 
 #include "AttributeCommon.h"
+#include "AttributeSystem/AttributeSystemCommon.h"
 
-template<typename T>
 class FAttributeModifierBase;
-
 template<typename T>
-class ATTRIBUTESYSTEM_API FAttributeBase : public TSharedFromThis<FAttributeBase<T>>
+class TAttributeModifierBase;
+
+class ATTRIBUTESYSTEM_API FAttributeBase : public TSharedFromThis<FAttributeBase>
 {
 public:
-	virtual ~FAttributeBase(){}
+	virtual ~FAttributeBase() {}
 
-	virtual FName GetName() const
+	virtual FName GetName() const = 0;
+
+	virtual void AddModifier(TWeakPtr<FAttributeModifierBase> InModifier) = 0;
+	virtual void RemoveModifier(TWeakPtr<FAttributeModifierBase> InModifier) = 0;
+
+protected:
+	FAttributeBase()
+		: DataType(ADT_None)
+	{}
+
+	EAttributeDataType DataType;
+};
+
+template<typename T>
+class ATTRIBUTESYSTEM_API TAttributeBase : public FAttributeBase
+{
+public:
+	virtual ~TAttributeBase() override {}
+
+	virtual FName GetName() const override
 	{
 		return AttributeName;
 	}
@@ -23,17 +43,17 @@ public:
 
 	virtual T GetValue() const;
 
-	virtual void AddModifier(TSharedPtr<FAttributeModifierBase<T>> InModifier);
+	virtual void AddModifier(TWeakPtr<FAttributeModifierBase> InModifier) override;
 
-	virtual void RemoveModifier(TSharedPtr<FAttributeModifierBase<T>> InModifier);
+	virtual void RemoveModifier(TWeakPtr<FAttributeModifierBase> InModifier) override;
 
-	virtual TWeakPtr<FAttributeModifierBase<T>> GetLastModifier() const
+	virtual TWeakPtr<TAttributeModifierBase<T>> GetLastModifier() const
 	{
 		return ModifierList.Num() > 0 ? ModifierList.Last() : nullptr;
 	}
 
 protected:
-	FAttributeBase(const FAttributeCreateArgument& InArgument, T InValue)
+	TAttributeBase(const FAttributeCreateArgument& InArgument, T InValue)
 	{
 		AttributeName = InArgument.AttrName;
 		Value = InValue;
@@ -46,5 +66,5 @@ protected:
 
 	T Value;
 
-	TArray<TSharedPtr<FAttributeModifierBase<T>>> ModifierList; 
+	TArray<TSharedPtr<TAttributeModifierBase<T>>> ModifierList; 
 };

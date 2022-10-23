@@ -1,6 +1,7 @@
 ﻿#include "Card/Card.h"
 
 #include "CardSystem.h"
+#include "AttributeSystem/AttributeFunctionLibrary.h"
 #include "Card/CardConcurrentCallbackCommand.h"
 #include "Card/CardAsyncCommand.h"
 #include "Card/CardCommand.h"
@@ -12,6 +13,30 @@ UCard::UCard()
 	bAutoConsume = false;
 	ExecutingIndex = 0;
 	WaitingConcurrentCommands = 0;
+}
+
+bool UCard::AddAttribute(const FAttributeCreateArgument& InArgument)
+{
+	// Attribute name duplicated check
+	if (AttributeMap.Contains(InArgument.AttrName))
+	{
+		UE_LOG(LogCardSystem, Error, TEXT("[Card] Duplicated attribute name: %s"), *InArgument.AttrName.ToString());
+		return false;
+	}
+
+	auto NewAttribute = FAttributeFunctionLibrary::CreateAttribute(InArgument.DataType, InArgument);
+	if (!NewAttribute.IsValid())
+	{
+		return false;
+	}
+
+	AttributeMap.Add(InArgument.AttrName, NewAttribute);
+	return true;
+}
+
+bool UCard::RemoveAttribute(FName InName)
+{
+	return AttributeMap.Remove(InName) == 1;
 }
 
 /**
