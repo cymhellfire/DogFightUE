@@ -27,6 +27,7 @@ public class CardSystem : ModuleRules
 				"UMG",
 				"SlateCore",
 				"InputCore",
+				"AttributeSystem",
 			}
 		);
 	}
