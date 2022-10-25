@@ -3,6 +3,9 @@ require("UnLua")
 local UTestCard = Class("CardSystem.Cards.CardBase")
 
 function UTestCard:AcquireCardTargetsImplementation()
+    -- Create attributes
+    self:CreateAttributeInteger("Damage", 50)
+
     local NewSettings = UE.FTargetAcquireSettings()
     NewSettings.Type = UE.ECardTargetType.CTT_Actor
     NewSettings.TargetCount = 1
@@ -38,6 +41,14 @@ end
 
 function UTestCard:OnWaitAndRandomCallback(Result)
     print(self:GetName() .. " Random result: " .. Result)
+
+    -- Get attribute value
+    local bGot, Damage = self:GetAttributeIntegerValue("Damage")
+    if bGot then
+        print("Damage = " .. Damage)
+    else
+        print("Failed to get Damage")
+    end
 end
 
 return UTestCard
