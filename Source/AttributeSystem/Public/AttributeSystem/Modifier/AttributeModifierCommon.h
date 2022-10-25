@@ -1,5 +1,6 @@
 #pragma once
 
+#include "AttributeSystem/AttributeSystemCommon.h"
 #include "AttributeModifierCommon.generated.h"
 
 UENUM()
@@ -16,6 +17,9 @@ USTRUCT(BlueprintType)
 struct ATTRIBUTESYSTEM_API FModifierCreateArgument
 {
 	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="ModifierArgument")
+	TEnumAsByte<EAttributeDataType> DataType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="ModifierArgument")
 	EModifierOperatorType OperatorType;

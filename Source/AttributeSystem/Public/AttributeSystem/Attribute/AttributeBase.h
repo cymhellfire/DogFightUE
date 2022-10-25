@@ -17,6 +17,11 @@ public:
 	virtual void AddModifier(TWeakPtr<FAttributeModifierBase> InModifier) = 0;
 	virtual void RemoveModifier(TWeakPtr<FAttributeModifierBase> InModifier) = 0;
 
+	virtual EAttributeDataType GetDataType() const
+	{
+		return DataType;
+	}
+
 protected:
 	FAttributeBase()
 		: DataType(ADT_None)
@@ -39,6 +44,11 @@ public:
 	virtual T GetRawValue() const
 	{
 		return Value;
+	}
+
+	virtual void SetRawValue(T InValue)
+	{
+		Value = InValue;
 	}
 
 	virtual T GetValue() const;

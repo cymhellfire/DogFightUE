@@ -1,7 +1,8 @@
 ﻿#include "Card/Card.h"
 
 #include "CardSystem.h"
-#include "AttributeSystem/AttributeFunctionLibrary.h"
+#include "Attribute/CardAttributeFunctionLibrary.h"
+#include "AttributeSystem/Attribute/Attribute.h"
 #include "Card/CardConcurrentCallbackCommand.h"
 #include "Card/CardAsyncCommand.h"
 #include "Card/CardCommand.h"
@@ -15,28 +16,65 @@ UCard::UCard()
 	WaitingConcurrentCommands = 0;
 }
 
-bool UCard::AddAttribute(const FAttributeCreateArgument& InArgument)
+bool UCard::CreateAttributeBool(FName InName, bool InValue)
 {
+	return FCardAttributeFunctionLibrary::CreateBoolAttributeForCard(this, InName, InValue);
+}
+
+bool UCard::CreateAttributeInteger(FName InName, int32 InValue)
+{
+	return FCardAttributeFunctionLibrary::CreateIntegerAttributeForCard(this, InName, InValue);
+}
+
+bool UCard::CreateAttributeFloat(FName InName, float InValue)
+{
+	return FCardAttributeFunctionLibrary::CreateFloatAttributeForCard(this, InName, InValue);
+}
+
+bool UCard::AddAttribute(TSharedPtr<FAttributeBase> InAttribute)
+{
+	if (!InAttribute.IsValid())
+	{
+		UE_LOG(LogCardSystem, Error, TEXT("[Card] Invalid attribute to add."));
+		return false;
+	}
+
+	const FName AttrName = InAttribute->GetName();
 	// Attribute name duplicated check
-	if (AttributeMap.Contains(InArgument.AttrName))
+	if (AttributeMap.Contains(AttrName))
 	{
-		UE_LOG(LogCardSystem, Error, TEXT("[Card] Duplicated attribute name: %s"), *InArgument.AttrName.ToString());
+		UE_LOG(LogCardSystem, Error, TEXT("[Card] Duplicated attribute name: %s"), *AttrName.ToString());
 		return false;
 	}
 
-	auto NewAttribute = FAttributeFunctionLibrary::CreateAttribute(InArgument.DataType, InArgument);
-	if (!NewAttribute.IsValid())
-	{
-		return false;
-	}
-
-	AttributeMap.Add(InArgument.AttrName, NewAttribute);
+	AttributeMap.Add(AttrName, InAttribute);
 	return true;
 }
 
 bool UCard::RemoveAttribute(FName InName)
 {
 	return AttributeMap.Remove(InName) == 1;
+}
+
+TWeakPtr<FAttributeBase> UCard::GetAttribute(FName InName)
+{
+	const auto Result = AttributeMap.Find(InName);
+	return Result ? *Result : nullptr;
+}
+
+bool UCard::GetAttributeBoolValue(FName InName, bool& OutValue)
+{
+	return FCardAttributeFunctionLibrary::GetBoolAttributeValueFromCard(this, InName, OutValue);
+}
+
+int32 UCard::GetAttributeIntegerValue(FName InName, int32& OutValue)
+{
+	return FCardAttributeFunctionLibrary::GetIntegerAttributeValueFromCard(this, InName, OutValue);
+}
+
+float UCard::GetAttributeFloatValue(FName InName, float& OutValue)
+{
+	return FCardAttributeFunctionLibrary::GetFloatAttributeValueFromCard(this, InName, OutValue);
 }
 
 /**

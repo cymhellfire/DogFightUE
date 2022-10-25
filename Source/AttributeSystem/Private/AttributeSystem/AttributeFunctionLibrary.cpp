@@ -2,9 +2,9 @@
 #include "AttributeSystem/Attribute/Attribute.h"
 #include "AttributeSystem/Modifier/AttributeModifier.h"
 
-TSharedPtr<FAttributeBase> FAttributeFunctionLibrary::CreateAttribute(EAttributeDataType AttributeType, const FAttributeCreateArgument& InArgument)
+TSharedPtr<FAttributeBase> FAttributeFunctionLibrary::CreateAttribute(const FAttributeCreateArgument& InArgument)
 {
-	switch (AttributeType)
+	switch (InArgument.DataType)
 	{
 	case ADT_Boolean:
 		return MakeShareable(new FAttributeBoolean(InArgument));
@@ -18,9 +18,9 @@ TSharedPtr<FAttributeBase> FAttributeFunctionLibrary::CreateAttribute(EAttribute
 	}
 }
 
-TSharedPtr<FAttributeModifierBase> FAttributeFunctionLibrary::CreateAttributeModifier(EAttributeDataType ModifierType, const FModifierCreateArgument& InArgument)
+TSharedPtr<FAttributeModifierBase> FAttributeFunctionLibrary::CreateAttributeModifier(const FModifierCreateArgument& InArgument)
 {
-	switch (ModifierType)
+	switch (InArgument.DataType)
 	{
 	case ADT_Boolean:
 		return MakeShareable(new FAttributeModifierBoolean(InArgument));
