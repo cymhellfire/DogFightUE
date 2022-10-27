@@ -2,7 +2,9 @@
 
 #include "CardSystem.h"
 #include "Attribute/CardAttributeFunctionLibrary.h"
+#include "Attribute/CardAttributeModifierFunctionLibrary.h"
 #include "AttributeSystem/Attribute/Attribute.h"
+#include "AttributeSystem/Modifier/AttributeModifier.h"
 #include "Card/CardConcurrentCallbackCommand.h"
 #include "Card/CardAsyncCommand.h"
 #include "Card/CardCommand.h"
@@ -67,14 +69,75 @@ bool UCard::GetAttributeBoolValue(FName InName, bool& OutValue)
 	return FCardAttributeFunctionLibrary::GetBoolAttributeValueFromCard(this, InName, OutValue);
 }
 
-int32 UCard::GetAttributeIntegerValue(FName InName, int32& OutValue)
+bool UCard::GetAttributeIntegerValue(FName InName, int32& OutValue)
 {
 	return FCardAttributeFunctionLibrary::GetIntegerAttributeValueFromCard(this, InName, OutValue);
 }
 
-float UCard::GetAttributeFloatValue(FName InName, float& OutValue)
+bool UCard::GetAttributeFloatValue(FName InName, float& OutValue)
 {
 	return FCardAttributeFunctionLibrary::GetFloatAttributeValueFromCard(this, InName, OutValue);
+}
+
+bool UCard::CreateModifierForBoolAttribute(FName InName, bool InValue)
+{
+	auto NewModifier = FCardAttributeModifierFunctionLibrary::CreateBoolAttributeModifier(InName, InValue);
+	if (!NewModifier.IsValid())
+	{
+		return false;
+	}
+
+	auto TargetAttribute = GetAttribute(InName);
+	if (!TargetAttribute.IsValid())
+	{
+		return false;
+	}
+
+	auto PinnedAttribute = TargetAttribute.Pin();
+	// Apply modifier
+	PinnedAttribute->AddModifier(NewModifier);
+
+	return true;
+}
+
+bool UCard::CreateModifierForIntegerAttribute(FName InName, int32 InValue, EModifierOperatorType OpType)
+{
+	auto NewModifier = FCardAttributeModifierFunctionLibrary::CreateIntegerAttributeModifier(InName, InValue, OpType);
+	if (!NewModifier.IsValid())
+	{
+		return false;
+	}
+
+	auto TargetAttribute = GetAttribute(InName);
+	if (!TargetAttribute.IsValid())
+	{
+		return false;
+	}
+
+	auto PinnedAttribute = TargetAttribute.Pin();
+	// Apply modifier
+	PinnedAttribute->AddModifier(NewModifier);
+	return true;
+}
+
+bool UCard::CreateModifierForFloatAttribute(FName InName, float InValue, EModifierOperatorType OpType)
+{
+	auto NewModifier = FCardAttributeModifierFunctionLibrary::CreateFloatAttributeModifier(InName, InValue, OpType);
+	if (!NewModifier.IsValid())
+	{
+		return false;
+	}
+
+	auto TargetAttribute = GetAttribute(InName);
+	if (!TargetAttribute.IsValid())
+	{
+		return false;
+	}
+
+	auto PinnedAttribute = TargetAttribute.Pin();
+	// Apply modifier
+	PinnedAttribute->AddModifier(NewModifier);
+	return true;
 }
 
 /**

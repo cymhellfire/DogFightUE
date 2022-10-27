@@ -10,6 +10,7 @@ TAttributeModifierBase<T>::TAttributeModifierBase(const FModifierCreateArgument&
 	bDirty = false;
 
 	ModifiedTarget = nullptr;
+	ModifiedValue = 0;
 }
 
 template <typename T>
@@ -153,17 +154,17 @@ void TAttributeModifierNumeric<T>::UpdateModifiedValue()
 		Super::ModifiedValue = Super::ModifyFactor;
 		break;
 	case EModifierOperatorType::MOT_Addition:
-		Super::ModifiedValue += Super::ModifyFactor;
+		Super::ModifiedValue = OriginValue + Super::ModifyFactor;
 		break;
 	case EModifierOperatorType::MOT_Subtract:
-		Super::ModifiedValue -= Super::ModifyFactor;
+		Super::ModifiedValue = OriginValue - Super::ModifyFactor;
 		break;
 	case EModifierOperatorType::MOT_Multiply:
-		Super::ModifiedValue *= Super::ModifyFactor;
+		Super::ModifiedValue = OriginValue * Super::ModifyFactor;
 		break;
 	case EModifierOperatorType::MOT_Divide:
 		// NOTE: No implicit conversion here
-		Super::ModifiedValue /= Super::ModifyFactor;
+		Super::ModifiedValue = OriginValue / Super::ModifyFactor;
 		break;
 	default:
 		// Should never be here

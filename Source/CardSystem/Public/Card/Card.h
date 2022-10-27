@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "AttributeSystem/Modifier/AttributeModifierCommon.h"
 #include "Player/CardTargetProviderInterface.h"
 #include "Card.generated.h"
 
@@ -44,10 +45,19 @@ public:
 	bool GetAttributeBoolValue(FName InName, bool& OutValue);
 
 	UFUNCTION(BlueprintCallable, Category="Card")
-	int32 GetAttributeIntegerValue(FName InName, int32& OutValue);
+	bool GetAttributeIntegerValue(FName InName, int32& OutValue);
 
 	UFUNCTION(BlueprintCallable, Category="Card")
-	float GetAttributeFloatValue(FName InName, float& OutValue);
+	bool GetAttributeFloatValue(FName InName, float& OutValue);
+
+	UFUNCTION(BlueprintCallable, Category="Card")
+	bool CreateModifierForBoolAttribute(FName InName, bool InValue);
+
+	UFUNCTION(BlueprintCallable, Category="Card")
+	bool CreateModifierForIntegerAttribute(FName InName, int32 InValue, EModifierOperatorType OpType);
+
+	UFUNCTION(BlueprintCallable, Category="Card")
+	bool CreateModifierForFloatAttribute(FName InName, float InValue, EModifierOperatorType OpType);
 
 protected:
 	TMap<FName, TSharedPtr<FAttributeBase>> AttributeMap;

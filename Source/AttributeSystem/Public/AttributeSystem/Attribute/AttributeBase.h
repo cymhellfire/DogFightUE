@@ -14,7 +14,7 @@ public:
 
 	virtual FName GetName() const = 0;
 
-	virtual void AddModifier(TWeakPtr<FAttributeModifierBase> InModifier) = 0;
+	virtual void AddModifier(TSharedPtr<FAttributeModifierBase> InModifier) = 0;
 	virtual void RemoveModifier(TWeakPtr<FAttributeModifierBase> InModifier) = 0;
 
 	virtual EAttributeDataType GetDataType() const
@@ -53,7 +53,7 @@ public:
 
 	virtual T GetValue() const;
 
-	virtual void AddModifier(TWeakPtr<FAttributeModifierBase> InModifier) override;
+	virtual void AddModifier(TSharedPtr<FAttributeModifierBase> InModifier) override;
 
 	virtual void RemoveModifier(TWeakPtr<FAttributeModifierBase> InModifier) override;
 
@@ -67,6 +67,7 @@ protected:
 	{
 		AttributeName = InArgument.AttrName;
 		Value = InValue;
+		AttributeTag = 0;
 	}
 
 protected:

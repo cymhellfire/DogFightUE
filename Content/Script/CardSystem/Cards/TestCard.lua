@@ -5,6 +5,10 @@ local UTestCard = Class("CardSystem.Cards.CardBase")
 function UTestCard:AcquireCardTargetsImplementation()
     -- Create attributes
     self:CreateAttributeInteger("Damage", 50)
+    -- Create modifier
+    self:CreateModifierForIntegerAttribute("Damage", 2, UE.EModifierOperatorType.MOT_Multiply)
+    self:CreateModifierForIntegerAttribute("Damage", 5, UE.EModifierOperatorType.MOT_Addition)
+    self:CreateModifierForIntegerAttribute("Damage", 3, UE.EModifierOperatorType.MOT_Divide)
 
     local NewSettings = UE.FTargetAcquireSettings()
     NewSettings.Type = UE.ECardTargetType.CTT_Actor

@@ -16,7 +16,7 @@ T TAttributeBase<T>::GetValue() const
 }
 
 template <typename T>
-void TAttributeBase<T>::AddModifier(TWeakPtr<FAttributeModifierBase> InModifier)
+void TAttributeBase<T>::AddModifier(TSharedPtr<FAttributeModifierBase> InModifier)
 {
 	if (!InModifier.IsValid())
 	{
@@ -24,8 +24,7 @@ void TAttributeBase<T>::AddModifier(TWeakPtr<FAttributeModifierBase> InModifier)
 	}
 
 	// Convert to expected type
-	auto PinnedModifier = InModifier.Pin();
-	TSharedPtr<TAttributeModifierBase<T>> ConvertedModifier = StaticCastSharedPtr<TAttributeModifierBase<T>>(PinnedModifier);
+	TSharedPtr<TAttributeModifierBase<T>> ConvertedModifier = StaticCastSharedPtr<TAttributeModifierBase<T>>(InModifier);
 
 	if (ConvertedModifier.IsValid() && !ModifierList.Contains(ConvertedModifier))
 	{
