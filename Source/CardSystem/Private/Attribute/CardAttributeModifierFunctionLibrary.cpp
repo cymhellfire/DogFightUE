@@ -21,11 +21,12 @@ TSharedPtr<FAttributeModifierBoolean> FCardAttributeModifierFunctionLibrary::Cre
 }
 
 TSharedPtr<FAttributeModifierInteger> FCardAttributeModifierFunctionLibrary::CreateIntegerAttributeModifier(
-	FName InName, int32 InValue, EModifierOperatorType OpType)
+	FName InName, int32 InValue, EModifierOperatorType OpType, FString ApplyRule)
 {
 	FModifierCreateArgument CreateArgument;
 	CreateArgument.DataType = ADT_Integer;
 	CreateArgument.OperatorType = OpType;
+	CreateArgument.ApplyRuleString = ApplyRule;
 
 	auto NewModifier = FAttributeFunctionLibrary::CreateAttributeModifier(CreateArgument);
 	auto ConvertedModifier = StaticCastSharedPtr<FAttributeModifierInteger>(NewModifier);

@@ -13,7 +13,7 @@ class CARDSYSTEM_API FCardAttributeModifierFunctionLibrary
 public:
 	static TSharedPtr<FAttributeModifierBoolean> CreateBoolAttributeModifier(FName InName, bool InValue);
 
-	static TSharedPtr<FAttributeModifierInteger> CreateIntegerAttributeModifier(FName InName, int32 InValue, EModifierOperatorType OpType);
+	static TSharedPtr<FAttributeModifierInteger> CreateIntegerAttributeModifier(FName InName, int32 InValue, EModifierOperatorType OpType, FString ApplyRule);
 
 	static TSharedPtr<FAttributeModifierFloat> CreateFloatAttributeModifier(FName InName, float InValue, EModifierOperatorType OpType);
 };

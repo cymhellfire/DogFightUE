@@ -100,9 +100,9 @@ bool UCard::CreateModifierForBoolAttribute(FName InName, bool InValue)
 	return true;
 }
 
-bool UCard::CreateModifierForIntegerAttribute(FName InName, int32 InValue, EModifierOperatorType OpType)
+bool UCard::CreateModifierForIntegerAttribute(FName InName, int32 InValue, EModifierOperatorType OpType, FString ApplyRule)
 {
-	auto NewModifier = FCardAttributeModifierFunctionLibrary::CreateIntegerAttributeModifier(InName, InValue, OpType);
+	auto NewModifier = FCardAttributeModifierFunctionLibrary::CreateIntegerAttributeModifier(InName, InValue, OpType, ApplyRule);
 	if (!NewModifier.IsValid())
 	{
 		return false;

@@ -6,14 +6,20 @@
 class FAttributeBase;
 template<typename T>
 class TAttributeBase;
+class FApplyRuleBase;
 
 class ATTRIBUTESYSTEM_API FAttributeModifierBase
 {
 public:
 	virtual ~FAttributeModifierBase() {}
 
-	virtual void Apply(TWeakPtr<FAttributeBase> InAttribute) = 0;
+	virtual bool Apply(TWeakPtr<FAttributeBase> InAttribute) = 0;
 	virtual void Remove() = 0;
+
+	virtual void SetApplyRule(TSharedPtr<FApplyRuleBase> InRule)
+	{
+		ApplyRule = InRule;
+	}
 
 	virtual EAttributeDataType GetDataType() const
 	{
@@ -26,6 +32,8 @@ protected:
 	{}
 
 	EAttributeDataType DataType;
+
+	TSharedPtr<FApplyRuleBase> ApplyRule;
 };
 
 template<typename T>
@@ -34,7 +42,7 @@ class ATTRIBUTESYSTEM_API TAttributeModifierBase : public FAttributeModifierBase
 public:
 	virtual ~TAttributeModifierBase() override;
 
-	virtual void Apply(TWeakPtr<FAttributeBase> InAttribute) override;
+	virtual bool Apply(TWeakPtr<FAttributeBase> InAttribute) override;
 	virtual void Remove() override;
 
 	virtual void RegisterPreviousModifier(TWeakPtr<TAttributeModifierBase<T>> InModifier);

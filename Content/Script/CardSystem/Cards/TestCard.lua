@@ -10,6 +10,12 @@ function UTestCard:AcquireCardTargetsImplementation()
     self:CreateModifierForIntegerAttribute("Damage", 5, UE.EModifierOperatorType.MOT_Addition)
     self:CreateModifierForIntegerAttribute("Damage", 3, UE.EModifierOperatorType.MOT_Divide)
 
+    -- Create modifier with apply rule
+    self:CreateModifierForIntegerAttribute("Damage", 5, UE.EModifierOperatorType.MOT_Multiply, "DataType=Float")
+    self:CreateModifierForIntegerAttribute("Damage", 10, UE.EModifierOperatorType.MOT_Addition, "[DataType=Float,Name=Damage,Tag(Tag1,Tag2)]")
+    self:CreateModifierForIntegerAttribute("Damage", 5, UE.EModifierOperatorType.MOT_Divide, "(Name=Damage,Tag[Tag1,Tag2,Tag3],DataType=Integer)")
+    self:CreateModifierForIntegerAttribute("Damage", 2, UE.EModifierOperatorType.MOT_Addition, "(Name=Damage,[DataType=Integer,DataType=Float])")
+
     local NewSettings = UE.FTargetAcquireSettings()
     NewSettings.Type = UE.ECardTargetType.CTT_Actor
     NewSettings.TargetCount = 1

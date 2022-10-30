@@ -54,7 +54,7 @@ public:
 	bool CreateModifierForBoolAttribute(FName InName, bool InValue);
 
 	UFUNCTION(BlueprintCallable, Category="Card")
-	bool CreateModifierForIntegerAttribute(FName InName, int32 InValue, EModifierOperatorType OpType);
+	bool CreateModifierForIntegerAttribute(FName InName, int32 InValue, EModifierOperatorType OpType, FString ApplyRule = "");
 
 	UFUNCTION(BlueprintCallable, Category="Card")
 	bool CreateModifierForFloatAttribute(FName InName, float InValue, EModifierOperatorType OpType);

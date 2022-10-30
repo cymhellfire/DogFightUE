@@ -12,7 +12,25 @@ class ATTRIBUTESYSTEM_API FAttributeBase : public TSharedFromThis<FAttributeBase
 public:
 	virtual ~FAttributeBase() {}
 
-	virtual FName GetName() const = 0;
+	virtual FName GetName() const
+	{
+		return AttributeName;
+	}
+
+	void AddTag(FName InTag)
+	{
+		AttributeTags.Add(InTag);
+	}
+
+	void RemoveTag(FName InTag)
+	{
+		AttributeTags.Remove(InTag);
+	}
+
+	bool HasTag(FName InTag) const
+	{
+		return AttributeTags.Contains(InTag);
+	}
 
 	virtual void AddModifier(TSharedPtr<FAttributeModifierBase> InModifier) = 0;
 	virtual void RemoveModifier(TWeakPtr<FAttributeModifierBase> InModifier) = 0;
@@ -23,9 +41,14 @@ public:
 	}
 
 protected:
-	FAttributeBase()
-		: DataType(ADT_None)
+	FAttributeBase(const FAttributeCreateArgument& InArgument)
+		: AttributeName(InArgument.AttrName)
+		,DataType(ADT_None) 
 	{}
+
+	FName AttributeName;
+
+	TSet<FName> AttributeTags;
 
 	EAttributeDataType DataType;
 };
@@ -35,11 +58,6 @@ class ATTRIBUTESYSTEM_API TAttributeBase : public FAttributeBase
 {
 public:
 	virtual ~TAttributeBase() override {}
-
-	virtual FName GetName() const override
-	{
-		return AttributeName;
-	}
 
 	virtual T GetRawValue() const
 	{
@@ -64,17 +82,11 @@ public:
 
 protected:
 	TAttributeBase(const FAttributeCreateArgument& InArgument, T InValue)
-	{
-		AttributeName = InArgument.AttrName;
-		Value = InValue;
-		AttributeTag = 0;
-	}
+		: FAttributeBase(InArgument)
+		, Value(InValue)
+	{}
 
 protected:
-	FName AttributeName;
-
-	int32 AttributeTag;
-
 	T Value;
 
 	TArray<TSharedPtr<TAttributeModifierBase<T>>> ModifierList; 

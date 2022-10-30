@@ -28,14 +28,16 @@ void TAttributeBase<T>::AddModifier(TSharedPtr<FAttributeModifierBase> InModifie
 
 	if (ConvertedModifier.IsValid() && !ModifierList.Contains(ConvertedModifier))
 	{
-		ConvertedModifier->Apply(SharedThis(this));
-		// Record the previous modifier
-		auto LastModifier = GetLastModifier();
-		if (LastModifier.IsValid())
+		if (ConvertedModifier->Apply(SharedThis(this)))
 		{
-			ConvertedModifier->RegisterPreviousModifier(LastModifier);
+			// Record the previous modifier
+			auto LastModifier = GetLastModifier();
+			if (LastModifier.IsValid())
+			{
+				ConvertedModifier->RegisterPreviousModifier(LastModifier);
+			}
+			ModifierList.Add(ConvertedModifier);
 		}
-		ModifierList.Add(ConvertedModifier);
 	}
 }
 

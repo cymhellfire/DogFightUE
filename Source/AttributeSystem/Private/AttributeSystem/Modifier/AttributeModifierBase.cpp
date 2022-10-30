@@ -1,6 +1,7 @@
 #include "AttributeSystem/Modifier/AttributeModifierBase.h"
 
 #include "AttributeSystem.h"
+#include "AttributeSystem/ApplyRule/ApplyRuleBase.h"
 #include "AttributeSystem/Attribute/AttributeBase.h"
 
 template <typename T>
@@ -24,15 +25,24 @@ TAttributeModifierBase<T>::~TAttributeModifierBase()
 }
 
 template <typename T>
-void TAttributeModifierBase<T>::Apply(TWeakPtr<FAttributeBase> InAttribute)
+bool TAttributeModifierBase<T>::Apply(TWeakPtr<FAttributeBase> InAttribute)
 {
 	if (!InAttribute.IsValid())
 	{
-		return;
+		return false;
+	}
+
+	auto PinnedAttribute = InAttribute.Pin();
+	// Check apply rule
+	if (ApplyRule.IsValid())
+	{
+		if (!ApplyRule->CanApply(PinnedAttribute))
+		{
+			return false;
+		}
 	}
 
 	// Convert passed in attribute to expected type
-	auto PinnedAttribute = InAttribute.Pin();
 	TSharedPtr<TAttributeBase<T>> ConvertedAttribute = StaticCastSharedPtr<TAttributeBase<T>>(PinnedAttribute);
 
 	if (ConvertedAttribute.IsValid())
@@ -42,7 +52,10 @@ void TAttributeModifierBase<T>::Apply(TWeakPtr<FAttributeBase> InAttribute)
 	else
 	{
 		UE_LOG(LogAttributeSystem, Error, TEXT("[TAttributeModifierBase] AttributeBase type converting failed."));
+		return false;
 	}
+
+	return true;
 }
 
 template <typename T>

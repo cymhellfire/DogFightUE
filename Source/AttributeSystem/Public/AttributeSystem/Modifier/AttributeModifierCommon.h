@@ -23,4 +23,7 @@ struct ATTRIBUTESYSTEM_API FModifierCreateArgument
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="ModifierArgument")
 	EModifierOperatorType OperatorType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="ModifierArgument")
+	FString ApplyRuleString;
 };
