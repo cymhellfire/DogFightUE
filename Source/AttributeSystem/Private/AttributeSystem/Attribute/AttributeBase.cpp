@@ -61,7 +61,7 @@ void TAttributeBase<T>::RemoveModifier(TWeakPtr<FAttributeModifierBase> InModifi
 	ensure(Index != INDEX_NONE);
 
 	// Mark modifier as dirty to notify those modifiers behind it
-	ConvertedModifier->MarkAsDirty();
+	ConvertedModifier->Remove();
 
 	if (Index == 0)
 	{

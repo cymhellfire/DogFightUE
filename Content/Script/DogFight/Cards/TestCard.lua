@@ -1,6 +1,6 @@
 require("UnLua")
 
-local UTestCard = Class("CardSystem.Cards.CardBase")
+local UTestCard = Class("DogFight.Cards.CardBase")
 
 function UTestCard:AcquireCardTargetsImplementation()
     -- Create attributes
@@ -15,6 +15,13 @@ function UTestCard:AcquireCardTargetsImplementation()
     self:CreateModifierForIntegerAttribute("Damage", 10, UE.EModifierOperatorType.MOT_Addition, "[DataType=Float,Name=Damage,Tag(Tag1,Tag2)]")
     self:CreateModifierForIntegerAttribute("Damage", 5, UE.EModifierOperatorType.MOT_Divide, "(Name=Damage,Tag[Tag1,Tag2,Tag3],DataType=Integer)")
     self:CreateModifierForIntegerAttribute("Damage", 2, UE.EModifierOperatorType.MOT_Addition, "(Name=Damage,[DataType=Integer,DataType=Float])")
+
+    -- Create modifier from service
+    local ModifierService = _G.GameServices.CardModifierGameService
+    if ModifierService ~= nil then
+        local NewModifier = ModifierService:CreateCardModifier("DogFight.CardModifiers.CardModifierTest", self)
+        self:AddAttributeModifier(NewModifier)
+    end
 
     local NewSettings = UE.FTargetAcquireSettings()
     NewSettings.Type = UE.ECardTargetType.CTT_Actor

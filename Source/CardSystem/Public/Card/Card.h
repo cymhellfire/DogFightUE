@@ -9,6 +9,7 @@ class UCardCommand;
 class UCardAsyncCommand;
 class UCardConcurrentCallbackCommand;
 class FAttributeBase;
+class UCardModifier;
 
 UENUM()
 enum class ECardExecutionResult : uint8
@@ -60,7 +61,18 @@ public:
 	bool CreateModifierForFloatAttribute(FName InName, float InValue, EModifierOperatorType OpType);
 
 protected:
+	TArray<TSharedPtr<FAttributeBase>> GetAttributesByDataType(EAttributeDataType InDataType);
+
 	TMap<FName, TSharedPtr<FAttributeBase>> AttributeMap;
+
+	// ------------ Card Attribute Modifier -----------------
+public:
+	UFUNCTION(BlueprintCallable, Category="Card")
+	void AddAttributeModifier(UCardModifier* InModifier);
+
+protected:
+	UPROPERTY(Transient)
+	TArray<UCardModifier*> AppliedModifiers;
 
 public:
 	/**

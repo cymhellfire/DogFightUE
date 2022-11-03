@@ -8,6 +8,7 @@
 #include "Card/CardConcurrentCallbackCommand.h"
 #include "Card/CardAsyncCommand.h"
 #include "Card/CardCommand.h"
+#include "CardModifier/CardModifier.h"
 
 UCard::UCard()
 {
@@ -138,6 +139,37 @@ bool UCard::CreateModifierForFloatAttribute(FName InName, float InValue, EModifi
 	// Apply modifier
 	PinnedAttribute->AddModifier(NewModifier);
 	return true;
+}
+
+TArray<TSharedPtr<FAttributeBase>> UCard::GetAttributesByDataType(EAttributeDataType InDataType)
+{
+	TArray<TSharedPtr<FAttributeBase>> Result;
+	for (auto Pairs : AttributeMap)
+	{
+		if (Pairs.Value->GetDataType() == InDataType)
+		{
+			Result.Add(Pairs.Value);
+		}
+	}
+
+	return Result;
+}
+
+void UCard::AddAttributeModifier(UCardModifier* InModifier)
+{
+	auto CandidateList = GetAttributesByDataType(InModifier->GetDataType());
+	if (CandidateList.Num() == 0)
+	{
+		UE_LOG(LogCardSystem, Error, TEXT("[Card] No attribute matches the data type of %d from modifier."), InModifier->GetDataType());
+		return;
+	}
+
+	// Pick random one from list if multiple attributes matched the data type
+	TSharedPtr<FAttributeBase> TargetAttribute = CandidateList[FMath::RandRange(0, CandidateList.Num() - 1)];
+	InModifier->ApplyToAttribute(TargetAttribute);
+
+	// Record new modifier
+	AppliedModifiers.Add(InModifier);
 }
 
 /**

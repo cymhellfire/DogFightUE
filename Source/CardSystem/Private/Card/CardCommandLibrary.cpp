@@ -2,7 +2,6 @@
 
 #include "CardSystem.h"
 #include "Card/CardCommand.h"
-#include "GameService/CardGameService.h"
 
 
 template <typename T>

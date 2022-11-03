@@ -13,7 +13,6 @@ public class CardSystem : ModuleRules
 			new []
 			{
 				"Core",
-				"UnLua",
 				"AttributeSystem",
 			}
 		);

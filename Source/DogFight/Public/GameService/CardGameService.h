@@ -1,13 +1,12 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "UnLuaInterface.h"
+#include "LuaGameService.h"
 #include "Card/Card.h"
-#include "GameService/GameService.h"
 #include "CardGameService.generated.h"
 
 UCLASS()
-class CARDSYSTEM_API UCardGameService : public UGameService, public IUnLuaInterface
+class DOGFIGHT_API UCardGameService : public ULuaGameService
 {
 	GENERATED_BODY()
 public:
@@ -22,7 +21,7 @@ public:
 
 	virtual FString GetModuleName_Implementation() const override
 	{
-		return TEXT("CardSystem.Services.CardGameService");
+		return TEXT("DogFight.Services.CardGameService");
 	}
 
 protected:

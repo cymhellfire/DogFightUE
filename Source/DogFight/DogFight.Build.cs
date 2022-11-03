@@ -34,13 +34,14 @@ public class DogFight : ModuleRules
 				"Niagara",
 				"ImGui",
 				"InGameScript",
+				"UnLua",
+				"ProjectFramework",
 			}
 		);
 		
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"ProjectFramework",
 				"CardSystem",
 			}
 		);
