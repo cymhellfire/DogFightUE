@@ -172,6 +172,19 @@ void UCard::AddAttributeModifier(UCardModifier* InModifier)
 	AppliedModifiers.Add(InModifier);
 }
 
+void UCard::RemoveAttributeModifier(UCardModifier* InModifier)
+{
+	if (!AppliedModifiers.Contains(InModifier))
+	{
+		return;
+	}
+
+	InModifier->RemoveFromTarget();
+
+	// Remove from list
+	AppliedModifiers.Remove(InModifier);
+}
+
 /**
  * Execution progress can be seperated into two parts:
  * ------------------------------------------------

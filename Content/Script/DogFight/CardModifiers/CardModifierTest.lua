@@ -1,17 +1,15 @@
 require "UnLua"
 
-local UCardModifierTest = Class()
+local UCardModifierTest = Class("DogFight.CardModifiers.CardModifierBase")
 
 function UCardModifierTest:GetModifierCreateArgument()
-    local NewArgument = UE.FModifierCreateArgument()
-    NewArgument.DataType = UE.EAttributeDataType.ADT_Integer
-    NewArgument.OperatorType = UE.EModifierOperatorType.MOT_Multiply
+    local Argument = {
+        ["DataType"] = "Integer",
+        ["OperatorType"] = "Multiply",
+        ["Value"] = 2,
+    }
 
-    return NewArgument
-end
-
-function UCardModifierTest:GetInitialIntegerValue()
-    return 2
+    return self:MakeCreateArgumentByTable(Argument)
 end
 
 return UCardModifierTest

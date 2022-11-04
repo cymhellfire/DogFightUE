@@ -80,6 +80,17 @@ void UCardModifier::ApplyToAttribute(TSharedPtr<FAttributeBase> InAttribute)
 	ModifiedAttribute = InAttribute;
 }
 
+void UCardModifier::RemoveFromTarget()
+{
+	if (!ModifiedAttribute.IsValid())
+	{
+		return;
+	}
+
+	auto PinnedAttribute = ModifiedAttribute.Pin();
+	PinnedAttribute->RemoveModifier(Modifier);
+}
+
 EAttributeDataType UCardModifier::GetDataType() const
 {
 	return Modifier.IsValid() ? Modifier->GetDataType() : ADT_None;

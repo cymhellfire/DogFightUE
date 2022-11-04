@@ -70,6 +70,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Card")
 	void AddAttributeModifier(UCardModifier* InModifier);
 
+	UFUNCTION(BlueprintCallable, Category="Card")
+	void RemoveAttributeModifier(UCardModifier* InModifier);
+
 protected:
 	UPROPERTY(Transient)
 	TArray<UCardModifier*> AppliedModifiers;

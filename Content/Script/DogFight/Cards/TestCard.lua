@@ -19,8 +19,11 @@ function UTestCard:AcquireCardTargetsImplementation()
     -- Create modifier from service
     local ModifierService = _G.GameServices.CardModifierGameService
     if ModifierService ~= nil then
-        local NewModifier = ModifierService:CreateCardModifier("DogFight.CardModifiers.CardModifierTest", self)
-        self:AddAttributeModifier(NewModifier)
+        local Modifier1 = ModifierService:CreateCardModifier("DogFight.CardModifiers.CardModifierTest", self)
+        self:AddAttributeModifier(Modifier1)
+        local Modifier2 = ModifierService:CreateCardModifier("DogFight.CardModifiers.CardModifierTest", self)
+        self:AddAttributeModifier(Modifier2)
+        self:RemoveAttributeModifier(Modifier1)
     end
 
     local NewSettings = UE.FTargetAcquireSettings()

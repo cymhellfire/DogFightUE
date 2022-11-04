@@ -28,6 +28,7 @@ public:
 	float GetInitialFloatValue();
 
 	void ApplyToAttribute(TSharedPtr<FAttributeBase> InAttribute);
+	void RemoveFromTarget();
 
 	EAttributeDataType GetDataType() const;
 
