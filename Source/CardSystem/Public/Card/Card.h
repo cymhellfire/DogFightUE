@@ -37,7 +37,7 @@ public:
 
 	bool AddAttribute(TSharedPtr<FAttributeBase> InAttribute);
 
-	TWeakPtr<FAttributeBase> GetAttribute(FName InName);
+	TSharedPtr<FAttributeBase> GetAttribute(FName InName);
 
 	UFUNCTION(BlueprintCallable, Category="Card")
 	bool RemoveAttribute(FName InName);
@@ -59,6 +59,18 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Card")
 	bool CreateModifierForFloatAttribute(FName InName, float InValue, EModifierOperatorType OpType);
+
+	UFUNCTION(BlueprintCallable, Category="Card")
+	bool AddAttributeTags(FName InName, const TArray<FString>& InTags);
+
+	UFUNCTION(BlueprintCallable, Category="Card")
+	bool RemoveAttributeTags(FName InName, const TArray<FString>& InTags);
+
+	UFUNCTION(BlueprintCallable, Category="Card")
+	bool ClearAttributeTags(FName InName);
+
+	UFUNCTION(BlueprintCallable, Category="Card")
+	bool SetAttributeTags(FName InName, const TArray<FString>& InTags);
 
 protected:
 	TArray<TSharedPtr<FAttributeBase>> GetAttributesByDataType(EAttributeDataType InDataType);

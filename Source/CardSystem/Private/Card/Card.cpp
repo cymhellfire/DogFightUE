@@ -59,7 +59,7 @@ bool UCard::RemoveAttribute(FName InName)
 	return AttributeMap.Remove(InName) == 1;
 }
 
-TWeakPtr<FAttributeBase> UCard::GetAttribute(FName InName)
+TSharedPtr<FAttributeBase> UCard::GetAttribute(FName InName)
 {
 	const auto Result = AttributeMap.Find(InName);
 	return Result ? *Result : nullptr;
@@ -94,9 +94,8 @@ bool UCard::CreateModifierForBoolAttribute(FName InName, bool InValue)
 		return false;
 	}
 
-	auto PinnedAttribute = TargetAttribute.Pin();
 	// Apply modifier
-	PinnedAttribute->AddModifier(NewModifier);
+	TargetAttribute->AddModifier(NewModifier);
 
 	return true;
 }
@@ -115,9 +114,8 @@ bool UCard::CreateModifierForIntegerAttribute(FName InName, int32 InValue, EModi
 		return false;
 	}
 
-	auto PinnedAttribute = TargetAttribute.Pin();
 	// Apply modifier
-	PinnedAttribute->AddModifier(NewModifier);
+	TargetAttribute->AddModifier(NewModifier);
 	return true;
 }
 
@@ -135,9 +133,61 @@ bool UCard::CreateModifierForFloatAttribute(FName InName, float InValue, EModifi
 		return false;
 	}
 
-	auto PinnedAttribute = TargetAttribute.Pin();
 	// Apply modifier
-	PinnedAttribute->AddModifier(NewModifier);
+	TargetAttribute->AddModifier(NewModifier);
+	return true;
+}
+
+bool UCard::AddAttributeTags(FName InName, const TArray<FString>& InTags)
+{
+	auto TargetAttribute = GetAttribute(InName);
+	if (!TargetAttribute.IsValid())
+	{
+		return false;
+	}
+
+	// Add tags
+	TargetAttribute->AddTags(InTags);
+	return true;
+}
+
+bool UCard::RemoveAttributeTags(FName InName, const TArray<FString>& InTags)
+{
+	auto TargetAttribute = GetAttribute(InName);
+	if (!TargetAttribute.IsValid())
+	{
+		return false;
+	}
+
+	// Remove tags
+	TargetAttribute->RemoveTags(InTags);
+	return true;
+}
+
+bool UCard::ClearAttributeTags(FName InName)
+{
+	auto TargetAttribute = GetAttribute(InName);
+	if (!TargetAttribute.IsValid())
+	{
+		return false;
+	}
+
+	// Clear tags
+	TargetAttribute->ClearTags();
+	return true;
+}
+
+bool UCard::SetAttributeTags(FName InName, const TArray<FString>& InTags)
+{
+	auto TargetAttribute = GetAttribute(InName);
+	if (!TargetAttribute.IsValid())
+	{
+		return false;
+	}
+
+	// Set tags
+	TargetAttribute->ClearTags();
+	TargetAttribute->AddTags(InTags);
 	return true;
 }
 

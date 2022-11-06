@@ -22,9 +22,30 @@ public:
 		AttributeTags.Add(InTag);
 	}
 
+	void AddTags(const TArray<FString>& InTags)
+	{
+		for (auto Tag : InTags)
+		{
+			AttributeTags.Add(FName(Tag));
+		}
+	}
+
 	void RemoveTag(FName InTag)
 	{
 		AttributeTags.Remove(InTag);
+	}
+
+	void RemoveTags(const TArray<FString>& InTags)
+	{
+		for (auto Tag : InTags)
+		{
+			AttributeTags.Remove(FName(Tag));
+		}
+	}
+
+	void ClearTags()
+	{
+		AttributeTags.Empty();
 	}
 
 	bool HasTag(FName InTag) const

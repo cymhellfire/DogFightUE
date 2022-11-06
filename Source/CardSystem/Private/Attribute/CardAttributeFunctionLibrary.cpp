@@ -126,7 +126,7 @@ TWeakPtr<TAttributeBase<T>> FCardAttributeFunctionLibrary::GetAttributeFromCard(
 	}
 
 	// Convert to excepted type
-	auto ConvertedAttribute = StaticCastSharedPtr<TAttributeBase<T>>(Attribute.Pin());
+	auto ConvertedAttribute = StaticCastSharedPtr<TAttributeBase<T>>(Attribute);
 	if (ConvertedAttribute.IsValid())
 	{
 		return ConvertedAttribute;

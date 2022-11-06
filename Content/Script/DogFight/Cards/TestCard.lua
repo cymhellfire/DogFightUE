@@ -5,6 +5,11 @@ local TestCard = Class("DogFight.Cards.CardBase")
 function TestCard:AcquireCardTargetsImplementation()
     -- Create attributes
     self:CreateAttributeInteger("Damage", 50)
+    -- Set attribute tags
+    local TagArray = UE.TArray("")
+    TagArray:Add("Tag1")
+    TagArray:Add("Tag2")
+    self:SetAttributeTags("Damage", TagArray)
     -- Create modifier
     self:CreateModifierForIntegerAttribute("Damage", 2, UE.EModifierOperatorType.MOT_Multiply)
     self:CreateModifierForIntegerAttribute("Damage", 5, UE.EModifierOperatorType.MOT_Addition)
