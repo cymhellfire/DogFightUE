@@ -12,7 +12,8 @@ class CARDSYSTEM_API UCardModifier : public UObject
 {
 	GENERATED_BODY()
 public:
-	UFUNCTION(BlueprintCallable, Category="CardModifier")
+	virtual void PostInitProperties() override;
+
 	void Initialize();
 
 	UFUNCTION(BlueprintNativeEvent, Category="CardModifier")

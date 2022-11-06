@@ -3,6 +3,14 @@
 #include "CardSystem.h"
 #include "AttributeSystem/AttributeFunctionLibrary.h"
 
+void UCardModifier::PostInitProperties()
+{
+	UObject::PostInitProperties();
+
+	// Invoke Initialize
+	Initialize();
+}
+
 void UCardModifier::Initialize()
 {
 	// Get modifier create argument from script

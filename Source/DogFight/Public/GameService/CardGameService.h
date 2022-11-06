@@ -14,10 +14,13 @@ public:
 	void UseCard(FString CardName, UObject* Instigator);
 
 	UFUNCTION(BlueprintImplementableEvent)
-	UCard* SpawnAndBindCard(UClass* Class, const FString& ScriptPath, UObject* Instigator);
+	UCard* CreateCard(const FString& ScriptPath, UObject* Instigator);
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void DestroyCard(UCard* InCard);
+
+	UFUNCTION(BlueprintCallable)
+	UClass* GetDefaultCardClass() const;
 
 	virtual FString GetModuleName_Implementation() const override
 	{
@@ -28,7 +31,4 @@ protected:
 
 	UFUNCTION()
 	void OnCardFinished(ECardExecutionResult Result, UCard* Card);
-
-protected:
-	TWeakObjectPtr<UClass> CardBlueprintClass; 
 };

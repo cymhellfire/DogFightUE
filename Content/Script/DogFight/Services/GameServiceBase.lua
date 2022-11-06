@@ -1,4 +1,5 @@
 require "UnLua"
+require "Common.StringHelper"
 
 local GameServiceBase = Class()
 
@@ -26,6 +27,19 @@ function GameServiceBase:ShutdownScript(ServiceName)
     if _G.GameServices ~= nil and _G.GameServices[ServiceName] == self then
         _G.GameServices[ServiceName] = nil
     end
+end
+
+---Validate script path with specified base path.
+function GameServiceBase:ValidateScriptPath(InPath)
+    if string.startWith(InPath, self:GetScriptBasePath()) then
+        return InPath
+    end
+
+    return self:GetScriptBasePath() .. InPath
+end
+
+function GameServiceBase:GetScriptBasePath()
+    return "DogFight."
 end
 
 return GameServiceBase

@@ -14,22 +14,12 @@ function CardModifierGameService:CreateCardModifier(Path, Instigator)
         return nil
     end
 
+    -- Create modifier and bind script
     local NewModifier = NewObject(DefaultClass, Instigator, nil, self:ValidateScriptPath(Path))
-    -- Initialize new modifier instance
-    NewModifier:Initialize()
     return NewModifier
 end
 
----Validate script path with given prefix.
-function CardModifierGameService:ValidateScriptPath(InPath)
-    if string.startWith(InPath, self:GetModifierBasePath()) then
-        return InPath
-    end
-
-    return self:GetModifierBasePath() .. InPath
-end
-
-function CardModifierGameService:GetModifierBasePath()
+function CardModifierGameService:GetScriptBasePath()
     return "DogFight.CardModifiers."
 end
 
