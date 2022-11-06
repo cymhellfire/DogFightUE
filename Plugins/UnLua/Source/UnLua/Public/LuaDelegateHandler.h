@@ -20,12 +20,14 @@
 
 namespace UnLua
 {
-    class FLuaEnv;
+    class FDelegateRegistry;
 }
 
 UCLASS()
 class UNLUA_API ULuaDelegateHandler : public UObject
 {
+    friend UnLua::FDelegateRegistry;
+
     GENERATED_BODY()
 
 public:
@@ -38,17 +40,19 @@ public:
 
     void AddTo(FMulticastDelegateProperty* InProperty, void* InDelegate);
 
+    virtual UWorld* GetWorld() const override;
+
     virtual void ProcessEvent(UFunction* Function, void* Parms) override;
 
     void RemoveFrom(FMulticastDelegateProperty* InProperty, void* InDelegate);
 
     virtual void BeginDestroy() override;
 
-    static ULuaDelegateHandler* CreateFrom(UnLua::FLuaEnv* InEnv, int32 InLuaRef, UObject* InOwner, UObject* InSelfObject);
+    void Reset();
 
-    TWeakObjectPtr<UObject> Owner;
+private:
     TWeakObjectPtr<UObject> SelfObject;
-    TWeakPtr<UnLua::FLuaEnv> Env;
+    UnLua::FDelegateRegistry* Registry;
     int32 LuaRef;
     void* Delegate;
 };

@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and limitations under the License.
 
 
+#include "Engine/BlueprintGeneratedClass.h"
 #include "LuaFunction.h"
 #include "UnLuaModule.h"
 #include "ReflectionUtils/PropertyDesc.h"
@@ -91,7 +92,7 @@ bool ULuaFunction::Override(UFunction* Function, UClass* Outer, FName NewName)
     DuplicationParams.DestClass = StaticClass();
     LuaFunction = static_cast<ULuaFunction*>(StaticDuplicateObjectEx(DuplicationParams));
     LuaFunction->FunctionFlags |= FUNC_Native;
-    LuaFunction->Overridden = Function;
+    LuaFunction->Overridden = Function->IsA<ULuaFunction>() ? static_cast<ULuaFunction*>(Function)->GetOverridden() : Function;
     LuaFunction->ClearInternalFlags(EInternalObjectFlags::Native);
     LuaFunction->SetNativeFunc(execCallLua);
 
@@ -108,16 +109,13 @@ bool ULuaFunction::Override(UFunction* Function, UClass* Outer, FName NewName)
 
     Outer->AddFunctionToFunctionMap(LuaFunction, NewName);
 
+    LuaFunction->Next = Outer->Children;
+    Outer->Children = LuaFunction;
+
     if (Outer->IsRooted() || GUObjectArray.IsDisregardForGC(Outer))
-    {
         LuaFunction->AddToRoot();
-    }
     else
-    {
-        LuaFunction->Next = Outer->Children;
-        Outer->Children = LuaFunction;
         LuaFunction->AddToCluster(Outer);
-    }
 
     return true;
 }
@@ -145,6 +143,10 @@ void ULuaFunction::RestoreOverrides(UClass* Class)
             FLinkerLoad::InvalidateExport(LuaFunction);
             Overridden->Rename(*Overridden->GetName().LeftChop(OverriddenSuffix.Length()), nullptr, RenameFlags);
             Class->AddFunctionToFunctionMap(Overridden, Overridden->GetFName());
+        }
+        else
+        {
+            Class->RemoveFunctionFromFunctionMap(LuaFunction);
         }
     }
     Class->ClearFunctionMapsCaches();

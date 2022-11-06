@@ -22,16 +22,16 @@
 #include "Registries/ContainerRegistry.h"
 #include "Registries/EnumRegistry.h"
 #include "UnLuaManager.h"
-#include "lua.h"
+#include "lua.hpp"
 #include "ObjectReferencer.h"
 #include "HAL/Platform.h"
 #include "LuaDeadLoopCheck.h"
+#include "LuaModuleLocator.h"
 
 namespace UnLua
 {
     class UNLUA_API FLuaEnv
-        : public FUObjectArray::FUObjectDeleteListener,
-          public TSharedFromThis<FLuaEnv>
+        : public FUObjectArray::FUObjectDeleteListener
     {
         friend FClassRegistry;
         friend FDelegateRegistry;
@@ -40,7 +40,7 @@ namespace UnLua
     public:
         DECLARE_MULTICAST_DELEGATE_OneParam(FOnCreated, FLuaEnv&);
 
-        DECLARE_DELEGATE_RetVal_ThreeParams(bool, FLuaFileLoader, const FString& /* FilePath */, TArray<uint8>&/* Data */, FString&/* RealFilePath */);
+        DECLARE_DELEGATE_RetVal_FourParams(bool, FLuaFileLoader, const FLuaEnv& /* Env */, const FString& /* FilePath */, TArray<uint8>&/* Data */, FString&/* RealFilePath */);
 
         static FOnCreated OnCreated;
 
@@ -48,9 +48,15 @@ namespace UnLua
 
         virtual ~FLuaEnv() override;
 
+        static TMap<lua_State*, FLuaEnv*>& GetAll();
+
         static FLuaEnv* FindEnv(const lua_State* L);
 
         static FLuaEnv& FindEnvChecked(const lua_State* L);
+
+        void Start(const TMap<FString, UObject*>& Args = {});
+
+        void Start(const FString& StartupModuleName, const TMap<FString, UObject*>& Args);
 
         const FString& GetName();
 
@@ -65,18 +71,6 @@ namespace UnLua
         virtual bool TryReplaceInputs(UObject* Object);
 
         bool DoString(const FString& Chunk, const FString& ChunkName = "chunk");
-
-        bool LoadString(const TArray<uint8>& Chunk, const FString& ChunkName = "chunk")
-        {
-            const char* Bytes = (char*)Chunk.GetData();
-            return LoadBuffer(Bytes, Chunk.Num(), TCHAR_TO_UTF8(*ChunkName));
-        }
-
-        bool LoadString(const FString& Chunk, const FString& ChunkName = "chunk")
-        {
-            const FTCHARToUTF8 Bytes(*Chunk);
-            return LoadBuffer(Bytes.Get(), Bytes.Length(), TCHAR_TO_UTF8(*ChunkName));
-        }
 
         virtual void GC();
 
@@ -94,23 +88,27 @@ namespace UnLua
 
         UUnLuaManager* GetManager();
 
-        FORCEINLINE TSharedPtr<FClassRegistry> GetClassRegistry() const { return ClassRegistry; }
+        FORCEINLINE FClassRegistry* GetClassRegistry() const { return ClassRegistry; }
 
-        FORCEINLINE TSharedPtr<FObjectRegistry> GetObjectRegistry() const { return ObjectRegistry; }
+        FORCEINLINE FObjectRegistry* GetObjectRegistry() const { return ObjectRegistry; }
 
-        FORCEINLINE TSharedPtr<FDelegateRegistry> GetDelegateRegistry() const { return DelegateRegistry; }
+        FORCEINLINE FDelegateRegistry* GetDelegateRegistry() const { return DelegateRegistry; }
 
-        FORCEINLINE TSharedPtr<FFunctionRegistry> GetFunctionRegistry() const { return FunctionRegistry; }
+        FORCEINLINE FFunctionRegistry* GetFunctionRegistry() const { return FunctionRegistry; }
 
-        FORCEINLINE TSharedPtr<FContainerRegistry> GetContainerRegistry() const { return ContainerRegistry; }
+        FORCEINLINE FContainerRegistry* GetContainerRegistry() const { return ContainerRegistry; }
 
-        FORCEINLINE TSharedPtr<FEnumRegistry> GetEnumRegistry() const { return EnumRegistry; }
+        FORCEINLINE FEnumRegistry* GetEnumRegistry() const { return EnumRegistry; }
 
-        FORCEINLINE TSharedPtr<FDeadLoopCheck> GetDeadLoopCheck() const { return DeadLoopCheck; }
+        FORCEINLINE FDeadLoopCheck* GetDeadLoopCheck() const { return DeadLoopCheck; }
 
         void AddLoader(const FLuaFileLoader Loader);
 
         void AddBuiltInLoader(const FString InName, lua_CFunction Loader);
+
+        void AddManualObjectReference(UObject* Object);
+
+        void RemoveManualObjectReference(UObject* Object);
 
     protected:
         lua_State* L;
@@ -124,6 +122,18 @@ namespace UnLua
         static void* DefaultLuaAllocator(void* ud, void* ptr, size_t osize, size_t nsize);
 
         virtual lua_Alloc GetLuaAllocator() const;
+
+        bool LoadString(const TArray<uint8>& Chunk, const FString& ChunkName = "chunk")
+        {
+            const char* Bytes = (char*)Chunk.GetData();
+            return LoadBuffer(Bytes, Chunk.Num(), TCHAR_TO_UTF8(*ChunkName));
+        }
+
+        bool LoadString(const FString& Chunk, const FString& ChunkName = "chunk")
+        {
+            const FTCHARToUTF8 Bytes(*Chunk);
+            return LoadBuffer(Bytes.Get(), Bytes.Length(), TCHAR_TO_UTF8(*ChunkName));
+        }
 
     private:
         void AddSearcher(lua_CFunction Searcher, int Index) const;
@@ -142,17 +152,18 @@ namespace UnLua
         TMap<FString, lua_CFunction> BuiltinLoaders;
         TArray<FLuaFileLoader> CustomLoaders;
         TArray<FWeakObjectPtr> Candidates; // binding candidates during async loading
+        ULuaModuleLocator* ModuleLocator;
         FCriticalSection CandidatesLock;
         FObjectReferencer AutoObjectReference;
         FObjectReferencer ManualObjectReference;
         UUnLuaManager* Manager = nullptr;
-        TSharedPtr<FClassRegistry> ClassRegistry;
-        TSharedPtr<FObjectRegistry> ObjectRegistry;
-        TSharedPtr<FDelegateRegistry> DelegateRegistry;
-        TSharedPtr<FFunctionRegistry> FunctionRegistry;
-        TSharedPtr<FContainerRegistry> ContainerRegistry;
-        TSharedPtr<FEnumRegistry> EnumRegistry;
-        TSharedPtr<FDeadLoopCheck> DeadLoopCheck;
+        FClassRegistry* ClassRegistry;
+        FObjectRegistry* ObjectRegistry;
+        FDelegateRegistry* DelegateRegistry;
+        FFunctionRegistry* FunctionRegistry;
+        FContainerRegistry* ContainerRegistry;
+        FEnumRegistry* EnumRegistry;
+        FDeadLoopCheck* DeadLoopCheck;
         TMap<lua_State*, int32> ThreadToRef;
         TMap<int32, lua_State*> RefToThread;
         FDelegateHandle OnAsyncLoadingFlushUpdateHandle;
@@ -160,5 +171,6 @@ namespace UnLua
         FDelegateHandle OnWorldTickStartHandle;
         FString Name = TEXT("Env_0");
         bool bObjectArrayListenerRegistered;
+        bool bStarted;
     };
 }

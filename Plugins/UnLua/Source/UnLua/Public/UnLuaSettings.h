@@ -16,6 +16,7 @@
 
 #include "CoreMinimal.h"
 #include "LuaEnvLocator.h"
+#include "LuaModuleLocator.h"
 #include "UnLuaSettings.generated.h"
 
 
@@ -27,6 +28,10 @@ class UNLUA_API UUnLuaSettings : public UObject
 public:
     UUnLuaSettings(const FObjectInitializer& ObjectInitializer);
 
+    /** Entry module name of lua env. Leave it empty to skip execution on startup. */
+    UPROPERTY(Config, EditAnywhere, Category="Runtime")
+    FString StartupModuleName = TEXT("");
+
     /** Prevent from infinite loops in lua. Timeout in seconds. */
     UPROPERTY(Config, EditAnywhere, Category="Runtime")
     int32 DeadLoopCheck = 0;
@@ -34,4 +39,11 @@ public:
     /** Class of LuaEnvLocator, which handles lua env locating for each UObject. */
     UPROPERTY(Config, EditAnywhere, Category="Runtime", Meta=(AllowAbstract="false"))
     TSubclassOf<ULuaEnvLocator> EnvLocatorClass = ULuaEnvLocator::StaticClass();
+
+    UPROPERTY(Config, EditAnywhere, Category=Runtime, Meta=(AllowAbstract="false", DisplayName="LuaModuleLocator"))
+    TSubclassOf<ULuaModuleLocator> ModuleLocatorClass = ULuaModuleLocator::StaticClass();
+
+    /** List of classes to bind on startup. */
+    UPROPERTY(config, EditAnywhere, Category=Runtime, meta = (MetaClass="Object", AllowAbstract="True", DisplayName = "List of classes to bind on startup"))
+    TArray<FSoftClassPath> PreBindClasses;
 };

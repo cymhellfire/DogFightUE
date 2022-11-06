@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include "lua.h"
+#include "lua.hpp"
 
 namespace UnLua
 {
@@ -22,7 +22,7 @@ namespace UnLua
     {
         const static UObject* ReleasedPtr = (UObject*)0xDEAD;
 
-        bool IsReleasedPtr(const void* Ptr);
+        FORCEINLINE bool IsReleasedPtr(const void* Ptr) { return Ptr == ReleasedPtr; }
 
         /**
          * Create weak key table
@@ -37,5 +37,11 @@ namespace UnLua
         FString GetMetatableName(const UObject* Object);
 
         FString GetMetatableName(const UStruct* Struct);
+
+        /* 从指定的LuaTable及其Super中找到所有Lua方法名 */
+        void GetFunctionNames(lua_State* L, int TableRef, TSet<FName>& FunctionNames);
+
+        /* Get package.loaded[ModuleName] */
+        int GetLoadedModule(lua_State* L, const char *ModuleName);
     }
 }

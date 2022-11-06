@@ -15,7 +15,8 @@
 #pragma once
 
 #include "InputCoreTypes.h"
-#include "lauxlib.h"
+#include "Engine/DynamicBlueprintBinding.h"
+#include "lua.hpp"
 #include "UnLuaCompatibility.h"
 #include "UnLuaManager.generated.h"
 
@@ -37,13 +38,11 @@ public:
 
     bool Bind(UObject *Object, const TCHAR *InModuleName, int32 InitializerTableRef = LUA_NOREF);
 
-    void OnWorldCleanup(UWorld* World, bool bArg, bool bCond);
-    
     void NotifyUObjectDeleted(const UObjectBase *Object);
 
     void Cleanup();
 
-    void CleanUpByClass(UClass *Class);
+    int GetBoundRef(const UClass* Class);
 
     void GetDefaultInputs();
 
@@ -52,6 +51,12 @@ public:
     bool ReplaceInputs(AActor *Actor, class UInputComponent *InputComponent);
 
     void OnMapLoaded(UWorld *World);
+
+    UFUNCTION(BlueprintCallable)
+    UDynamicBlueprintBinding* GetOrAddBindingObject(UClass* Class, UClass* BindingClass);
+
+    UFUNCTION(BlueprintCallable)
+    void Override(UClass* Class, FName FunctionName, FName LuaFunctionName);
 
     UFUNCTION()
     void OnLatentActionCompleted(int32 LinkID);
@@ -75,12 +80,8 @@ public:
     void TriggerAnimNotify();
 
 private:
-    UClass* GetTargetClass(UClass *Class, UFunction **GetModuleNameFunc = nullptr);
-
-    bool BindInternal(UClass *Class, const FString &InModuleName, bool bMultipleLuaBind, FString &Error);
-    bool ConditionalUpdateClass(UClass *Class, const TSet<FName> &LuaFunctions, TMap<FName, UFunction*> &UEFunctions);
-
-    void OverrideFunctions(const TSet<FName> &LuaFunctions, TMap<FName, UFunction*> &UEFunctions, UClass *OuterClass);
+    /* 将一个UClass绑定到Lua模块，根据这个模块定义的函数列表来覆盖上面的UFunction */
+    bool BindClass(UClass *Class, const FString &InModuleName, FString &Error);
 
     void ReplaceActionInputs(AActor *Actor, UInputComponent *InputComponent, TSet<FName> &LuaFunctions);
     void ReplaceKeyInputs(AActor *Actor, UInputComponent *InputComponent, TSet<FName> &LuaFunctions);
@@ -90,10 +91,16 @@ private:
     void ReplaceVectorAxisInputs(AActor *Actor, UInputComponent *InputComponent, TSet<FName> &LuaFunctions);
     void ReplaceGestureInputs(AActor *Actor, UInputComponent *InputComponent, TSet<FName> &LuaFunctions);
 
-    TMap<UClass*, FString> ModuleNames;
-    TMap<FString, int16> RealModuleNames;
-    TMap<FString, UClass*> Classes;
-    TMap<FString, TSet<FName>> ModuleFunctions;
+    struct FClassBindInfo
+    {
+        UClass* Class;
+        FString ModuleName;
+        int TableRef;
+        TSet<FName> LuaFunctions;
+        TMap<FName, UFunction*> UEFunctions;
+    };
+
+    TMap<UClass*, FClassBindInfo> Classes;
 
     TSet<FName> DefaultAxisNames;
     TSet<FName> DefaultActionNames;

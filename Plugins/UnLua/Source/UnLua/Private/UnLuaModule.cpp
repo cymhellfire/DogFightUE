@@ -26,6 +26,7 @@
 #include "Engine/World.h"
 #include "UnLuaModule.h"
 #include "DefaultParamCollection.h"
+#include "GameDelegates.h"
 #include "LuaEnvLocator.h"
 #include "UnLuaDebugBase.h"
 #include "UnLuaInterface.h"
@@ -58,17 +59,16 @@ namespace UnLua
 
             CreateDefaultParamCollection();
 
+#if AUTO_UNLUA_STARTUP
 #if WITH_EDITOR
             if (!IsRunningGame())
             {
                 FEditorDelegates::PreBeginPIE.AddRaw(this, &FUnLuaModule::OnPreBeginPIE);
                 FEditorDelegates::PostPIEStarted.AddRaw(this, &FUnLuaModule::OnPostPIEStarted);
                 FEditorDelegates::EndPIE.AddRaw(this, &FUnLuaModule::OnEndPIE);
+                FGameDelegates::Get().GetEndPlayMapDelegate().AddRaw(this, &FUnLuaModule::OnEndPlayMap);
             }
-#endif
 
-#if AUTO_UNLUA_STARTUP
-#if WITH_EDITOR
             if (IsRunningGame() || IsRunningDedicatedServer())
 #endif
                 SetActive(true);
@@ -102,7 +102,27 @@ namespace UnLua
                 const auto EnvLocatorClass = *Settings.EnvLocatorClass == nullptr ? ULuaEnvLocator::StaticClass() : *Settings.EnvLocatorClass;
                 EnvLocator = NewObject<ULuaEnvLocator>(GetTransientPackage(), EnvLocatorClass);
                 EnvLocator->AddToRoot();
-                FDeadLoopCheck::Timeout = Settings.DeadLoopCheck; 
+                FDeadLoopCheck::Timeout = Settings.DeadLoopCheck;
+
+                for (const auto Class : TObjectRange<UClass>())
+                {
+                    for (const auto& ClassPath : Settings.PreBindClasses)
+                    {
+                        if (!ClassPath.IsValid())
+                            continue;
+
+                        const auto TargetClass = ClassPath.ResolveClass();
+                        if (!TargetClass)
+                            continue;
+
+                        if (Class->IsChildOf(TargetClass))
+                        {
+                            const auto Env = EnvLocator->Locate(Class);
+                            Env->TryBind(Class);
+                            break;
+                        }
+                    }
+                }
             }
             else
             {
@@ -127,7 +147,7 @@ namespace UnLua
             bIsActive = bActive;
         }
 
-        virtual TSharedPtr<FLuaEnv> GetEnv(UObject* Object) override
+        virtual FLuaEnv* GetEnv(UObject* Object) override
         {
             if (!bIsActive)
                 return nullptr;
@@ -199,6 +219,11 @@ namespace UnLua
 
         void OnEndPIE(bool bIsSimulating)
         {
+            // SetActive(false);
+        }
+
+        void OnEndPlayMap()
+        {
             SetActive(false);
         }
 
@@ -216,6 +241,13 @@ namespace UnLua
                                                                   LOCTEXT("UnLuaEditorSettingsDescription", "UnLua Runtime Settings"),
                                                                   GetMutableDefault<UUnLuaSettings>());
             Section->OnModified().BindRaw(this, &FUnLuaModule::OnSettingsModified);
+#endif
+
+#if ENGINE_MAJOR_VERSION >=5 && !WITH_EDITOR
+            // UE5下打包后没有从{PROJECT}/Config/DefaultUnLua.ini加载，这里强制刷新一下
+            FString UnLuaIni = TEXT("UnLua");
+            GConfig->LoadGlobalIniFile(UnLuaIni, *UnLuaIni, nullptr, true);
+            UUnLuaSettings::StaticClass()->GetDefaultObject()->ReloadConfig();
 #endif
         }
 

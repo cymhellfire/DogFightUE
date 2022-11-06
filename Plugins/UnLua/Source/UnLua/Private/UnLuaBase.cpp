@@ -61,6 +61,35 @@ namespace UnLua
     }
 
     /**
+     * Load a Lua file without running it
+     */
+    bool LoadFile(lua_State *L, const FString &RelativeFilePath, const char *Mode, int32 Env)
+    {
+        FString FullFilePath = GetFullPathFromRelativePath(RelativeFilePath);
+        if (FullFilePath.IsEmpty())
+        {
+            UE_LOG(LogUnLua, Warning, TEXT("the lua file try to load does not exist! : %s"), *RelativeFilePath);
+            return false;
+        }
+
+        if (FullFilePath != GLuaSrcFullPath + RelativeFilePath)
+        {
+            UE_LOG(LogUnLua, Log, TEXT("Load lua file from DownloadDir : %s"), *FullFilePath);
+        }
+
+        TArray<uint8> Data;
+        bool bSuccess = FFileHelper::LoadFileToArray(Data, *FullFilePath, 0);
+        if (!bSuccess)
+        {
+            UE_LOG(LogUnLua, Warning, TEXT("%s: Failed to load lua file!"), ANSI_TO_TCHAR(__FUNCTION__));
+            return false;
+        }
+
+        int32 SkipLen = (3 < Data.Num()) && (0xEF == Data[0]) && (0xBB == Data[1]) && (0xBF == Data[2]) ? 3 : 0;        // skip UTF-8 BOM mark
+        return LoadChunk(L, (const char*)(Data.GetData() + SkipLen), Data.Num() - SkipLen, TCHAR_TO_UTF8(*RelativeFilePath), Mode, Env);    // loads the buffer as a Lua chunk
+    }
+
+    /**
      * Load a Lua chunk without running it
      */
     bool LoadChunk(lua_State *L, const char *Chunk, int32 ChunkSize, const char *ChunkName, const char *Mode, int32 Env)
@@ -278,14 +307,9 @@ namespace UnLua
     UObject* GetUObject(lua_State *L, int32 Index, bool bReturnNullIfInvalid)
     {
         UObject* Object = (UObject*)GetCppInstance(L, Index);
-        if (bReturnNullIfInvalid && !IsUObjectValid(Object))
-        {
+        if (UNLIKELY(bReturnNullIfInvalid && !IsUObjectValid(Object)))
             return nullptr;
-        }
-        else
-        {
-            return Object;
-        }
+        return Object;
     }
 
     /**
@@ -337,8 +361,15 @@ namespace UnLua
 
             const auto LuaArray = Registry->NewArray(L, TypeInterface, FLuaArray::OwnedBySelf);
             FScriptArray *DestScriptArray = LuaArray->GetContainerPtr();       // create a new FScriptArray
+
+#if ENGINE_MAJOR_VERSION >=5
+            DestScriptArray->Empty(Num, ElementSize, __STDCPP_DEFAULT_NEW_ALIGNMENT__);
+            DestScriptArray->Add(Num, ElementSize, __STDCPP_DEFAULT_NEW_ALIGNMENT__);
+#else
             DestScriptArray->Empty(Num, ElementSize);
             DestScriptArray->Add(Num, ElementSize);
+#endif
+
             if (Num)
             {
                 uint8 *SrcData = (uint8*)ScriptArray->GetData();

@@ -39,13 +39,15 @@ private:
 
     static bool IsBlueprint(const FAssetData& AssetData);
 
-    static bool ShouldExport(const FAssetData& AssetData);
+    static bool ShouldExport(const FAssetData& AssetData, bool bLoad = false);
 
     void Export(const UBlueprint* Blueprint);
 
     void Export(const UField* Field);
 
     void ExportUE(const TArray<const UField*> Types);
+
+    void ExportUnLua();
 
     void CollectTypes(TArray<const UField*> &Types);
     

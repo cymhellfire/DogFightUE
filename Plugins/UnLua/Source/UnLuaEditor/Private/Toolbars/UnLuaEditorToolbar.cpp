@@ -8,6 +8,7 @@
 #include "HAL/PlatformApplicationMisc.h"
 #include "Interfaces/IPluginManager.h"
 #include "BlueprintEditor.h"
+#include "LuaModuleLocator.h"
 #include "SBlueprintEditorToolbar.h"
 #include "Framework/Docking/SDockingTabWell.h"
 #include "Framework/Notifications/NotificationManager.h"
@@ -15,6 +16,9 @@
 #include "Layout/Children.h"
 #include "Widgets/Notifications/SNotificationList.h"
 #include "ToolMenus.h"
+#include "UnLuaSettings.h"
+#include "UnLuaIntelliSense.h"
+#include "Animation/AnimNotifies/AnimNotifyState.h"
 
 #define LOCTEXT_NAMESPACE "FUnLuaEditorModule"
 
@@ -147,12 +151,26 @@ void FUnLuaEditorToolbar::BindToLua_Executed() const
     if (!Ok)
         return;
 
+    FString LuaModuleName;
     const auto ModifierKeys = FSlateApplication::Get().GetModifierKeys();
     const auto bIsAltDown = ModifierKeys.IsLeftAltDown() || ModifierKeys.IsRightAltDown();
     if (bIsAltDown)
     {
         const auto Package = Blueprint->GetTypedOuter(UPackage::StaticClass());
-        const auto LuaModuleName = Package->GetName().RightChop(6).Replace(TEXT("/"), TEXT("."));
+        LuaModuleName = Package->GetName().RightChop(6).Replace(TEXT("/"), TEXT("."));
+    }
+    else
+    {
+        const auto Settings = GetDefault<UUnLuaSettings>();
+        if (Settings && Settings->ModuleLocatorClass)
+        {
+            const auto ModuleLocator = Cast<ULuaModuleLocator>(Settings->ModuleLocatorClass->GetDefaultObject());
+            LuaModuleName = ModuleLocator->Locate(TargetClass);
+        }
+    }
+
+    if (!LuaModuleName.IsEmpty())
+    {
         const auto InterfaceDesc = *Blueprint->ImplementedInterfaces.FindByPredicate([](const FBPInterfaceDescription& Desc)
         {
             return Desc.Interface == UUnLuaInterface::StaticClass();
@@ -240,7 +258,7 @@ void FUnLuaEditorToolbar::CreateLuaTemplate_Executed()
         return;
 
     FString ModuleName;
-    Class->ProcessEvent(Func, &ModuleName);
+    Class->GetDefaultObject()->ProcessEvent(Func, &ModuleName);
 
     if (ModuleName.IsEmpty())
     {
@@ -252,46 +270,37 @@ void FUnLuaEditorToolbar::CreateLuaTemplate_Executed()
 
     TArray<FString> ModuleNameParts;
     ModuleName.ParseIntoArray(ModuleNameParts, TEXT("."));
-    const auto ClassName = ModuleNameParts.Last();
+    const auto TemplateName = ModuleNameParts.Last();
 
     const auto RelativePath = ModuleName.Replace(TEXT("."), TEXT("/"));
     const auto FileName = FString::Printf(TEXT("%s%s.lua"), *GLuaSrcFullPath, *RelativePath);
 
     if (FPaths::FileExists(FileName))
     {
-        UE_LOG(LogUnLua, Warning, TEXT("%s"), *FText::Format(LOCTEXT("FileAlreadyExists", "Lua file ({0}) is already existed!"), FText::FromString(ClassName)).ToString());
+        UE_LOG(LogUnLua, Warning, TEXT("%s"), *FText::Format(LOCTEXT("FileAlreadyExists", "Lua file ({0}) is already existed!"), FText::FromString(TemplateName)).ToString());
         return;
     }
 
-    static FString ContentDir = IPluginManager::Get().FindPlugin(TEXT("UnLua"))->GetContentDir();
+    static FString BaseDir = IPluginManager::Get().FindPlugin(TEXT("UnLua"))->GetBaseDir();
+    for (auto TemplateClass = Class; TemplateClass; TemplateClass = TemplateClass->GetSuperClass())
+    {
+        auto TemplateClassName = TemplateClass->GetName().EndsWith("_C") ? TemplateClass->GetName().LeftChop(2) : TemplateClass->GetName();
+        auto RelativeFilePath = "Config/LuaTemplates" / TemplateClassName + ".lua";
+        auto FullFilePath = FPaths::ProjectConfigDir() / RelativeFilePath;
+        if (!FPaths::FileExists(FullFilePath))
+            FullFilePath = BaseDir / RelativeFilePath;
 
-    FString TemplateName;
-    if (Class->IsChildOf(AActor::StaticClass()))
-    {
-        // default BlueprintEvents for Actor
-        TemplateName = ContentDir + TEXT("/ActorTemplate.lua");
-    }
-    else if (Class->IsChildOf(UUserWidget::StaticClass()))
-    {
-        // default BlueprintEvents for UserWidget (UMG)
-        TemplateName = ContentDir + TEXT("/UserWidgetTemplate.lua");
-    }
-    else if (Class->IsChildOf(UAnimInstance::StaticClass()))
-    {
-        // default BlueprintEvents for AnimInstance (animation blueprint)
-        TemplateName = ContentDir + TEXT("/AnimInstanceTemplate.lua");
-    }
-    else if (Class->IsChildOf(UActorComponent::StaticClass()))
-    {
-        // default BlueprintEvents for ActorComponent
-        TemplateName = ContentDir + TEXT("/ActorComponentTemplate.lua");
-    }
+        if (!FPaths::FileExists(FullFilePath))
+            continue;
 
-    FString Content;
-    FFileHelper::LoadFileToString(Content, *TemplateName);
-    Content = Content.Replace(TEXT("TemplateName"), *ClassName);
+        FString Content;
+        FFileHelper::LoadFileToString(Content, *FullFilePath);
+        Content = Content.Replace(TEXT("TemplateName"), *TemplateName)
+                         .Replace(TEXT("ClassName"), *UnLua::IntelliSense::GetTypeName(Class));
 
-    FFileHelper::SaveStringToFile(Content, *FileName, FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM);
+        FFileHelper::SaveStringToFile(Content, *FileName, FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM);
+        break;
+    }
 }
 
 void FUnLuaEditorToolbar::RevealInExplorer_Executed()

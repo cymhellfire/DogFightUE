@@ -14,37 +14,36 @@
 
 #pragma once
 
-#include "lua.h"
+#include "lua.hpp"
 #include "LuaDelegateHandler.h"
 #include "ReflectionUtils/FunctionDesc.h"
 
-struct FLuaFunction2
+struct FLuaDelegatePair
 {
-	FLuaFunction2(TWeakObjectPtr<UObject> InSelfObject, const void* InLuaFunction)
-		: SelfObject(InSelfObject)
-		, LuaFunction(InLuaFunction)
-	{
+    FLuaDelegatePair(TWeakObjectPtr<UObject> InSelfObject, const void* InLuaFunction)
+        : SelfObject(InSelfObject)
+          , LuaFunction(InLuaFunction)
+    {
+    }
 
-	}
+    TWeakObjectPtr<UObject> SelfObject;
 
-	TWeakObjectPtr<UObject> SelfObject;
+    const void* LuaFunction;
 
-	const void* LuaFunction;
+    friend inline bool operator==(const FLuaDelegatePair& A, const FLuaDelegatePair& B)
+    {
+        return A.LuaFunction == B.LuaFunction && A.SelfObject == B.SelfObject;
+    }
 
-	friend inline bool operator==(const FLuaFunction2& A, const FLuaFunction2& B)
-	{
-		return A.LuaFunction == B.LuaFunction && A.SelfObject == B.SelfObject;
-	}
+    friend inline uint32 GetTypeHash(const FLuaDelegatePair& Key)
+    {
+        uint32 Hash = 0;
 
-	friend inline uint32 GetTypeHash(const FLuaFunction2& Key)
-	{
-		uint32 Hash = 0;
+        Hash = HashCombine(Hash, GetTypeHash(Key.SelfObject));
+        Hash = HashCombine(Hash, GetTypeHash(Key.LuaFunction));
 
-		Hash = HashCombine(Hash, GetTypeHash(Key.SelfObject));
-		Hash = HashCombine(Hash, GetTypeHash(Key.LuaFunction));
-
-		return Hash;
-	}
+        return Hash;
+    }
 };
 
 namespace UnLua
@@ -78,10 +77,12 @@ namespace UnLua
 
         void Clear(void* Delegate);
 
-        void NotifyHandlerBeginDestroy(const ULuaDelegateHandler* Handler);
+        void NotifyHandlerBeginDestroy(ULuaDelegateHandler* Handler);
 
     private:
         TSharedPtr<FFunctionDesc> GetSignatureDesc(const void* Delegate);
+
+        ULuaDelegateHandler* CreateHandler(int LuaRef, UObject* Owner, UObject* SelfObject);
 
         struct FDelegateInfo
         {
@@ -95,11 +96,12 @@ namespace UnLua
             UFunction* SignatureFunction;
             TSharedPtr<FFunctionDesc> Desc;
             TWeakObjectPtr<UObject> Owner;
-            TMap<FLuaFunction2, TWeakObjectPtr<ULuaDelegateHandler>> LuaFunction2Handler;
+            TSet<TWeakObjectPtr<ULuaDelegateHandler>> Handlers;
             bool bIsMulticast;
         };
 
         TMap<void*, FDelegateInfo> Delegates;
+        TMap<FLuaDelegatePair, TWeakObjectPtr<ULuaDelegateHandler>> CachedHandlers;
         FLuaEnv* Env;
         FDelegateHandle PostGarbageCollectHandle;
     };

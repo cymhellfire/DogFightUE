@@ -33,7 +33,7 @@ namespace UnLua
     {
     }
 
-    TSharedPtr<FClassRegistry> FClassRegistry::Find(const lua_State* L)
+    FClassRegistry* FClassRegistry::Find(const lua_State* L)
     {
         const auto Env = FLuaEnv::FindEnv(L);
         if (Env == nullptr)
@@ -121,7 +121,18 @@ namespace UnLua
     {
         int Type = luaL_getmetatable(L, MetatableName);
         if (Type == LUA_TTABLE)
-            return true;
+        {
+            FClassDesc* Ret = Find(MetatableName);
+            if (Ret && Ret->IsClass() && !Ret->IsStructValid())
+            {
+                // unregister invalid metatable
+                Unregister(Ret);
+            }
+            else
+            {
+                return true;
+            }
+        }
         lua_pop(L, 1);
 
         if (FindExportedNonReflectedClass(MetatableName))
@@ -148,6 +159,10 @@ namespace UnLua
         UScriptStruct* ScriptStruct = ClassDesc->AsScriptStruct();
         if (ScriptStruct)
         {
+            lua_pushstring(L, "ClassDesc");
+            lua_pushlightuserdata(L, ClassDesc);
+            lua_rawset(L, -3);
+
             lua_pushlightuserdata(L, ClassDesc);
 
             lua_pushstring(L, "Copy");
@@ -295,6 +310,10 @@ namespace UnLua
 
     void FClassRegistry::Unregister(const FClassDesc* ClassDesc)
     {
+        if (ClassDesc->IsStructValid())
+        {
+            return;
+        }
         const auto L = Env->GetMainState();
         const auto MetatableName = ClassDesc->GetName();
         lua_pushnil(L);

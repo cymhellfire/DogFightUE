@@ -12,7 +12,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
 // See the License for the specific language governing permissions and limitations under the License.
 
-#include "Engine/World.h"
 #include "LuaDelegateHandler.h"
 #include "LuaEnv.h"
 
@@ -21,7 +20,7 @@ static const FName NAME_Dummy = TEXT("Dummy");
 ULuaDelegateHandler::ULuaDelegateHandler()
 {
     LuaRef = LUA_NOREF;
-    Env.Reset();
+    Registry = nullptr;
     Delegate = nullptr;
 }
 
@@ -43,6 +42,13 @@ void ULuaDelegateHandler::AddTo(FMulticastDelegateProperty* InProperty, void* In
     TMulticastDelegateTraits<FMulticastDelegateType>::AddDelegate(InProperty, MoveTemp(DynamicDelegate), nullptr, InDelegate);
 }
 
+UWorld* ULuaDelegateHandler::GetWorld() const
+{
+    if (SelfObject.IsValid())
+        return SelfObject->GetWorld();
+    return UObject::GetWorld();
+}
+
 void ULuaDelegateHandler::RemoveFrom(FMulticastDelegateProperty* InProperty, void* InDelegate)
 {
     FScriptDelegate DynamicDelegate;
@@ -52,39 +58,20 @@ void ULuaDelegateHandler::RemoveFrom(FMulticastDelegateProperty* InProperty, voi
 
 void ULuaDelegateHandler::BeginDestroy()
 {
-    if (Env.IsValid())
-    {
-        const auto PinnedEnv = Env.Pin();
-        PinnedEnv->GetObjectRegistry()->NotifyUObjectLuaGC(this);
-    }
+    if (Registry)
+        Registry->NotifyHandlerBeginDestroy(this);
     UObject::BeginDestroy();
+}
+
+void ULuaDelegateHandler::Reset()
+{
+    LuaRef = LUA_NOREF;
+    Registry = nullptr;
+    Delegate = nullptr;
 }
 
 void ULuaDelegateHandler::ProcessEvent(UFunction* Function, void* Parms)
 {
-    if (!Env.IsValid())
-        return;
-    Env.Pin()->GetDelegateRegistry()->Execute(this, Parms);
-}
-
-ULuaDelegateHandler* ULuaDelegateHandler::CreateFrom(UnLua::FLuaEnv* InEnv, int32 InLuaRef, UObject* InOwner, UObject* InSelfObject)
-{
-    UObject* Outer;
-
-    if (InSelfObject)
-        Outer = InSelfObject->GetOuter();
-    else if (InOwner)
-        Outer = InOwner->GetOuter();
-    else
-        Outer = nullptr;
-
-    if (!Outer)
-        Outer = GetTransientPackage();
-
-    const auto Ret = NewObject<ULuaDelegateHandler>(Outer);
-    Ret->Env = InEnv->AsShared();
-    Ret->LuaRef = InLuaRef;
-    Ret->Owner = InOwner;
-    Ret->SelfObject = InSelfObject;
-    return Ret;
+    if (Registry)
+        Registry->Execute(this, Parms);
 }

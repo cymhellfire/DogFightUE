@@ -52,7 +52,7 @@ public:
 
     /** Whether or not startup UnLua module on game start. (Requires restart to take effect) */
     UPROPERTY(config, EditAnywhere, Category = "Build")
-    bool bAutoStart = true;
+    bool bAutoStartup = true;
 
     /** Enable UnLua debug routine codes. (Requires restart to take effect) */
     UPROPERTY(config, EditAnywhere, Category = "Build")
@@ -74,6 +74,10 @@ public:
     UPROPERTY(config, EditAnywhere, Category = "Build")
     bool bEnableCallOverriddenFunction = true;
 
+    /** Whether or not compile lua module as c++ code. (Requires restart to take effect) */
+    UPROPERTY(config, EditAnywhere, Category = "Build")
+    bool bLuaCompileAsCpp = false;
+
     /** Create UE4 global table on lua env. (Requires restart to take effect) */
     UPROPERTY(config, EditAnywhere, Category = "Legacy")
     bool bWithUE4Namespace = true;
@@ -85,6 +89,10 @@ public:
     /** Auto append '_C' to blueprint class path. (Requires restart to take effect) */
     UPROPERTY(config, EditAnywhere, Category = "Legacy")
     bool bLegacyBlueprintPath = false;
+
+    /** Allow lua file with UTF-8 BOM header. (Requires restart to take effect) */
+    UPROPERTY(config, EditAnywhere, Category = "Legacy")
+    bool bLegacyAllowUTF8WithBOM = false;
 
     UPROPERTY(config, EditAnywhere, Category = "System", meta = (defaultValue = 0))
     EUpdateMode UpdateMode;

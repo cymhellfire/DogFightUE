@@ -21,7 +21,7 @@
     {\
     	FString LogMsg = FString::Printf(Format, ##__VA_ARGS__);\
         luaL_traceback(L, L, "", 0); \
-        UE_LOG(LogUnLua, Log, TEXT("%s\n%s"),*LogMsg,UTF8_TO_TCHAR(lua_tostring(L,-1))); \
+        UE_LOG(LogUnLua, Log, TEXT("%s%s"),*LogMsg,UTF8_TO_TCHAR(lua_tostring(L,-1))); \
         lua_pop(L,1); \
     }
 
@@ -29,7 +29,7 @@
     {\
     	FString LogMsg = FString::Printf(Format, ##__VA_ARGS__);\
         luaL_traceback(L, L, "", 0); \
-        UE_LOG(LogUnLua, Warning, TEXT("%s\n%s"),*LogMsg,UTF8_TO_TCHAR(lua_tostring(L,-1))); \
+        UE_LOG(LogUnLua, Warning, TEXT("%s%s"),*LogMsg,UTF8_TO_TCHAR(lua_tostring(L,-1))); \
         lua_pop(L,1); \
     }
 
@@ -37,7 +37,7 @@
     {\
     	FString LogMsg = FString::Printf(Format, ##__VA_ARGS__);\
         luaL_traceback(L, L, "", 0); \
-        UE_LOG(LogUnLua, Error, TEXT("%s\n%s"),*LogMsg,UTF8_TO_TCHAR(lua_tostring(L,-1))); \
+        UE_LOG(LogUnLua, Error, TEXT("%s%s"),*LogMsg,UTF8_TO_TCHAR(lua_tostring(L,-1))); \
         lua_pop(L,1); \
     }
 
@@ -47,6 +47,9 @@ DECLARE_MEMORY_STAT_EXTERN(TEXT("Lua Memory"), STAT_UnLua_Lua_Memory, STATGROUP_
 DECLARE_MEMORY_STAT_EXTERN(TEXT("Persistent Parameter Buffer Memory"), STAT_UnLua_PersistentParamBuffer_Memory, STATGROUP_UnLua, /*UNLUA_API*/);
 DECLARE_MEMORY_STAT_EXTERN(TEXT("OutParmRec Memory"), STAT_UnLua_OutParmRec_Memory, STATGROUP_UnLua, /*UNLUA_API*/);
 DECLARE_MEMORY_STAT_EXTERN(TEXT("Container Element Cache Memory"), STAT_UnLua_ContainerElementCache_Memory, STATGROUP_UnLua, /*UNLUA_API*/);
+
+#define UNLUA_DEFINE_STAT(Name) \
+    DEFINE_STAT(STAT_UnLua_##Name);
 
 #define UNLUA_STAT_MEMORY_ALLOC(Pointer, CounterName) \
     const auto _AllocedSize = FMemory::GetAllocSize(Pointer); \
@@ -73,11 +76,22 @@ DECLARE_MEMORY_STAT_EXTERN(TEXT("Container Element Cache Memory"), STAT_UnLua_Co
     _ReallocGuard.Ptr = Pointer; \
     _ReallocGuard.NewPtr = &NewPointer; \
 
+#define UNLUA_DECLARE_CYCLE_STAT(FriendlyName, StatName) \
+    DECLARE_CYCLE_STAT(TEXT(FriendlyName), STAT_##StatName, STATGROUP_UnLua)
+
+#define UNLUA_SCOPE_CYCLE_COUNTER(StatName) \
+    SCOPE_CYCLE_COUNTER(STAT_##StatName)
+
 #else
+
+#define UNLUA_DEFINE_STAT(Name)
 
 #define UNLUA_STAT_MEMORY_ALLOC(Pointer, CounterName)
 #define UNLUA_STAT_MEMORY_FREE(PointerName, CounterName)
 #define UNLUA_STAT_MEMORY_REALLOC(Pointer, NewPointer, CounterName)
+
+#define UNLUA_DECLARE_CYCLE_STAT(FriendlyName, StatName)
+#define UNLUA_SCOPE_CYCLE_COUNTER(StatName)
 
 #endif
 

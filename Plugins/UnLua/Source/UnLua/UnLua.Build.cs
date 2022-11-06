@@ -25,10 +25,7 @@ public class UnLua : ModuleRules
 {
     public UnLua(ReadOnlyTargetRules Target) : base(Target)
     {
-        SetupScripts();
-
         bEnforceIWYU = false;
-        bUseUnity = false;
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
         PublicIncludePaths.AddRange(
@@ -44,14 +41,7 @@ public class UnLua : ModuleRules
             }
         );
 
-        PublicIncludePathModuleNames.AddRange(
-            new[]
-            {
-                "ApplicationCore",
-            }
-        );
-
-        PrivateDependencyModuleNames.AddRange(
+        PublicDependencyModuleNames.AddRange(
             new[]
             {
                 "Core",
@@ -59,7 +49,6 @@ public class UnLua : ModuleRules
                 "Engine",
                 "Slate",
                 "InputCore",
-                "Projects",
                 "Lua"
             }
         );
@@ -90,22 +79,10 @@ public class UnLua : ModuleRules
         loadBoolConfig("bEnableTypeChecking", "ENABLE_TYPE_CHECK", true);
         loadBoolConfig("bEnableRPCCall", "SUPPORTS_RPC_CALL", true);
         loadBoolConfig("bEnableCallOverriddenFunction", "ENABLE_CALL_OVERRIDDEN_FUNCTION", true);
-        loadBoolConfig("bWithUENamespace", "WITH_UE4_NAMESPACE", true);
+        loadBoolConfig("bLuaCompileAsCpp", "LUA_COMPILE_AS_CPP", false);
+        loadBoolConfig("bWithUE4Namespace", "WITH_UE4_NAMESPACE", true);
         loadBoolConfig("bLegacyReturnOrder", "UNLUA_LEGACY_RETURN_ORDER", false);
         loadBoolConfig("bLegacyBlueprintPath", "UNLUA_LEGACY_BLUEPRINT_PATH", false);
-    }
-
-    private void SetupScripts()
-    {
-        const string UnLuaSourceFileName = "UnLua.lua";
-        var PluginContentDirectory = Path.Combine(PluginDirectory, "Content");
-        var DefaultScriptDirectory = Path.Combine(Target.ProjectFile.Directory.ToString(), "Content/Script");
-        if (!Directory.Exists(DefaultScriptDirectory))
-            Directory.CreateDirectory(DefaultScriptDirectory);
-
-        var SrcPath = Path.Combine(PluginContentDirectory, UnLuaSourceFileName);
-        var DstPath = Path.Combine(DefaultScriptDirectory, UnLuaSourceFileName);
-        if (!File.Exists(DstPath) && File.Exists(SrcPath))
-            File.Copy(SrcPath, DstPath);
+        loadBoolConfig("bLegacyAllowUTF8WithBOM", "UNLUA_LEGACY_ALLOW_BOM", false);
     }
 }

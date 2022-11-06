@@ -21,19 +21,11 @@
 #include "Containers/LuaMap.h"
 #include "ObjectReferencer.h"
 
-TMap<FProperty*,FPropertyDesc*> FPropertyDesc::Property2Desc;
-
 FPropertyDesc::FPropertyDesc(FProperty *InProperty) : Property(InProperty) 
 {
-    Property2Desc.Add(Property,this);
     PropertyType = CPT_None;
     PropertyPtr = InProperty;
     Name = Property->GetName();
-}
-
-FPropertyDesc::~FPropertyDesc()
-{
-    Property2Desc.Remove(Property);
 }
 
 bool FPropertyDesc::IsValid() const
@@ -346,18 +338,24 @@ public:
 
     virtual bool SetValueInternal(lua_State *L, void *ValuePtr, int32 IndexInStack, bool bCopyValue) const override
     {
+        auto Object = UnLua::GetUObject(L, IndexInStack, false);
+        if (UnLua::LowLevel::IsReleasedPtr(Object))
+        {
+            UNLUA_LOGWARNING(L, LogUnLua, Warning, TEXT("attempt to set property %s with released object"), *GetName());
+            Object = nullptr;
+        }
+
         if (MetaClass)
         {
-            UClass *Value = Cast<UClass>(UnLua::GetUObject(L, IndexInStack));
-            if (Value && !Value->IsChildOf(MetaClass))
+            UClass *Class = Cast<UClass>(Object);
+            if (Class && !Class->IsChildOf(MetaClass))
             {
-                Value = nullptr;
+                Class = nullptr;
             }
-            ObjectBaseProperty->SetObjectPropertyValue(ValuePtr, Value);
+            ObjectBaseProperty->SetObjectPropertyValue(ValuePtr, Object);
         }
         else
         {
-            UObject* Object = UnLua::GetUObject(L, IndexInStack);
 #if ENABLE_TYPE_CHECK == 1
             if (Object)
             {
@@ -603,7 +601,7 @@ public:
 
     virtual bool SetValueInternal(lua_State *L, void *ValuePtr, int32 IndexInStack, bool bCopyValue) const override
     {
-        NameProperty->SetPropertyValue(ValuePtr, FName(lua_tostring(L, IndexInStack)));
+        NameProperty->SetPropertyValue(ValuePtr, FName(UTF8_TO_TCHAR(lua_tostring(L, IndexInStack))));
         return true;
     }
 
@@ -780,7 +778,7 @@ public:
             {
                 if (!bCopyValue && Property->HasAnyPropertyFlags(CPF_OutParm))
                 {
-                    if (Src->ElementSize < ArrayProperty->ElementSize)
+                    if (Src->ElementSize < ArrayProperty->Inner->ElementSize)
                     {
                         FScriptArrayHelper Helper(ArrayProperty, ValuePtr);
                         if (Src->Num() > 0)
@@ -1346,7 +1344,7 @@ public:
         void* ValuePtr = Property->ContainerPtrToValuePtr<void>(ContainerPtr);
         FScriptDelegate* ScriptDelegate = DelegateProperty->GetPropertyValuePtr(ValuePtr);
         UnLua::FLuaEnv::FindEnvChecked(L).GetDelegateRegistry()->Register(ScriptDelegate, DelegateProperty, ScriptDelegate->GetUObject());
-        return SetValueInternal(L, ValuePtr, IndexInStack, true);
+        return SetValueInternal(L, ValuePtr, IndexInStack, bCopyValue);
     }
     
     virtual void GetValueInternal(lua_State *L, const void *ValuePtr, bool bCreateCopy) const override
@@ -1366,6 +1364,13 @@ public:
     {
         UObject *Object = nullptr;
         const void *CallbackFunction = nullptr;
+        if (lua_isfunction(L, IndexInStack))
+        {
+            FScriptDelegate *Delegate = DelegateProperty->GetPropertyValuePtr(ValuePtr);
+            UnLua::FLuaEnv::FindEnvChecked(L).GetDelegateRegistry()->Bind(L, IndexInStack, Delegate, Object);
+            return bCopyValue;
+        }
+
         int32 FuncIdxInTable = GetDelegateInfo(L, IndexInStack, Object, CallbackFunction);      // get target UObject and Lua function
         if (FuncIdxInTable != INDEX_NONE)
         {
@@ -1374,7 +1379,7 @@ public:
             UnLua::FLuaEnv::FindEnvChecked(L).GetDelegateRegistry()->Bind(L, -1, Delegate, Object);
             lua_pop(L, 1);
         }
-        return true;
+        return bCopyValue;
     }
 
 #if ENABLE_TYPE_CHECK == 1
@@ -1383,9 +1388,9 @@ public:
         int32 Type = lua_type(L, IndexInStack);
         if (Type != LUA_TNIL)
         {
-            if (Type != LUA_TTABLE)
+            if (Type != LUA_TTABLE && Type != LUA_TFUNCTION)
             {
-                ErrorMsg = FString::Printf(TEXT("table needed but got %s"), UTF8_TO_TCHAR(lua_typename(L, Type)));
+                ErrorMsg = FString::Printf(TEXT("table or function needed but got %s"), UTF8_TO_TCHAR(lua_typename(L, Type)));
                 return false;
             }
         }
@@ -1441,7 +1446,7 @@ public:
 
         void* ValuePtr = Property->ContainerPtrToValuePtr<void>(ContainerPtr);
         UnLua::FLuaEnv::FindEnvChecked(L).GetDelegateRegistry()->Register(ValuePtr, DelegateProperty, (UObject*)ContainerPtr);
-        return SetValueInternal(L, ValuePtr, IndexInStack, true);
+        return SetValueInternal(L, ValuePtr, IndexInStack, bCopyValue);
     }
     
     virtual void GetValueInternal(lua_State *L, const void *ValuePtr, bool bCreateCopy) const override
@@ -1461,6 +1466,13 @@ public:
     {
         UObject *Object = nullptr;
         const void *CallbackFunction = nullptr;
+        if (lua_isfunction(L, IndexInStack))
+        {
+            FScriptDelegate *Delegate = DelegateProperty->GetPropertyValuePtr(ValuePtr);
+            UnLua::FLuaEnv::FindEnvChecked(L).GetDelegateRegistry()->Bind(L, IndexInStack, Delegate, Object);
+            return bCopyValue;
+        }
+        
         int32 FuncIdxInTable = GetDelegateInfo(L, IndexInStack, Object, CallbackFunction);      // get target UObject and Lua function
 
         if (FuncIdxInTable != INDEX_NONE)
@@ -1472,7 +1484,7 @@ public:
             Registry->Add(L, -1, ScriptDelegate, Object);
             lua_pop(L, 1);
         }
-        return true;
+        return bCopyValue;
     }
 
 #if ENABLE_TYPE_CHECK == 1
@@ -1481,9 +1493,9 @@ public:
         int32 Type = lua_type(L, IndexInStack);
         if (Type != LUA_TNIL)
         {
-            if (Type != LUA_TTABLE)
+            if (Type != LUA_TTABLE && Type != LUA_TFUNCTION)
             {
-                ErrorMsg = FString::Printf(TEXT("table needed but got %s"), UTF8_TO_TCHAR(lua_typename(L, Type)));
+                ErrorMsg = FString::Printf(TEXT("table or function needed but got %s"), UTF8_TO_TCHAR(lua_typename(L, Type)));
                 return false;
             }
         }
