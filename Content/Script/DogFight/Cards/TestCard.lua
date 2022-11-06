@@ -2,14 +2,15 @@ require("UnLua")
 
 local TestCard = Class("DogFight.Cards.CardBase")
 
-function TestCard:AcquireCardTargetsImplementation()
+function TestCard:OnInitialized()
     -- Create attributes
-    self:CreateAttributeInteger("Damage", 50)
-    -- Set attribute tags
-    local TagArray = UE.TArray("")
-    TagArray:Add("Tag1")
-    TagArray:Add("Tag2")
-    self:SetAttributeTags("Damage", TagArray)
+    self:AddAttribute({
+        Name = "Damage",
+        DataType = "Integer",
+        Value = 50,
+        Tags = {"Tag1", "Tag2"},
+    })
+
     -- Create modifier
     self:CreateModifierForIntegerAttribute("Damage", 2, UE.EModifierOperatorType.MOT_Multiply)
     self:CreateModifierForIntegerAttribute("Damage", 5, UE.EModifierOperatorType.MOT_Addition)
@@ -30,7 +31,9 @@ function TestCard:AcquireCardTargetsImplementation()
         self:AddAttributeModifier(Modifier2)
         self:RemoveAttributeModifier(Modifier1)
     end
+end
 
+function TestCard:AcquireCardTargetsImplementation()
     local NewSettings = UE.FTargetAcquireSettings()
     NewSettings.Type = UE.ECardTargetType.CTT_Actor
     NewSettings.TargetCount = 1

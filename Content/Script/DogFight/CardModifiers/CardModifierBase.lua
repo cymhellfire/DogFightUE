@@ -1,21 +1,8 @@
 require "UnLua"
 
+local AttributeEnum = require "DogFight.DataBridge.AttributeEnum"
+
 local CardModifierBase = Class()
-
-CardModifierBase.DataType = {
-    ["None"] = 0,
-    ["Boolean"] = 1,
-    ["Integer"] = 2,
-    ["Float"] = 3,
-}
-
-CardModifierBase.OperatorType = {
-    ["Set"] = 0,
-    ["Add"] = 1,
-    ["Sub"] = 2,
-    ["Multiply"] = 3,
-    ["Divide"] = 4,
-}
 
 CardModifierBase.DefaultBoolean = false
 CardModifierBase.DefaultInteger = 0
@@ -27,9 +14,9 @@ CardModifierBase.DefaultFloat = 0
 ---@return FModifierCreateArgument @ Created argument instance / 新建实例
 function CardModifierBase:MakeCreateArgumentByTable(InTable)
     local Instance = UE.FModifierCreateArgument()
-    Instance.DataType = InTable["DataType"] and self.DataType[InTable["DataType"]] or self.DataType["None"]
-    Instance.OperatorType = InTable["OperatorType"] and self.OperatorType[InTable["OperatorType"]]
-        or self.OperatorType["Set"]
+    Instance.DataType = InTable["DataType"] and AttributeEnum.DataType[InTable["DataType"]] or AttributeEnum.DataType["None"]
+    Instance.OperatorType = InTable["OperatorType"] and AttributeEnum.OperatorType[InTable["OperatorType"]]
+        or AttributeEnum.OperatorType["Set"]
     Instance.ApplyRuleString = InTable["ApplyRule"] and InTable["ApplyRule"] or ""
 
     -- Record default value based on type

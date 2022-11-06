@@ -25,6 +25,14 @@ class CARDSYSTEM_API UCard : public UObject
 public:
 	UCard();
 
+	virtual void PostInitProperties() override;
+
+	// ------------------- Initialize ----------------------
+	virtual void Initialize();
+
+	UFUNCTION(BlueprintImplementableEvent, Category="Card")
+	void BP_Initialize();
+
 	// ---------------- Card Attribute ---------------------
 	UFUNCTION(BlueprintCallable, Category="Card")
 	bool CreateAttributeBool(FName InName, bool InValue);

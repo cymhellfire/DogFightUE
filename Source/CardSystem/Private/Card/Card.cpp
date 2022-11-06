@@ -19,6 +19,20 @@ UCard::UCard()
 	WaitingConcurrentCommands = 0;
 }
 
+void UCard::PostInitProperties()
+{
+	UObject::PostInitProperties();
+
+	// Start initialize card class
+	Initialize();
+}
+
+void UCard::Initialize()
+{
+	// Invoke blueprint side implementation
+	BP_Initialize();
+}
+
 bool UCard::CreateAttributeBool(FName InName, bool InValue)
 {
 	return FCardAttributeFunctionLibrary::CreateBoolAttributeForCard(this, InName, InValue);
