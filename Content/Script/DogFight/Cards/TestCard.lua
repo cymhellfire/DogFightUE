@@ -1,8 +1,8 @@
 require("UnLua")
 
-local UTestCard = Class("DogFight.Cards.CardBase")
+local TestCard = Class("DogFight.Cards.CardBase")
 
-function UTestCard:AcquireCardTargetsImplementation()
+function TestCard:AcquireCardTargetsImplementation()
     -- Create attributes
     self:CreateAttributeInteger("Damage", 50)
     -- Create modifier
@@ -19,9 +19,9 @@ function UTestCard:AcquireCardTargetsImplementation()
     -- Create modifier from service
     local ModifierService = _G.GameServices.CardModifierGameService
     if ModifierService ~= nil then
-        local Modifier1 = ModifierService:CreateCardModifier("DogFight.CardModifiers.CardModifierTest", self)
+        local Modifier1 = ModifierService:CreateCardModifier("CardModifierTest", self)
         self:AddAttributeModifier(Modifier1)
-        local Modifier2 = ModifierService:CreateCardModifier("DogFight.CardModifiers.CardModifierTest", self)
+        local Modifier2 = ModifierService:CreateCardModifier("CardModifierTest", self)
         self:AddAttributeModifier(Modifier2)
         self:RemoveAttributeModifier(Modifier1)
     end
@@ -33,7 +33,7 @@ function UTestCard:AcquireCardTargetsImplementation()
     self:AcquireTargetBatch(NewSettings, 0)
 end
 
-function UTestCard:CardLogicImplementation()
+function TestCard:CardLogicImplementation()
     -- local TargetList = self:GetActorTargetListByBatch(0)
     -- if TargetList:Length() > 0 then
     --     for i = 1, TargetList:Length() do
@@ -59,7 +59,7 @@ function UTestCard:CardLogicImplementation()
     --self:OnCardFinished()
 end
 
-function UTestCard:OnWaitAndRandomCallback(Result)
+function TestCard:OnWaitAndRandomCallback(Result)
     print(self:GetName() .. " Random result: " .. Result)
 
     -- Get attribute value
@@ -71,4 +71,4 @@ function UTestCard:OnWaitAndRandomCallback(Result)
     end
 end
 
-return UTestCard
+return TestCard

@@ -1,15 +1,15 @@
 require "Unlua"
 
-local UCardGameService = Class("DogFight.Services.GameServiceBase")
+local CardGameService = Class("DogFight.Services.GameServiceBase")
 
-function UCardGameService:SpawnAndBindCard(Template, ScriptPath, Instigator)
+function CardGameService:SpawnAndBindCard(Template, ScriptPath, Instigator)
     local NewCard = NewObject(Template, Instigator, nil, ScriptPath)
 
     return NewCard
 end
 
-function UCardGameService:DestroyCard(InCard)
+function CardGameService:DestroyCard(InCard)
     InCard:Destroy()
 end
 
-return UCardGameService
+return CardGameService

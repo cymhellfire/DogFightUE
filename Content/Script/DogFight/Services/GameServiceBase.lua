@@ -1,8 +1,8 @@
 require "UnLua"
 
-local UGameServiceBase = Class()
+local GameServiceBase = Class()
 
-function UGameServiceBase:StartupScript(ServiceName)
+function GameServiceBase:StartupScript(ServiceName)
     print("ServiceStart: " .. ServiceName)
 
     -- Register this service to global scope
@@ -19,7 +19,7 @@ function UGameServiceBase:StartupScript(ServiceName)
     _G.GameServices[ServiceName] = self
 end
 
-function UGameServiceBase:ShutdownScript(ServiceName)
+function GameServiceBase:ShutdownScript(ServiceName)
     print("ServiceStop: " .. ServiceName)
 
     -- Unregister this service from global scope
@@ -28,4 +28,4 @@ function UGameServiceBase:ShutdownScript(ServiceName)
     end
 end
 
-return UGameServiceBase
+return GameServiceBase

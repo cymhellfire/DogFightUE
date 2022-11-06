@@ -1,15 +1,13 @@
 require "UnLua"
 
-local UCardModifierTest = Class("DogFight.CardModifiers.CardModifierBase")
+local CardModifierTest = Class("DogFight.CardModifiers.CardModifierBase")
 
-function UCardModifierTest:GetModifierCreateArgument()
-    local Argument = {
+function CardModifierTest:GetArgumentTable()
+    return {
         ["DataType"] = "Integer",
         ["OperatorType"] = "Multiply",
         ["Value"] = 2,
     }
-
-    return self:MakeCreateArgumentByTable(Argument)
 end
 
-return UCardModifierTest
+return CardModifierTest

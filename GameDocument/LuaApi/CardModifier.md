@@ -5,6 +5,7 @@
     * [CreateCardModifier函数](#createcardmodifier)
   * [卡牌修改器脚本](#)
     * [基本结构](#)
+    * [自定义修改器效果](#)
 <!-- TOC -->
 
 # 卡牌修改器
@@ -30,7 +31,7 @@ local ModifierService = _G.GameServices.CardModifierGameService
 
 |    参数名称    | 功能           | 备注         |
 |:----------:|--------------|------------|
-|    Path    | 指定修改器使用的脚本路径 |            |
+|    Path    | 指定修改器使用的脚本名称 |            |
 | Instigator | 修改器创建的发起者    | 基本使用self即可 |
 
 代码样例：
@@ -39,7 +40,7 @@ local ModifierService = _G.GameServices.CardModifierGameService
 local ModifierService = _G.GameServices.CardModifierGameService
 if ModifierService then
     -- 创建新的修改器
-    local Modifier1 = ModifierService:CreateCardModifier("DogFight.CardModifiers.CardModifierTest", self)
+    local Modifier1 = ModifierService:CreateCardModifier("CardModifierTest", self)
 end
 ```
 
@@ -67,17 +68,15 @@ return XXX
 
 ### 自定义修改器效果
 
-卡牌修改器的效果由创建时传入的参数集确定，该参数集可在*GetModifierCreateArgument*函数中修改。下面的例子展示了创建一个将整数属性值乘以2的修改器。
+卡牌修改器的效果由创建时传入的参数集确定，该参数集可在*GetArgumentTable*函数中修改。下面的例子展示了一个将整数属性值乘以2的修改器的参数集。
 
 ```
-function XXX:GetModifierCreateArgument()
-    local Argument = {
+function XXX:GetArgumentTable()
+    return {
         ["DataType"] = "Integer",
         ["OperatorType"] = "Multiply",
         ["Value"] = 2,
     }
-
-    return self:MakeCreateArgumentByTable(Argument)
 end
 ```
 

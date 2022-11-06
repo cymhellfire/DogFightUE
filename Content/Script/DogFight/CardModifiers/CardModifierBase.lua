@@ -57,4 +57,15 @@ function CardModifierBase:GetInitialFloatValue()
     return self.DefaultFloat
 end
 
+---Obtain the create argument table for this modifier.
+---获取创建修改器使用的参数集
+---@return table @ Argument table / 参数集
+function CardModifierBase:GetModifierCreateArgument()
+    local InitTable = nil
+    if self.GetArgumentTable then
+        InitTable = self:GetArgumentTable()
+    end
+    return self:MakeCreateArgumentByTable(InitTable)
+end
+
 return CardModifierBase
