@@ -1,0 +1,16 @@
+require("UnLua")
+
+local $Class$ = Class("DogFight.Cards.CardBase")
+
+---卡牌初始化函数
+function $Class$:OnInitialized()
+    -- 创建一个名为Damage,初始值为50并带有Tag1,Tag2标签的整数属性
+    -- self:AddAttribute({
+    --     Name = "Damage",
+    --     DataType = "Integer",
+    --     Value = 50,
+    --     Tags = {"Tag1", "Tag2"},
+    -- })
+end
+
+return $Class$

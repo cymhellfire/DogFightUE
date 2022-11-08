@@ -1,51 +1,61 @@
 {
-	"FileVersion": 3,
-	"EngineAssociation": "5.0",
-	"Category": "",
-	"Description": "",
-	"Modules": [
-		{
-			"Name": "DogFight",
-			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"AdditionalDependencies": [
-				"Engine",
-				"UMG",
-				"CoreUObject",
-				"Slate",
-				"SlateCore",
-				"AIModule",
-				"ProjectFramework"
-			]
-		},
-		{
-			"Name": "ProjectFramework",
-			"Type": "Runtime",
-			"LoadingPhase": "Default"
-		},
-		{
-			"Name": "CardSystem",
-			"Type": "Runtime",
-			"LoadingPhase": "Default"
-		}
-	],
-	"Plugins": [
-		{
-			"Name": "PythonScriptPlugin",
-			"Enabled": true
-		},
-		{
-			"Name": "InGameScript",
-			"Enabled": true
-		},
-		{
-			"Name": "Bridge",
-			"Enabled": true,
-			"SupportedTargetPlatforms": [
-				"Win64",
-				"Mac",
-				"Linux"
-			]
-		}
-	]
+  "FileVersion": 3,
+  "EngineAssociation": "5.0",
+  "Category": "",
+  "Description": "",
+  "Modules": [
+    {
+      "Name": "DogFight",
+      "Type": "Runtime",
+      "LoadingPhase": "Default",
+      "AdditionalDependencies": [
+        "Engine",
+        "UMG",
+        "CoreUObject",
+        "Slate",
+        "SlateCore",
+        "AIModule",
+        "ProjectFramework"
+      ]
+    },
+    {
+      "Name": "ProjectFramework",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    },
+    {
+      "Name": "CardSystem",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    },
+    {
+      "Name": "AttributeSystem",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    },
+    {
+      "Name": "DogFightEditor",
+      "Type": "Editor",
+      "LoadingPhase": "Default"
+    }
+  ],
+  "Plugins": [
+    {
+      "Name": "PythonScriptPlugin",
+      "Enabled": true
+    },
+    {
+      "Name": "InGameScript",
+      "Enabled": true
+    },
+    {
+      "Name": "Bridge",
+      "Enabled": true,
+      "SupportedTargetPlatforms": [
+        "Win64",
+        "Mac",
+        "Linux"
+      ]
+    }
+  ]
 }

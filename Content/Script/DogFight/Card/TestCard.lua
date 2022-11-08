@@ -1,6 +1,6 @@
 require("UnLua")
 
-local TestCard = Class("DogFight.Cards.CardBase")
+local TestCard = Class("DogFight.Card.CardBase")
 
 function TestCard:OnInitialized()
     -- Create attributes

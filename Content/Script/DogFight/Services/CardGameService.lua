@@ -19,7 +19,7 @@ function CardGameService:CreateCard(Path, Instigator)
 end
 
 function CardGameService:GetScriptBasePath()
-    return "DogFight.Cards."
+    return "DogFight.Card."
 end
 
 function CardGameService:DestroyCard(InCard)

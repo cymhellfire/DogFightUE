@@ -1,0 +1,15 @@
+require "UnLua"
+
+local $Class$ = Class("DogFight.CardModifiers.CardModifierBase")
+
+---卡牌修改器构造参数集
+function $Class$:GetArgumentTable()
+    -- 创建整数型属性翻倍修改器
+    -- return {
+    --     ["DataType"] = "Integer",
+    --     ["OperatorType"] = "Multiply",
+    --     ["Value"] = 2,
+    -- }
+end
+
+return $Class$

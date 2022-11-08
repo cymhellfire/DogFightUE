@@ -3,13 +3,13 @@
 卡牌修改器API包括创建修改器及修改器本身脚本接口。
 
 <!-- TOC -->
-* [卡牌修改器](#)
-  * [创建新的卡牌修改器](#)
-    * [获取修改器服务](#)
-    * [CreateCardModifier函数](#createcardmodifier)
-  * [卡牌修改器脚本](#)
-    * [基本结构](#)
-    * [自定义修改器效果](#)
+* [卡牌修改器](#卡牌修改器)
+  * [创建新的卡牌修改器](#创建新的卡牌修改器)
+    * [获取修改器服务](#获取修改器服务)
+    * [CreateCardModifier函数](#createcardmodifier函数)
+  * [卡牌修改器脚本](#卡牌修改器脚本)
+    * [基本结构](#基本结构)
+    * [自定义修改器效果](#自定义修改器效果)
 <!-- TOC -->
 
 ## 创建新的卡牌修改器
@@ -27,7 +27,7 @@ local ModifierService = _G.GameServices.CardModifierGameService
 
 ### CreateCardModifier函数
 
-调用*CreateCardModifier*函数可以创建新的卡牌修改器。
+调用`CreateCardModifier(Path, Instigator)`函数可以创建新的卡牌修改器。
 
 |    参数名称    | 功能           | 备注         |
 |------------|--------------|------------|
@@ -64,11 +64,11 @@ local XXX = Class("DogFight.CardModifiers.CardModifierBase")
 return XXX
 ```
 
-例子中XXX为修改器类型名称，推荐使用包括*CardModifier*关键字的名称以提高辨识度。
+例子中XXX为修改器类型名称，推荐使用包括*CardModifier*关键字的名称以提高辨识度，如*CardModifierDoubleDamage*。
 
 ### 自定义修改器效果
 
-卡牌修改器的效果由创建时传入的参数集确定，该参数集可在*GetArgumentTable*函数中修改。下面的例子展示了一个将整数属性值乘以2的修改器的参数集。
+卡牌修改器的效果由创建时传入的参数集确定，该参数集可在`GetArgumentTable()`函数中修改。下面的例子展示了一个将整数属性值乘以2的修改器的参数集。
 
 ```
 function XXX:GetArgumentTable()

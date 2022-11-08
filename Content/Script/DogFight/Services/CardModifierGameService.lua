@@ -20,7 +20,7 @@ function CardModifierGameService:CreateCardModifier(Path, Instigator)
 end
 
 function CardModifierGameService:GetScriptBasePath()
-    return "DogFight.CardModifiers."
+    return "DogFight.CardModifier."
 end
 
 return CardModifierGameService

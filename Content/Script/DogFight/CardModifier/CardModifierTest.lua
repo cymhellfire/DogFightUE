@@ -1,6 +1,6 @@
 require "UnLua"
 
-local CardModifierTest = Class("DogFight.CardModifiers.CardModifierBase")
+local CardModifierTest = Class("DogFight.CardModifier.CardModifierBase")
 
 function CardModifierTest:GetArgumentTable()
     return {
