@@ -129,6 +129,28 @@ void SCreateLuaScriptWindow::Construct(const FArguments& InArgs)
 					.OnTextCommitted(this, &SCreateLuaScriptWindow::OnNameTextCommitted)
 				]
 			]
+			+ SVerticalBox::Slot()
+			.AutoHeight()
+			.Padding(DefaultRowPadding)
+			[
+				SNew(SHorizontalBox)
+				+ SHorizontalBox::Slot()
+				.AutoWidth()
+				.VAlign(VAlign_Center)
+				[
+					SNew(STextBlock)
+					.Text(LOCTEXT("PreviewPath", "Preview File Path: "))
+				]
+				+ SHorizontalBox::Slot()
+				.Padding(10.f, 0, 0, 0)
+				.AutoWidth()
+				.VAlign(VAlign_Center)
+				[
+					SNew(SEditableText)
+					.IsReadOnly(true)
+					.Text(this, &SCreateLuaScriptWindow::GetPreviewPathText)
+				]
+			]
 			+ SVerticalBox::Slot().FillHeight(1.f)		// Spacer
 			+ SVerticalBox::Slot()
 			.Padding(DefaultRowPadding)
@@ -137,7 +159,8 @@ void SCreateLuaScriptWindow::Construct(const FArguments& InArgs)
 				SNew(SHorizontalBox)
 				+ SHorizontalBox::Slot()
 				.HAlign(HAlign_Left)
-				.FillWidth(1.f)
+				.VAlign(VAlign_Center)
+				.AutoWidth()
 				[
 					SNew(STextBlock)
 					.Text_Lambda([this]()
@@ -162,6 +185,25 @@ void SCreateLuaScriptWindow::Construct(const FArguments& InArgs)
 					})
 				]
 				+ SHorizontalBox::Slot()
+				.HAlign(HAlign_Left)
+				.Padding(5, 0, 5, 5)
+				.FillWidth(1.f)
+				[
+					SNew(SButton)
+					.Text(LOCTEXT("OpenFile", "Open"))
+					.Visibility_Lambda([this]()
+					{
+						if (bLastCreateResult.IsSet())
+						{
+							bool bSuccess = bLastCreateResult.GetValue() == "Success";
+							return bSuccess ? EVisibility::Visible : EVisibility::Collapsed;
+						}
+
+						return EVisibility::Collapsed;
+					})
+					.OnClicked(this, &SCreateLuaScriptWindow::OnOpenFileButtonClicked)
+				]
+				+ SHorizontalBox::Slot()
 				.HAlign(HAlign_Right)
 				.Padding(0, 0, 5, 5)
 				[
@@ -172,6 +214,10 @@ void SCreateLuaScriptWindow::Construct(const FArguments& InArgs)
 						SNew(SButton)
 						.Text(LOCTEXT("Create", "Create"))
 						.OnClicked(this, &SCreateLuaScriptWindow::OnCreateButtonClicked)
+						.IsEnabled_Lambda([this]()
+						{
+							return !NewScriptName.IsEmpty();
+						})
 					]
 					+ SHorizontalBox::Slot()
 					.AutoWidth()
@@ -217,6 +263,16 @@ FReply SCreateLuaScriptWindow::OnCreateButtonClicked()
 	return FReply::Handled();
 }
 
+FReply SCreateLuaScriptWindow::OnOpenFileButtonClicked()
+{
+	FString AbsolutePath = FPaths::ConvertRelativePathToFull(UDogFightUtilsFunctionLibrary::GenerateLuaScriptPath(
+		*SelectedTemplate, ScriptPath.ToString(), NewScriptName.ToString()));
+	
+	FPlatformProcess::LaunchFileInDefaultExternalApplication(*AbsolutePath);
+
+	return FReply::Handled();
+}
+
 void SCreateLuaScriptWindow::OnPathTextCommitted(const FText& InText, ETextCommit::Type InCommitType)
 {
 	ScriptPath = InText;
@@ -225,6 +281,12 @@ void SCreateLuaScriptWindow::OnPathTextCommitted(const FText& InText, ETextCommi
 void SCreateLuaScriptWindow::OnNameTextCommitted(const FText& InText, ETextCommit::Type InCommitType)
 {
 	NewScriptName = InText;
+}
+
+FText SCreateLuaScriptWindow::GetPreviewPathText() const
+{
+	return FText::FromString(FPaths::ConvertRelativePathToFull(UDogFightUtilsFunctionLibrary::GenerateLuaScriptPath(
+		*SelectedTemplate, ScriptPath.ToString(), NewScriptName.ToString())));
 }
 
 #undef LOCTEXT_NAMESPACE

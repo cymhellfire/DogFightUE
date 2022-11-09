@@ -17,9 +17,12 @@ private:
 
 	FReply OnCloseButtonClicked();
 	FReply OnCreateButtonClicked();
+	FReply OnOpenFileButtonClicked();
 
 	void OnPathTextCommitted(const FText& InText, ETextCommit::Type InCommitType);
 	void OnNameTextCommitted(const FText& InText, ETextCommit::Type InCommitType);
+
+	FText GetPreviewPathText() const;
 
 	TOptional<FString> bLastCreateResult;
 

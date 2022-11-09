@@ -3,16 +3,21 @@
 #define LUA_SCRIPT_BASE_PATH		TEXT("Script/DogFight")
 #define LUA_TEMPLATE_BASE_PATH		TEXT("EditorResources/ScriptTemplates")
 
-FString UDogFightUtilsFunctionLibrary::CreateLuaScriptByTemplate(FString Template, FString Path, FString ScriptName)
+FString UDogFightUtilsFunctionLibrary::GenerateLuaScriptPath(FString Template, FString Path, FString ScriptName)
 {
-	const FString NewClassName = Template + ScriptName;
-	FString NewFileName = NewClassName + ".lua";
+	FString NewFileName = Template + ScriptName + ".lua";
 	if (!Path.IsEmpty())
 	{
 		NewFileName = Path / NewFileName;
 	}
-	FString NewScriptPath = FString::Printf(TEXT("%s%s/%s/%s"), *FPaths::ProjectContentDir(), LUA_SCRIPT_BASE_PATH,
+	return FString::Printf(TEXT("%s%s/%s/%s"), *FPaths::ProjectContentDir(), LUA_SCRIPT_BASE_PATH,
 		*Template, *NewFileName);
+}
+
+FString UDogFightUtilsFunctionLibrary::CreateLuaScriptByTemplate(FString Template, FString Path, FString ScriptName)
+{
+	const FString NewClassName = Template + ScriptName;
+	FString NewScriptPath = GenerateLuaScriptPath(Template, Path, ScriptName);
 
 	// Check duplicated files
 	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
