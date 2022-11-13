@@ -53,6 +53,32 @@ public:
 		return AttributeTags.Contains(InTag);
 	}
 
+	bool HasAllTags(const TArray<FName>& InTags) const
+	{
+		for (auto Tag : InTags)
+		{
+			if (!HasTag(Tag))
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	bool HasAnyTag(const TArray<FName>& InTags) const
+	{
+		for (auto Tag: InTags)
+		{
+			if (HasTag(Tag))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	virtual void AddModifier(TSharedPtr<FAttributeModifierBase> InModifier) = 0;
 	virtual void RemoveModifier(TWeakPtr<FAttributeModifierBase> InModifier) = 0;
 
@@ -60,12 +86,23 @@ public:
 	{
 		return DataType;
 	}
-
 protected:
 	FAttributeBase(const FAttributeCreateArgument& InArgument)
 		: AttributeName(InArgument.AttrName)
-		,DataType(ADT_None) 
-	{}
+		,DataType(ADT_None)
+	{
+		// Import tags
+		if (InArgument.Tags.Num() > 0)
+		{
+			AddTags(InArgument.Tags);
+		}
+	}
+
+public:
+	DECLARE_MULTICAST_DELEGATE_OneParam(FAttributeValueChangeSignature, TSharedPtr<FAttributeBase>)
+	FAttributeValueChangeSignature OnValueChanged;
+
+protected:
 
 	FName AttributeName;
 
@@ -88,6 +125,9 @@ public:
 	virtual void SetRawValue(T InValue)
 	{
 		Value = InValue;
+
+		// Trigger delegate
+		OnValueChanged.Broadcast(SharedThis(this));
 	}
 
 	virtual T GetValue() const;

@@ -21,6 +21,7 @@
 #include "Game/StandardGameMode.h"
 #include "Actors/Weapons/WeaponDisplayRelative.h"
 #include "Actors/Weapons/WeaponActionBase.h"
+#include "Pawns/TestAttributeComponent.h"
 #include "UI/Widget/CharacterFloatingTextPanelWidget.h"
 
 // Sets default values
@@ -74,6 +75,9 @@ AStandardModePlayerCharacter::AStandardModePlayerCharacter()
 	// Create TeleportComponent
 	TeleportComponent = CreateDefaultSubobject<UActorTeleportComponent>("TeleportComponent");
 	TeleportComponent->SetIsReplicated(true);
+
+	// Create AttributeComponent
+	AttributeComponent = CreateDefaultSubobject<UTestAttributeComponent>("AttributeComponent");
 
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -674,6 +678,12 @@ float AStandardModePlayerCharacter::TakeDamage(float Damage, FDamageEvent const&
 
 		// Invoke OnRep on server side manually
 		OnRep_CurrentHealth();
+
+		// Test code for attribute
+		if (AttributeComponent)
+		{
+			AttributeComponent->ChangeTestAttribute(CurrentHealth);
+		}
 
 		// Show damage
 		// Check damage type and format the text

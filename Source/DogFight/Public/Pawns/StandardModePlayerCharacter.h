@@ -250,6 +250,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Unit", meta=(ExposeFunctionCategories = "TeleportComponent", AllowPrivateAccess = "true"))
 	class UActorTeleportComponent* TeleportComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Unit", meta=(AllowPrivateAccess="true"))
+	class UTestAttributeComponent* AttributeComponent;
+
 	/** The target bone to follow during ragdoll activate. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Animation")
 	FName FollowBoneName;

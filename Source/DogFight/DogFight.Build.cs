@@ -36,6 +36,7 @@ public class DogFight : ModuleRules
 				"InGameScript",
 				"UnLua",
 				"ProjectFramework",
+				"AttributeSystem",
 			}
 		);
 		
@@ -43,6 +44,7 @@ public class DogFight : ModuleRules
 			new string[]
 			{
 				"CardSystem",
+				"NetCore",
 			}
 		);
 		

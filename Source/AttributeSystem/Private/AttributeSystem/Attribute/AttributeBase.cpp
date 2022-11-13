@@ -37,6 +37,9 @@ void TAttributeBase<T>::AddModifier(TSharedPtr<FAttributeModifierBase> InModifie
 				ConvertedModifier->RegisterPreviousModifier(LastModifier);
 			}
 			ModifierList.Add(ConvertedModifier);
+
+			// Trigger delegate
+			OnValueChanged.Broadcast(SharedThis(this));
 		}
 	}
 }
@@ -84,4 +87,7 @@ void TAttributeBase<T>::RemoveModifier(TWeakPtr<FAttributeModifierBase> InModifi
 	// Nothing to do if remove the tailing modifier
 
 	ModifierList.Remove(ConvertedModifier);
+
+	// Trigger delegate
+	OnValueChanged.Broadcast(SharedThis(this));
 }

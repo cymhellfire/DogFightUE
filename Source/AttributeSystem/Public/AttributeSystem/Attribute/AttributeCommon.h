@@ -13,4 +13,16 @@ struct ATTRIBUTESYSTEM_API FAttributeCreateArgument
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AttributeArgument")
 	TEnumAsByte<EAttributeDataType> DataType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AttributeArgument")
+	TArray<FString> Tags;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AttributeArgument")
+	bool InitBoolValue = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AttributeArgument")
+	int32 InitIntValue = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AttributeArgument")
+	float InitFloatValue = 0.f;
 };
