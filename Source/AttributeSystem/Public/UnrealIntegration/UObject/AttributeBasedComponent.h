@@ -26,12 +26,24 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
 	virtual bool RemoveAttribute(FName InName) override;
+
+	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
+	virtual bool AddModifierObject(TScriptInterface<IAttributeModifierCarrierInterface> InModifierObject) override;
+
+	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
+	virtual bool RemoveModifierObject(TScriptInterface<IAttributeModifierCarrierInterface> InModifierObject) override;
 protected:
 	virtual bool OnAttributeAdded(TSharedPtr<FAttributeBase> InAttribute) override;
 	virtual TSharedPtr<FAttributeBase> GetAttribute(FName InName) override;
 	virtual TArray<TSharedPtr<FAttributeBase>> GetAllAttributes() override;
+
+	virtual void OnModifierObjectAdded(IAttributeModifierCarrierInterface* InModifierObject) override;
+	virtual void OnModifierObjectRemoved(IAttributeModifierCarrierInterface* InModifierObject) override;
+	virtual TArray<IAttributeModifierCarrierInterface*> GetAllModifierObjects() const override;
 	// -------- Attribute Carrier Interface --------
 
 protected:
 	TMap<FName, TSharedPtr<FAttributeBase>> AttributeMap;
+
+	TArray<IAttributeModifierCarrierInterface*> ModifierList;
 };

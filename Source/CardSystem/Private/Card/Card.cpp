@@ -1,13 +1,9 @@
 ﻿#include "Card/Card.h"
 
 #include "CardSystem.h"
-#include "Attribute/CardAttributeModifierFunctionLibrary.h"
-#include "AttributeSystem/Attribute/Attribute.h"
-#include "AttributeSystem/Modifier/AttributeModifier.h"
 #include "Card/CardConcurrentCallbackCommand.h"
 #include "Card/CardAsyncCommand.h"
 #include "Card/CardCommand.h"
-#include "CardModifier/CardModifier.h"
 
 UCard::UCard()
 {
@@ -30,94 +26,6 @@ void UCard::Initialize()
 {
 	// Invoke blueprint side implementation
 	BP_Initialize();
-}
-
-bool UCard::CreateModifierForBoolAttribute(FName InName, bool InValue)
-{
-	auto NewModifier = FCardAttributeModifierFunctionLibrary::CreateBoolAttributeModifier(InName, InValue);
-	if (!NewModifier.IsValid())
-	{
-		return false;
-	}
-
-	auto TargetAttribute = GetAttribute(InName);
-	if (!TargetAttribute.IsValid())
-	{
-		return false;
-	}
-
-	// Apply modifier
-	TargetAttribute->AddModifier(NewModifier);
-
-	return true;
-}
-
-bool UCard::CreateModifierForIntegerAttribute(FName InName, int32 InValue, EModifierOperatorType OpType, FString ApplyRule)
-{
-	auto NewModifier = FCardAttributeModifierFunctionLibrary::CreateIntegerAttributeModifier(InName, InValue, OpType, ApplyRule);
-	if (!NewModifier.IsValid())
-	{
-		return false;
-	}
-
-	auto TargetAttribute = GetAttribute(InName);
-	if (!TargetAttribute.IsValid())
-	{
-		return false;
-	}
-
-	// Apply modifier
-	TargetAttribute->AddModifier(NewModifier);
-	return true;
-}
-
-bool UCard::CreateModifierForFloatAttribute(FName InName, float InValue, EModifierOperatorType OpType)
-{
-	auto NewModifier = FCardAttributeModifierFunctionLibrary::CreateFloatAttributeModifier(InName, InValue, OpType);
-	if (!NewModifier.IsValid())
-	{
-		return false;
-	}
-
-	auto TargetAttribute = GetAttribute(InName);
-	if (!TargetAttribute.IsValid())
-	{
-		return false;
-	}
-
-	// Apply modifier
-	TargetAttribute->AddModifier(NewModifier);
-	return true;
-}
-
-void UCard::AddAttributeModifier(UCardModifier* InModifier)
-{
-	auto CandidateList = GetAttributesByDataType(InModifier->GetDataType());
-	if (CandidateList.Num() == 0)
-	{
-		UE_LOG(LogCardSystem, Error, TEXT("[Card] No attribute matches the data type of %d from modifier."), InModifier->GetDataType());
-		return;
-	}
-
-	// Pick random one from list if multiple attributes matched the data type
-	TSharedPtr<FAttributeBase> TargetAttribute = CandidateList[FMath::RandRange(0, CandidateList.Num() - 1)];
-	InModifier->ApplyToAttribute(TargetAttribute);
-
-	// Record new modifier
-	AppliedModifiers.Add(InModifier);
-}
-
-void UCard::RemoveAttributeModifier(UCardModifier* InModifier)
-{
-	if (!AppliedModifiers.Contains(InModifier))
-	{
-		return;
-	}
-
-	InModifier->RemoveFromTarget();
-
-	// Remove from list
-	AppliedModifiers.Remove(InModifier);
 }
 
 /**

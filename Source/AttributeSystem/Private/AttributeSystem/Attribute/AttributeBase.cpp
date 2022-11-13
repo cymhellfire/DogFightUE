@@ -69,7 +69,7 @@ void TAttributeBase<T>::RemoveModifier(TWeakPtr<FAttributeModifierBase> InModifi
 	if (Index == 0)
 	{
 		// Make the second modifier as the head if possible
-		if (ModifierList.Num() > 2)
+		if (ModifierList.Num() > 1)
 		{
 			TSharedPtr<TAttributeModifierBase<T>> NewHead = ModifierList[1];
 			// Clear the previous modifier

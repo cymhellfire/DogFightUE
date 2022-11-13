@@ -11,25 +11,14 @@ function TestCard:OnInitialized()
         Tags = {"Tag1", "Tag2"},
     })
 
-    -- Create modifier
-    self:CreateModifierForIntegerAttribute("Damage", 2, UE.EModifierOperatorType.MOT_Multiply)
-    self:CreateModifierForIntegerAttribute("Damage", 5, UE.EModifierOperatorType.MOT_Addition)
-    self:CreateModifierForIntegerAttribute("Damage", 3, UE.EModifierOperatorType.MOT_Divide)
-
-    -- Create modifier with apply rule
-    self:CreateModifierForIntegerAttribute("Damage", 5, UE.EModifierOperatorType.MOT_Multiply, "DataType=Float")
-    self:CreateModifierForIntegerAttribute("Damage", 10, UE.EModifierOperatorType.MOT_Addition, "[DataType=Float,Name=Damage,Tag(Tag1,Tag2)]")
-    self:CreateModifierForIntegerAttribute("Damage", 5, UE.EModifierOperatorType.MOT_Divide, "(Name=Damage,Tag[Tag1,Tag2,Tag3],DataType=Integer)")
-    self:CreateModifierForIntegerAttribute("Damage", 2, UE.EModifierOperatorType.MOT_Addition, "(Name=Damage,[DataType=Integer,DataType=Float])")
-
     -- Create modifier from service
     local ModifierService = _G.GameServices.CardModifierGameService
     if ModifierService ~= nil then
         local Modifier1 = ModifierService:CreateCardModifier("CardModifierTest", self)
-        self:AddAttributeModifier(Modifier1)
+        self:AddModifierObject(Modifier1)
         local Modifier2 = ModifierService:CreateCardModifier("CardModifierTest", self)
-        self:AddAttributeModifier(Modifier2)
-        self:RemoveAttributeModifier(Modifier1)
+        self:AddModifierObject(Modifier2)
+        self:RemoveModifierObject(Modifier1)
     end
 end
 

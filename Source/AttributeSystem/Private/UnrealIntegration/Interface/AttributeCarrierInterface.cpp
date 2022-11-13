@@ -1,11 +1,14 @@
 #include "UnrealIntegration/Interface/AttributeCarrierInterface.h"
+
+#include "AttributeSystem.h"
 #include "AttributeSystem/AttributeFunctionLibrary.h"
 #include "AttributeSystem/Attribute/Attribute.h"
+#include "UnrealIntegration/Interface/AttributeModifierCarrierInterface.h"
 
 bool IAttributeCarrierInterface::AddAttribute(const FAttributeCreateArgument& InArgument)
 {
 	auto NewAttribute = FAttributeFunctionLibrary::CreateAttribute(InArgument);
-	if (NewAttribute.IsValid())
+	if (NewAttribute && NewAttribute.IsValid())
 	{
 		// Add new attribute
 		return OnAttributeAdded(NewAttribute);
@@ -94,4 +97,74 @@ TArray<TSharedPtr<FAttributeBase>> IAttributeCarrierInterface::GetAttributesByTa
 	}
 
 	return Result;
+}
+
+bool IAttributeCarrierInterface::AddModifierObject(TScriptInterface<IAttributeModifierCarrierInterface> InModifierObject)
+{
+	if (InModifierObject == nullptr)
+	{
+		return false;
+	}
+
+	// Try to apply modifier
+	if (AddAttributeModifier(InModifierObject->GetModifier()))
+	{
+		// Notify new modifier object added
+		OnModifierObjectAdded(InModifierObject.GetInterface());
+
+		return true;
+	}
+
+	return false;
+}
+
+bool IAttributeCarrierInterface::RemoveModifierObject(TScriptInterface<IAttributeModifierCarrierInterface> InModifierObject)
+{
+	if (InModifierObject == nullptr)
+	{
+		return false;
+	}
+
+	// Skip modifier that is not applied yet
+	if (!IsModifierObjectApplied(InModifierObject.GetInterface()))
+	{
+		UE_LOG(LogAttributeSystem, Warning, TEXT("[AttributeCarrier] Modifier must be applied before remove."));
+		return false;
+	}
+
+	// Remove modifier
+	InModifierObject->RemoveFromTarget();
+
+	// Notify modifier object removed
+	OnModifierObjectRemoved(InModifierObject.GetInterface());
+
+	return true;
+}
+
+bool IAttributeCarrierInterface::AddAttributeModifier(TSharedPtr<FAttributeModifierBase> InModifier)
+{
+	if (!InModifier.IsValid())
+	{
+		return false;
+	}
+
+	// Filter attributes by modifier data type
+	auto CandidateList = GetAttributesByDataType(InModifier->GetDataType());
+	if (CandidateList.Num() == 0)
+	{
+		UE_LOG(LogAttributeSystem, Warning, TEXT("[AttributeCarrier] No attribute matches the data type [%s] from modifier."),
+			*UEnum::GetValueAsString<EAttributeDataType>(InModifier->GetDataType()));
+		return false;
+	}
+
+	// Pick random one from list if multiple attributes matched the data type
+	TSharedPtr<FAttributeBase> TargetAttribute = CandidateList[FMath::RandRange(0, CandidateList.Num() - 1)];
+	TargetAttribute->AddModifier(InModifier);
+
+	return true;
+}
+
+bool IAttributeCarrierInterface::IsModifierObjectApplied(IAttributeModifierCarrierInterface* InModifier) const
+{
+	return GetAllModifierObjects().Contains(InModifier);
 }

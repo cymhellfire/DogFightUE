@@ -26,4 +26,13 @@ struct ATTRIBUTESYSTEM_API FModifierCreateArgument
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="ModifierArgument")
 	FString ApplyRuleString;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="ModifierArgument")
+	bool InitBooleanValue = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="ModifierArgument")
+	int32 InitIntegerValue = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="ModifierArgument")
+	float InitFloatValue = 0.f;
 };

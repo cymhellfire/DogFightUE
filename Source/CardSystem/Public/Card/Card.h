@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "AttributeSystem/Modifier/AttributeModifierCommon.h"
 #include "Player/CardTargetProviderInterface.h"
 #include "UnrealIntegration/UObject/AttributeBasedObject.h"
 #include "Card.generated.h"
@@ -9,7 +8,6 @@
 class UCardCommand;
 class UCardAsyncCommand;
 class UCardConcurrentCallbackCommand;
-class FAttributeBase;
 class UCardModifier;
 
 UENUM()
@@ -33,27 +31,6 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category="Card")
 	void BP_Initialize();
-
-	// ------------ Card Attribute Modifier -----------------
-public:
-	UFUNCTION(BlueprintCallable, Category="Card")
-	bool CreateModifierForBoolAttribute(FName InName, bool InValue);
-
-	UFUNCTION(BlueprintCallable, Category="Card")
-	bool CreateModifierForIntegerAttribute(FName InName, int32 InValue, EModifierOperatorType OpType, FString ApplyRule = "");
-
-	UFUNCTION(BlueprintCallable, Category="Card")
-	bool CreateModifierForFloatAttribute(FName InName, float InValue, EModifierOperatorType OpType);
-
-	UFUNCTION(BlueprintCallable, Category="Card")
-	void AddAttributeModifier(UCardModifier* InModifier);
-
-	UFUNCTION(BlueprintCallable, Category="Card")
-	void RemoveAttributeModifier(UCardModifier* InModifier);
-
-protected:
-	UPROPERTY(Transient)
-	TArray<UCardModifier*> AppliedModifiers;
 
 public:
 	/**

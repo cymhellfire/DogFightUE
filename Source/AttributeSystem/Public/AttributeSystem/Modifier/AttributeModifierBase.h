@@ -8,13 +8,14 @@ template<typename T>
 class TAttributeBase;
 class FApplyRuleBase;
 
-class ATTRIBUTESYSTEM_API FAttributeModifierBase
+class ATTRIBUTESYSTEM_API FAttributeModifierBase : public TSharedFromThis<FAttributeModifierBase>
 {
 public:
 	virtual ~FAttributeModifierBase() {}
 
 	virtual bool Apply(TWeakPtr<FAttributeBase> InAttribute) = 0;
 	virtual void Remove() = 0;
+	virtual void RemoveFromTarget() = 0;
 
 	virtual void SetApplyRule(TSharedPtr<FApplyRuleBase> InRule)
 	{
@@ -44,6 +45,7 @@ public:
 
 	virtual bool Apply(TWeakPtr<FAttributeBase> InAttribute) override;
 	virtual void Remove() override;
+	virtual void RemoveFromTarget() override;
 
 	virtual void RegisterPreviousModifier(TWeakPtr<TAttributeModifierBase<T>> InModifier);
 	virtual void ClearPreviousModifier();

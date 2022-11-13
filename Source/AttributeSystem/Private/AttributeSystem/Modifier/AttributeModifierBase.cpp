@@ -8,7 +8,8 @@ template <typename T>
 TAttributeModifierBase<T>::TAttributeModifierBase(const FModifierCreateArgument& InArgument, T InValue)
 	: ModifyFactor(InValue)
 {
-	bDirty = false;
+	// Mark modifier dirty as default to ensure the value calculation can be triggered when first access
+	bDirty = true;
 
 	ModifiedTarget = nullptr;
 	ModifiedValue = 0;
@@ -67,6 +68,23 @@ void TAttributeModifierBase<T>::Remove()
 	}
 
 	MarkAsDirty();
+}
+
+template <typename T>
+void TAttributeModifierBase<T>::RemoveFromTarget()
+{
+	if (!ModifiedTarget.IsValid())
+	{
+		return;
+	}
+
+	auto PinnedAttribute = ModifiedTarget.Pin();
+	if (PinnedAttribute.IsValid())
+	{
+		MarkAsDirty();
+
+		PinnedAttribute->RemoveModifier(SharedThis(this));
+	}
 }
 
 template <typename T>

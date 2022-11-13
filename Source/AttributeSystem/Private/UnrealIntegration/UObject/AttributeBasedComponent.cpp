@@ -34,6 +34,16 @@ bool UAttributeBasedComponent::RemoveAttribute(FName InName)
 	return AttributeMap.Remove(InName) == 1;
 }
 
+bool UAttributeBasedComponent::AddModifierObject(TScriptInterface<IAttributeModifierCarrierInterface> InModifierObject)
+{
+	return IAttributeCarrierInterface::AddModifierObject(InModifierObject);
+}
+
+bool UAttributeBasedComponent::RemoveModifierObject(TScriptInterface<IAttributeModifierCarrierInterface> InModifierObject)
+{
+	return IAttributeCarrierInterface::RemoveModifierObject(InModifierObject);
+}
+
 bool UAttributeBasedComponent::OnAttributeAdded(TSharedPtr<FAttributeBase> InAttribute)
 {
 	if (!InAttribute.IsValid() || AttributeMap.Contains(InAttribute->GetName()))
@@ -61,4 +71,29 @@ TArray<TSharedPtr<FAttributeBase>> UAttributeBasedComponent::GetAllAttributes()
 	TArray<TSharedPtr<FAttributeBase>> Result;
 	AttributeMap.GenerateValueArray(Result);
 	return Result;
+}
+
+void UAttributeBasedComponent::OnModifierObjectAdded(IAttributeModifierCarrierInterface* InModifierObject)
+{
+	if (InModifierObject == nullptr)
+	{
+		return;
+	}
+
+	ModifierList.AddUnique(InModifierObject);
+}
+
+void UAttributeBasedComponent::OnModifierObjectRemoved(IAttributeModifierCarrierInterface* InModifierObject)
+{
+	if (InModifierObject == nullptr)
+	{
+		return;
+	}
+
+	ModifierList.Remove(InModifierObject);
+}
+
+TArray<IAttributeModifierCarrierInterface*> UAttributeBasedComponent::GetAllModifierObjects() const
+{
+	return ModifierList;
 }
