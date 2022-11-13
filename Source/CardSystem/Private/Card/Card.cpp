@@ -1,7 +1,6 @@
 ﻿#include "Card/Card.h"
 
 #include "CardSystem.h"
-#include "Attribute/CardAttributeFunctionLibrary.h"
 #include "Attribute/CardAttributeModifierFunctionLibrary.h"
 #include "AttributeSystem/Attribute/Attribute.h"
 #include "AttributeSystem/Modifier/AttributeModifier.h"
@@ -31,67 +30,6 @@ void UCard::Initialize()
 {
 	// Invoke blueprint side implementation
 	BP_Initialize();
-}
-
-bool UCard::CreateAttributeBool(FName InName, bool InValue)
-{
-	return FCardAttributeFunctionLibrary::CreateBoolAttributeForCard(this, InName, InValue);
-}
-
-bool UCard::CreateAttributeInteger(FName InName, int32 InValue)
-{
-	return FCardAttributeFunctionLibrary::CreateIntegerAttributeForCard(this, InName, InValue);
-}
-
-bool UCard::CreateAttributeFloat(FName InName, float InValue)
-{
-	return FCardAttributeFunctionLibrary::CreateFloatAttributeForCard(this, InName, InValue);
-}
-
-bool UCard::AddAttribute(TSharedPtr<FAttributeBase> InAttribute)
-{
-	if (!InAttribute.IsValid())
-	{
-		UE_LOG(LogCardSystem, Error, TEXT("[Card] Invalid attribute to add."));
-		return false;
-	}
-
-	const FName AttrName = InAttribute->GetName();
-	// Attribute name duplicated check
-	if (AttributeMap.Contains(AttrName))
-	{
-		UE_LOG(LogCardSystem, Error, TEXT("[Card] Duplicated attribute name: %s"), *AttrName.ToString());
-		return false;
-	}
-
-	AttributeMap.Add(AttrName, InAttribute);
-	return true;
-}
-
-bool UCard::RemoveAttribute(FName InName)
-{
-	return AttributeMap.Remove(InName) == 1;
-}
-
-TSharedPtr<FAttributeBase> UCard::GetAttribute(FName InName)
-{
-	const auto Result = AttributeMap.Find(InName);
-	return Result ? *Result : nullptr;
-}
-
-bool UCard::GetAttributeBoolValue(FName InName, bool& OutValue)
-{
-	return FCardAttributeFunctionLibrary::GetBoolAttributeValueFromCard(this, InName, OutValue);
-}
-
-bool UCard::GetAttributeIntegerValue(FName InName, int32& OutValue)
-{
-	return FCardAttributeFunctionLibrary::GetIntegerAttributeValueFromCard(this, InName, OutValue);
-}
-
-bool UCard::GetAttributeFloatValue(FName InName, float& OutValue)
-{
-	return FCardAttributeFunctionLibrary::GetFloatAttributeValueFromCard(this, InName, OutValue);
 }
 
 bool UCard::CreateModifierForBoolAttribute(FName InName, bool InValue)
@@ -150,73 +88,6 @@ bool UCard::CreateModifierForFloatAttribute(FName InName, float InValue, EModifi
 	// Apply modifier
 	TargetAttribute->AddModifier(NewModifier);
 	return true;
-}
-
-bool UCard::AddAttributeTags(FName InName, const TArray<FString>& InTags)
-{
-	auto TargetAttribute = GetAttribute(InName);
-	if (!TargetAttribute.IsValid())
-	{
-		return false;
-	}
-
-	// Add tags
-	TargetAttribute->AddTags(InTags);
-	return true;
-}
-
-bool UCard::RemoveAttributeTags(FName InName, const TArray<FString>& InTags)
-{
-	auto TargetAttribute = GetAttribute(InName);
-	if (!TargetAttribute.IsValid())
-	{
-		return false;
-	}
-
-	// Remove tags
-	TargetAttribute->RemoveTags(InTags);
-	return true;
-}
-
-bool UCard::ClearAttributeTags(FName InName)
-{
-	auto TargetAttribute = GetAttribute(InName);
-	if (!TargetAttribute.IsValid())
-	{
-		return false;
-	}
-
-	// Clear tags
-	TargetAttribute->ClearTags();
-	return true;
-}
-
-bool UCard::SetAttributeTags(FName InName, const TArray<FString>& InTags)
-{
-	auto TargetAttribute = GetAttribute(InName);
-	if (!TargetAttribute.IsValid())
-	{
-		return false;
-	}
-
-	// Set tags
-	TargetAttribute->ClearTags();
-	TargetAttribute->AddTags(InTags);
-	return true;
-}
-
-TArray<TSharedPtr<FAttributeBase>> UCard::GetAttributesByDataType(EAttributeDataType InDataType)
-{
-	TArray<TSharedPtr<FAttributeBase>> Result;
-	for (auto Pairs : AttributeMap)
-	{
-		if (Pairs.Value->GetDataType() == InDataType)
-		{
-			Result.Add(Pairs.Value);
-		}
-	}
-
-	return Result;
 }
 
 void UCard::AddAttributeModifier(UCardModifier* InModifier)

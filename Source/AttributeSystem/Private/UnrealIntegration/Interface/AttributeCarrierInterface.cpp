@@ -14,40 +14,43 @@ bool IAttributeCarrierInterface::AddAttribute(const FAttributeCreateArgument& In
 	return false;
 }
 
-bool IAttributeCarrierInterface::GetAttributeBoolValue(FName InName)
+bool IAttributeCarrierInterface::GetAttributeBoolValue(FName InName, bool& OutValue)
 {
 	auto Attribute = GetAttribute(InName);
 	// Convert to expected type
 	if (auto ConvertedAttr = StaticCastSharedPtr<FAttributeBoolean>(Attribute))
 	{
-		return ConvertedAttr->GetValue();
+		OutValue = ConvertedAttr->GetValue();
+		return true;
 	}
 
 	return false;
 }
 
-int32 IAttributeCarrierInterface::GetAttributeIntegerValue(FName InName)
+bool IAttributeCarrierInterface::GetAttributeIntegerValue(FName InName, int32& OutValue)
 {
 	auto Attribute = GetAttribute(InName);
 	// Convert to expected type
 	if (auto ConvertedAttr = StaticCastSharedPtr<FAttributeInteger>(Attribute))
 	{
-		return ConvertedAttr->GetValue();
+		OutValue = ConvertedAttr->GetValue();
+		return true;
 	}
 
-	return 0;
+	return false;
 }
 
-float IAttributeCarrierInterface::GetAttributeFloatValue(FName InName)
+bool IAttributeCarrierInterface::GetAttributeFloatValue(FName InName, float& OutValue)
 {
 	auto Attribute = GetAttribute(InName);
 	// Convert to expected type
 	if (auto ConvertedAttr = StaticCastSharedPtr<FAttributeFloat>(Attribute))
 	{
-		return ConvertedAttr->GetValue();
+		OutValue = ConvertedAttr->GetValue();
+		return true;
 	}
 
-	return 0.f;
+	return false;
 }
 
 TArray<TSharedPtr<FAttributeBase>> IAttributeCarrierInterface::GetAttributesByDataType(EAttributeDataType InDataType)

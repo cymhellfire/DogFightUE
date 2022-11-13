@@ -1,4 +1,4 @@
-#include "UnrealIntegration/Component/AttributeBasedComponent.h"
+#include "UnrealIntegration/UObject/AttributeBasedComponent.h"
 
 #include "AttributeSystem/Attribute/AttributeBase.h"
 
@@ -14,19 +14,19 @@ bool UAttributeBasedComponent::AddAttribute(const FAttributeCreateArgument& InAr
 	return IAttributeCarrierInterface::AddAttribute(InArgument);
 }
 
-bool UAttributeBasedComponent::GetAttributeBoolValue(FName InName)
+bool UAttributeBasedComponent::GetAttributeBoolValue(FName InName, bool& OutValue)
 {
-	return IAttributeCarrierInterface::GetAttributeBoolValue(InName);
+	return IAttributeCarrierInterface::GetAttributeBoolValue(InName, OutValue);
 }
 
-int32 UAttributeBasedComponent::GetAttributeIntegerValue(FName InName)
+bool UAttributeBasedComponent::GetAttributeIntegerValue(FName InName, int32& OutValue)
 {
-	return IAttributeCarrierInterface::GetAttributeIntegerValue(InName);
+	return IAttributeCarrierInterface::GetAttributeIntegerValue(InName, OutValue);
 }
 
-float UAttributeBasedComponent::GetAttributeFloatValue(FName InName)
+bool UAttributeBasedComponent::GetAttributeFloatValue(FName InName, float& OutValue)
 {
-	return IAttributeCarrierInterface::GetAttributeFloatValue(InName);
+	return IAttributeCarrierInterface::GetAttributeFloatValue(InName, OutValue);
 }
 
 bool UAttributeBasedComponent::RemoveAttribute(FName InName)

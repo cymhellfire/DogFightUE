@@ -28,7 +28,7 @@ void UTestAttributeComponent::InitializeComponent()
 	FAttributeCreateArgument NewAttributeArgument;
 	NewAttributeArgument.AttrName = NewAttrName;
 	NewAttributeArgument.DataType = ADT_Integer;
-	NewAttributeArgument.InitIntValue = 100;
+	NewAttributeArgument.InitIntegerValue = 100;
 
 	if (AddAttribute(NewAttributeArgument))
 	{
@@ -49,7 +49,7 @@ void UTestAttributeComponent::ChangeTestAttribute(int32 NewValue)
 void UTestAttributeComponent::SetTestInteger(int32 NewValue)
 {
 	MARK_PROPERTY_DIRTY_FROM_NAME(UTestAttributeComponent, TestInteger, this);
-	TestInteger.Value = NewValue;
+	TestInteger = NewValue;
 }
 
 void UTestAttributeComponent::OnTestAttributeValueChanged(TSharedPtr<FAttributeBase> Attribute)
@@ -61,7 +61,7 @@ void UTestAttributeComponent::OnTestAttributeValueChanged(TSharedPtr<FAttributeB
 	}
 }
 
-void UTestAttributeComponent::OnRep_TestInteger(const FNetAttributeInteger& OldInteger)
+void UTestAttributeComponent::OnRep_TestInteger(int32 OldInteger)
 {
-	UE_LOG(LogTemp, Log, TEXT("[TestAttribute] OnRep Old: %d New: %d"), OldInteger.Value, TestInteger.Value);
+	UE_LOG(LogTemp, Log, TEXT("[TestAttribute] OnRep Old: %d New: %d"), OldInteger, TestInteger);
 }

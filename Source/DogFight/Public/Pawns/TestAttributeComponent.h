@@ -1,7 +1,6 @@
 #pragma once
 
-#include "UnrealIntegration/DataWrapper/UnrealAttribute.h"
-#include "UnrealIntegration/Component/AttributeBasedComponent.h"
+#include "UnrealIntegration/UObject/AttributeBasedComponent.h"
 #include "TestAttributeComponent.generated.h"
 
 UCLASS(BlueprintType)
@@ -23,9 +22,9 @@ protected:
 	void SetTestInteger(int32 NewValue);
 
 	UFUNCTION()
-	void OnRep_TestInteger(const FNetAttributeInteger& OldInteger);
+	void OnRep_TestInteger(int32 OldInteger);
 
 protected:
 	UPROPERTY(BlueprintReadWrite, Category="TestAttribute", ReplicatedUsing=OnRep_TestInteger)
-	FNetAttributeInteger TestInteger;
+	int32 TestInteger;
 };

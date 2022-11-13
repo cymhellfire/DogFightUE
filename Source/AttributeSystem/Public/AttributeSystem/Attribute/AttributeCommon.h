@@ -18,10 +18,10 @@ struct ATTRIBUTESYSTEM_API FAttributeCreateArgument
 	TArray<FString> Tags;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AttributeArgument")
-	bool InitBoolValue = false;
+	bool InitBooleanValue = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AttributeArgument")
-	int32 InitIntValue = 0;
+	int32 InitIntegerValue = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AttributeArgument")
 	float InitFloatValue = 0.f;

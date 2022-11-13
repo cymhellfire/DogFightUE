@@ -7,13 +7,6 @@ local CardBase = Class()
 --========================== Workflow ==========================--
 
 function CardBase:BP_Initialize()
-    -- Construct attribute creating function table
-    self.AttributeCreateHandle = {
-        ["Boolean"] = self.CreateAttributeBool,
-        ["Integer"] = self.CreateAttributeInteger,
-        ["Float"] = self.CreateAttributeFloat,
-    }
-
     -- Invoke OnInitialize of any subclass
     if type(self.OnInitialized) == "function" then
         self:OnInitialized()
@@ -22,10 +15,10 @@ end
 
 --========================== Attribute ==========================--
 
----Add new attribute to this card based on given arguments.
+---Create new attribute to this card based on given arguments.
 ---根据传入参数为当前卡牌添加新的属性。
 ---@param InTable table @ Create argument / 构造参数
-function CardBase:AddAttribute(InTable)
+function CardBase:CreateAttribute(InTable)
     local NameStr = InTable["Name"]
     if NameStr == nil then
         print("[CardBase] Cannot create attribute without name.")
@@ -35,25 +28,22 @@ function CardBase:AddAttribute(InTable)
     local DataTypeStr = InTable["DataType"]
     local BaseValue = InTable["Value"] and InTable["Value"] or AttributeEnum.DefaultValue[DataTypeStr]
 
-    -- Invoke creation handler
-    if self.AttributeCreateHandle[DataTypeStr] then
-        self.AttributeCreateHandle[DataTypeStr](self, NameStr, BaseValue)
-    else
-        print("[CardBase] Unknown data type: " .. DataTypeStr)
-        return
-    end
-
     -- Set tags
+    local TagArray = UE.TArray("")
     local Tags = InTable["Tags"]
-    if type(Tags) ~= "table" or #Tags == 0 then
-        return
+    if type(Tags) == "table" and #Tags > 0 then
+        for _, v in ipairs(Tags) do
+            TagArray:Add(v)
+        end
     end
 
-    local TagArray = UE.TArray("")
-    for _, v in ipairs(Tags) do
-        TagArray:Add(v)
-    end
-    self:SetAttributeTags(NameStr, TagArray)
+    -- Construct attribute argument
+    local NewArgument = UE.FAttributeCreateArgument()
+    NewArgument.AttrName = NameStr
+    NewArgument.DataType = AttributeEnum.DataType[DataTypeStr]
+    NewArgument.Tags = TagArray
+    NewArgument["Init" .. DataTypeStr .. "Value"] = BaseValue
+    self:AddAttribute(NewArgument)
 end
 
 --====================== Concurrent Command =======================

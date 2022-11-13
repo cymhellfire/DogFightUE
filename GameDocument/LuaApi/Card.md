@@ -45,7 +45,7 @@ return XXX
 ```
 function CardXXX:OnInitialized()
     -- 创建属性
-    self:AddAttribute({
+    self:CreateAttribute({
         Name = "Damage",
         DataType = "Integer",
         Value = 50,
@@ -60,7 +60,7 @@ end
 
 ### 创建属性
 
-可使用`AddAttribute()`函数为当前卡牌创建属性，该函数接收一个表作为创建参数，内容如下：
+可使用`CreateAttribute()`函数为当前卡牌创建属性，该函数接收一个表作为创建参数，内容如下：
 
 | 属性名      | 作用         | 备注                                                  |
 |----------|------------|-----------------------------------------------------|
@@ -73,7 +73,7 @@ end
 
 ```
 -- 创建一个名为Damage，初始值为50，且具有Tag1与Tag2标签的整数属性
-self:AddAttribute({
+self:CreateAttribute({
     Name = "Damage",
     DataType = "Integer",
     Value = 50,

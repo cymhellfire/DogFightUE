@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "AttributeSystem/Modifier/AttributeModifierCommon.h"
 #include "Player/CardTargetProviderInterface.h"
+#include "UnrealIntegration/UObject/AttributeBasedObject.h"
 #include "Card.generated.h"
 
 class UCardCommand;
@@ -19,7 +20,7 @@ enum class ECardExecutionResult : uint8
 };
 
 UCLASS(Blueprintable)
-class CARDSYSTEM_API UCard : public UObject
+class CARDSYSTEM_API UCard : public UAttributeBasedObject
 {
 	GENERATED_BODY()
 public:
@@ -33,32 +34,8 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category="Card")
 	void BP_Initialize();
 
-	// ---------------- Card Attribute ---------------------
-	UFUNCTION(BlueprintCallable, Category="Card")
-	bool CreateAttributeBool(FName InName, bool InValue);
-
-	UFUNCTION(BlueprintCallable, Category="Card")
-	bool CreateAttributeInteger(FName InName, int32 InValue);
-
-	UFUNCTION(BlueprintCallable, Category="Card")
-	bool CreateAttributeFloat(FName InName, float InValue);
-
-	bool AddAttribute(TSharedPtr<FAttributeBase> InAttribute);
-
-	TSharedPtr<FAttributeBase> GetAttribute(FName InName);
-
-	UFUNCTION(BlueprintCallable, Category="Card")
-	bool RemoveAttribute(FName InName);
-
-	UFUNCTION(BlueprintCallable, Category="Card")
-	bool GetAttributeBoolValue(FName InName, bool& OutValue);
-
-	UFUNCTION(BlueprintCallable, Category="Card")
-	bool GetAttributeIntegerValue(FName InName, int32& OutValue);
-
-	UFUNCTION(BlueprintCallable, Category="Card")
-	bool GetAttributeFloatValue(FName InName, float& OutValue);
-
+	// ------------ Card Attribute Modifier -----------------
+public:
 	UFUNCTION(BlueprintCallable, Category="Card")
 	bool CreateModifierForBoolAttribute(FName InName, bool InValue);
 
@@ -68,25 +45,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Card")
 	bool CreateModifierForFloatAttribute(FName InName, float InValue, EModifierOperatorType OpType);
 
-	UFUNCTION(BlueprintCallable, Category="Card")
-	bool AddAttributeTags(FName InName, const TArray<FString>& InTags);
-
-	UFUNCTION(BlueprintCallable, Category="Card")
-	bool RemoveAttributeTags(FName InName, const TArray<FString>& InTags);
-
-	UFUNCTION(BlueprintCallable, Category="Card")
-	bool ClearAttributeTags(FName InName);
-
-	UFUNCTION(BlueprintCallable, Category="Card")
-	bool SetAttributeTags(FName InName, const TArray<FString>& InTags);
-
-protected:
-	TArray<TSharedPtr<FAttributeBase>> GetAttributesByDataType(EAttributeDataType InDataType);
-
-	TMap<FName, TSharedPtr<FAttributeBase>> AttributeMap;
-
-	// ------------ Card Attribute Modifier -----------------
-public:
 	UFUNCTION(BlueprintCallable, Category="Card")
 	void AddAttributeModifier(UCardModifier* InModifier);
 

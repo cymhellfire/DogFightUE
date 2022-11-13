@@ -20,13 +20,13 @@ public:
 	virtual bool AddAttribute(const FAttributeCreateArgument& InArgument);
 
 	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
-	virtual bool GetAttributeBoolValue(FName InName);
+	virtual bool GetAttributeBoolValue(FName InName, bool& OutValue);
 
 	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
-	virtual int32 GetAttributeIntegerValue(FName InName);
+	virtual bool GetAttributeIntegerValue(FName InName, int32& OutValue);
 
 	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
-	virtual float GetAttributeFloatValue(FName InName);
+	virtual bool GetAttributeFloatValue(FName InName, float& OutValue);
 
 	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
 	virtual bool RemoveAttribute(FName InName) = 0;

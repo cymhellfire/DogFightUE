@@ -4,7 +4,7 @@ local TestCard = Class("DogFight.Card.CardBase")
 
 function TestCard:OnInitialized()
     -- Create attributes
-    self:AddAttribute({
+    self:CreateAttribute({
         Name = "Damage",
         DataType = "Integer",
         Value = 50,

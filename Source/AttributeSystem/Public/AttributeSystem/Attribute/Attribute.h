@@ -10,7 +10,7 @@ class ATTRIBUTESYSTEM_API FAttributeBoolean : public TAttributeBase<bool>
 	friend FAttributeFunctionLibrary;
 protected:
 	FAttributeBoolean(const FAttributeCreateArgument& InArgument)
-		: TAttributeBase<bool>(InArgument, InArgument.InitBoolValue)
+		: TAttributeBase<bool>(InArgument, InArgument.InitBooleanValue)
 	{
 		DataType = EAttributeDataType::ADT_Boolean;
 	}
@@ -21,7 +21,7 @@ class ATTRIBUTESYSTEM_API FAttributeInteger : public TAttributeBase<int32>
 	friend FAttributeFunctionLibrary;
 protected:
 	FAttributeInteger(const FAttributeCreateArgument& InArgument)
-		: TAttributeBase<int32>(InArgument, InArgument.InitIntValue)
+		: TAttributeBase<int32>(InArgument, InArgument.InitIntegerValue)
 	{
 		DataType = EAttributeDataType::ADT_Integer;
 	}

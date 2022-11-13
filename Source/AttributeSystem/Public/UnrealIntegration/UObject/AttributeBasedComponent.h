@@ -16,13 +16,13 @@ public:
 	virtual bool AddAttribute(const FAttributeCreateArgument& InArgument) override;
 
 	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
-	virtual bool GetAttributeBoolValue(FName InName) override;
+	virtual bool GetAttributeBoolValue(FName InName, bool& OutValue) override;
 
 	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
-	virtual int32 GetAttributeIntegerValue(FName InName) override;
+	virtual bool GetAttributeIntegerValue(FName InName, int32& OutValue) override;
 
 	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
-	virtual float GetAttributeFloatValue(FName InName) override;
+	virtual bool GetAttributeFloatValue(FName InName, float& OutValue) override;
 
 	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
 	virtual bool RemoveAttribute(FName InName) override;
