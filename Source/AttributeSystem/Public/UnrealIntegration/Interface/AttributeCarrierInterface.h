@@ -47,8 +47,10 @@ protected:
 	virtual TArray<TSharedPtr<FAttributeBase>> GetAttributesByTags(const TArray<FName>& InTags, bool bMatchAll);
 
 	virtual bool AddAttributeModifier(TSharedPtr<FAttributeModifierBase> InModifier);
-	virtual void OnModifierObjectAdded(IAttributeModifierCarrierInterface* InModifierObject) = 0;
-	virtual void OnModifierObjectRemoved(IAttributeModifierCarrierInterface* InModifierObject) = 0;
+	virtual void OnModifierInterfaceAdded(IAttributeModifierCarrierInterface* InModifierInterface) = 0;
+	virtual void OnModifierObjectAdded(UObject* InModifierObject) = 0;
+	virtual void OnModifierInterfaceRemoved(IAttributeModifierCarrierInterface* InModifierObject) = 0;
+	virtual void OnModifierObjectRemoved(UObject* InModifierObject) = 0;
 	virtual TArray<IAttributeModifierCarrierInterface*> GetAllModifierObjects() const = 0;
 	virtual bool IsModifierObjectApplied(IAttributeModifierCarrierInterface* InModifier) const;
 };

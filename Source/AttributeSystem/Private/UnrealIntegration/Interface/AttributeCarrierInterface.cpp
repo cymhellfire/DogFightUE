@@ -110,7 +110,8 @@ bool IAttributeCarrierInterface::AddModifierObject(TScriptInterface<IAttributeMo
 	if (AddAttributeModifier(InModifierObject->GetModifier()))
 	{
 		// Notify new modifier object added
-		OnModifierObjectAdded(InModifierObject.GetInterface());
+		OnModifierInterfaceAdded(InModifierObject.GetInterface());
+		OnModifierObjectAdded(InModifierObject.GetObject());
 
 		return true;
 	}
@@ -136,7 +137,8 @@ bool IAttributeCarrierInterface::RemoveModifierObject(TScriptInterface<IAttribut
 	InModifierObject->RemoveFromTarget();
 
 	// Notify modifier object removed
-	OnModifierObjectRemoved(InModifierObject.GetInterface());
+	OnModifierInterfaceRemoved(InModifierObject.GetInterface());
+	OnModifierObjectRemoved(InModifierObject.GetObject());
 
 	return true;
 }

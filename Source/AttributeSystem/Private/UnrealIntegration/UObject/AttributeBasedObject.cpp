@@ -66,24 +66,44 @@ TArray<TSharedPtr<FAttributeBase>> UAttributeBasedObject::GetAllAttributes()
 	return Result;
 }
 
-void UAttributeBasedObject::OnModifierObjectAdded(IAttributeModifierCarrierInterface* InModifierObject)
+void UAttributeBasedObject::OnModifierInterfaceAdded(IAttributeModifierCarrierInterface* InModifierInterface)
 {
-	if (InModifierObject == nullptr)
+	if (InModifierInterface == nullptr)
 	{
 		return;
 	}
 
-	ModifierList.AddUnique(InModifierObject);
+	ModifierList.AddUnique(InModifierInterface);
 }
 
-void UAttributeBasedObject::OnModifierObjectRemoved(IAttributeModifierCarrierInterface* InModifierObject)
+void UAttributeBasedObject::OnModifierObjectAdded(UObject* InModifierObject)
 {
 	if (InModifierObject == nullptr)
 	{
 		return;
 	}
 
-	ModifierList.Remove(InModifierObject);
+	ModifierObjectList.AddUnique(InModifierObject);
+}
+
+void UAttributeBasedObject::OnModifierInterfaceRemoved(IAttributeModifierCarrierInterface* InModifierInterface)
+{
+	if (InModifierInterface == nullptr)
+	{
+		return;
+	}
+
+	ModifierList.Remove(InModifierInterface);
+}
+
+void UAttributeBasedObject::OnModifierObjectRemoved(UObject* InModifierObject)
+{
+	if (InModifierObject == nullptr)
+	{
+		return;
+	}
+
+	ModifierObjectList.Remove(InModifierObject);
 }
 
 TArray<IAttributeModifierCarrierInterface*> UAttributeBasedObject::GetAllModifierObjects() const

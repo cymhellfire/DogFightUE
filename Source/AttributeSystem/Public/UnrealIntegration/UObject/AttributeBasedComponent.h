@@ -37,8 +37,10 @@ protected:
 	virtual TSharedPtr<FAttributeBase> GetAttribute(FName InName) override;
 	virtual TArray<TSharedPtr<FAttributeBase>> GetAllAttributes() override;
 
-	virtual void OnModifierObjectAdded(IAttributeModifierCarrierInterface* InModifierObject) override;
-	virtual void OnModifierObjectRemoved(IAttributeModifierCarrierInterface* InModifierObject) override;
+	virtual void OnModifierInterfaceAdded(IAttributeModifierCarrierInterface* InModifierInterface) override;
+	virtual void OnModifierObjectAdded(UObject* InModifierObject) override;
+	virtual void OnModifierInterfaceRemoved(IAttributeModifierCarrierInterface* InModifierInterface) override;
+	virtual void OnModifierObjectRemoved(UObject* InModifierObject) override;
 	virtual TArray<IAttributeModifierCarrierInterface*> GetAllModifierObjects() const override;
 	// -------- Attribute Carrier Interface --------
 
@@ -46,4 +48,8 @@ protected:
 	TMap<FName, TSharedPtr<FAttributeBase>> AttributeMap;
 
 	TArray<IAttributeModifierCarrierInterface*> ModifierList;
+
+	// Reference holder for modifiers
+	UPROPERTY(Transient)
+	TArray<UObject*> ModifierObjectList;
 };
