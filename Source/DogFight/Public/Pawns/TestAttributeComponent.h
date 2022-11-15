@@ -1,5 +1,6 @@
 #pragma once
 
+#include "UnrealIntegration/DataWrapper/AttributeWrapper.h"
 #include "UnrealIntegration/UObject/AttributeBasedComponent.h"
 #include "TestAttributeComponent.generated.h"
 
@@ -16,15 +17,19 @@ public:
 
 	void ChangeTestAttribute(int32 NewValue);
 
+	void AddTestModifier();
+
+	void RemoveTestModifier();
+
 protected:
 	void OnTestAttributeValueChanged(TSharedPtr<FAttributeBase> Attribute);
 
 	void SetTestInteger(int32 NewValue);
 
 	UFUNCTION()
-	void OnRep_TestInteger(int32 OldInteger);
+	void OnRep_TestInteger(const FAttributeIntegerWrapper& OldInteger);
 
 protected:
 	UPROPERTY(BlueprintReadWrite, Category="TestAttribute", ReplicatedUsing=OnRep_TestInteger)
-	int32 TestInteger;
+	FAttributeIntegerWrapper TestInteger;
 };

@@ -3,6 +3,8 @@
 #include "AttributeSystem/Attribute/Attribute.h"
 #include "AttributeSystem/Attribute/AttributeBase.h"
 #include "Net/UnrealNetwork.h"
+#include "Pawns/TestAttributeModifier.h"
+#include "UnrealIntegration/UObject/AttributeModifierDescObject.h"
 
 UTestAttributeComponent::UTestAttributeComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -46,10 +48,26 @@ void UTestAttributeComponent::ChangeTestAttribute(int32 NewValue)
 	}
 }
 
+void UTestAttributeComponent::AddTestModifier()
+{
+	// Create test modifier
+	auto NewModifier = NewObject<UTestAttributeModifier>(this, "TestModifier", RF_Transient);
+	AddModifierObject(NewModifier);
+}
+
+void UTestAttributeComponent::RemoveTestModifier()
+{
+	// Remove from list head
+	if (ModifierObjectList.Num() > 0)
+	{
+		RemoveModifierObject(ModifierObjectList[0]);
+	}
+}
+
 void UTestAttributeComponent::SetTestInteger(int32 NewValue)
 {
 	MARK_PROPERTY_DIRTY_FROM_NAME(UTestAttributeComponent, TestInteger, this);
-	TestInteger = NewValue;
+	TestInteger.Value = NewValue;
 }
 
 void UTestAttributeComponent::OnTestAttributeValueChanged(TSharedPtr<FAttributeBase> Attribute)
@@ -61,7 +79,15 @@ void UTestAttributeComponent::OnTestAttributeValueChanged(TSharedPtr<FAttributeB
 	}
 }
 
-void UTestAttributeComponent::OnRep_TestInteger(int32 OldInteger)
+void UTestAttributeComponent::OnRep_TestInteger(const FAttributeIntegerWrapper& OldInteger)
 {
-	UE_LOG(LogTemp, Log, TEXT("[TestAttribute] OnRep Old: %d New: %d"), OldInteger, TestInteger);
+	UE_LOG(LogTemp, Log, TEXT("[TestAttribute] OnRep Old: %d New: %d"), OldInteger.Value, TestInteger.Value);
+
+	// Try to print out modifier data
+	for (int32 Index = 0; Index < TestInteger.AppliedModifierDesc.Num(); ++Index)
+	{
+		auto Desc = TestInteger.AppliedModifierDesc[Index];
+		UE_LOG(LogTemp, Log, TEXT("[TestAttribute] Modifier %d: Source = %s, Effect = %s"), Index, *Desc->GetSourceString(),
+			*Desc->GetEffectString());
+	}
 }

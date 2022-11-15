@@ -17,6 +17,9 @@ public:
 	virtual void SetSourceString(FString InStr);
 	virtual void SetEffectString(FString InStr);
 
+	FString GetSourceString() const { return Source; }
+	FString GetEffectString() const { return Effect; }
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AttribtueModifierDesc", Replicated)
 	FString Source;

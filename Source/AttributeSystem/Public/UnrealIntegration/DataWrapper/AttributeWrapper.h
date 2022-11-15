@@ -2,6 +2,8 @@
 
 #include "AttributeWrapper.generated.h"
 
+class UAttributeModifierDescObject;
+
 USTRUCT(BlueprintType)
 struct FAttributeBooleanWrapper
 {
@@ -14,7 +16,7 @@ struct FAttributeBooleanWrapper
 	bool Value;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AttributeBooleanWrapper", Transient)
-	TArray<UObject*> AppliedModifierDesc;
+	TArray<UAttributeModifierDescObject*> AppliedModifierDesc;
 };
 
 USTRUCT(BlueprintType)
@@ -29,7 +31,7 @@ struct FAttributeIntegerWrapper
 	int32 Value;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AttributeIntegerWrapper", Transient)
-	TArray<UObject*> AppliedModifierDesc;
+	TArray<UAttributeModifierDescObject*> AppliedModifierDesc;
 };
 
 USTRUCT(BlueprintType)
@@ -44,5 +46,5 @@ struct FAttributeFloatWrapper
 	float Value;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AttributeFloatWrapper", Transient)
-	TArray<UObject*> AppliedModifierDesc;
+	TArray<UAttributeModifierDescObject*> AppliedModifierDesc;
 };

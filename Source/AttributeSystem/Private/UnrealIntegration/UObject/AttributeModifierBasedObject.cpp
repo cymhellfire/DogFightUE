@@ -8,9 +8,20 @@ bool UAttributeModifierBasedObject::CreateModifier(const FModifierCreateArgument
 	return IAttributeModifierCarrierInterface::CreateModifier(InArgument);
 }
 
-void UAttributeModifierBasedObject::RemoveFromTarget()
+void UAttributeModifierBasedObject::RemoveFromTarget(TSharedPtr<FAttributeBase>& OutTarget)
 {
-	IAttributeModifierCarrierInterface::RemoveFromTarget();
+	IAttributeModifierCarrierInterface::RemoveFromTarget(OutTarget);
+}
+
+UAttributeModifierDescObject* UAttributeModifierBasedObject::GetDescObject(UObject* Instigator)
+{
+	// Generate if no desc object yet
+	if (DescObject == nullptr)
+	{
+		DescObject = GenerateDescObject(Instigator);
+	}
+
+	return DescObject;
 }
 
 UAttributeModifierDescObject* UAttributeModifierBasedObject::GenerateDescObject(UObject* Instigator)

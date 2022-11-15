@@ -15,11 +15,11 @@ bool IAttributeModifierCarrierInterface::CreateModifier(const FModifierCreateArg
 	return false;
 }
 
-void IAttributeModifierCarrierInterface::RemoveFromTarget()
+void IAttributeModifierCarrierInterface::RemoveFromTarget(TSharedPtr<FAttributeBase>& OutTarget)
 {
 	auto Modifier = GetModifier();
 	if (Modifier && Modifier.IsValid())
 	{
-		Modifier->RemoveFromTarget();
+		Modifier->RemoveFromTarget(OutTarget);
 	}
 }

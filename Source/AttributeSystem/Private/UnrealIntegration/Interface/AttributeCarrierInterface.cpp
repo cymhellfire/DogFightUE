@@ -3,6 +3,9 @@
 #include "AttributeSystem.h"
 #include "AttributeSystem/AttributeFunctionLibrary.h"
 #include "AttributeSystem/Attribute/Attribute.h"
+#include "Chaos/AABB.h"
+#include "Chaos/AABB.h"
+#include "UnrealIntegration/DataWrapper/AttributeWrapper.h"
 #include "UnrealIntegration/Interface/AttributeModifierCarrierInterface.h"
 #include "UnrealIntegration/UObject/AttributeModifierDescObject.h"
 
@@ -108,18 +111,22 @@ bool IAttributeCarrierInterface::AddModifierObject(TScriptInterface<IAttributeMo
 	}
 
 	// Try to apply modifier
-	if (AddAttributeModifier(InModifierObject->GetModifier()))
+	TSharedPtr<FAttributeBase> AppliedAttribute = nullptr;
+	if (AddAttributeModifier(InModifierObject->GetModifier(), AppliedAttribute))
 	{
 		// Notify new modifier object added
 		OnModifierInterfaceAdded(InModifierObject.GetInterface());
 		OnModifierObjectAdded(InModifierObject.GetObject());
 
 		// Generate new description and notify
-		auto NewDesc = InModifierObject->GenerateDescObject(GetSubobjectCarrier());
+		auto NewDesc = InModifierObject->GetDescObject(GetSubobjectCarrier());
 		if (NewDesc)
 		{
 			OnModifierDescObjectAdded(InModifierObject.GetObject(), NewDesc);
 		}
+
+		// Add new description object to property wrapper
+		UpdateDescObjectToProperty(AppliedAttribute, NewDesc, true);
 
 		return true;
 	}
@@ -142,7 +149,11 @@ bool IAttributeCarrierInterface::RemoveModifierObject(TScriptInterface<IAttribut
 	}
 
 	// Remove modifier
-	InModifierObject->RemoveFromTarget();
+	TSharedPtr<FAttributeBase> TargetAttr;
+	InModifierObject->RemoveFromTarget(TargetAttr);
+
+	// Remove description object from property wrapper
+	UpdateDescObjectToProperty(TargetAttr, InModifierObject->GetDescObject(GetSubobjectCarrier()), false);
 
 	// Notify modifier object removed
 	OnModifierInterfaceRemoved(InModifierObject.GetInterface());
@@ -151,7 +162,7 @@ bool IAttributeCarrierInterface::RemoveModifierObject(TScriptInterface<IAttribut
 	return true;
 }
 
-bool IAttributeCarrierInterface::AddAttributeModifier(TSharedPtr<FAttributeModifierBase> InModifier)
+bool IAttributeCarrierInterface::AddAttributeModifier(TSharedPtr<FAttributeModifierBase> InModifier, TSharedPtr<FAttributeBase>& OutAttribute)
 {
 	if (!InModifier.IsValid())
 	{
@@ -171,10 +182,84 @@ bool IAttributeCarrierInterface::AddAttributeModifier(TSharedPtr<FAttributeModif
 	TSharedPtr<FAttributeBase> TargetAttribute = CandidateList[FMath::RandRange(0, CandidateList.Num() - 1)];
 	TargetAttribute->AddModifier(InModifier);
 
+	OutAttribute = TargetAttribute;
 	return true;
 }
 
 bool IAttributeCarrierInterface::IsModifierObjectApplied(IAttributeModifierCarrierInterface* InModifier) const
 {
 	return GetAllModifierObjects().Contains(InModifier);
+}
+
+void IAttributeCarrierInterface::UpdateDescObjectToProperty(TSharedPtr<FAttributeBase> AppliedAttribute,
+	UAttributeModifierDescObject* InDescObject, bool bAdd)
+{
+	// Record new modifier object to wrapper Property
+	UObject* ThisObject = ThisAsObject();
+	if (ThisObject)
+	{
+		UClass* MyClass = ThisObject->GetClass();
+		// Here is a rule, the wrapper property should have the same name as inner FAttributeBase instance.
+		if (FProperty* Property = MyClass->FindPropertyByName(AppliedAttribute->GetName()))
+		{
+			bool bFailed = false;
+			void* PropertyAddr = Property->ContainerPtrToValuePtr<void>(ThisObject);
+			switch(AppliedAttribute->GetDataType())
+			{
+			case ADT_Boolean:
+				if (FAttributeBooleanWrapper* BooleanWrapper = static_cast<FAttributeBooleanWrapper*>(PropertyAddr))
+				{
+					if (bAdd)
+						BooleanWrapper->AppliedModifierDesc.Add(InDescObject);
+					else
+						BooleanWrapper->AppliedModifierDesc.Remove(InDescObject);
+				}
+				else
+				{
+					bFailed = true;
+				}
+				break;
+			case ADT_Integer:
+				if (FAttributeIntegerWrapper* IntegerWrapper = static_cast<FAttributeIntegerWrapper*>(PropertyAddr))
+				{
+					if (bAdd)
+						IntegerWrapper->AppliedModifierDesc.Add(InDescObject);
+					else
+						IntegerWrapper->AppliedModifierDesc.Remove(InDescObject);
+				}
+				else
+				{
+					bFailed = true;
+				}
+				break;
+			case ADT_Float:
+				if (FAttributeFloatWrapper* FloatWrapper = static_cast<FAttributeFloatWrapper*>(PropertyAddr))
+				{
+					if (bAdd)
+						FloatWrapper->AppliedModifierDesc.Add(InDescObject);
+					else
+						FloatWrapper->AppliedModifierDesc.Remove(InDescObject);
+				}
+				else
+				{
+					bFailed = true;
+				}
+				break;
+			case ADT_None:
+			default: ;
+			}
+
+			if (bFailed)
+			{
+				UE_LOG(LogAttributeSystem, Error, TEXT("[AttributeCarrierInterface] Data type mismatch. Expected property %s type is %s"),
+					*AppliedAttribute->GetName().ToString(), *UEnum::GetValueAsString<EAttributeDataType>(AppliedAttribute->GetDataType()));
+			}
+		}
+		else
+		{
+			UE_LOG(LogAttributeSystem, Error,
+				TEXT("[AttributeCarrierInterface] Cannot find UPROPERTY with name %s. Modifier information cannot be synced."),
+				*AppliedAttribute->GetName().ToString());
+		}
+	}
 }

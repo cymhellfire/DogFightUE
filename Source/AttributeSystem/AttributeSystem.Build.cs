@@ -22,7 +22,8 @@ public class AttributeSystem : ModuleRules
                 "CoreUObject",
                 "Engine",
                 "Slate",
-                "SlateCore"
+                "SlateCore",
+                "NetCore",
             }
         );
     }

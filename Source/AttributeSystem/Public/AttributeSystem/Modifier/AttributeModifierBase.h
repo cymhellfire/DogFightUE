@@ -2,6 +2,8 @@
 
 #include "AttributeSystem/AttributeSystemCommon.h"
 #include "AttributeSystem/Modifier/AttributeModifierCommon.h"
+#include "Chaos/AABB.h"
+#include "Chaos/AABB.h"
 
 class FAttributeBase;
 template<typename T>
@@ -15,7 +17,7 @@ public:
 
 	virtual bool Apply(TWeakPtr<FAttributeBase> InAttribute) = 0;
 	virtual void Remove() = 0;
-	virtual void RemoveFromTarget() = 0;
+	virtual void RemoveFromTarget(TSharedPtr<FAttributeBase>& OutTarget) = 0;
 
 	virtual void SetApplyRule(TSharedPtr<FApplyRuleBase> InRule)
 	{
@@ -45,7 +47,7 @@ public:
 
 	virtual bool Apply(TWeakPtr<FAttributeBase> InAttribute) override;
 	virtual void Remove() override;
-	virtual void RemoveFromTarget() override;
+	virtual void RemoveFromTarget(TSharedPtr<FAttributeBase>& OutTarget) override;
 
 	virtual void RegisterPreviousModifier(TWeakPtr<TAttributeModifierBase<T>> InModifier);
 	virtual void ClearPreviousModifier();

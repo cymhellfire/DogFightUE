@@ -310,6 +310,17 @@ private:
 
 #pragma region DebugCommand
 public:
+	UFUNCTION(Exec)
+	void ExecAddTestModifier();
+
+	UFUNCTION(Server, Reliable)
+	void ServerAddTestModifierToPawn();
+
+	UFUNCTION(Exec)
+	void ExecRemoveTestModifier();
+
+	UFUNCTION(Server, Reliable)
+	void ServerRemoveTestModifierFromPawn();
 
 	UFUNCTION(Exec)
 	void ExecSetCharacterName(FString NewName);

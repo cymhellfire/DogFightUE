@@ -1,5 +1,8 @@
 #include "UnrealIntegration/UObject/AttributeBasedObject.h"
+#include "UnrealIntegration/UObject/AttributeModifierDescObject.h"
+
 #include "AttributeSystem/Attribute/AttributeBase.h"
+#include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
 
 void UAttributeBasedObject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -45,6 +48,19 @@ bool UAttributeBasedObject::AddModifierObject(TScriptInterface<IAttributeModifie
 bool UAttributeBasedObject::RemoveModifierObject(TScriptInterface<IAttributeModifierCarrierInterface> InModifierObject)
 {
 	return IAttributeCarrierInterface::RemoveModifierObject(InModifierObject);
+}
+
+bool UAttributeBasedObject::ReplicateModifierDescObjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
+{
+	bool bWroteSomething = false;
+
+	// Replicate array content
+	for (auto DescObject : ModifierDescList)
+	{
+		bWroteSomething |= Channel->ReplicateSubobject(DescObject, *Bunch, *RepFlags);
+	}
+
+	return bWroteSomething;
 }
 
 bool UAttributeBasedObject::OnAttributeAdded(TSharedPtr<FAttributeBase> InAttribute)

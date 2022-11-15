@@ -40,12 +40,15 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
 	virtual bool RemoveModifierObject(TScriptInterface<IAttributeModifierCarrierInterface> InModifierObject) override;
+
+	virtual bool ReplicateModifierDescObjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
 protected:
 	virtual bool OnAttributeAdded(TSharedPtr<FAttributeBase> InAttribute) override;
 	virtual TSharedPtr<FAttributeBase> GetAttribute(FName InName) override;
 	virtual TArray<TSharedPtr<FAttributeBase>> GetAllAttributes() override;
 
 	virtual UObject* GetSubobjectCarrier() override { return this; }
+	virtual UObject* ThisAsObject() override { return this; }
 
 	virtual void OnModifierInterfaceAdded(IAttributeModifierCarrierInterface* InModifierInterface) override;
 	virtual void OnModifierObjectAdded(UObject* InModifierObject) override;

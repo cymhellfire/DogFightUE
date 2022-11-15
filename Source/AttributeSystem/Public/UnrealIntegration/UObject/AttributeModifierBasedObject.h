@@ -13,18 +13,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category="AttributeModifierCarrier")
 	virtual bool CreateModifier(const FModifierCreateArgument& InArgument) override;
 
-	UFUNCTION(BlueprintCallable, Category="AttributeModifierCarrier")
-	virtual void RemoveFromTarget() override;
+	virtual void RemoveFromTarget(TSharedPtr<FAttributeBase>& OutTarget) override;
 
 	virtual TSharedPtr<FAttributeModifierBase> GetModifier() override
 	{
 		return Modifier;
 	}
 
-	virtual UAttributeModifierDescObject* GenerateDescObject(UObject* Instigator) override;
+	virtual UAttributeModifierDescObject* GetDescObject(UObject* Instigator) override;
 
 protected:
 	virtual void OnModifierCreated(TSharedPtr<FAttributeModifierBase> InModifier) override;
+
+	virtual UAttributeModifierDescObject* GenerateDescObject(UObject* Instigator) override;
 
 	virtual TSubclassOf<UAttributeModifierDescObject> GetModifierDescClass() override;
 
@@ -32,4 +33,7 @@ protected:
 
 protected:
 	TSharedPtr<FAttributeModifierBase> Modifier;
+
+	UPROPERTY(Transient)
+	UAttributeModifierDescObject* DescObject = nullptr;
 };

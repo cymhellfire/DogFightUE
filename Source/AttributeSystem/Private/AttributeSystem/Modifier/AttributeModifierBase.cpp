@@ -3,6 +3,8 @@
 #include "AttributeSystem.h"
 #include "AttributeSystem/ApplyRule/ApplyRuleBase.h"
 #include "AttributeSystem/Attribute/AttributeBase.h"
+#include "Chaos/AABB.h"
+#include "Chaos/AABB.h"
 
 template <typename T>
 TAttributeModifierBase<T>::TAttributeModifierBase(const FModifierCreateArgument& InArgument, T InValue)
@@ -71,7 +73,7 @@ void TAttributeModifierBase<T>::Remove()
 }
 
 template <typename T>
-void TAttributeModifierBase<T>::RemoveFromTarget()
+void TAttributeModifierBase<T>::RemoveFromTarget(TSharedPtr<FAttributeBase>& OutTarget)
 {
 	if (!ModifiedTarget.IsValid())
 	{
@@ -83,6 +85,7 @@ void TAttributeModifierBase<T>::RemoveFromTarget()
 	{
 		MarkAsDirty();
 
+		OutTarget = PinnedAttribute;
 		PinnedAttribute->RemoveModifier(SharedThis(this));
 	}
 }

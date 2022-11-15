@@ -38,14 +38,8 @@ bool UAttributeBasedComponent::ReplicateSubobjects(UActorChannel* Channel, FOutB
 {
 	bool bWroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
 
-	// Replicate the TArray
-	bWroteSomething |= Channel->ReplicateSubobjectList(ModifierDescList, *Bunch, *RepFlags);
-
-	// Replicate array content
-	for (auto DescObject : ModifierDescList)
-	{
-		bWroteSomething |= Channel->ReplicateSubobject(DescObject, *Bunch, *RepFlags);
-	}
+	// Replicate description objects
+	bWroteSomething |= ReplicateModifierDescObjects(Channel, Bunch, RepFlags);
 
 	return bWroteSomething;
 }
@@ -83,6 +77,19 @@ bool UAttributeBasedComponent::AddModifierObject(TScriptInterface<IAttributeModi
 bool UAttributeBasedComponent::RemoveModifierObject(TScriptInterface<IAttributeModifierCarrierInterface> InModifierObject)
 {
 	return IAttributeCarrierInterface::RemoveModifierObject(InModifierObject);
+}
+
+bool UAttributeBasedComponent::ReplicateModifierDescObjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
+{
+	bool bWroteSomething = false;
+
+	// Replicate array content
+	for (auto DescObject : ModifierDescList)
+	{
+		bWroteSomething |= Channel->ReplicateSubobject(DescObject, *Bunch, *RepFlags);
+	}
+
+	return bWroteSomething;
 }
 
 bool UAttributeBasedComponent::OnAttributeAdded(TSharedPtr<FAttributeBase> InAttribute)

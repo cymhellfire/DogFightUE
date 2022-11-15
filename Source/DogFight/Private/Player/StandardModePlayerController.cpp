@@ -22,6 +22,7 @@
 #include "Actors/Managers/BuffQueue.h"
 #include "Blueprint/UserWidget.h"
 #include "GameService/CardGameService.h"
+#include "Pawns/TestAttributeComponent.h"
 #include "Player/ControllerComponent/CardTargetProviderComponent.h"
 #include "UI/Widget/AbilityPanelWidget.h"
 #include "UI/Widget/AbilitySelectWindowWidget.h"
@@ -1080,6 +1081,38 @@ void AStandardModePlayerController::ClientSelectActorTarget_Implementation()
 	if (AStandardHUD* StandardHUD = GetHUD<AStandardHUD>())
 	{
 		StandardHUD->DisplayHintMessage(EOperationHintMessageContent::SelectActorTarget);
+	}
+}
+
+void AStandardModePlayerController::ExecAddTestModifier()
+{
+	ServerAddTestModifierToPawn();
+}
+
+void AStandardModePlayerController::ServerAddTestModifierToPawn_Implementation()
+{
+	if (CharacterPawn)
+	{
+		if (auto TestAttributeComponent = CharacterPawn->FindComponentByClass<UTestAttributeComponent>())
+		{
+			TestAttributeComponent->AddTestModifier();
+		}
+	}
+}
+
+void AStandardModePlayerController::ExecRemoveTestModifier()
+{
+	ServerRemoveTestModifierFromPawn();
+}
+
+void AStandardModePlayerController::ServerRemoveTestModifierFromPawn_Implementation()
+{
+	if (CharacterPawn)
+	{
+		if (auto TestAttributeComponent = CharacterPawn->FindComponentByClass<UTestAttributeComponent>())
+		{
+			TestAttributeComponent->RemoveTestModifier();
+		}
 	}
 }
 

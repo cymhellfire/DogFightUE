@@ -3,6 +3,7 @@
 #include "AttributeSystem/Modifier/AttributeModifierCommon.h"
 #include "AttributeModifierCarrierInterface.generated.h"
 
+class FAttributeBase;
 class FAttributeModifierBase;
 class UAttributeModifierDescObject;
 
@@ -19,15 +20,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category="AttributeModifierCarrier")
 	virtual bool CreateModifier(const FModifierCreateArgument& InArgument);
 
-	UFUNCTION(BlueprintCallable, Category="AttributeModifierCarrier")
-	virtual void RemoveFromTarget();
+	virtual void RemoveFromTarget(TSharedPtr<FAttributeBase>& OutTarget);
 
 	virtual TSharedPtr<FAttributeModifierBase> GetModifier() = 0;
 
-	virtual UAttributeModifierDescObject* GenerateDescObject(UObject* Instigator) = 0;
+	virtual UAttributeModifierDescObject* GetDescObject(UObject* Instigator) = 0;
 
 protected:
 	virtual void OnModifierCreated(TSharedPtr<FAttributeModifierBase> InModifier) = 0;
+
+	virtual UAttributeModifierDescObject* GenerateDescObject(UObject* Instigator) = 0;
 
 	virtual TSubclassOf<UAttributeModifierDescObject> GetModifierDescClass() = 0;
 };

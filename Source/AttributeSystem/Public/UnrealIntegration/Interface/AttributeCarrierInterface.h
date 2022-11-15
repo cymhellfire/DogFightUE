@@ -40,6 +40,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
 	virtual bool RemoveModifierObject(TScriptInterface<IAttributeModifierCarrierInterface> InModifierObject);
 
+	/**
+	 * Replication function for all modifier description objects.
+	 */
+	virtual bool ReplicateModifierDescObjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags) = 0;
+
 protected:
 	virtual bool OnAttributeAdded(TSharedPtr<FAttributeBase> InAttribute) = 0;
 	virtual TSharedPtr<FAttributeBase> GetAttribute(FName InName) = 0;
@@ -47,9 +52,14 @@ protected:
 	virtual TArray<TSharedPtr<FAttributeBase>> GetAttributesByDataType(EAttributeDataType InDataType);
 	virtual TArray<TSharedPtr<FAttributeBase>> GetAttributesByTags(const TArray<FName>& InTags, bool bMatchAll);
 
+	/**
+	 * Get UObject that used to hold all sub object. Also used as the replication parent.
+	 */
 	virtual UObject* GetSubobjectCarrier() = 0;
 
-	virtual bool AddAttributeModifier(TSharedPtr<FAttributeModifierBase> InModifier);
+	virtual UObject* ThisAsObject() = 0;
+
+	virtual bool AddAttributeModifier(TSharedPtr<FAttributeModifierBase> InModifier, TSharedPtr<FAttributeBase>& OutAttribute);
 	virtual void OnModifierInterfaceAdded(IAttributeModifierCarrierInterface* InModifierInterface) = 0;
 	virtual void OnModifierObjectAdded(UObject* InModifierObject) = 0;
 	virtual void OnModifierDescObjectAdded(UObject* InModifierObject, UAttributeModifierDescObject* InDescObject) = 0;
@@ -57,4 +67,12 @@ protected:
 	virtual void OnModifierObjectRemoved(UObject* InModifierObject) = 0;
 	virtual TArray<IAttributeModifierCarrierInterface*> GetAllModifierObjects() const = 0;
 	virtual bool IsModifierObjectApplied(IAttributeModifierCarrierInterface* InModifier) const;
+
+	/**
+	 * @brief Function to update recorded description objects in wrapper properties.
+	 * @param AppliedAttribute			Attribute instance that indicate wrapper property.
+	 * @param InDescObject				Description object that to update.
+	 * @param bAdd						Add/Remove description object to/from wrapper property.
+	 */
+	void UpdateDescObjectToProperty(TSharedPtr<FAttributeBase> AppliedAttribute, UAttributeModifierDescObject* InDescObject, bool bAdd);
 };
