@@ -11,6 +11,14 @@ class ATTRIBUTESYSTEM_API UAttributeBasedComponent : public UActorComponent, pub
 public:
 	UAttributeBasedComponent(const FObjectInitializer& ObjectInitializer);
 
+	virtual void InitializeComponent() override;
+
+	virtual void InitializeAttributes() {}
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	virtual bool ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
+
 	// -------- Attribute Carrier Interface --------
 	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
 	virtual bool AddAttribute(const FAttributeCreateArgument& InArgument) override;
@@ -37,8 +45,11 @@ protected:
 	virtual TSharedPtr<FAttributeBase> GetAttribute(FName InName) override;
 	virtual TArray<TSharedPtr<FAttributeBase>> GetAllAttributes() override;
 
+	virtual UObject* GetSubobjectCarrier() override { return this; }
+
 	virtual void OnModifierInterfaceAdded(IAttributeModifierCarrierInterface* InModifierInterface) override;
 	virtual void OnModifierObjectAdded(UObject* InModifierObject) override;
+	virtual void OnModifierDescObjectAdded(UObject* InModifierObject, UAttributeModifierDescObject* InDescObject) override;
 	virtual void OnModifierInterfaceRemoved(IAttributeModifierCarrierInterface* InModifierInterface) override;
 	virtual void OnModifierObjectRemoved(UObject* InModifierObject) override;
 	virtual TArray<IAttributeModifierCarrierInterface*> GetAllModifierObjects() const override;
@@ -49,7 +60,13 @@ protected:
 
 	TArray<IAttributeModifierCarrierInterface*> ModifierList;
 
+	TMap<UObject*, TArray<UAttributeModifierDescObject*>> ModifierDescObjectMap;
+
 	// Reference holder for modifiers
 	UPROPERTY(Transient)
 	TArray<UObject*> ModifierObjectList;
+
+	// Replicated array for modifier description objects
+	UPROPERTY(Transient, Replicated)
+	TArray<UAttributeModifierDescObject*> ModifierDescList;
 };

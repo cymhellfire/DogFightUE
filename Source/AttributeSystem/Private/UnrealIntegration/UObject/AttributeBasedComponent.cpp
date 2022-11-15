@@ -1,12 +1,53 @@
 #include "UnrealIntegration/UObject/AttributeBasedComponent.h"
 
 #include "AttributeSystem/Attribute/AttributeBase.h"
+#include "Engine/ActorChannel.h"
+#include "Net/UnrealNetwork.h"
+#include "UnrealIntegration/UObject/AttributeModifierDescObject.h"
 
 UAttributeBasedComponent::UAttributeBasedComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	bWantsInitializeComponent = true;
 	SetIsReplicatedByDefault(true);
+}
+
+void UAttributeBasedComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+
+	// Invoke attribute initializer on server/host side
+	if (GetOwner()->GetLocalRole() == ROLE_Authority)
+	{
+		InitializeAttributes();
+	}
+}
+
+void UAttributeBasedComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	FDoRepLifetimeParams SharedParams;
+	SharedParams.bIsPushBased = true;
+
+	DOREPLIFETIME_WITH_PARAMS_FAST(UAttributeBasedComponent, ModifierDescList, SharedParams);
+}
+
+bool UAttributeBasedComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch,
+	FReplicationFlags* RepFlags)
+{
+	bool bWroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+
+	// Replicate the TArray
+	bWroteSomething |= Channel->ReplicateSubobjectList(ModifierDescList, *Bunch, *RepFlags);
+
+	// Replicate array content
+	for (auto DescObject : ModifierDescList)
+	{
+		bWroteSomething |= Channel->ReplicateSubobject(DescObject, *Bunch, *RepFlags);
+	}
+
+	return bWroteSomething;
 }
 
 bool UAttributeBasedComponent::AddAttribute(const FAttributeCreateArgument& InArgument)
@@ -91,6 +132,22 @@ void UAttributeBasedComponent::OnModifierObjectAdded(UObject* InModifierObject)
 	}
 
 	ModifierObjectList.AddUnique(InModifierObject);
+}
+
+void UAttributeBasedComponent::OnModifierDescObjectAdded(UObject* InModifierObject, UAttributeModifierDescObject* InDescObject)
+{
+	if (InModifierObject == nullptr || InDescObject == nullptr)
+	{
+		return;
+	}
+
+	// Record new desc object in map
+	TArray<UAttributeModifierDescObject*> TargetList = ModifierDescObjectMap.FindOrAdd(InModifierObject);
+	TargetList.Add(InDescObject);
+
+	// Record new desc object into replicated array
+	MARK_PROPERTY_DIRTY_FROM_NAME(UAttributeBasedComponent, ModifierDescList, this);
+	ModifierDescList.Add(InDescObject);
 }
 
 void UAttributeBasedComponent::OnModifierInterfaceRemoved(IAttributeModifierCarrierInterface* InModifierInterface)

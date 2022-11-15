@@ -21,8 +21,14 @@ public:
 		return Modifier;
 	}
 
+	virtual UAttributeModifierDescObject* GenerateDescObject(UObject* Instigator) override;
+
 protected:
 	virtual void OnModifierCreated(TSharedPtr<FAttributeModifierBase> InModifier) override;
+
+	virtual TSubclassOf<UAttributeModifierDescObject> GetModifierDescClass() override;
+
+	virtual void InitializeDescObject(UAttributeModifierDescObject* InDesc);
 
 protected:
 	TSharedPtr<FAttributeModifierBase> Modifier;

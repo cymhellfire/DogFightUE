@@ -1,6 +1,16 @@
 #include "UnrealIntegration/UObject/AttributeBasedObject.h"
-
 #include "AttributeSystem/Attribute/AttributeBase.h"
+#include "Net/UnrealNetwork.h"
+
+void UAttributeBasedObject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	UObject::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	FDoRepLifetimeParams SharedParams;
+	SharedParams.bIsPushBased = true;
+
+	DOREPLIFETIME_WITH_PARAMS_FAST(UAttributeBasedObject, ModifierDescList, SharedParams);
+}
 
 bool UAttributeBasedObject::AddAttribute(const FAttributeCreateArgument& InArgument)
 {
@@ -84,6 +94,22 @@ void UAttributeBasedObject::OnModifierObjectAdded(UObject* InModifierObject)
 	}
 
 	ModifierObjectList.AddUnique(InModifierObject);
+}
+
+void UAttributeBasedObject::OnModifierDescObjectAdded(UObject* InModifierObject, UAttributeModifierDescObject* InDescObject)
+{
+	if (InModifierObject == nullptr || InDescObject == nullptr)
+	{
+		return;
+	}
+
+	// Record new desc object in map
+	TArray<UAttributeModifierDescObject*> TargetList = ModifierDescObjectMap.FindOrAdd(InModifierObject);
+	TargetList.Add(InDescObject);
+
+	// Record new desc object into replicated array
+	MARK_PROPERTY_DIRTY_FROM_NAME(UAttributeBasedObject, ModifierDescList, this);
+	ModifierDescList.Add(InDescObject);
 }
 
 void UAttributeBasedObject::OnModifierInterfaceRemoved(IAttributeModifierCarrierInterface* InModifierInterface)

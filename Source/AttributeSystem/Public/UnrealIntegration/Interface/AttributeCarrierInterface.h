@@ -7,6 +7,7 @@
 class FAttributeBase;
 class FAttributeModifierBase;
 class IAttributeModifierCarrierInterface;
+class UAttributeModifierDescObject;
 
 UINTERFACE(NotBlueprintable)
 class ATTRIBUTESYSTEM_API UAttributeCarrierInterface : public UInterface
@@ -46,9 +47,12 @@ protected:
 	virtual TArray<TSharedPtr<FAttributeBase>> GetAttributesByDataType(EAttributeDataType InDataType);
 	virtual TArray<TSharedPtr<FAttributeBase>> GetAttributesByTags(const TArray<FName>& InTags, bool bMatchAll);
 
+	virtual UObject* GetSubobjectCarrier() = 0;
+
 	virtual bool AddAttributeModifier(TSharedPtr<FAttributeModifierBase> InModifier);
 	virtual void OnModifierInterfaceAdded(IAttributeModifierCarrierInterface* InModifierInterface) = 0;
 	virtual void OnModifierObjectAdded(UObject* InModifierObject) = 0;
+	virtual void OnModifierDescObjectAdded(UObject* InModifierObject, UAttributeModifierDescObject* InDescObject) = 0;
 	virtual void OnModifierInterfaceRemoved(IAttributeModifierCarrierInterface* InModifierObject) = 0;
 	virtual void OnModifierObjectRemoved(UObject* InModifierObject) = 0;
 	virtual TArray<IAttributeModifierCarrierInterface*> GetAllModifierObjects() const = 0;

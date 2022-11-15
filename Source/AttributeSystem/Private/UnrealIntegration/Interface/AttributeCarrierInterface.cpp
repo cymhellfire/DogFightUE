@@ -4,6 +4,7 @@
 #include "AttributeSystem/AttributeFunctionLibrary.h"
 #include "AttributeSystem/Attribute/Attribute.h"
 #include "UnrealIntegration/Interface/AttributeModifierCarrierInterface.h"
+#include "UnrealIntegration/UObject/AttributeModifierDescObject.h"
 
 bool IAttributeCarrierInterface::AddAttribute(const FAttributeCreateArgument& InArgument)
 {
@@ -112,6 +113,13 @@ bool IAttributeCarrierInterface::AddModifierObject(TScriptInterface<IAttributeMo
 		// Notify new modifier object added
 		OnModifierInterfaceAdded(InModifierObject.GetInterface());
 		OnModifierObjectAdded(InModifierObject.GetObject());
+
+		// Generate new description and notify
+		auto NewDesc = InModifierObject->GenerateDescObject(GetSubobjectCarrier());
+		if (NewDesc)
+		{
+			OnModifierDescObjectAdded(InModifierObject.GetObject(), NewDesc);
+		}
 
 		return true;
 	}

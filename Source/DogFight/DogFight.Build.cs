@@ -37,6 +37,7 @@ public class DogFight : ModuleRules
 				"UnLua",
 				"ProjectFramework",
 				"AttributeSystem",
+				"DamageSystem",
 			}
 		);
 		
