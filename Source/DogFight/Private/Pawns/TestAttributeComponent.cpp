@@ -51,7 +51,7 @@ void UTestAttributeComponent::ChangeTestAttribute(int32 NewValue)
 void UTestAttributeComponent::AddTestModifier()
 {
 	// Create test modifier
-	auto NewModifier = NewObject<UTestAttributeModifier>(this, "TestModifier", RF_Transient);
+	auto NewModifier = NewObject<UTestAttributeModifier>(this, NAME_None, RF_Transient);
 	AddModifierObject(NewModifier);
 }
 
