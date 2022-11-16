@@ -13,8 +13,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category="AttributeModifierCarrier")
 	virtual bool CreateModifier(const FModifierCreateArgument& InArgument) override;
 
-	virtual void RemoveFromTarget(TSharedPtr<FAttributeBase>& OutTarget) override;
-
 	virtual TSharedPtr<FAttributeModifierBase> GetModifier() override
 	{
 		return Modifier;
