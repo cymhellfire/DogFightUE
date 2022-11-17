@@ -11,6 +11,8 @@
 #include "GameFramework/Character.h"
 #include "StandardModePlayerCharacter.generated.h"
 
+class UCardDescObject;
+
 UCLASS(Config=Game)
 class DOGFIGHT_API AStandardModePlayerCharacter : public ACharacter, public IDamageableActorInterface, public IGameAnimatedCharacterInterface,
 	public IBuffableActorInterface, public IGameplayTagsActorInterface, public IWeaponCarrierInterface
@@ -31,6 +33,8 @@ public:
 
 	// Sets default values for this character's properties
 	AStandardModePlayerCharacter();
+
+	virtual bool ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
 
 	void SetSupremeController(AController* NewController);
 
@@ -225,6 +229,8 @@ public:
 
 	void EquipTestWeapon();
 
+	void AddCardDescObject(UCardDescObject* InObject);
+
 protected:
 
 	void ShowFloatingText(FText NewText);
@@ -281,6 +287,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Debug")
 	TSubclassOf<UWeaponBase> TestWeaponClass;
+
+	UPROPERTY(Transient, Replicated)
+	TArray<UCardDescObject*> CardDescObjects;
 
 private:
 	/** Current unit name. */

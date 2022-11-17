@@ -5,13 +5,15 @@
 #include "Card/Card.h"
 #include "CardGameService.generated.h"
 
+class AStandardModePlayerCharacter;
+
 UCLASS()
 class DOGFIGHT_API UCardGameService : public ULuaGameService
 {
 	GENERATED_BODY()
 public:
 
-	void UseCard(FString CardName, UObject* Instigator);
+	void UseCard(FString CardName, UObject* Instigator, AStandardModePlayerCharacter* Carrier);
 
 	UFUNCTION(BlueprintImplementableEvent)
 	UCard* CreateCard(const FString& ScriptPath, UObject* Instigator);
@@ -31,4 +33,7 @@ protected:
 
 	UFUNCTION()
 	void OnCardFinished(ECardExecutionResult Result, UCard* Card);
+
+	UPROPERTY(Transient)
+	UCard* HoldingCard;
 };

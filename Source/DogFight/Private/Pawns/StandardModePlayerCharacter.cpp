@@ -21,6 +21,8 @@
 #include "Game/StandardGameMode.h"
 #include "Actors/Weapons/WeaponDisplayRelative.h"
 #include "Actors/Weapons/WeaponActionBase.h"
+#include "Card/CardDescObject.h"
+#include "Engine/ActorChannel.h"
 #include "Pawns/TestAttributeComponent.h"
 #include "UI/Widget/CharacterFloatingTextPanelWidget.h"
 
@@ -120,6 +122,7 @@ void AStandardModePlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimePr
 	DOREPLIFETIME(AStandardModePlayerCharacter, MaxStrength);
 	DOREPLIFETIME(AStandardModePlayerCharacter, CacheBlastForce);
 	DOREPLIFETIME(AStandardModePlayerCharacter, CurrentWeaponType);
+	DOREPLIFETIME(AStandardModePlayerCharacter, CardDescObjects);
 }
 
 void AStandardModePlayerCharacter::OnRep_SyncRagdollRotation()
@@ -1000,3 +1003,20 @@ void AStandardModePlayerCharacter::SynchronizeOrientationWithRagdoll(bool bIsFac
 	GetCapsuleComponent()->SetWorldRotation(NewRotator);
 }
 #pragma endregion Ragdoll
+
+void AStandardModePlayerCharacter::AddCardDescObject(UCardDescObject* InObject)
+{
+	CardDescObjects.AddUnique(InObject);
+}
+
+bool AStandardModePlayerCharacter::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
+{
+	bool bWroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+
+	for (auto DescObject : CardDescObjects)
+	{
+		bWroteSomething |= Channel->ReplicateSubobject(DescObject, *Bunch, *RepFlags);
+	}
+
+	return bWroteSomething;
+}

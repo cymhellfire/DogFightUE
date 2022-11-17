@@ -1,14 +1,15 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "AttributeSystem/Attribute/AttributeCommon.h"
 #include "Player/CardTargetProviderInterface.h"
-#include "UnrealIntegration/UObject/AttributeBasedObject.h"
 #include "Card.generated.h"
 
 class UCardCommand;
 class UCardAsyncCommand;
 class UCardConcurrentCallbackCommand;
 class UCardModifier;
+class UCardDescObject;
 
 UENUM()
 enum class ECardExecutionResult : uint8
@@ -18,7 +19,7 @@ enum class ECardExecutionResult : uint8
 };
 
 UCLASS(Blueprintable)
-class CARDSYSTEM_API UCard : public UAttributeBasedObject
+class CARDSYSTEM_API UCard : public UObject
 {
 	GENERATED_BODY()
 public:
@@ -31,6 +32,25 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category="Card")
 	void BP_Initialize();
+
+	// ------------------- Attribute ----------------------
+
+	UFUNCTION(BlueprintCallable, Category="Card")
+	void AddAttribute(const FAttributeCreateArgument& InArgument);
+
+	UFUNCTION(BlueprintCallable, Category="Card")
+	bool GetAttributeBoolValue(FName InName, bool& OutValue);
+
+	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
+	bool GetAttributeIntegerValue(FName InName, int32& OutValue);
+
+	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
+	bool GetAttributeFloatValue(FName InName, float& OutValue);
+
+	UCardDescObject* GetDescObject() const
+	{
+		return DescObject;
+	}
 
 public:
 	/**
@@ -110,6 +130,9 @@ public:
 	void OnCardFinished();
 
 protected:
+	UPROPERTY(Transient)
+	UCardDescObject* DescObject;
+
 	/** The owner controller to handle necessary RPC function call. */
 	TWeakObjectPtr<AController> OwnerController;
 

@@ -4,6 +4,7 @@
 #include "Card/CardConcurrentCallbackCommand.h"
 #include "Card/CardAsyncCommand.h"
 #include "Card/CardCommand.h"
+#include "Card/CardDescObject.h"
 
 UCard::UCard()
 {
@@ -26,6 +27,47 @@ void UCard::Initialize()
 {
 	// Invoke blueprint side implementation
 	BP_Initialize();
+
+	// Create description object
+	DescObject = NewObject<UCardDescObject>(this, NAME_None, RF_Transient);
+}
+
+void UCard::AddAttribute(const FAttributeCreateArgument& InArgument)
+{
+	if (DescObject)
+	{
+		DescObject->AddAttribute(InArgument);
+	}
+}
+
+bool UCard::GetAttributeBoolValue(FName InName, bool& OutValue)
+{
+	if (DescObject)
+	{
+		return DescObject->GetAttributeBoolValue(InName, OutValue);
+	}
+
+	return false;
+}
+
+bool UCard::GetAttributeIntegerValue(FName InName, int32& OutValue)
+{
+	if (DescObject)
+	{
+		return DescObject->GetAttributeIntegerValue(InName, OutValue);
+	}
+
+	return false;
+}
+
+bool UCard::GetAttributeFloatValue(FName InName, float& OutValue)
+{
+	if (DescObject)
+	{
+		return DescObject->GetAttributeFloatValue(InName, OutValue);
+	}
+
+	return false;
 }
 
 /**

@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "AttributeSystem/Attribute/AttributeCommon.h"
 #include "UnrealIntegration/Marco/AttributeCarrierMarcos.h"
+#include "UnrealIntegration/DataWrapper/AttributeWrapper.h"
 #include "AttributeCarrierInterface.generated.h"
 
 class FAttributeBase;
@@ -176,10 +177,47 @@ protected:
 	virtual TArray<IAttributeModifierCarrierInterface*> GetAllModifierObjects() const = 0;
 
 	/**
-	 * @brief Function to update recorded description objects in wrapper properties.
+	 * @brief Function to update recorded description objects in wrapper properties. UE reflection system version.
 	 * @param AppliedAttribute			Attribute instance that indicate wrapper property.
 	 * @param InDescObject				Description object that to update.
 	 * @param bAdd						Add/Remove description object to/from wrapper property.
 	 */
-	void UpdateDescObjectToProperty(TSharedPtr<FAttributeBase> AppliedAttribute, UAttributeModifierDescObject* InDescObject, bool bAdd);
+	void UpdateDescObjectToProperty_Reflection(TSharedPtr<FAttributeBase> AppliedAttribute, UAttributeModifierDescObject* InDescObject, bool bAdd);
+
+	/**
+	 * @brief Function to update recorded description objects in wrapper properties. Use custom getter function version.
+	 * @param AppliedAttribute			Attribute instance that indicate wrapper property.
+	 * @param InDescObject				Description object that to update.
+	 * @param bAdd						Add/Remove description object to/from wrapper property.
+	 */
+	void UpdateDescObjectToProperty_Dynamic(TSharedPtr<FAttributeBase> AppliedAttribute, UAttributeModifierDescObject* InDescObject, bool bAdd);
+
+	/**
+	 * @brief When add description objects, use UE reflection system to search attribute wrapper member declared in code
+	 * is default behavior. If the wrapper struct is created dynamically in runtime, you can use custom getter function
+	 * return correct result.
+	 * @return Whether use dynamic wrapper getter functions.
+	 */
+	virtual bool UseCustomAttributeWrapperGetter() const { return false; }
+
+	/**
+	 * @brief Getter function for dynamically created wrapper struct of boolean attribute.
+	 * @param InName			Name of attribute to search.
+	 * @return The wrapper struct if found.
+	 */
+	virtual TSharedPtr<FAttributeBooleanWrapper> GetBooleanAttributeWrapperByName(FName InName) { return nullptr; }
+
+	/**
+	 * @brief Getter function for dynamically created wrapper struct of integer attribute.
+	 * @param InName			Name of attribute to search.
+	 * @return The wrapper struct if found.
+	 */
+	virtual TSharedPtr<FAttributeIntegerWrapper> GetIntegerAttributeWrapperByName(FName InName) { return nullptr; }
+
+	/**
+	 * @brief Getter function for dynamically created wrapper struct of float attribute.
+	 * @param InName			Name of attribute to search.
+	 * @return The wrapper struct if found.
+	 */
+	virtual TSharedPtr<FAttributeFloatWrapper> GetFloatAttributeWrapperByName(FName InName) { return nullptr; }
 };

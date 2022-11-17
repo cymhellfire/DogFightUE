@@ -126,7 +126,10 @@ bool IAttributeCarrierInterface::AddModifierObject(TScriptInterface<IAttributeMo
 		}
 
 		// Add new description object to property wrapper
-		UpdateDescObjectToProperty(AppliedAttribute, NewDesc, true);
+		if (UseCustomAttributeWrapperGetter())
+			UpdateDescObjectToProperty_Dynamic(AppliedAttribute, NewDesc, true);
+		else
+			UpdateDescObjectToProperty_Reflection(AppliedAttribute, NewDesc, true);
 
 		return true;
 	}
@@ -153,7 +156,10 @@ bool IAttributeCarrierInterface::RemoveModifierObject(TScriptInterface<IAttribut
 	InModifierObject->RemoveFromTarget(TargetAttr);
 
 	// Remove description object from property wrapper
-	UpdateDescObjectToProperty(TargetAttr, InModifierObject->GetDescObject(GetSubobjectCarrier()), false);
+	if (UseCustomAttributeWrapperGetter())
+		UpdateDescObjectToProperty_Dynamic(TargetAttr, InModifierObject->GetDescObject(GetSubobjectCarrier()), false);
+	else
+		UpdateDescObjectToProperty_Reflection(TargetAttr, InModifierObject->GetDescObject(GetSubobjectCarrier()), false);
 
 	// Notify modifier object removed
 	OnModifierInterfaceRemoved(InModifierObject.GetInterface());
@@ -191,7 +197,7 @@ bool IAttributeCarrierInterface::IsModifierObjectApplied(IAttributeModifierCarri
 	return GetAllModifierObjects().Contains(InModifier);
 }
 
-void IAttributeCarrierInterface::UpdateDescObjectToProperty(TSharedPtr<FAttributeBase> AppliedAttribute,
+void IAttributeCarrierInterface::UpdateDescObjectToProperty_Reflection(TSharedPtr<FAttributeBase> AppliedAttribute,
 	UAttributeModifierDescObject* InDescObject, bool bAdd)
 {
 	// Record new modifier object to wrapper Property
@@ -246,7 +252,9 @@ void IAttributeCarrierInterface::UpdateDescObjectToProperty(TSharedPtr<FAttribut
 				}
 				break;
 			case ADT_None:
-			default: ;
+			default:
+				UE_LOG(LogAttributeSystem, Error, TEXT("[AttributeCarrierInterface] Attribute %s's data type invalid."),
+					*AppliedAttribute->GetName().ToString());
 			}
 
 			if (bFailed)
@@ -258,8 +266,67 @@ void IAttributeCarrierInterface::UpdateDescObjectToProperty(TSharedPtr<FAttribut
 		else
 		{
 			UE_LOG(LogAttributeSystem, Error,
-				TEXT("[AttributeCarrierInterface] Cannot find UPROPERTY with name %s. Modifier information cannot be synced."),
+				TEXT("[AttributeCarrierInterface] Cannot find UPROPERTY with name %s. Modifier information cannot be synced. Consider declare new wrapper member or use custom getter function instead."),
 				*AppliedAttribute->GetName().ToString());
 		}
+	}
+}
+
+void IAttributeCarrierInterface::UpdateDescObjectToProperty_Dynamic(TSharedPtr<FAttributeBase> AppliedAttribute,
+	UAttributeModifierDescObject* InDescObject, bool bAdd)
+{
+	bool bFailed = false;
+	const FName AttributeName = AppliedAttribute->GetName();
+	switch(AppliedAttribute->GetDataType())
+	{
+	case ADT_Boolean:
+		if (auto Attribute = GetBooleanAttributeWrapperByName(AttributeName))
+		{
+			if (bAdd)
+				Attribute->AppliedModifierDesc.Add(InDescObject);
+			else
+				Attribute->AppliedModifierDesc.Remove(InDescObject);
+		}
+		else
+		{
+			bFailed = true;
+		}
+		break;
+	case ADT_Integer:
+		if (auto Attribute = GetIntegerAttributeWrapperByName(AttributeName))
+		{
+			if (bAdd)
+				Attribute->AppliedModifierDesc.Add(InDescObject);
+			else
+				Attribute->AppliedModifierDesc.Remove(InDescObject);
+		}
+		else
+		{
+			bFailed = true;
+		}
+		break;
+	case ADT_Float:
+		if (auto Attribute = GetFloatAttributeWrapperByName(AttributeName))
+		{
+			if (bAdd)
+				Attribute->AppliedModifierDesc.Add(InDescObject);
+			else
+				Attribute->AppliedModifierDesc.Remove(InDescObject);
+		}
+		else
+		{
+			bFailed = true;
+		}
+		break;
+	case ADT_None:
+	default:
+		UE_LOG(LogAttributeSystem, Error, TEXT("[AttributeCarrierInterface] Attribute %s's data type invalid."),
+			*AppliedAttribute->GetName().ToString());;
+	}
+
+	if (bFailed)
+	{
+		UE_LOG(LogAttributeSystem, Error, TEXT("[AttributeCarrierInterface] Cannot find wrapper member with name %s."),
+			*AppliedAttribute->GetName().ToString());
 	}
 }

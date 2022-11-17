@@ -1221,7 +1221,7 @@ void AStandardModePlayerController::ExecSpawnCard(FString CardName)
 	UCardGameService* CardGameService = UGameService::GetGameService<UCardGameService>();
 	if (CardGameService)
 	{
-		CardGameService->UseCard(CardName, this);
+		CardGameService->UseCard(CardName, this, CharacterPawn);
 	}
 }
 
