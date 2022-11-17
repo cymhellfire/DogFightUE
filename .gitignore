@@ -7,6 +7,9 @@
 # RiderLink plugin
 Plugins/Developer/RiderLink/
 
+# Lua intermediate files
+Plugins/UnLua/Source/ThirdParty/Lua/lua-5.4.3/build/
+
 # Compiled Object files
 *.slo
 *.lo
