@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "AttributeSystem/Attribute/AttributeCommon.h"
+#include "UnrealIntegration/Marco/AttributeCarrierMarcos.h"
 #include "AttributeCarrierInterface.generated.h"
 
 class FAttributeBase;

@@ -26,17 +26,8 @@ void UTestAttributeComponent::InitializeComponent()
 	Super::InitializeComponent();
 
 	// test code
-	const FName NewAttrName = "TestInteger";
-	FAttributeCreateArgument NewAttributeArgument;
-	NewAttributeArgument.AttrName = NewAttrName;
-	NewAttributeArgument.DataType = ADT_Integer;
-	NewAttributeArgument.InitIntegerValue = 100;
-
-	if (AddAttribute(NewAttributeArgument))
-	{
-		auto NewAttribute = GetAttribute(NewAttrName);
-		NewAttribute->OnValueChanged.AddUObject(this, &UTestAttributeComponent::OnTestAttributeValueChanged);
-	}
+	TestInteger.BaseValue = 100;
+	MAKE_INT_ATTRIBUTE_FOR_MEMBER(UTestAttributeComponent, TestInteger, OnTestAttributeValueChanged);
 }
 
 void UTestAttributeComponent::ChangeTestAttribute(int32 NewValue)
