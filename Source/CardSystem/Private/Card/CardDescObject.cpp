@@ -2,6 +2,7 @@
 #include "Net/UnrealNetwork.h"
 #include "AttributeSystem/Attribute/Attribute.h"
 #include "AttributeSystem/Attribute/AttributeBase.h"
+#include "UnrealIntegration/DataWrapper/AttributeWrapperObject.h"
 #include "UnrealIntegration/UObject/AttributeModifierDescObject.h"
 
 void UCardDescObject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -10,10 +11,6 @@ void UCardDescObject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 
 	FDoRepLifetimeParams SharedParams;
 	SharedParams.bIsPushBased = true;
-
-	DOREPLIFETIME_WITH_PARAMS_FAST(UCardDescObject, BooleanWrapperMap, SharedParams);
-	DOREPLIFETIME_WITH_PARAMS_FAST(UCardDescObject, IntegerWrapperMap, SharedParams);
-	DOREPLIFETIME_WITH_PARAMS_FAST(UCardDescObject, FloatWrapperMap, SharedParams);
 }
 
 bool UCardDescObject::OnAttributeAdded(TSharedPtr<FAttributeBase> InAttribute)
@@ -41,13 +38,13 @@ bool UCardDescObject::OnAttributeAdded(TSharedPtr<FAttributeBase> InAttribute)
 				{
 					if (auto Wrapper = GetBooleanAttributeWrapperByName(Attribute->GetName()))
 					{
-						MARK_PROPERTY_DIRTY_FROM_NAME(UCardDescObject, BooleanWrapperMap, this);
+
 						Wrapper->Value = ConvertAttr->GetValue();
 					}
 				}
 			});
 
-			MARK_PROPERTY_DIRTY_FROM_NAME(UCardDescObject, BooleanWrapperMap, this);
+
 			BooleanWrapperMap.Add(AttributeName, NewWrapper);
 		}
 		break;
@@ -63,13 +60,13 @@ bool UCardDescObject::OnAttributeAdded(TSharedPtr<FAttributeBase> InAttribute)
 				{
 					if (auto Wrapper = GetIntegerAttributeWrapperByName(Attribute->GetName()))
 					{
-						MARK_PROPERTY_DIRTY_FROM_NAME(UCardDescObject, IntegerWrapperMap, this);
+
 						Wrapper->Value = ConvertAttr->GetValue();
 					}
 				}
 			});
 
-			MARK_PROPERTY_DIRTY_FROM_NAME(UCardDescObject, IntegerWrapperMap, this);
+
 			IntegerWrapperMap.Add(AttributeName, NewWrapper);
 		}
 		break;
@@ -85,13 +82,13 @@ bool UCardDescObject::OnAttributeAdded(TSharedPtr<FAttributeBase> InAttribute)
 				{
 					if (auto Wrapper = GetFloatAttributeWrapperByName(Attribute->GetName()))
 					{
-						MARK_PROPERTY_DIRTY_FROM_NAME(UCardDescObject, FloatWrapperMap, this);
+
 						Wrapper->Value = ConvertAttr->GetValue();
 					}
 				}
 			});
 
-			MARK_PROPERTY_DIRTY_FROM_NAME(UCardDescObject, FloatWrapperMap, this);
+
 			FloatWrapperMap.Add(AttributeName, NewWrapper);
 		}
 		break;
@@ -102,38 +99,42 @@ bool UCardDescObject::OnAttributeAdded(TSharedPtr<FAttributeBase> InAttribute)
 	return true;
 }
 
-TSharedPtr<FAttributeBooleanWrapper> UCardDescObject::GetBooleanAttributeWrapperByName(FName InName)
+UAttributeBooleanWrapperObject* UCardDescObject::GetBooleanAttributeWrapperByName(FName InName)
 {
 	auto Wrapper = BooleanWrapperMap.Find(InName);
 	return Wrapper ? *Wrapper : nullptr;
 }
 
-TSharedPtr<FAttributeIntegerWrapper> UCardDescObject::GetIntegerAttributeWrapperByName(FName InName)
+UAttributeIntegerWrapperObject* UCardDescObject::GetIntegerAttributeWrapperByName(FName InName)
 {
 	auto Wrapper = IntegerWrapperMap.Find(InName);
 	return Wrapper ? *Wrapper : nullptr;
 }
 
-TSharedPtr<FAttributeFloatWrapper> UCardDescObject::GetFloatAttributeWrapperByName(FName InName)
+UAttributeFloatWrapperObject* UCardDescObject::GetFloatAttributeWrapperByName(FName InName)
 {
 	auto Wrapper = FloatWrapperMap.Find(InName);
 	return Wrapper ? *Wrapper : nullptr;
 }
 
-void UCardDescObject::OnRep_IntegerWrapperMap()
+void UCardDescObject::OnRep_BooleanWrapperList()
 {
-	for (auto& Record : IntegerWrapperMap)
+	for (auto Wrapper : BooleanWrapperList)
 	{
-		auto Wrapper = Record.Value;
-		if (Wrapper->AppliedModifierDesc.Num() > 0)
+		int32 Index = 0;
+		for (auto Desc : Wrapper->AppliedModifierDesc)
 		{
-			int32 Index = 0;
-			for (auto Desc : Wrapper->AppliedModifierDesc)
-			{
-				UE_LOG(LogTemp, Log, TEXT("[TestAttribute] Modifier %d: Source = %s, Effect = %s"), Index, *Desc->GetSourceString(),
-					*Desc->GetEffectString());
-				Index++;
-			}
+			UE_LOG(LogTemp, Log, TEXT("[TestAttribute] Modifier %d: Source = %s, Effect = %s"), Index, *Desc->GetSourceString(),
+				*Desc->GetEffectString());
+			Index++;
 		}
 	}
+}
+
+void UCardDescObject::OnRep_IntegerWrapperList()
+{
+}
+
+void UCardDescObject::OnRep_FloatWrapperList()
+{
 }

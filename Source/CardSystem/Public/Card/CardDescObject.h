@@ -3,6 +3,10 @@
 #include "UnrealIntegration/UObject/AttributeBasedObject.h"
 #include "CardDescObject.generated.h"
 
+class UAttributeBooleanWrapperObject;
+class UAttributeIntegerWrapperObject;
+class UAttributeFloatWrapperObject;
+
 /**
  * Card description object that is replicated through network.
  */
@@ -20,15 +24,26 @@ protected:
 	// Use custom wrapper getter cause all attributes of card are created at runtime.
 	virtual bool UseCustomAttributeWrapperGetter() const override { return true; }
 
-	virtual TSharedPtr<FAttributeBooleanWrapper> GetBooleanAttributeWrapperByName(FName InName) override;
-	virtual TSharedPtr<FAttributeIntegerWrapper> GetIntegerAttributeWrapperByName(FName InName) override;
-	virtual TSharedPtr<FAttributeFloatWrapper> GetFloatAttributeWrapperByName(FName InName) override;
+	virtual UAttributeBooleanWrapperObject* GetBooleanAttributeWrapperByName(FName InName) override;
+	virtual UAttributeIntegerWrapperObject* GetIntegerAttributeWrapperByName(FName InName) override;
+	virtual UAttributeFloatWrapperObject* GetFloatAttributeWrapperByName(FName InName) override;
 
 	UFUNCTION()
-	void OnRep_IntegerWrapperMap();
+	void OnRep_BooleanWrapperList();
+
+	UFUNCTION()
+	void OnRep_IntegerWrapperList();
+
+	UFUNCTION()
+	void OnRep_FloatWrapperList();
 
 protected:
-	TMap<FName, TSharedPtr<FAttributeBooleanWrapper>> BooleanWrapperMap;
-	TMap<FName, TSharedPtr<FAttributeIntegerWrapper>> IntegerWrapperMap;
-	TMap<FName, TSharedPtr<FAttributeFloatWrapper>> FloatWrapperMap;
+	UPROPERTY(Transient, ReplicatedUsing=OnRep_BooleanWrapperList)
+	TArray<UAttributeBooleanWrapperObject*> BooleanWrapperList;
+
+	UPROPERTY(Transient, ReplicatedUsing=OnRep_IntegerWrapperList)
+	TArray<UAttributeIntegerWrapperObject*> IntegerWrapperList;
+
+	UPROPERTY(Transient, ReplicatedUsing=OnRep_FloatWrapperList)
+	TArray<UAttributeFloatWrapperObject*> FloatWrapperList;
 };

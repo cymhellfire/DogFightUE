@@ -4,6 +4,7 @@
 #include "AttributeSystem/Attribute/AttributeCommon.h"
 #include "UnrealIntegration/Marco/AttributeCarrierMarcos.h"
 #include "UnrealIntegration/DataWrapper/AttributeWrapper.h"
+#include "UnrealIntegration/DataWrapper/AttributeWrapperObject.h"
 #include "AttributeCarrierInterface.generated.h"
 
 class FAttributeBase;
@@ -205,19 +206,19 @@ protected:
 	 * @param InName			Name of attribute to search.
 	 * @return The wrapper struct if found.
 	 */
-	virtual TSharedPtr<FAttributeBooleanWrapper> GetBooleanAttributeWrapperByName(FName InName) { return nullptr; }
+	virtual UAttributeBooleanWrapperObject* GetBooleanAttributeWrapperByName(FName InName) { return nullptr; }
 
 	/**
 	 * @brief Getter function for dynamically created wrapper struct of integer attribute.
 	 * @param InName			Name of attribute to search.
 	 * @return The wrapper struct if found.
 	 */
-	virtual TSharedPtr<FAttributeIntegerWrapper> GetIntegerAttributeWrapperByName(FName InName) { return nullptr; }
+	virtual UAttributeIntegerWrapperObject* GetIntegerAttributeWrapperByName(FName InName) { return nullptr; }
 
 	/**
 	 * @brief Getter function for dynamically created wrapper struct of float attribute.
 	 * @param InName			Name of attribute to search.
 	 * @return The wrapper struct if found.
 	 */
-	virtual TSharedPtr<FAttributeFloatWrapper> GetFloatAttributeWrapperByName(FName InName) { return nullptr; }
+	virtual UAttributeFloatWrapperObject* GetFloatAttributeWrapperByName(FName InName) { return nullptr; }
 };
