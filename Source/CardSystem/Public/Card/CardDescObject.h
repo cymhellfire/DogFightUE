@@ -17,6 +17,8 @@ class CARDSYSTEM_API UCardDescObject : public UAttributeBasedObject
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	virtual bool ReplicateModifierDescObjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
+
 protected:
 	// Create wrapper struct for every created attribute
 	virtual bool OnAttributeAdded(TSharedPtr<FAttributeBase> InAttribute) override;

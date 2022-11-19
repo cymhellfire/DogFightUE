@@ -12,6 +12,7 @@
 class ACardBase;
 class UBuffQueue;
 class UAbilityBase;
+class UCardDescObject;
 
 /**
  * Struct that handles the data describe relationship between players.
@@ -244,6 +245,14 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	virtual bool ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
+
+	void AddCardDescObject(UCardDescObject* InDescObject);
+
+	void RemoveCardDescObject(UCardDescObject* InDescObject);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -341,4 +350,7 @@ protected:
 	int32 DesireCardCount;
 
 	bool bUsableCardListDirty;
+
+	UPROPERTY(Replicated, Transient)
+	TArray<UCardDescObject*> CardDescObjects;
 };

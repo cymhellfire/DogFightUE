@@ -1,8 +1,9 @@
 ﻿#include "GameService/CardGameService.h"
 
+#include "Game/StandardPlayerState.h"
 #include "Pawns/StandardModePlayerCharacter.h"
 
-void UCardGameService::UseCard(FString CardName, UObject* Instigator, AStandardModePlayerCharacter* Carrier)
+void UCardGameService::UseCard(FString CardName, UObject* Instigator)
 {
 	UCard* NewCard = CreateCard(CardName, Instigator);
 	if (NewCard)
@@ -12,10 +13,11 @@ void UCardGameService::UseCard(FString CardName, UObject* Instigator, AStandardM
 		if (Owner)
 		{
 			NewCard->SetOwnerController(Owner);
-		}
-		if (Carrier)
-		{
-			Carrier->AddCardDescObject(NewCard->GetDescObject());
+
+			if (auto PlayerState = Owner->GetPlayerState<AStandardPlayerState>())
+			{
+				PlayerState->AddCardDescObject(NewCard->GetDescObject());
+			}
 		}
 		NewCard->OnCardExecutionFinished.AddDynamic(this, &UCardGameService::OnCardFinished);
 		NewCard->Execute();
@@ -29,6 +31,14 @@ UClass* UCardGameService::GetDefaultCardClass() const
 
 void UCardGameService::OnCardFinished(ECardExecutionResult Result, UCard* Card)
 {
+	if (APlayerController* PC = Cast<APlayerController>(Card->GetOwnerController()))
+	{
+		if (auto PlayerState = PC->GetPlayerState<AStandardPlayerState>())
+		{
+			PlayerState->RemoveCardDescObject(Card->GetDescObject());
+		}
+	}
+
 	DestroyCard(Card);
 
 	HoldingCard = nullptr;

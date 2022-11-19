@@ -5,6 +5,7 @@
 #include "Card/CardAsyncCommand.h"
 #include "Card/CardCommand.h"
 #include "Card/CardDescObject.h"
+#include "CardModifier/CardModifier.h"
 
 UCard::UCard()
 {
@@ -25,11 +26,11 @@ void UCard::PostInitProperties()
 
 void UCard::Initialize()
 {
+	// Create description object
+	DescObject = NewObject<UCardDescObject>(GetOuter(), NAME_None, RF_Transient);
+
 	// Invoke blueprint side implementation
 	BP_Initialize();
-
-	// Create description object
-	DescObject = NewObject<UCardDescObject>(this, NAME_None, RF_Transient);
 }
 
 void UCard::AddAttribute(const FAttributeCreateArgument& InArgument)
@@ -68,6 +69,22 @@ bool UCard::GetAttributeFloatValue(FName InName, float& OutValue)
 	}
 
 	return false;
+}
+
+void UCard::AddModifierObject(UCardModifier* InModifier)
+{
+	if (DescObject)
+	{
+		DescObject->AddModifierObject(InModifier);
+	}
+}
+
+void UCard::RemoveModifierObject(UCardModifier* InModifier)
+{
+	if (DescObject)
+	{
+		DescObject->RemoveModifierObject(InModifier);
+	}
 }
 
 /**

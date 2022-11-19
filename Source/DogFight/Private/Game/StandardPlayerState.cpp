@@ -12,6 +12,8 @@
 #include "AI/StandardModeAIController.h"
 #include "Actors/Managers/BuffQueue.h"
 #include "Common/BitmaskOperation.h"
+#include "Engine/ActorChannel.h"
+#include "Card/CardDescObject.h"
 
 AStandardPlayerState::AStandardPlayerState(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -37,6 +39,48 @@ void AStandardPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 	DOREPLIFETIME(AStandardPlayerState, PlayerStatisticArray);
 	DOREPLIFETIME(AStandardPlayerState, bIsRagdoll);
 	DOREPLIFETIME(AStandardPlayerState, SkipGamePhaseFlags);
+
+	FDoRepLifetimeParams SharedParams;
+	SharedParams.bIsPushBased = true;
+
+	DOREPLIFETIME_WITH_PARAMS_FAST(AStandardPlayerState, CardDescObjects, SharedParams);
+}
+
+bool AStandardPlayerState::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
+{
+	bool bWroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+
+	for (auto Desc : CardDescObjects)
+	{
+		bWroteSomething |= Channel->ReplicateSubobject(Desc, *Bunch, *RepFlags);
+
+		// Replicated sub objects
+		bWroteSomething |= Desc->ReplicateModifierDescObjects(Channel, Bunch, RepFlags);
+	}
+
+	return bWroteSomething;
+}
+
+void AStandardPlayerState::AddCardDescObject(UCardDescObject* InDescObject)
+{
+	if (InDescObject == nullptr)
+	{
+		return;
+	}
+
+	MARK_PROPERTY_DIRTY_FROM_NAME(AStandardPlayerState, CardDescObjects, this);
+	CardDescObjects.AddUnique(InDescObject);
+}
+
+void AStandardPlayerState::RemoveCardDescObject(UCardDescObject* InDescObject)
+{
+	if (InDescObject == nullptr)
+	{
+		return;
+	}
+
+	MARK_PROPERTY_DIRTY_FROM_NAME(AStandardPlayerState, CardDescObjects, this);
+	CardDescObjects.Remove(InDescObject);
 }
 
 void AStandardPlayerState::OnRep_PlayerName()

@@ -52,6 +52,12 @@ public:
 		return DescObject;
 	}
 
+	UFUNCTION(BlueprintCallable, Category="Card")
+	void AddModifierObject(UCardModifier* InModifier);
+
+	UFUNCTION(BlueprintCallable, Category="Card")
+	void RemoveModifierObject(UCardModifier* InModifier);
+
 public:
 	/**
 	 * Execute this card logic flow.
@@ -59,6 +65,11 @@ public:
 	void Execute();
 
 	void SetOwnerController(AController* InOwner);
+
+	AController* GetOwnerController() const
+	{
+		return OwnerController.IsValid() ? OwnerController.Get() : nullptr;
+	}
 
 public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FCardExecutedSignature, ECardExecutionResult, Result, UCard*, Card);

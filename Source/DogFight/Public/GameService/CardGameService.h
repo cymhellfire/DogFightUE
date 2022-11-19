@@ -13,7 +13,7 @@ class DOGFIGHT_API UCardGameService : public ULuaGameService
 	GENERATED_BODY()
 public:
 
-	void UseCard(FString CardName, UObject* Instigator, AStandardModePlayerCharacter* Carrier);
+	void UseCard(FString CardName, UObject* Instigator);
 
 	UFUNCTION(BlueprintImplementableEvent)
 	UCard* CreateCard(const FString& ScriptPath, UObject* Instigator);

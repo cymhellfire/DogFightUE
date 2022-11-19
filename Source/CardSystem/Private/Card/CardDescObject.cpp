@@ -2,6 +2,7 @@
 #include "Net/UnrealNetwork.h"
 #include "AttributeSystem/Attribute/Attribute.h"
 #include "AttributeSystem/Attribute/AttributeBase.h"
+#include "Engine/ActorChannel.h"
 #include "UnrealIntegration/DataWrapper/AttributeWrapperObject.h"
 #include "UnrealIntegration/UObject/AttributeModifierDescObject.h"
 
@@ -11,6 +12,32 @@ void UCardDescObject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 
 	FDoRepLifetimeParams SharedParams;
 	SharedParams.bIsPushBased = true;
+
+	DOREPLIFETIME_WITH_PARAMS_FAST(UCardDescObject, BooleanWrapperList, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(UCardDescObject, IntegerWrapperList, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(UCardDescObject, FloatWrapperList, SharedParams);
+}
+
+bool UCardDescObject::ReplicateModifierDescObjects(UActorChannel* Channel, FOutBunch* Bunch,
+	FReplicationFlags* RepFlags)
+{
+	bool bWroteSomething = Super::ReplicateModifierDescObjects(Channel, Bunch, RepFlags);
+
+	// Replicate wrapper list content
+	for (auto Wrapper : BooleanWrapperList)
+	{
+		bWroteSomething |= Channel->ReplicateSubobject(Wrapper, *Bunch, *RepFlags);
+	}
+	for (auto Wrapper : IntegerWrapperList)
+	{
+		bWroteSomething |= Channel->ReplicateSubobject(Wrapper, *Bunch, *RepFlags);
+	}
+	for (auto Wrapper : FloatWrapperList)
+	{
+		bWroteSomething |= Channel->ReplicateSubobject(Wrapper, *Bunch, *RepFlags);
+	}
+
+	return bWroteSomething;
 }
 
 bool UCardDescObject::OnAttributeAdded(TSharedPtr<FAttributeBase> InAttribute)
@@ -46,12 +73,14 @@ bool UCardDescObject::OnAttributeAdded(TSharedPtr<FAttributeBase> InAttribute)
 
 			MARK_PROPERTY_DIRTY_FROM_NAME(UCardDescObject, BooleanWrapperList, this);
 			BooleanWrapperList.Add(NewWrapper);
+
+			BooleanWrapperMap.Add(AttributeName, NewWrapper);
 		}
 		break;
 	case ADT_Integer:
 		if (auto IntegerAttribute = StaticCastSharedPtr<FAttributeInteger>(InAttribute))
 		{
-			UAttributeIntegerWrapperObject* NewWrapper = NewObject<UAttributeIntegerWrapperObject>(this, NMAE_None, RF_Transient);
+			UAttributeIntegerWrapperObject* NewWrapper = NewObject<UAttributeIntegerWrapperObject>(this, NAME_None, RF_Transient);
 			NewWrapper->SetAttributeName(AttributeName);
 			NewWrapper->SetBaseValue(IntegerAttribute->GetRawValue());
 			NewWrapper->SetValue(IntegerAttribute->GetValue());
@@ -68,6 +97,8 @@ bool UCardDescObject::OnAttributeAdded(TSharedPtr<FAttributeBase> InAttribute)
 
 			MARK_PROPERTY_DIRTY_FROM_NAME(UCardDescObject, IntegerWrapperList, this);
 			IntegerWrapperList.Add(NewWrapper);
+
+			IntegerWrapperMap.Add(AttributeName, NewWrapper);
 		}
 		break;
 	case ADT_Float:
@@ -90,6 +121,8 @@ bool UCardDescObject::OnAttributeAdded(TSharedPtr<FAttributeBase> InAttribute)
 
 			MARK_PROPERTY_DIRTY_FROM_NAME(UCardDescObject, FloatWrapperList, this);
 			FloatWrapperList.Add(NewWrapper);
+
+			FloatWrapperMap.Add(AttributeName, NewWrapper);
 		}
 		break;
 	case ADT_None:
@@ -102,19 +135,19 @@ bool UCardDescObject::OnAttributeAdded(TSharedPtr<FAttributeBase> InAttribute)
 UAttributeBooleanWrapperObject* UCardDescObject::GetBooleanAttributeWrapperByName(FName InName)
 {
 	auto WrapperPtr = BooleanWrapperMap.Find(InName);
-	return WrapperPtr->IsValid() ? WrapperPtr->Get() : nullptr;
+	return (WrapperPtr && WrapperPtr->IsValid()) ? WrapperPtr->Get() : nullptr;
 }
 
 UAttributeIntegerWrapperObject* UCardDescObject::GetIntegerAttributeWrapperByName(FName InName)
 {
 	auto WrapperPtr = IntegerWrapperMap.Find(InName);
-	return WrapperPtr->IsValid() ? WrapperPtr->Get() : nullptr;
+	return (WrapperPtr && WrapperPtr->IsValid()) ? WrapperPtr->Get() : nullptr;
 }
 
 UAttributeFloatWrapperObject* UCardDescObject::GetFloatAttributeWrapperByName(FName InName)
 {
 	auto WrapperPtr = FloatWrapperMap.Find(InName);
-	return WrapperPtr->IsValid() ? WrapperPtr->Get() : nullptr;
+	return (WrapperPtr && WrapperPtr->IsValid()) ? WrapperPtr->Get() : nullptr;
 }
 
 void UCardDescObject::OnRep_BooleanWrapperList()
@@ -135,6 +168,11 @@ void UCardDescObject::OnRep_IntegerWrapperList()
 {
 	for (auto Wrapper : IntegerWrapperList)
 	{
+		if (!Wrapper)
+		{
+			continue;
+		}
+
 		int32 Index = 0;
 		for (auto Desc : Wrapper->AppliedModifierDesc)
 		{
