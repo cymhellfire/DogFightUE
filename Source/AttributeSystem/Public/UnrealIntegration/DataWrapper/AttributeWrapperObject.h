@@ -19,6 +19,13 @@ public:
 
 	void RemoveDescObject(UAttributeModifierDescObject* InDescObject);
 
+	void SetAttributeName(FName InName);
+
+	FName GetAttributeName() const
+	{
+		return AttributeName;
+	}
+
 public:
 	DECLARE_MULTICAST_DELEGATE(FAttributeWrapperObjectDelegate);
 	FAttributeWrapperObjectDelegate OnBaseValueChanged;
@@ -28,6 +35,10 @@ public:
 	// Only replicate array content in this class since all description objects are replicated by outer actor.
 	UPROPERTY(Replicated, Transient)
 	TArray<UAttributeModifierDescObject*> AppliedModifierDesc;
+
+protected:
+	UPROPERTY(Replicated, Transient)
+	FName AttributeName;
 };
 
 UCLASS()

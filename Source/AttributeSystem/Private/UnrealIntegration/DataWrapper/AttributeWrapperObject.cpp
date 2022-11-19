@@ -10,6 +10,7 @@ void UAttributeWrapperObjectBase::GetLifetimeReplicatedProps(TArray<FLifetimePro
 	UObject::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	MAKE_SHARED_PARAMS(SharedParams)
+	DOREPLIFETIME_WITH_PARAMS_FAST(UAttributeWrapperObjectBase, AttributeName, SharedParams);
 	DOREPLIFETIME_WITH_PARAMS_FAST(UAttributeWrapperObjectBase, AppliedModifierDesc, SharedParams);
 }
 
@@ -29,6 +30,12 @@ void UAttributeWrapperObjectBase::RemoveDescObject(UAttributeModifierDescObject*
 
 	MARK_PROPERTY_DIRTY_FROM_NAME(UAttributeWrapperObjectBase, AppliedModifierDesc, this);
 	AppliedModifierDesc.Remove(InDescObject);
+}
+
+void UAttributeWrapperObjectBase::SetAttributeName(FName InName)
+{
+	MARK_PROPERTY_DIRTY_FROM_NAME(UAttributeWrapperObjectBase, AttributeName, this);
+	AttributeName = InName;
 }
 
 void UAttributeBooleanWrapperObject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

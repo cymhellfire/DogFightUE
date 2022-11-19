@@ -29,67 +29,67 @@ bool UCardDescObject::OnAttributeAdded(TSharedPtr<FAttributeBase> InAttribute)
 	case ADT_Boolean:
 		if (auto BooleanAttribute = StaticCastSharedPtr<FAttributeBoolean>(InAttribute))
 		{
-			TSharedPtr<FAttributeBooleanWrapper> NewWrapper = MakeShareable(new FAttributeBooleanWrapper);
-			NewWrapper->BaseValue = BooleanAttribute->GetRawValue();
-			NewWrapper->Value = BooleanAttribute->GetValue();
+			UAttributeBooleanWrapperObject* NewWrapper = NewObject<UAttributeBooleanWrapperObject>(this, NAME_None, RF_Transient);
+			NewWrapper->SetAttributeName(AttributeName);
+			NewWrapper->SetBaseValue(BooleanAttribute->GetRawValue());
+			NewWrapper->SetValue(BooleanAttribute->GetValue());
 			BooleanAttribute->OnValueChanged.AddLambda([this](TSharedPtr<FAttributeBase> Attribute)
 			{
 				if (auto ConvertAttr = StaticCastSharedPtr<FAttributeBoolean>(Attribute))
 				{
 					if (auto Wrapper = GetBooleanAttributeWrapperByName(Attribute->GetName()))
 					{
-
-						Wrapper->Value = ConvertAttr->GetValue();
+						Wrapper->SetValue(ConvertAttr->GetValue());
 					}
 				}
 			});
 
-
-			BooleanWrapperMap.Add(AttributeName, NewWrapper);
+			MARK_PROPERTY_DIRTY_FROM_NAME(UCardDescObject, BooleanWrapperList, this);
+			BooleanWrapperList.Add(NewWrapper);
 		}
 		break;
 	case ADT_Integer:
 		if (auto IntegerAttribute = StaticCastSharedPtr<FAttributeInteger>(InAttribute))
 		{
-			TSharedPtr<FAttributeIntegerWrapper> NewWrapper = MakeShareable(new FAttributeIntegerWrapper);
-			NewWrapper->BaseValue = IntegerAttribute->GetRawValue();
-			NewWrapper->Value = IntegerAttribute->GetValue();
+			UAttributeIntegerWrapperObject* NewWrapper = NewObject<UAttributeIntegerWrapperObject>(this, NMAE_None, RF_Transient);
+			NewWrapper->SetAttributeName(AttributeName);
+			NewWrapper->SetBaseValue(IntegerAttribute->GetRawValue());
+			NewWrapper->SetValue(IntegerAttribute->GetValue());
 			IntegerAttribute->OnValueChanged.AddLambda([this](TSharedPtr<FAttributeBase> Attribute)
 			{
 				if (auto ConvertAttr = StaticCastSharedPtr<FAttributeInteger>(Attribute))
 				{
 					if (auto Wrapper = GetIntegerAttributeWrapperByName(Attribute->GetName()))
 					{
-
-						Wrapper->Value = ConvertAttr->GetValue();
+						Wrapper->SetValue(ConvertAttr->GetValue());
 					}
 				}
 			});
 
-
-			IntegerWrapperMap.Add(AttributeName, NewWrapper);
+			MARK_PROPERTY_DIRTY_FROM_NAME(UCardDescObject, IntegerWrapperList, this);
+			IntegerWrapperList.Add(NewWrapper);
 		}
 		break;
 	case ADT_Float:
 		if (auto FloatAttribute = StaticCastSharedPtr<FAttributeFloat>(InAttribute))
 		{
-			TSharedPtr<FAttributeFloatWrapper> NewWrapper = MakeShareable(new FAttributeFloatWrapper);
-			NewWrapper->BaseValue = FloatAttribute->GetRawValue();
-			NewWrapper->Value = FloatAttribute->GetValue();
+			UAttributeFloatWrapperObject* NewWrapper = NewObject<UAttributeFloatWrapperObject>(this, NAME_None, RF_Transient);
+			NewWrapper->SetAttributeName(AttributeName);
+			NewWrapper->SetBaseValue(FloatAttribute->GetRawValue());
+			NewWrapper->SetValue(FloatAttribute->GetValue());
 			FloatAttribute->OnValueChanged.AddLambda([this](TSharedPtr<FAttributeBase> Attribute)
 			{
 				if (auto ConvertAttr = StaticCastSharedPtr<FAttributeFloat>(Attribute))
 				{
 					if (auto Wrapper = GetFloatAttributeWrapperByName(Attribute->GetName()))
 					{
-
-						Wrapper->Value = ConvertAttr->GetValue();
+						Wrapper->SetValue(ConvertAttr->GetValue());
 					}
 				}
 			});
 
-
-			FloatWrapperMap.Add(AttributeName, NewWrapper);
+			MARK_PROPERTY_DIRTY_FROM_NAME(UCardDescObject, FloatWrapperList, this);
+			FloatWrapperList.Add(NewWrapper);
 		}
 		break;
 	case ADT_None:
@@ -101,20 +101,20 @@ bool UCardDescObject::OnAttributeAdded(TSharedPtr<FAttributeBase> InAttribute)
 
 UAttributeBooleanWrapperObject* UCardDescObject::GetBooleanAttributeWrapperByName(FName InName)
 {
-	auto Wrapper = BooleanWrapperMap.Find(InName);
-	return Wrapper ? *Wrapper : nullptr;
+	auto WrapperPtr = BooleanWrapperMap.Find(InName);
+	return WrapperPtr->IsValid() ? WrapperPtr->Get() : nullptr;
 }
 
 UAttributeIntegerWrapperObject* UCardDescObject::GetIntegerAttributeWrapperByName(FName InName)
 {
-	auto Wrapper = IntegerWrapperMap.Find(InName);
-	return Wrapper ? *Wrapper : nullptr;
+	auto WrapperPtr = IntegerWrapperMap.Find(InName);
+	return WrapperPtr->IsValid() ? WrapperPtr->Get() : nullptr;
 }
 
 UAttributeFloatWrapperObject* UCardDescObject::GetFloatAttributeWrapperByName(FName InName)
 {
-	auto Wrapper = FloatWrapperMap.Find(InName);
-	return Wrapper ? *Wrapper : nullptr;
+	auto WrapperPtr = FloatWrapperMap.Find(InName);
+	return WrapperPtr->IsValid() ? WrapperPtr->Get() : nullptr;
 }
 
 void UCardDescObject::OnRep_BooleanWrapperList()
@@ -133,6 +133,16 @@ void UCardDescObject::OnRep_BooleanWrapperList()
 
 void UCardDescObject::OnRep_IntegerWrapperList()
 {
+	for (auto Wrapper : IntegerWrapperList)
+	{
+		int32 Index = 0;
+		for (auto Desc : Wrapper->AppliedModifierDesc)
+		{
+			UE_LOG(LogTemp, Log, TEXT("[TestAttribute] Modifier %d: Source = %s, Effect = %s"), Index, *Desc->GetSourceString(),
+				*Desc->GetEffectString());
+			Index++;
+		}
+	}
 }
 
 void UCardDescObject::OnRep_FloatWrapperList()

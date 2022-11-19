@@ -46,4 +46,9 @@ protected:
 
 	UPROPERTY(Transient, ReplicatedUsing=OnRep_FloatWrapperList)
 	TArray<UAttributeFloatWrapperObject*> FloatWrapperList;
+
+	// Map container that do NOT replicated. These maps are maintained by OnRep functions on client side.
+	TMap<FName, TWeakObjectPtr<UAttributeBooleanWrapperObject>> BooleanWrapperMap;
+	TMap<FName, TWeakObjectPtr<UAttributeIntegerWrapperObject>> IntegerWrapperMap;
+	TMap<FName, TWeakObjectPtr<UAttributeFloatWrapperObject>> FloatWrapperMap;
 };
