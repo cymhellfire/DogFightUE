@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogAttributeSystem, Log, All);
+ATTRIBUTESYSTEM_API DECLARE_LOG_CATEGORY_EXTERN(LogAttributeSystem, Log, All);
 
 class FAttributeSystemModule : public IModuleInterface
 {

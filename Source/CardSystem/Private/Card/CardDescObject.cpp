@@ -1,10 +1,10 @@
 #include "Card/CardDescObject.h"
+#include "CardSystem.h"
 #include "Net/UnrealNetwork.h"
 #include "AttributeSystem/Attribute/Attribute.h"
 #include "AttributeSystem/Attribute/AttributeBase.h"
 #include "Engine/ActorChannel.h"
 #include "UnrealIntegration/DataWrapper/AttributeWrapperObject.h"
-#include "UnrealIntegration/UObject/AttributeModifierDescObject.h"
 
 void UCardDescObject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -74,7 +74,7 @@ bool UCardDescObject::OnAttributeAdded(TSharedPtr<FAttributeBase> InAttribute)
 			MARK_PROPERTY_DIRTY_FROM_NAME(UCardDescObject, BooleanWrapperList, this);
 			BooleanWrapperList.Add(NewWrapper);
 
-			BooleanWrapperMap.Add(AttributeName, NewWrapper);
+			OnRep_BooleanWrapperList();
 		}
 		break;
 	case ADT_Integer:
@@ -98,7 +98,7 @@ bool UCardDescObject::OnAttributeAdded(TSharedPtr<FAttributeBase> InAttribute)
 			MARK_PROPERTY_DIRTY_FROM_NAME(UCardDescObject, IntegerWrapperList, this);
 			IntegerWrapperList.Add(NewWrapper);
 
-			IntegerWrapperMap.Add(AttributeName, NewWrapper);
+			OnRep_IntegerWrapperList();
 		}
 		break;
 	case ADT_Float:
@@ -122,7 +122,7 @@ bool UCardDescObject::OnAttributeAdded(TSharedPtr<FAttributeBase> InAttribute)
 			MARK_PROPERTY_DIRTY_FROM_NAME(UCardDescObject, FloatWrapperList, this);
 			FloatWrapperList.Add(NewWrapper);
 
-			FloatWrapperMap.Add(AttributeName, NewWrapper);
+			OnRep_FloatWrapperList();
 		}
 		break;
 	case ADT_None:
@@ -154,12 +154,16 @@ void UCardDescObject::OnRep_BooleanWrapperList()
 {
 	for (auto Wrapper : BooleanWrapperList)
 	{
-		int32 Index = 0;
-		for (auto Desc : Wrapper->AppliedModifierDesc)
+		if (!Wrapper)
+			continue;
+
+		const FName AttributeName = Wrapper->GetAttributeName();
+		// Add new synced wrapper to map
+		if (!BooleanWrapperMap.Contains(AttributeName))
 		{
-			UE_LOG(LogTemp, Log, TEXT("[TestAttribute] Modifier %d: Source = %s, Effect = %s"), Index, *Desc->GetSourceString(),
-				*Desc->GetEffectString());
-			Index++;
+			BooleanWrapperMap.Add(AttributeName, Wrapper);
+			UE_LOG(LogCardSystem, Log, TEXT("[CardDescObject] New attribute %s added."), *AttributeName.ToString());
+			UE_LOG(LogCardSystem, Log, TEXT("[CardDescObject] %s"), *Wrapper->ToString());
 		}
 	}
 }
@@ -169,23 +173,33 @@ void UCardDescObject::OnRep_IntegerWrapperList()
 	for (auto Wrapper : IntegerWrapperList)
 	{
 		if (!Wrapper)
-		{
 			continue;
-		}
 
-		UE_LOG(LogTemp, Log, TEXT("[TestAttribute] Attribute: %s, Value: %d/%d"), *Wrapper->GetAttributeName().ToString(),
-			Wrapper->GetValue(), Wrapper->GetBaseValue());
-
-		int32 Index = 0;
-		for (auto Desc : Wrapper->AppliedModifierDesc)
+		const FName AttributeName = Wrapper->GetAttributeName();
+		// Add new synced wrapper to map
+		if (!IntegerWrapperMap.Contains(AttributeName))
 		{
-			UE_LOG(LogTemp, Log, TEXT("[TestAttribute] Modifier %d: Source = %s, Effect = %s"), Index, *Desc->GetSourceString(),
-				*Desc->GetEffectString());
-			Index++;
+			IntegerWrapperMap.Add(AttributeName, Wrapper);
+			UE_LOG(LogCardSystem, Log, TEXT("[CardDescObject] New attribute %s added."), *AttributeName.ToString());
+			UE_LOG(LogCardSystem, Log, TEXT("[CardDescObject] %s"), *Wrapper->ToString());
 		}
 	}
 }
 
 void UCardDescObject::OnRep_FloatWrapperList()
 {
+	for (auto Wrapper : FloatWrapperList)
+	{
+		if (!Wrapper)
+			return;
+
+		const FName AttributeName = Wrapper->GetAttributeName();
+		// Add new synced wrapper to map
+		if (!FloatWrapperMap.Contains(AttributeName))
+		{
+			FloatWrapperMap.Add(AttributeName, Wrapper);
+			UE_LOG(LogCardSystem, Log, TEXT("[CardDescObject] New attribute %s added."), *AttributeName.ToString());
+			UE_LOG(LogCardSystem, Log, TEXT("[CardDescObject] %s"), *Wrapper->ToString());
+		}
+	}
 }

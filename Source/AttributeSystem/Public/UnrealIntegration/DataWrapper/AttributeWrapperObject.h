@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "UnrealIntegration/Marco/AttributeDataTypeMacro.h"
 #include "AttributeWrapperObject.generated.h"
 
 class UAttributeModifierDescObject;
@@ -26,6 +27,15 @@ public:
 		return AttributeName;
 	}
 
+	virtual FString ToString() const
+	{
+		return FString::Printf(TEXT("Attribute Name: %s"), *AttributeName.ToString());
+	}
+
+protected:
+	UFUNCTION()
+	void OnRep_AppliedModifierDesc(const TArray<UAttributeModifierDescObject*>& OldList);
+
 public:
 	DECLARE_MULTICAST_DELEGATE(FAttributeWrapperObjectDelegate);
 	FAttributeWrapperObjectDelegate OnBaseValueChanged;
@@ -33,7 +43,7 @@ public:
 
 //protected:
 	// Only replicate array content in this class since all description objects are replicated by outer actor.
-	UPROPERTY(Replicated, Transient)
+	UPROPERTY(ReplicatedUsing=OnRep_AppliedModifierDesc, Transient)
 	TArray<UAttributeModifierDescObject*> AppliedModifierDesc;
 
 protected:
@@ -62,12 +72,18 @@ public:
 
 	void SetValue(bool InValue);
 
+	virtual FString ToString() const override
+	{
+		return FString::Printf(TEXT("%s, Value: %s/%s"), *Super::ToString(),
+			BOOL_TO_STR(Value), BOOL_TO_STR(BaseValue));
+	}
+
 protected:
 	UFUNCTION()
-	void OnRep_BaseValue();
+	void OnRep_BaseValue(bool OldValue);
 
 	UFUNCTION()
-	void OnRep_Value();
+	void OnRep_Value(bool OldValue);
 
 protected:
 	UPROPERTY(ReplicatedUsing=OnRep_BaseValue, Transient)
@@ -98,12 +114,17 @@ public:
 
 	void SetValue(int32 InValue);
 
+	virtual FString ToString() const override
+	{
+		return FString::Printf(TEXT("%s, Value: %d/%d"), *Super::ToString(), Value, BaseValue);
+	}
+
 protected:
 	UFUNCTION()
-	void OnRep_BaseValue();
+	void OnRep_BaseValue(int32 OldValue);
 
 	UFUNCTION()
-	void OnRep_Value();
+	void OnRep_Value(int32 OldValue);
 
 protected:
 	UPROPERTY(ReplicatedUsing=OnRep_BaseValue, Transient)
@@ -134,12 +155,17 @@ public:
 
 	void SetValue(float InValue);
 
+	virtual FString ToString() const override
+	{
+		return FString::Printf(TEXT("%s, Value: %.3f/%.3f"), *Super::ToString(), Value, BaseValue);
+	}
+
 protected:
 	UFUNCTION()
-	void OnRep_BaseValue();
+	void OnRep_BaseValue(float OldValue);
 
 	UFUNCTION()
-	void OnRep_Value();
+	void OnRep_Value(float OldValue);
 
 protected:
 	UPROPERTY(ReplicatedUsing=OnRep_BaseValue, Transient)

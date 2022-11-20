@@ -283,9 +283,9 @@ void IAttributeCarrierInterface::UpdateDescObjectToProperty_Dynamic(TSharedPtr<F
 		if (auto Attribute = GetBooleanAttributeWrapperByName(AttributeName))
 		{
 			if (bAdd)
-				Attribute->AppliedModifierDesc.Add(InDescObject);
+				Attribute->AddDescObject(InDescObject);
 			else
-				Attribute->AppliedModifierDesc.Remove(InDescObject);
+				Attribute->RemoveDescObject(InDescObject);
 		}
 		else
 		{
@@ -296,9 +296,9 @@ void IAttributeCarrierInterface::UpdateDescObjectToProperty_Dynamic(TSharedPtr<F
 		if (auto Attribute = GetIntegerAttributeWrapperByName(AttributeName))
 		{
 			if (bAdd)
-				Attribute->AppliedModifierDesc.Add(InDescObject);
+				Attribute->AddDescObject(InDescObject);
 			else
-				Attribute->AppliedModifierDesc.Remove(InDescObject);
+				Attribute->RemoveDescObject(InDescObject);
 		}
 		else
 		{
@@ -309,9 +309,9 @@ void IAttributeCarrierInterface::UpdateDescObjectToProperty_Dynamic(TSharedPtr<F
 		if (auto Attribute = GetFloatAttributeWrapperByName(AttributeName))
 		{
 			if (bAdd)
-				Attribute->AppliedModifierDesc.Add(InDescObject);
+				Attribute->AddDescObject(InDescObject);
 			else
-				Attribute->AppliedModifierDesc.Remove(InDescObject);
+				Attribute->RemoveDescObject(InDescObject);
 		}
 		else
 		{
