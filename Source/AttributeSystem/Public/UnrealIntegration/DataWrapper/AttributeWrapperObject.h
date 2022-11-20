@@ -4,6 +4,10 @@
 #include "UnrealIntegration/Marco/AttributeDataTypeMacro.h"
 #include "AttributeWrapperObject.generated.h"
 
+class FAttributeBase;
+class FAttributeBoolean;
+class FAttributeInteger;
+class FAttributeFloat;
 class UAttributeModifierDescObject;
 
 UCLASS()
@@ -35,6 +39,15 @@ public:
 protected:
 	UFUNCTION()
 	void OnRep_AppliedModifierDesc(const TArray<UAttributeModifierDescObject*>& OldList);
+
+	ENetRole GetNetRole() const
+	{
+		if (auto OuterActor = GetTypedOuter<AActor>())
+		{
+			return OuterActor->GetLocalRole();
+		}
+		return ROLE_None;
+	}
 
 public:
 	DECLARE_MULTICAST_DELEGATE(FAttributeWrapperObjectDelegate);
@@ -173,4 +186,38 @@ protected:
 
 	UPROPERTY(ReplicatedUsing=OnRep_Value, Transient)
 	float Value;
+};
+
+class ATTRIBUTESYSTEM_API FAttributeWrapperObjectHelper
+{
+public:
+	/**
+	 * @brief Helper function of creating new wrapper object from given boolean attribute.
+	 * @param Instigator		The instigator of creating.
+	 * @param InAttribute		Attribute that create wrapper object with.
+	 * @param InCallback		Callback function which is triggered every time the attribute value has changed.
+	 * @return New created wrapper object.
+	 */
+	static UAttributeBooleanWrapperObject* CreateWrapperObjectForBooleanAttribute(UObject* Instigator, TSharedPtr<FAttributeBoolean> InAttribute,
+		const TFunction<void(TSharedPtr<FAttributeBase>)>& InCallback);
+
+	/**
+	 * @brief Helper function of creating new wrapper object from given integer attribute.
+	 * @param Instigator		The instigator of creating.
+	 * @param InAttribute		Attribute that create wrapper object with.
+	 * @param InCallback		Callback function which is triggered every time the attribute value has changed.
+	 * @return New created wrapper object.
+	 */
+	static UAttributeIntegerWrapperObject* CreateWrapperObjectForIntegerAttribute(UObject* Instigator, TSharedPtr<FAttributeInteger> InAttribute,
+		const TFunction<void(TSharedPtr<FAttributeBase>)>& InCallback);
+
+	/**
+	 * @brief Helper function of creating new wrapper object from given float attribute.
+	 * @param Instigator		The instigator of creating.
+	 * @param InAttribute		Attribute that create wrapper object with.
+	 * @param InCallback		Callback function which is triggered every time the attribute value has changed.
+	 * @return New created wrapper object.
+	 */
+	static UAttributeFloatWrapperObject* CreateWrapperObjectForFloatAttribute(UObject* Instigator, TSharedPtr<FAttributeFloat> InAttribute,
+		const TFunction<void(TSharedPtr<FAttributeBase>)>& InCallback);
 };

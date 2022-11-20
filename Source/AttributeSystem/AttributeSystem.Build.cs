@@ -26,5 +26,15 @@ public class AttributeSystem : ModuleRules
                 "NetCore",
             }
         );
+
+        bool bEnableDetailLog = true;
+        if (Target.bBuildEditor && bEnableDetailLog)
+        {
+            PrivateDefinitions.Add("ATTR_DETAIL_LOG=1");
+        }
+        else
+        {
+            PrivateDefinitions.Add("ATTR_DETAIL_LOG=0");
+        }
     }
 }

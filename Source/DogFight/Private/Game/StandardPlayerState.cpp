@@ -70,6 +70,9 @@ void AStandardPlayerState::AddCardDescObject(UCardDescObject* InDescObject)
 
 	MARK_PROPERTY_DIRTY_FROM_NAME(AStandardPlayerState, CardDescObjects, this);
 	CardDescObjects.AddUnique(InDescObject);
+
+	// Set replicator
+	InDescObject->SetReplicator(this);
 }
 
 void AStandardPlayerState::RemoveCardDescObject(UCardDescObject* InDescObject)

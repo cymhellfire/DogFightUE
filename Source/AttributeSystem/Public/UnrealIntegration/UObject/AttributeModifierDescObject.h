@@ -20,6 +20,8 @@ public:
 	FString GetSourceString() const { return Source; }
 	FString GetEffectString() const { return Effect; }
 
+	FString ToString() const;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AttribtueModifierDesc", Replicated)
 	FString Source;

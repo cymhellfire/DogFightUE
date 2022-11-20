@@ -132,6 +132,12 @@ protected:
 	virtual UObject* ThisAsObject() = 0;
 
 	/**
+	 * @brief Get local net role of this instance.
+	 * @return Net role.
+	 */
+	virtual ENetRole GetNetRole() = 0;
+
+	/**
 	 * Find a suitable attribute and apply passed in modifier to it.
 	 * @param InModifier			Modifier to apply.
 	 * @param OutAttribute			The attribute applied new modifier.
@@ -178,47 +184,67 @@ protected:
 	virtual TArray<IAttributeModifierCarrierInterface*> GetAllModifierObjects() const = 0;
 
 	/**
-	 * @brief Function to update recorded description objects in wrapper properties. UE reflection system version.
+	 * @brief Create new wrapper object for given attribute.
+	 * @param InAttribute Attribute that new wrapper object created for.
+	 */
+	void CreateWrapperObjectForAttribute(TSharedPtr<FAttributeBase> InAttribute);
+
+	/**
+	 * @brief Notify the class a new wrapper object for boolean attribute is created.
+	 * @param NewWrapper New created wrapper object.
+	 */
+	virtual void OnBooleanAttributeWrapperObjectCreated(UAttributeBooleanWrapperObject* NewWrapper) = 0;
+
+	/**
+	 * @brief Notify the class a new wrapper object for integer attribute is created.
+	 * @param NewWrapper New created wrapper object.
+	 */
+	virtual void OnIntegerAttributeWrapperObjectCreated(UAttributeIntegerWrapperObject* NewWrapper) = 0;
+
+	/**
+	 * @brief Notify the class a new wrapper object for float attribute is created.
+	 * @param NewWrapper New created wrapper object.
+	 */
+	virtual void OnFloatAttributeWrapperObjectCreated(UAttributeFloatWrapperObject* NewWrapper) = 0;
+
+	/**
+	 * @brief Function to update recorded description objects in wrapper properties.
 	 * @param AppliedAttribute			Attribute instance that indicate wrapper property.
 	 * @param InDescObject				Description object that to update.
 	 * @param bAdd						Add/Remove description object to/from wrapper property.
 	 */
-	void UpdateDescObjectToProperty_Reflection(TSharedPtr<FAttributeBase> AppliedAttribute, UAttributeModifierDescObject* InDescObject, bool bAdd);
-
-	/**
-	 * @brief Function to update recorded description objects in wrapper properties. Use custom getter function version.
-	 * @param AppliedAttribute			Attribute instance that indicate wrapper property.
-	 * @param InDescObject				Description object that to update.
-	 * @param bAdd						Add/Remove description object to/from wrapper property.
-	 */
-	void UpdateDescObjectToProperty_Dynamic(TSharedPtr<FAttributeBase> AppliedAttribute, UAttributeModifierDescObject* InDescObject, bool bAdd);
-
-	/**
-	 * @brief When add description objects, use UE reflection system to search attribute wrapper member declared in code
-	 * is default behavior. If the wrapper struct is created dynamically in runtime, you can use custom getter function
-	 * return correct result.
-	 * @return Whether use dynamic wrapper getter functions.
-	 */
-	virtual bool UseCustomAttributeWrapperGetter() const { return false; }
+	void UpdateDescObjectToProperty(TSharedPtr<FAttributeBase> AppliedAttribute, UAttributeModifierDescObject* InDescObject, bool bAdd);
 
 	/**
 	 * @brief Getter function for dynamically created wrapper struct of boolean attribute.
 	 * @param InName			Name of attribute to search.
 	 * @return The wrapper struct if found.
 	 */
-	virtual UAttributeBooleanWrapperObject* GetBooleanAttributeWrapperByName(FName InName) { return nullptr; }
+	UAttributeBooleanWrapperObject* GetBooleanAttributeWrapperByName(FName InName);
 
 	/**
 	 * @brief Getter function for dynamically created wrapper struct of integer attribute.
 	 * @param InName			Name of attribute to search.
 	 * @return The wrapper struct if found.
 	 */
-	virtual UAttributeIntegerWrapperObject* GetIntegerAttributeWrapperByName(FName InName) { return nullptr; }
+	UAttributeIntegerWrapperObject* GetIntegerAttributeWrapperByName(FName InName);
 
 	/**
 	 * @brief Getter function for dynamically created wrapper struct of float attribute.
 	 * @param InName			Name of attribute to search.
 	 * @return The wrapper struct if found.
 	 */
-	virtual UAttributeFloatWrapperObject* GetFloatAttributeWrapperByName(FName InName) { return nullptr; }
+	UAttributeFloatWrapperObject* GetFloatAttributeWrapperByName(FName InName);
+
+	/**
+	 * @brief Iterate through specified wrapper object map and remove invalid records.
+	 * @param InDataType		Data type that to validate.
+	 * @param OutInvalidKeys	Invalid keys that has been removed. (Optional)
+	 */
+	void ValidateWrapperObjectMap(EAttributeDataType InDataType, TArray<FName>* OutInvalidKeys = nullptr);
+
+	// Map container that do NOT replicated. These maps are maintained by OnRep functions on client side.
+	TMap<FName, TWeakObjectPtr<UAttributeBooleanWrapperObject>> BooleanWrapperMap;
+	TMap<FName, TWeakObjectPtr<UAttributeIntegerWrapperObject>> IntegerWrapperMap;
+	TMap<FName, TWeakObjectPtr<UAttributeFloatWrapperObject>> FloatWrapperMap;
 };

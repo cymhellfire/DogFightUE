@@ -1,6 +1,7 @@
 #include "UnrealIntegration/DataWrapper/AttributeWrapperObject.h"
 
 #include "AttributeSystem.h"
+#include "AttributeSystem/Attribute/Attribute.h"
 #include "Net/UnrealNetwork.h"
 #include "UnrealIntegration/UObject/AttributeModifierDescObject.h"
 
@@ -49,6 +50,9 @@ void UAttributeWrapperObjectBase::SetAttributeName(FName InName)
 
 void UAttributeWrapperObjectBase::OnRep_AppliedModifierDesc(const TArray<UAttributeModifierDescObject*>& OldList)
 {
+#if ATTR_DETAIL_LOG
+	const FString ObjName = GetOuter()->GetName();
+	const FString NetRoleStr = (GetNetRole() == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
 	TArray<UAttributeModifierDescObject*> RemovedObjects = TArray(OldList);
 	for (auto Desc : AppliedModifierDesc)
 	{
@@ -58,16 +62,17 @@ void UAttributeWrapperObjectBase::OnRep_AppliedModifierDesc(const TArray<UAttrib
 		}
 		else
 		{
-			UE_LOG(LogAttributeSystem, Log, TEXT("[%s] Modifier Added: Name - %s Effect - %s"), *GetAttributeName().ToString(),
-				*Desc->GetSourceString(), *Desc->GetEffectString());
+			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] Modifier added to %s: %s"), *NetRoleStr, *ObjName,
+				*GetAttributeName().ToString(),	*Desc->ToString());
 		}
 	}
 
 	for (auto Desc : RemovedObjects)
 	{
-		UE_LOG(LogAttributeSystem, Log, TEXT("[%s] Modifier Removed: Name - %s Effect - %s"), *GetAttributeName().ToString(),
-			*Desc->GetSourceString(), *Desc->GetEffectString());
+		UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] Modifier removed from %s: %s"), *NetRoleStr, *ObjName,
+				*GetAttributeName().ToString(),	*Desc->ToString());
 	}
+#endif
 }
 
 void UAttributeBooleanWrapperObject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -99,16 +104,24 @@ void UAttributeBooleanWrapperObject::SetValue(bool InValue)
 
 void UAttributeBooleanWrapperObject::OnRep_BaseValue(bool OldValue)
 {
-	UE_LOG(LogAttributeSystem, Log, TEXT("[BooleanWrapperObject] Attribute %s BaseValue: %s -> %s"), *GetAttributeName().ToString(),
-		BOOL_TO_STR(OldValue), BOOL_TO_STR(BaseValue));
+#if ATTR_DETAIL_LOG
+	const FString ObjName = GetOuter()->GetName();
+	const FString NetRoleStr = (GetNetRole() == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
+	UE_LOG(LogAttributeSystem, Log, TEXT("%s [%s] Attribute %s BaseValue: %s -> %s"), *NetRoleStr, *ObjName,
+		*GetAttributeName().ToString(),	BOOL_TO_STR(OldValue), BOOL_TO_STR(BaseValue));
+#endif
 
 	OnBaseValueChanged.Broadcast();
 }
 
 void UAttributeBooleanWrapperObject::OnRep_Value(bool OldValue)
 {
-	UE_LOG(LogAttributeSystem, Log, TEXT("[BooleanWrapperObject] Attribute %s Value: %s -> %s"), *GetAttributeName().ToString(),
-		BOOL_TO_STR(OldValue), BOOL_TO_STR(Value));
+#if ATTR_DETAIL_LOG
+	const FString ObjName = GetOuter()->GetName();
+	const FString NetRoleStr = (GetNetRole() == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
+	UE_LOG(LogAttributeSystem, Log, TEXT("%s [%s] Attribute %s Value: %s -> %s"), *NetRoleStr, *ObjName,
+		*GetAttributeName().ToString(), BOOL_TO_STR(OldValue), BOOL_TO_STR(Value));
+#endif
 
 	OnValueChanged.Broadcast();
 }
@@ -142,16 +155,24 @@ void UAttributeIntegerWrapperObject::SetValue(int32 InValue)
 
 void UAttributeIntegerWrapperObject::OnRep_BaseValue(int32 OldValue)
 {
-	UE_LOG(LogAttributeSystem, Log, TEXT("[IntegerWrapperObject] Attribute %s BaseValue: %d -> %d"), *GetAttributeName().ToString(),
-		OldValue, BaseValue);
+#if ATTR_DETAIL_LOG
+	const FString ObjName = GetOuter()->GetName();
+	const FString NetRoleStr = (GetNetRole() == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
+	UE_LOG(LogAttributeSystem, Log, TEXT("%s [%s] Attribute %s BaseValue: %d -> %d"), *NetRoleStr, *ObjName,
+		*GetAttributeName().ToString(),	OldValue, BaseValue);
+#endif
 
 	OnBaseValueChanged.Broadcast();
 }
 
 void UAttributeIntegerWrapperObject::OnRep_Value(int32 OldValue)
 {
-	UE_LOG(LogAttributeSystem, Log, TEXT("[IntegerWrapperObject] Attribute %s Value: %d -> %d"), *GetAttributeName().ToString(),
-		OldValue, Value);
+#if ATTR_DETAIL_LOG
+	const FString ObjName = GetOuter()->GetName();
+	const FString NetRoleStr = (GetNetRole() == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
+	UE_LOG(LogAttributeSystem, Log, TEXT("%s [%s] Attribute %s Value: %d -> %d"), *NetRoleStr, *ObjName,
+		*GetAttributeName().ToString(), OldValue, Value);
+#endif
 
 	OnValueChanged.Broadcast();
 }
@@ -185,16 +206,63 @@ void UAttributeFloatWrapperObject::SetValue(float InValue)
 
 void UAttributeFloatWrapperObject::OnRep_BaseValue(float OldValue)
 {
-	UE_LOG(LogAttributeSystem, Log, TEXT("[FloatWrapperObject] Attribute %s BaseValue: %.3f -> %.3f"), *GetAttributeName().ToString(),
-		OldValue, BaseValue);
+#if ATTR_DETAIL_LOG
+	const FString ObjName = GetOuter()->GetName();
+	const FString NetRoleStr = (GetNetRole() == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
+	UE_LOG(LogAttributeSystem, Log, TEXT("%s [%s] Attribute %s BaseValue: %.3f -> %.3f"), *NetRoleStr, *ObjName,
+		*GetAttributeName().ToString(),	OldValue, BaseValue);
+#endif
 
 	OnBaseValueChanged.Broadcast();
 }
 
 void UAttributeFloatWrapperObject::OnRep_Value(float OldValue)
 {
-	UE_LOG(LogAttributeSystem, Log, TEXT("[FloatWrapperObject] Attribute %s Value: %.3f -> %.3f"), *GetAttributeName().ToString(),
-		OldValue, Value);
+#if ATTR_DETAIL_LOG
+	const FString ObjName = GetOuter()->GetName();
+	const FString NetRoleStr = (GetNetRole() == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
+	UE_LOG(LogAttributeSystem, Log, TEXT("%s [%s] Attribute %s Value: %.3f -> %.3f"), *NetRoleStr, *ObjName,
+		*GetAttributeName().ToString(),	OldValue, Value);
+#endif
 
 	OnValueChanged.Broadcast();
+}
+
+UAttributeBooleanWrapperObject* FAttributeWrapperObjectHelper::CreateWrapperObjectForBooleanAttribute(UObject* Instigator,
+	TSharedPtr<FAttributeBoolean> InAttribute, const TFunction<void(TSharedPtr<FAttributeBase>)>& InCallback)
+{
+	const FName AttributeName = InAttribute->GetName();
+	UAttributeBooleanWrapperObject* NewWrapper = NewObject<UAttributeBooleanWrapperObject>(Instigator, NAME_None, RF_Transient);
+	NewWrapper->SetAttributeName(AttributeName);
+	NewWrapper->SetBaseValue(InAttribute->GetRawValue());
+	NewWrapper->SetValue(InAttribute->GetValue());
+	InAttribute->OnValueChanged.AddLambda(InCallback);
+
+	return NewWrapper;
+}
+
+UAttributeIntegerWrapperObject* FAttributeWrapperObjectHelper::CreateWrapperObjectForIntegerAttribute(UObject* Instigator,
+	TSharedPtr<FAttributeInteger> InAttribute, const TFunction<void(TSharedPtr<FAttributeBase>)>& InCallback)
+{
+	const FName AttributeName = InAttribute->GetName();
+	UAttributeIntegerWrapperObject* NewWrapper = NewObject<UAttributeIntegerWrapperObject>(Instigator, NAME_None, RF_Transient);
+	NewWrapper->SetAttributeName(AttributeName);
+	NewWrapper->SetBaseValue(InAttribute->GetRawValue());
+	NewWrapper->SetValue(InAttribute->GetValue());
+	InAttribute->OnValueChanged.AddLambda(InCallback);
+
+	return NewWrapper;
+}
+
+UAttributeFloatWrapperObject* FAttributeWrapperObjectHelper::CreateWrapperObjectForFloatAttribute(UObject* Instigator,
+	TSharedPtr<FAttributeFloat> InAttribute, const TFunction<void(TSharedPtr<FAttributeBase>)>& InCallback)
+{
+	const FName AttributeName = InAttribute->GetName();
+	UAttributeFloatWrapperObject* NewWrapper = NewObject<UAttributeFloatWrapperObject>(Instigator, NAME_None, RF_Transient);
+	NewWrapper->SetAttributeName(AttributeName);
+	NewWrapper->SetBaseValue(InAttribute->GetRawValue());
+	NewWrapper->SetValue(InAttribute->GetValue());
+	InAttribute->OnValueChanged.AddLambda(InCallback);
+
+	return NewWrapper;
 }

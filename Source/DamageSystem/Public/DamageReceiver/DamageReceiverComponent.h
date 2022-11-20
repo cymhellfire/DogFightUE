@@ -18,12 +18,12 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 protected:
-	void OnMaxHealthChanged(TSharedPtr<FAttributeBase> InAttribute);
+	// void OnMaxHealthChanged(TSharedPtr<FAttributeBase> InAttribute);
 
-	UFUNCTION()
-	void OnRep_MaxHealth(const FAttributeIntegerWrapper& OldValue);
+	// UFUNCTION()
+	// void OnRep_MaxHealth(const FAttributeIntegerWrapper& OldValue);
 
 public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="DamageReceiverComponent", ReplicatedUsing=OnRep_MaxHealth)
-	FAttributeIntegerWrapper MaxHealth;
+	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="DamageReceiverComponent", ReplicatedUsing=OnRep_MaxHealth)
+	// FAttributeIntegerWrapper MaxHealth;
 };
