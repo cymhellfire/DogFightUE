@@ -3,8 +3,6 @@
 #include "AttributeSystem.h"
 #include "AttributeSystem/AttributeFunctionLibrary.h"
 #include "AttributeSystem/Attribute/Attribute.h"
-#include "Chaos/AABB.h"
-#include "Chaos/AABB.h"
 #include "UnrealIntegration/DataWrapper/AttributeWrapper.h"
 #include "UnrealIntegration/Interface/AttributeModifierCarrierInterface.h"
 #include "UnrealIntegration/UObject/AttributeModifierDescObject.h"
@@ -15,7 +13,11 @@ bool IAttributeCarrierInterface::AddAttribute(const FAttributeCreateArgument& In
 	if (NewAttribute && NewAttribute.IsValid())
 	{
 		// Add new attribute
-		return OnAttributeAdded(NewAttribute);
+		if (OnAttributeAdded(NewAttribute))
+		{
+			// Create wrapper object for attributes that added succeed
+			CreateWrapperObjectForAttribute(NewAttribute);
+		}
 	}
 
 	return false;
@@ -126,10 +128,7 @@ bool IAttributeCarrierInterface::AddModifierObject(TScriptInterface<IAttributeMo
 		}
 
 		// Add new description object to property wrapper
-		if (UseCustomAttributeWrapperGetter())
-			UpdateDescObjectToProperty_Dynamic(AppliedAttribute, NewDesc, true);
-		else
-			UpdateDescObjectToProperty_Reflection(AppliedAttribute, NewDesc, true);
+		UpdateDescObjectToProperty(AppliedAttribute, NewDesc, true);
 
 		return true;
 	}
@@ -156,10 +155,7 @@ bool IAttributeCarrierInterface::RemoveModifierObject(TScriptInterface<IAttribut
 	InModifierObject->RemoveFromTarget(TargetAttr);
 
 	// Remove description object from property wrapper
-	if (UseCustomAttributeWrapperGetter())
-		UpdateDescObjectToProperty_Dynamic(TargetAttr, InModifierObject->GetDescObject(GetSubobjectCarrier()), false);
-	else
-		UpdateDescObjectToProperty_Reflection(TargetAttr, InModifierObject->GetDescObject(GetSubobjectCarrier()), false);
+	UpdateDescObjectToProperty(TargetAttr, InModifierObject->GetDescObject(GetSubobjectCarrier()), false);
 
 	// Notify modifier object removed
 	OnModifierInterfaceRemoved(InModifierObject.GetInterface());
@@ -197,83 +193,75 @@ bool IAttributeCarrierInterface::IsModifierObjectApplied(IAttributeModifierCarri
 	return GetAllModifierObjects().Contains(InModifier);
 }
 
-void IAttributeCarrierInterface::UpdateDescObjectToProperty_Reflection(TSharedPtr<FAttributeBase> AppliedAttribute,
-	UAttributeModifierDescObject* InDescObject, bool bAdd)
+void IAttributeCarrierInterface::CreateWrapperObjectForAttribute(TSharedPtr<FAttributeBase> InAttribute)
 {
-	// Record new modifier object to wrapper Property
-	UObject* ThisObject = ThisAsObject();
-	if (ThisObject)
+	EAttributeDataType DataType = InAttribute->GetDataType();
+	switch(DataType)
 	{
-		UClass* MyClass = ThisObject->GetClass();
-		// Here is a rule, the wrapper property should have the same name as inner FAttributeBase instance.
-		if (FProperty* Property = MyClass->FindPropertyByName(AppliedAttribute->GetName()))
+	case ADT_Boolean:
+		if (auto BooleanAttribute = StaticCastSharedPtr<FAttributeBoolean>(InAttribute))
 		{
-			bool bFailed = false;
-			void* PropertyAddr = Property->ContainerPtrToValuePtr<void>(ThisObject);
-			switch(AppliedAttribute->GetDataType())
-			{
-			case ADT_Boolean:
-				if (FAttributeBooleanWrapper* BooleanWrapper = static_cast<FAttributeBooleanWrapper*>(PropertyAddr))
+			UAttributeBooleanWrapperObject* NewWrapper = FAttributeWrapperObjectHelper::CreateWrapperObjectForBooleanAttribute(
+				ThisAsObject(), BooleanAttribute, [this](TSharedPtr<FAttributeBase> Attribute)
 				{
-					if (bAdd)
-						BooleanWrapper->AppliedModifierDesc.Add(InDescObject);
-					else
-						BooleanWrapper->AppliedModifierDesc.Remove(InDescObject);
-				}
-				else
-				{
-					bFailed = true;
-				}
-				break;
-			case ADT_Integer:
-				if (FAttributeIntegerWrapper* IntegerWrapper = static_cast<FAttributeIntegerWrapper*>(PropertyAddr))
-				{
-					if (bAdd)
-						IntegerWrapper->AppliedModifierDesc.Add(InDescObject);
-					else
-						IntegerWrapper->AppliedModifierDesc.Remove(InDescObject);
-				}
-				else
-				{
-					bFailed = true;
-				}
-				break;
-			case ADT_Float:
-				if (FAttributeFloatWrapper* FloatWrapper = static_cast<FAttributeFloatWrapper*>(PropertyAddr))
-				{
-					if (bAdd)
-						FloatWrapper->AppliedModifierDesc.Add(InDescObject);
-					else
-						FloatWrapper->AppliedModifierDesc.Remove(InDescObject);
-				}
-				else
-				{
-					bFailed = true;
-				}
-				break;
-			case ADT_None:
-			default:
-				UE_LOG(LogAttributeSystem, Error, TEXT("[AttributeCarrierInterface] Attribute %s's data type invalid."),
-					*AppliedAttribute->GetName().ToString());
-			}
+					if (auto ConvertAttr = StaticCastSharedPtr<FAttributeBoolean>(Attribute))
+					{
+						if (auto Wrapper = GetBooleanAttributeWrapperByName(Attribute->GetName()))
+						{
+							Wrapper->SetValue(ConvertAttr->GetValue());
+						}
+					}
+				});
 
-			if (bFailed)
-			{
-				UE_LOG(LogAttributeSystem, Error, TEXT("[AttributeCarrierInterface] Data type mismatch. Expected property %s type is %s"),
-					*AppliedAttribute->GetName().ToString(), *UEnum::GetValueAsString<EAttributeDataType>(AppliedAttribute->GetDataType()));
-			}
+			// Notify the derived class
+			OnBooleanAttributeWrapperObjectCreated(NewWrapper);
 		}
-		else
+		break;
+	case ADT_Integer:
+		if (auto IntegerAttribute = StaticCastSharedPtr<FAttributeInteger>(InAttribute))
 		{
-			UE_LOG(LogAttributeSystem, Error,
-				TEXT("[AttributeCarrierInterface] Cannot find UPROPERTY with name %s. Modifier information cannot be synced. Consider declare new wrapper member or use custom getter function instead."),
-				*AppliedAttribute->GetName().ToString());
+			UAttributeIntegerWrapperObject* NewWrapper = FAttributeWrapperObjectHelper::CreateWrapperObjectForIntegerAttribute(
+				ThisAsObject(), IntegerAttribute, [this](TSharedPtr<FAttributeBase> Attribute)
+				{
+					if (auto ConvertAttr = StaticCastSharedPtr<FAttributeInteger>(Attribute))
+					{
+						if (auto Wrapper = GetIntegerAttributeWrapperByName(Attribute->GetName()))
+						{
+							Wrapper->SetValue(ConvertAttr->GetValue());
+						}
+					}
+				});
+
+			// Notify the derived class
+			OnIntegerAttributeWrapperObjectCreated(NewWrapper);
 		}
+		break;
+	case ADT_Float:
+		if (auto FloatAttribute = StaticCastSharedPtr<FAttributeFloat>(InAttribute))
+		{
+			UAttributeFloatWrapperObject* NewWrapper = FAttributeWrapperObjectHelper::CreateWrapperObjectForFloatAttribute(
+				ThisAsObject(), FloatAttribute, [this](TSharedPtr<FAttributeBase> Attribute)
+				{
+					if (auto ConvertAttr = StaticCastSharedPtr<FAttributeFloat>(Attribute))
+					{
+						if (auto Wrapper = GetFloatAttributeWrapperByName(Attribute->GetName()))
+						{
+							Wrapper->SetValue(ConvertAttr->GetValue());
+						}
+					}
+				});
+
+			// Notify the derived class
+			OnFloatAttributeWrapperObjectCreated(NewWrapper);
+		}
+		break;
+	case ADT_None:
+	default: ;
 	}
 }
 
-void IAttributeCarrierInterface::UpdateDescObjectToProperty_Dynamic(TSharedPtr<FAttributeBase> AppliedAttribute,
-	UAttributeModifierDescObject* InDescObject, bool bAdd)
+void IAttributeCarrierInterface::UpdateDescObjectToProperty(TSharedPtr<FAttributeBase> AppliedAttribute,
+                                                            UAttributeModifierDescObject* InDescObject, bool bAdd)
 {
 	bool bFailed = false;
 	const FName AttributeName = AppliedAttribute->GetName();
@@ -283,9 +271,9 @@ void IAttributeCarrierInterface::UpdateDescObjectToProperty_Dynamic(TSharedPtr<F
 		if (auto Attribute = GetBooleanAttributeWrapperByName(AttributeName))
 		{
 			if (bAdd)
-				Attribute->AppliedModifierDesc.Add(InDescObject);
+				Attribute->AddDescObject(InDescObject);
 			else
-				Attribute->AppliedModifierDesc.Remove(InDescObject);
+				Attribute->RemoveDescObject(InDescObject);
 		}
 		else
 		{
@@ -296,9 +284,9 @@ void IAttributeCarrierInterface::UpdateDescObjectToProperty_Dynamic(TSharedPtr<F
 		if (auto Attribute = GetIntegerAttributeWrapperByName(AttributeName))
 		{
 			if (bAdd)
-				Attribute->AppliedModifierDesc.Add(InDescObject);
+				Attribute->AddDescObject(InDescObject);
 			else
-				Attribute->AppliedModifierDesc.Remove(InDescObject);
+				Attribute->RemoveDescObject(InDescObject);
 		}
 		else
 		{
@@ -309,9 +297,9 @@ void IAttributeCarrierInterface::UpdateDescObjectToProperty_Dynamic(TSharedPtr<F
 		if (auto Attribute = GetFloatAttributeWrapperByName(AttributeName))
 		{
 			if (bAdd)
-				Attribute->AppliedModifierDesc.Add(InDescObject);
+				Attribute->AddDescObject(InDescObject);
 			else
-				Attribute->AppliedModifierDesc.Remove(InDescObject);
+				Attribute->RemoveDescObject(InDescObject);
 		}
 		else
 		{
@@ -329,4 +317,85 @@ void IAttributeCarrierInterface::UpdateDescObjectToProperty_Dynamic(TSharedPtr<F
 		UE_LOG(LogAttributeSystem, Error, TEXT("[AttributeCarrierInterface] Cannot find wrapper member with name %s."),
 			*AppliedAttribute->GetName().ToString());
 	}
+}
+
+UAttributeBooleanWrapperObject* IAttributeCarrierInterface::GetBooleanAttributeWrapperByName(FName InName)
+{
+	auto WrapperPtr = BooleanWrapperMap.Find(InName);
+	return (WrapperPtr && WrapperPtr->IsValid()) ? WrapperPtr->Get() : nullptr;
+}
+
+UAttributeIntegerWrapperObject* IAttributeCarrierInterface::GetIntegerAttributeWrapperByName(FName InName)
+{
+	auto WrapperPtr = IntegerWrapperMap.Find(InName);
+	return (WrapperPtr && WrapperPtr->IsValid()) ? WrapperPtr->Get() : nullptr;
+}
+
+UAttributeFloatWrapperObject* IAttributeCarrierInterface::GetFloatAttributeWrapperByName(FName InName)
+{
+	auto WrapperPtr = FloatWrapperMap.Find(InName);
+	return (WrapperPtr && WrapperPtr->IsValid()) ? WrapperPtr->Get() : nullptr;
+}
+
+void IAttributeCarrierInterface::ValidateWrapperObjectMap(EAttributeDataType InDataType, TArray<FName>* OutInvalidKeys)
+{
+	TArray<FName> InvalidKeys;
+	switch (InDataType)
+	{
+	case ADT_Boolean:
+		for (auto& Record : BooleanWrapperMap)
+		{
+			if (Record.Value == nullptr || !Record.Value.IsValid())
+			{
+				InvalidKeys.Add(Record.Key);
+			}
+		}
+
+		// Remove all invalid keys
+		for (auto Key : InvalidKeys)
+		{
+			BooleanWrapperMap.Remove(Key);
+		}
+		break;
+	case ADT_Integer:
+		for (auto& Record : IntegerWrapperMap)
+		{
+			if (Record.Value == nullptr || !Record.Value.IsValid())
+			{
+				InvalidKeys.Add(Record.Key);
+			}
+		}
+
+		// Remove all invalid keys
+		for (auto Key : InvalidKeys)
+		{
+			IntegerWrapperMap.Remove(Key);
+		}
+		break;
+	case ADT_Float:
+		for (auto& Record : FloatWrapperMap)
+		{
+			if (Record.Value == nullptr || !Record.Value.IsValid())
+			{
+				InvalidKeys.Add(Record.Key);
+			}
+		}
+
+		// Remove all invalid keys
+		for (auto Key : InvalidKeys)
+		{
+			FloatWrapperMap.Remove(Key);
+		}
+		break;
+	case ADT_None:
+	default: ;
+	}
+
+#if ATTR_DETAIL_LOG
+	if (OutInvalidKeys)
+	{
+		OutInvalidKeys->Empty();
+		OutInvalidKeys->Append(InvalidKeys);
+	}
+#endif
 }

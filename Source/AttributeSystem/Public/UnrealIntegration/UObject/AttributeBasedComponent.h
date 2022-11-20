@@ -49,6 +49,7 @@ protected:
 
 	virtual UObject* GetSubobjectCarrier() override { return this; }
 	virtual UObject* ThisAsObject() override { return this; }
+	virtual ENetRole GetNetRole() override { return GetOwnerRole(); }
 
 	virtual void OnModifierInterfaceAdded(IAttributeModifierCarrierInterface* InModifierInterface) override;
 	virtual void OnModifierObjectAdded(UObject* InModifierObject) override;
@@ -56,7 +57,20 @@ protected:
 	virtual void OnModifierInterfaceRemoved(IAttributeModifierCarrierInterface* InModifierInterface) override;
 	virtual void OnModifierObjectRemoved(UObject* InModifierObject) override;
 	virtual TArray<IAttributeModifierCarrierInterface*> GetAllModifierObjects() const override;
+
+	virtual void OnBooleanAttributeWrapperObjectCreated(UAttributeBooleanWrapperObject* NewWrapper) override;
+	virtual void OnIntegerAttributeWrapperObjectCreated(UAttributeIntegerWrapperObject* NewWrapper) override;
+	virtual void OnFloatAttributeWrapperObjectCreated(UAttributeFloatWrapperObject* NewWrapper) override;
 	// -------- Attribute Carrier Interface --------
+
+	UFUNCTION()
+	void OnRep_BooleanWrapperList();
+
+	UFUNCTION()
+	void OnRep_IntegerWrapperList();
+
+	UFUNCTION()
+	void OnRep_FloatWrapperList();
 
 protected:
 	TMap<FName, TSharedPtr<FAttributeBase>> AttributeMap;
@@ -72,4 +86,14 @@ protected:
 	// Replicated array for modifier description objects
 	UPROPERTY(Transient, Replicated)
 	TArray<UAttributeModifierDescObject*> ModifierDescList;
+
+	// Replicated array for attribute wrapper objects
+	UPROPERTY(Transient, ReplicatedUsing=OnRep_BooleanWrapperList)
+	TArray<UAttributeBooleanWrapperObject*> BooleanWrapperList;
+
+	UPROPERTY(Transient, ReplicatedUsing=OnRep_IntegerWrapperList)
+	TArray<UAttributeIntegerWrapperObject*> IntegerWrapperList;
+
+	UPROPERTY(Transient, ReplicatedUsing=OnRep_FloatWrapperList)
+	TArray<UAttributeFloatWrapperObject*> FloatWrapperList;
 };

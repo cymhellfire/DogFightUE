@@ -1,5 +1,6 @@
 #include "UnrealIntegration/UObject/AttributeBasedComponent.h"
 
+#include "AttributeSystem.h"
 #include "AttributeSystem/Attribute/AttributeBase.h"
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
@@ -31,6 +32,9 @@ void UAttributeBasedComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 	SharedParams.bIsPushBased = true;
 
 	DOREPLIFETIME_WITH_PARAMS_FAST(UAttributeBasedComponent, ModifierDescList, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(UAttributeBasedComponent, BooleanWrapperList, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(UAttributeBasedComponent, IntegerWrapperList, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(UAttributeBasedComponent, FloatWrapperList, SharedParams);
 }
 
 bool UAttributeBasedComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch,
@@ -40,6 +44,20 @@ bool UAttributeBasedComponent::ReplicateSubobjects(UActorChannel* Channel, FOutB
 
 	// Replicate description objects
 	bWroteSomething |= ReplicateModifierDescObjects(Channel, Bunch, RepFlags);
+
+	// Replicate wrapper list content
+	for (auto Wrapper : BooleanWrapperList)
+	{
+		bWroteSomething |= Channel->ReplicateSubobject(Wrapper, *Bunch, *RepFlags);
+	}
+	for (auto Wrapper : IntegerWrapperList)
+	{
+		bWroteSomething |= Channel->ReplicateSubobject(Wrapper, *Bunch, *RepFlags);
+	}
+	for (auto Wrapper : FloatWrapperList)
+	{
+		bWroteSomething |= Channel->ReplicateSubobject(Wrapper, *Bunch, *RepFlags);
+	}
 
 	return bWroteSomething;
 }
@@ -99,7 +117,9 @@ bool UAttributeBasedComponent::OnAttributeAdded(TSharedPtr<FAttributeBase> InAtt
 		return false;
 	}
 
+	// Record new attribute into map
 	AttributeMap.Add(InAttribute->GetName(), InAttribute);
+
 	return true;
 }
 
@@ -180,4 +200,181 @@ void UAttributeBasedComponent::OnModifierObjectRemoved(UObject* InModifierObject
 TArray<IAttributeModifierCarrierInterface*> UAttributeBasedComponent::GetAllModifierObjects() const
 {
 	return ModifierList;
+}
+
+void UAttributeBasedComponent::OnBooleanAttributeWrapperObjectCreated(UAttributeBooleanWrapperObject* NewWrapper)
+{
+	MARK_PROPERTY_DIRTY_FROM_NAME(UAttributeBasedComponent, BooleanWrapperList, this);
+	BooleanWrapperList.Add(NewWrapper);
+
+	OnRep_BooleanWrapperList();
+}
+
+void UAttributeBasedComponent::OnIntegerAttributeWrapperObjectCreated(UAttributeIntegerWrapperObject* NewWrapper)
+{
+	MARK_PROPERTY_DIRTY_FROM_NAME(UAttributeBasedComponent, IntegerWrapperList, this);
+	IntegerWrapperList.Add(NewWrapper);
+
+	OnRep_IntegerWrapperList();
+}
+
+void UAttributeBasedComponent::OnFloatAttributeWrapperObjectCreated(UAttributeFloatWrapperObject* NewWrapper)
+{
+	MARK_PROPERTY_DIRTY_FROM_NAME(UAttributeBasedComponent, FloatWrapperList, this);
+	FloatWrapperList.Add(NewWrapper);
+
+	OnRep_FloatWrapperList();
+}
+
+void UAttributeBasedComponent::OnRep_BooleanWrapperList()
+{
+#if ATTR_DETAIL_LOG
+	TArray<UAttributeBooleanWrapperObject*> NewAddedWrappers;
+#endif
+	for (auto Wrapper : BooleanWrapperList)
+	{
+		if (!Wrapper)
+			continue;
+
+		const FName AttributeName = Wrapper->GetAttributeName();
+		// Add new synced wrapper to map
+		if (!BooleanWrapperMap.Contains(AttributeName))
+		{
+			BooleanWrapperMap.Add(AttributeName, Wrapper);
+#if ATTR_DETAIL_LOG
+			NewAddedWrappers.Add(Wrapper);
+#endif
+		}
+	}
+
+#if ATTR_DETAIL_LOG
+	if (NewAddedWrappers.Num() > 0)
+	{
+		const FString ObjName = GetName();
+		const FString NetRoleStr = (GetNetRole() == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
+		for (auto Wrapper : NewAddedWrappers)
+		{
+			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] New attribute %s added."), *NetRoleStr, *ObjName,
+				*Wrapper->GetAttributeName().ToString());
+			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] %s"), *NetRoleStr, *ObjName, *Wrapper->ToString());
+		}
+	}
+
+	TArray<FName> InvalidKeys;
+	ValidateWrapperObjectMap(ADT_Boolean, &InvalidKeys);
+
+	if (InvalidKeys.Num() > 0)
+	{
+		const FString ObjName = GetName();
+		const FString NetRoleStr = (GetNetRole() == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
+		for (auto Key : InvalidKeys)
+		{
+			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] Attribute %s removed."), *NetRoleStr, *ObjName, *Key.ToString());
+		}
+	}
+#else
+	ValidateWrapperObjectMap(ADT_Boolean);
+#endif
+}
+
+void UAttributeBasedComponent::OnRep_IntegerWrapperList()
+{
+#if ATTR_DETAIL_LOG
+	TArray<UAttributeIntegerWrapperObject*> NewAddedWrappers;
+#endif
+	for (auto Wrapper : IntegerWrapperList)
+	{
+		if (!Wrapper)
+			continue;
+
+		const FName AttributeName = Wrapper->GetAttributeName();
+		// Add new synced wrapper to map
+		if (!IntegerWrapperMap.Contains(AttributeName))
+		{
+			IntegerWrapperMap.Add(AttributeName, Wrapper);
+#if ATTR_DETAIL_LOG
+			NewAddedWrappers.Add(Wrapper);
+#endif
+		}
+	}
+
+#if ATTR_DETAIL_LOG
+	if (NewAddedWrappers.Num() > 0)
+	{
+		const FString ObjName = GetName();
+		const FString NetRoleStr = (GetNetRole() == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
+		for (auto Wrapper : NewAddedWrappers)
+		{
+			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] New attribute %s added."), *NetRoleStr, *ObjName,
+				*Wrapper->GetAttributeName().ToString());
+			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] %s"), *NetRoleStr, *ObjName, *Wrapper->ToString());
+		}
+	}
+
+	TArray<FName> InvalidKeys;
+	ValidateWrapperObjectMap(ADT_Integer, &InvalidKeys);
+
+	if (InvalidKeys.Num() > 0)
+	{
+		const FString ObjName = GetName();
+		const FString NetRoleStr = (GetNetRole() == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
+		for (auto Key : InvalidKeys)
+		{
+			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] Attribute %s removed."), *NetRoleStr, *ObjName, *Key.ToString());
+		}
+	}
+#else
+	ValidateWrapperObjectMap(ADT_Integer);
+#endif
+}
+
+void UAttributeBasedComponent::OnRep_FloatWrapperList()
+{
+#if ATTR_DETAIL_LOG
+	TArray<UAttributeFloatWrapperObject*> NewAddedWrappers;
+#endif
+	for (auto Wrapper : FloatWrapperList)
+	{
+		if (!Wrapper)
+			return;
+
+		const FName AttributeName = Wrapper->GetAttributeName();
+		// Add new synced wrapper to map
+		if (!FloatWrapperMap.Contains(AttributeName))
+		{
+			FloatWrapperMap.Add(AttributeName, Wrapper);
+#if ATTR_DETAIL_LOG
+			NewAddedWrappers.Add(Wrapper);
+#endif
+		}
+	}
+
+#if ATTR_DETAIL_LOG
+	if (NewAddedWrappers.Num() > 0)
+	{
+		const FString ObjName = GetName();
+		const FString NetRoleStr = (GetNetRole() == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
+		for (auto Wrapper : NewAddedWrappers)
+		{
+			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] New attribute %s added."), *NetRoleStr, *ObjName,
+				*Wrapper->GetAttributeName().ToString());
+			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] %s"), *NetRoleStr, *ObjName, *Wrapper->ToString());
+		}
+	}
+
+	TArray<FName> InvalidKeys;
+	ValidateWrapperObjectMap(ADT_Float, &InvalidKeys);
+
+	if (InvalidKeys.Num() > 0)
+	{
+		const FString ObjName = GetName();
+		const FString NetRoleStr = (GetNetRole() == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
+		for (auto Key : InvalidKeys)
+		{
+			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] Attribute %s removed."), *NetRoleStr, *ObjName, *Key.ToString());
+		}
+	}
+#else
+	ValidateWrapperObjectMap(ADT_Float);
+#endif
 }

@@ -29,3 +29,8 @@ void UAttributeModifierDescObject::SetEffectString(FString InStr)
 		Effect = InStr;
 	}
 }
+
+FString UAttributeModifierDescObject::ToString() const
+{
+	return FString::Printf(TEXT("Name - %s, Effect - %s"), *Source, *Effect);
+}

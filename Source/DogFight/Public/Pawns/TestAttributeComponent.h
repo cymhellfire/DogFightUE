@@ -11,9 +11,9 @@ class DOGFIGHT_API UTestAttributeComponent : public UAttributeBasedComponent
 public:
 	UTestAttributeComponent(const FObjectInitializer& ObjectInitializer);
 
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
 	virtual void InitializeComponent() override;
+
+	virtual void InitializeAttributes() override;
 
 	void ChangeTestAttribute(int32 NewValue);
 
@@ -24,12 +24,5 @@ public:
 protected:
 	void OnTestAttributeValueChanged(TSharedPtr<FAttributeBase> Attribute);
 
-	void SetTestInteger(int32 NewValue);
-
-	UFUNCTION()
-	void OnRep_TestInteger(const FAttributeIntegerWrapper& OldInteger);
-
-protected:
-	UPROPERTY(BlueprintReadWrite, Category="TestAttribute", ReplicatedUsing=OnRep_TestInteger)
-	FAttributeIntegerWrapper TestInteger;
+	FTimerHandle RemoveAttributeTimer;
 };
