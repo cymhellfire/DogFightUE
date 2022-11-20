@@ -2,6 +2,7 @@
 
 #include "CardSystem.h"
 #include "AttributeSystem/AttributeFunctionLibrary.h"
+#include "UnrealIntegration/UObject/AttributeModifierDescObject.h"
 
 void UCardModifier::PostInitProperties()
 {
@@ -37,4 +38,17 @@ FModifierCreateArgument UCardModifier::GetModifierCreateArgument_Implementation(
 EAttributeDataType UCardModifier::GetDataType() const
 {
 	return Modifier.IsValid() ? Modifier->GetDataType() : ADT_None;
+}
+
+void UCardModifier::InitializeDescObject(UAttributeModifierDescObject* InDesc)
+{
+	FCardModifierDescArgument DescArgument = GetModifierDescArgument();
+
+	InDesc->SetSourceString(DescArgument.ModifierName);
+	InDesc->SetEffectString(Modifier->GetEffectString());
+}
+
+FCardModifierDescArgument UCardModifier::GetModifierDescArgument_Implementation()
+{
+	return FCardModifierDescArgument{"Unknown Modifier"};
 }

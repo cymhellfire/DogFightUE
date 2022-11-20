@@ -29,6 +29,8 @@ public:
 		return DataType;
 	}
 
+	virtual FString GetEffectString() const = 0;
+
 protected:
 	FAttributeModifierBase()
 		: DataType(EAttributeDataType::ADT_None)

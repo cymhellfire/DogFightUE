@@ -68,10 +68,10 @@ return XXX
 
 ### 自定义修改器效果
 
-卡牌修改器的效果由创建时传入的参数集确定，该参数集可在`GetArgumentTable()`函数中修改。下面的例子展示了一个将整数属性值乘以2的修改器的参数集。
+卡牌修改器的效果由创建时传入的参数集确定，该参数集可在`GetModifierArgumentTable()`函数中修改。下面的例子展示了一个将整数属性值乘以2的修改器的参数集。
 
 ```
-function XXX:GetArgumentTable()
+function XXX:GetModifierArgumentTable()
     return {
         ["DataType"] = "Integer",
         ["OperatorType"] = "Multiply",
@@ -90,4 +90,22 @@ end
 | ApplyRule    | 修改器应用规则    | 该规则定义了修改器可以应用在卡牌的哪些属性上，不填则可以应用到任何数据类型匹配的属性上。                   |
 
 > 修改器应用规则可以参考 [修改器应用规则](ModifierApplyRule.md) 文档。
+
+### 自定义修改器显示内容
+
+卡牌修改器在界面上显示的内容可以通过复写`GetDescArgumentTable`函数修改。下面的例子展示了将卡牌修改器显示名称修改为*TestModifier*的方法。
+
+```
+function XXX:GetDescArgumentTable()
+    return {
+        Name = "TestModifier",
+    }
+end
+```
+
+这里的*Argument*表包含了所有显示内容相关的参数。
+
+| 参数名  | 功能         | 备注  |
+|------|------------|-----|
+| Name | 指定修改器显示的名称 |     |
 

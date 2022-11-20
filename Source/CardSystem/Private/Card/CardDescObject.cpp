@@ -173,6 +173,9 @@ void UCardDescObject::OnRep_IntegerWrapperList()
 			continue;
 		}
 
+		UE_LOG(LogTemp, Log, TEXT("[TestAttribute] Attribute: %s, Value: %d/%d"), *Wrapper->GetAttributeName().ToString(),
+			Wrapper->GetValue(), Wrapper->GetBaseValue());
+
 		int32 Index = 0;
 		for (auto Desc : Wrapper->AppliedModifierDesc)
 		{
