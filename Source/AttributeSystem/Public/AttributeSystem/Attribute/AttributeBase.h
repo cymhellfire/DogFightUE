@@ -9,6 +9,7 @@ class TAttributeModifierBase;
 
 class ATTRIBUTESYSTEM_API FAttributeBase : public TSharedFromThis<FAttributeBase>
 {
+	friend class FAttributeWrapperObjectHelper;
 public:
 	virtual ~FAttributeBase() {}
 
@@ -98,11 +99,9 @@ protected:
 		}
 	}
 
-public:
+protected:
 	DECLARE_MULTICAST_DELEGATE_OneParam(FAttributeValueChangeSignature, TSharedPtr<FAttributeBase>)
 	FAttributeValueChangeSignature OnValueChanged;
-
-protected:
 
 	FName AttributeName;
 

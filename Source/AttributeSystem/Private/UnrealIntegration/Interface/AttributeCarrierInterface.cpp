@@ -3,7 +3,6 @@
 #include "AttributeSystem.h"
 #include "AttributeSystem/AttributeFunctionLibrary.h"
 #include "AttributeSystem/Attribute/Attribute.h"
-#include "UnrealIntegration/DataWrapper/AttributeWrapper.h"
 #include "UnrealIntegration/Interface/AttributeModifierCarrierInterface.h"
 #include "UnrealIntegration/UObject/AttributeModifierDescObject.h"
 

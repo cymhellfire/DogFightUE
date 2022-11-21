@@ -3,7 +3,6 @@
 #include "CoreMinimal.h"
 #include "AttributeSystem/Attribute/AttributeCommon.h"
 #include "UnrealIntegration/Marco/AttributeCarrierMarcos.h"
-#include "UnrealIntegration/DataWrapper/AttributeWrapper.h"
 #include "UnrealIntegration/DataWrapper/AttributeWrapperObject.h"
 #include "AttributeCarrierInterface.generated.h"
 

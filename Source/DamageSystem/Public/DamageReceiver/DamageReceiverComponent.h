@@ -3,7 +3,6 @@
 #include "CoreMinimal.h"
 #include "UnrealIntegration/UObject/AttributeBasedComponent.h"
 #include "AttributeSystem/Attribute/Attribute.h"
-#include "UnrealIntegration/DataWrapper/AttributeWrapper.h"
 #include "DamageReceiverComponent.generated.h"
 
 class FAttributeBase;
@@ -18,7 +17,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 protected:
-	// void OnMaxHealthChanged(TSharedPtr<FAttributeBase> InAttribute);
+	void OnMaxHealthChanged();
 
 	// UFUNCTION()
 	// void OnRep_MaxHealth(const FAttributeIntegerWrapper& OldValue);
