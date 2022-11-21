@@ -3,11 +3,6 @@
 #include "AttributeSystem.h"
 #include "UnrealIntegration/UObject/AttributeModifierDescObject.h"
 
-bool UAttributeModifierBasedObject::CreateModifier(const FModifierCreateArgument& InArgument)
-{
-	return IAttributeModifierCarrierInterface::CreateModifier(InArgument);
-}
-
 UAttributeModifierDescObject* UAttributeModifierBasedObject::GetDescObject(UObject* Instigator)
 {
 	// Generate if no desc object yet

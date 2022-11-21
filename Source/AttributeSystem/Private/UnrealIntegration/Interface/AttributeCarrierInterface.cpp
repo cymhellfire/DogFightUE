@@ -17,10 +17,63 @@ bool IAttributeCarrierInterface::AddAttribute(const FAttributeCreateArgument& In
 		{
 			// Create wrapper object for attributes that added succeed
 			CreateWrapperObjectForAttribute(NewAttribute);
+
+			return true;
 		}
 	}
 
 	return false;
+}
+
+bool IAttributeCarrierInterface::AddBooleanAttribute(FName InName, bool InitValue, FString Tags)
+{
+	TArray<FString> TagArray;
+	if (!Tags.IsEmpty())
+	{
+		Tags.ParseIntoArray(TagArray, TEXT(","));
+	}
+
+	FAttributeCreateArgument CreateArgument;
+	CreateArgument.AttrName = InName;
+	CreateArgument.DataType = ADT_Boolean;
+	CreateArgument.Tags = TagArray;
+	CreateArgument.InitBooleanValue = InitValue;
+
+	return AddAttribute(CreateArgument);
+}
+
+bool IAttributeCarrierInterface::AddIntegerAttribute(FName InName, int32 InitValue, FString Tags)
+{
+	TArray<FString> TagArray;
+	if (!Tags.IsEmpty())
+	{
+		Tags.ParseIntoArray(TagArray, TEXT(","));
+	}
+
+	FAttributeCreateArgument CreateArgument;
+	CreateArgument.AttrName = InName;
+	CreateArgument.DataType = ADT_Integer;
+	CreateArgument.Tags = TagArray;
+	CreateArgument.InitIntegerValue = InitValue;
+
+	return AddAttribute(CreateArgument);
+}
+
+bool IAttributeCarrierInterface::AddFloatAttribute(FName InName, float InitValue, FString Tags)
+{
+	TArray<FString> TagArray;
+	if (!Tags.IsEmpty())
+	{
+		Tags.ParseIntoArray(TagArray, TEXT(","));
+	}
+
+	FAttributeCreateArgument CreateArgument;
+	CreateArgument.AttrName = InName;
+	CreateArgument.DataType = ADT_Float;
+	CreateArgument.Tags = TagArray;
+	CreateArgument.InitFloatValue = InitValue;
+
+	return AddAttribute(CreateArgument);
 }
 
 bool IAttributeCarrierInterface::GetAttributeBoolValue(FName InName, bool& OutValue)

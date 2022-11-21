@@ -31,6 +31,35 @@ public:
 	virtual bool AddAttribute(const FAttributeCreateArgument& InArgument);
 
 	/**
+	 * @brief Create a new boolean type attribute for this class.
+	 * @param InName			Name of new attribute.
+	 * @param InitValue			Initial value of new attribute.
+	 * @param Tags				Tag string of new attribute.
+	 * @return Whether the creating succeed
+	 */
+	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
+	virtual bool AddBooleanAttribute(FName InName, bool InitValue = false, FString Tags = "");
+
+	/**
+	 * @brief Create a new integer type attribute for this class.
+	 * @param InName			Name of new attribute.
+	 * @param InitValue			Initial value of new attribute.
+	 * @param Tags				Tag string of new attribute.
+	 * @return Whether the creating succeed
+	 */
+	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
+	virtual bool AddIntegerAttribute(FName InName, int32 InitValue = 0, FString Tags = "");
+
+	/**
+	 * @brief Create a new float type attribute for this class.
+	 * @param InName			Name of new attribute.
+	 * @param InitValue			Initial value of new attribute.
+	 * @param Tags				Tag string of new attribute.
+	 * @return Whether the creating succeed
+	 */
+	virtual bool AddFloatAttribute(FName InName, float InitValue = 0.f, FString Tags = "");
+
+	/**
 	 * @brief Get value from a boolean attribute with given name.
 	 * @param InName			Name of expected attribute.
 	 * @param OutValue			The value obtained.

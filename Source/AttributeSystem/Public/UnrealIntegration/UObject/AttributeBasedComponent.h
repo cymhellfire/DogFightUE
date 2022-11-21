@@ -21,25 +21,7 @@ public:
 
 	// -------- Attribute Carrier Interface --------
 	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
-	virtual bool AddAttribute(const FAttributeCreateArgument& InArgument) override;
-
-	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
-	virtual bool GetAttributeBoolValue(FName InName, bool& OutValue) override;
-
-	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
-	virtual bool GetAttributeIntegerValue(FName InName, int32& OutValue) override;
-
-	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
-	virtual bool GetAttributeFloatValue(FName InName, float& OutValue) override;
-
-	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
 	virtual bool RemoveAttribute(FName InName) override;
-
-	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
-	virtual bool AddModifierObject(TScriptInterface<IAttributeModifierCarrierInterface> InModifierObject) override;
-
-	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
-	virtual bool RemoveModifierObject(TScriptInterface<IAttributeModifierCarrierInterface> InModifierObject) override;
 
 	virtual bool ReplicateModifierDescObjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
 protected:

@@ -27,39 +27,9 @@ void UAttributeBasedObject::SetReplicator(AActor* InActor)
 	Replicator = InActor;
 }
 
-bool UAttributeBasedObject::AddAttribute(const FAttributeCreateArgument& InArgument)
-{
-	return IAttributeCarrierInterface::AddAttribute(InArgument);
-}
-
-bool UAttributeBasedObject::GetAttributeBoolValue(FName InName, bool& OutValue)
-{
-	return IAttributeCarrierInterface::GetAttributeBoolValue(InName, OutValue);
-}
-
-bool UAttributeBasedObject::GetAttributeIntegerValue(FName InName, int32& OutValue)
-{
-	return IAttributeCarrierInterface::GetAttributeIntegerValue(InName, OutValue);
-}
-
-bool UAttributeBasedObject::GetAttributeFloatValue(FName InName, float& OutValue)
-{
-	return IAttributeCarrierInterface::GetAttributeFloatValue(InName, OutValue);
-}
-
 bool UAttributeBasedObject::RemoveAttribute(FName InName)
 {
 	return AttributeMap.Remove(InName) == 1;
-}
-
-bool UAttributeBasedObject::AddModifierObject(TScriptInterface<IAttributeModifierCarrierInterface> InModifierObject)
-{
-	return IAttributeCarrierInterface::AddModifierObject(InModifierObject);
-}
-
-bool UAttributeBasedObject::RemoveModifierObject(TScriptInterface<IAttributeModifierCarrierInterface> InModifierObject)
-{
-	return IAttributeCarrierInterface::RemoveModifierObject(InModifierObject);
 }
 
 bool UAttributeBasedObject::ReplicateModifierDescObjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)

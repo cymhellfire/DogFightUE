@@ -62,39 +62,9 @@ bool UAttributeBasedComponent::ReplicateSubobjects(UActorChannel* Channel, FOutB
 	return bWroteSomething;
 }
 
-bool UAttributeBasedComponent::AddAttribute(const FAttributeCreateArgument& InArgument)
-{
-	return IAttributeCarrierInterface::AddAttribute(InArgument);
-}
-
-bool UAttributeBasedComponent::GetAttributeBoolValue(FName InName, bool& OutValue)
-{
-	return IAttributeCarrierInterface::GetAttributeBoolValue(InName, OutValue);
-}
-
-bool UAttributeBasedComponent::GetAttributeIntegerValue(FName InName, int32& OutValue)
-{
-	return IAttributeCarrierInterface::GetAttributeIntegerValue(InName, OutValue);
-}
-
-bool UAttributeBasedComponent::GetAttributeFloatValue(FName InName, float& OutValue)
-{
-	return IAttributeCarrierInterface::GetAttributeFloatValue(InName, OutValue);
-}
-
 bool UAttributeBasedComponent::RemoveAttribute(FName InName)
 {
 	return AttributeMap.Remove(InName) == 1;
-}
-
-bool UAttributeBasedComponent::AddModifierObject(TScriptInterface<IAttributeModifierCarrierInterface> InModifierObject)
-{
-	return IAttributeCarrierInterface::AddModifierObject(InModifierObject);
-}
-
-bool UAttributeBasedComponent::RemoveModifierObject(TScriptInterface<IAttributeModifierCarrierInterface> InModifierObject)
-{
-	return IAttributeCarrierInterface::RemoveModifierObject(InModifierObject);
 }
 
 bool UAttributeBasedComponent::ReplicateModifierDescObjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
