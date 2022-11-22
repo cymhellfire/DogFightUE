@@ -50,11 +50,6 @@ protected:
 	}
 
 public:
-	DECLARE_MULTICAST_DELEGATE(FAttributeWrapperObjectDelegate);
-	FAttributeWrapperObjectDelegate OnBaseValueChanged;
-	FAttributeWrapperObjectDelegate OnValueChanged;
-
-//protected:
 	// Only replicate array content in this class since all description objects are replicated by outer actor.
 	UPROPERTY(ReplicatedUsing=OnRep_AppliedModifierDesc, Transient)
 	TArray<UAttributeModifierDescObject*> AppliedModifierDesc;
@@ -98,6 +93,11 @@ protected:
 	UFUNCTION()
 	void OnRep_Value(bool OldValue);
 
+public:
+	DECLARE_MULTICAST_DELEGATE_TwoParams(FAttributeBooleanWrapperObjectValueDelegate, UAttributeBooleanWrapperObject*, bool);
+	FAttributeBooleanWrapperObjectValueDelegate OnBaseValueChanged;
+	FAttributeBooleanWrapperObjectValueDelegate OnValueChanged;
+
 protected:
 	UPROPERTY(ReplicatedUsing=OnRep_BaseValue, Transient)
 	bool BaseValue;
@@ -139,6 +139,11 @@ protected:
 	UFUNCTION()
 	void OnRep_Value(int32 OldValue);
 
+public:
+	DECLARE_MULTICAST_DELEGATE_TwoParams(FAttributeIntegerWrapperObjectValueDelegate, UAttributeIntegerWrapperObject*, int32);
+	FAttributeIntegerWrapperObjectValueDelegate OnBaseValueChanged;
+	FAttributeIntegerWrapperObjectValueDelegate OnValueChanged;
+
 protected:
 	UPROPERTY(ReplicatedUsing=OnRep_BaseValue, Transient)
 	int32 BaseValue;
@@ -179,6 +184,11 @@ protected:
 
 	UFUNCTION()
 	void OnRep_Value(float OldValue);
+
+public:
+	DECLARE_MULTICAST_DELEGATE_TwoParams(FAttributeFloatWrapperObjectValueDelegate, UAttributeFloatWrapperObject*, float);
+	FAttributeFloatWrapperObjectValueDelegate OnBaseValueChanged;
+	FAttributeFloatWrapperObjectValueDelegate OnValueChanged;
 
 protected:
 	UPROPERTY(ReplicatedUsing=OnRep_BaseValue, Transient)

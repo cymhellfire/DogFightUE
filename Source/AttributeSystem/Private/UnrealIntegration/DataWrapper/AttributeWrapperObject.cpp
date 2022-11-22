@@ -111,7 +111,7 @@ void UAttributeBooleanWrapperObject::OnRep_BaseValue(bool OldValue)
 		*GetAttributeName().ToString(),	BOOL_TO_STR(OldValue), BOOL_TO_STR(BaseValue));
 #endif
 
-	OnBaseValueChanged.Broadcast();
+	OnBaseValueChanged.Broadcast(this, BaseValue);
 }
 
 void UAttributeBooleanWrapperObject::OnRep_Value(bool OldValue)
@@ -123,7 +123,7 @@ void UAttributeBooleanWrapperObject::OnRep_Value(bool OldValue)
 		*GetAttributeName().ToString(), BOOL_TO_STR(OldValue), BOOL_TO_STR(Value));
 #endif
 
-	OnValueChanged.Broadcast();
+	OnValueChanged.Broadcast(this, Value);
 }
 
 void UAttributeIntegerWrapperObject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -162,7 +162,7 @@ void UAttributeIntegerWrapperObject::OnRep_BaseValue(int32 OldValue)
 		*GetAttributeName().ToString(),	OldValue, BaseValue);
 #endif
 
-	OnBaseValueChanged.Broadcast();
+	OnBaseValueChanged.Broadcast(this, BaseValue);
 }
 
 void UAttributeIntegerWrapperObject::OnRep_Value(int32 OldValue)
@@ -174,7 +174,7 @@ void UAttributeIntegerWrapperObject::OnRep_Value(int32 OldValue)
 		*GetAttributeName().ToString(), OldValue, Value);
 #endif
 
-	OnValueChanged.Broadcast();
+	OnValueChanged.Broadcast(this, Value);
 }
 
 void UAttributeFloatWrapperObject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -213,7 +213,7 @@ void UAttributeFloatWrapperObject::OnRep_BaseValue(float OldValue)
 		*GetAttributeName().ToString(),	OldValue, BaseValue);
 #endif
 
-	OnBaseValueChanged.Broadcast();
+	OnBaseValueChanged.Broadcast(this, BaseValue);
 }
 
 void UAttributeFloatWrapperObject::OnRep_Value(float OldValue)
@@ -225,7 +225,7 @@ void UAttributeFloatWrapperObject::OnRep_Value(float OldValue)
 		*GetAttributeName().ToString(),	OldValue, Value);
 #endif
 
-	OnValueChanged.Broadcast();
+	OnValueChanged.Broadcast(this, Value);
 }
 
 UAttributeBooleanWrapperObject* FAttributeWrapperObjectHelper::CreateWrapperObjectForBooleanAttribute(UObject* Instigator,

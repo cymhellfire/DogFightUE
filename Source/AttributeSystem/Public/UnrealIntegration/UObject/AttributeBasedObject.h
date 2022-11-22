@@ -52,16 +52,20 @@ protected:
 	virtual void OnBooleanAttributeWrapperObjectCreated(UAttributeBooleanWrapperObject* NewWrapper) override;
 	virtual void OnIntegerAttributeWrapperObjectCreated(UAttributeIntegerWrapperObject* NewWrapper) override;
 	virtual void OnFloatAttributeWrapperObjectCreated(UAttributeFloatWrapperObject* NewWrapper) override;
+
+	virtual TArray<UAttributeBooleanWrapperObject*> GetAllBooleanAttributeWrappers() const override { return BooleanWrapperList; }
+	virtual TArray<UAttributeIntegerWrapperObject*> GetAllIntegerAttributeWrappers() const override { return IntegerWrapperList; }
+	virtual TArray<UAttributeFloatWrapperObject*> GetAllFloatAttributeWrappers() const override { return FloatWrapperList; }
+
+	UFUNCTION()
+	virtual void OnRep_BooleanWrapperList() override;
+	
+	UFUNCTION()
+	virtual void OnRep_IntegerWrapperList() override;
+	
+	UFUNCTION()
+	virtual void OnRep_FloatWrapperList() override;
 	// -------- Attribute Carrier Interface --------
-
-	UFUNCTION()
-	void OnRep_BooleanWrapperList();
-
-	UFUNCTION()
-	void OnRep_IntegerWrapperList();
-
-	UFUNCTION()
-	void OnRep_FloatWrapperList();
 
 protected:
 	TMap<FName, TSharedPtr<FAttributeBase>> AttributeMap;

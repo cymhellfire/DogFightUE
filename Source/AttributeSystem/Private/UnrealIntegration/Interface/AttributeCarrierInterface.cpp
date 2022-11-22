@@ -451,3 +451,180 @@ void IAttributeCarrierInterface::ValidateWrapperObjectMap(EAttributeDataType InD
 	}
 #endif
 }
+
+void IAttributeCarrierInterface::OnRep_BooleanWrapperList()
+{
+#if ATTR_DETAIL_LOG
+	TArray<UAttributeBooleanWrapperObject*> NewAddedWrappers;
+#endif
+	const ENetRole LocalRole = GetNetRole();
+	const auto WrapperList = GetAllBooleanAttributeWrappers();
+	for (auto Wrapper : WrapperList)
+	{
+		if (!Wrapper)
+			continue;
+
+		const FName AttributeName = Wrapper->GetAttributeName();
+		// Add new synced wrapper to map
+		if (!BooleanWrapperMap.Contains(AttributeName))
+		{
+			BooleanWrapperMap.Add(AttributeName, Wrapper);
+
+			//Notify the client
+			if (LocalRole != ENetRole::ROLE_Authority)
+			{
+				Sync_OnBooleanWrapperAdded(Wrapper);
+			}
+#if ATTR_DETAIL_LOG
+			NewAddedWrappers.Add(Wrapper);
+#endif
+		}
+	}
+
+#if ATTR_DETAIL_LOG
+	if (NewAddedWrappers.Num() > 0)
+	{
+		const FString ObjName = ThisAsObject()->GetName();
+		const FString NetRoleStr = (LocalRole == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
+		for (auto Wrapper : NewAddedWrappers)
+		{
+			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] New attribute %s added."), *NetRoleStr, *ObjName,
+				*Wrapper->GetAttributeName().ToString());
+			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] %s"), *NetRoleStr, *ObjName, *Wrapper->ToString());
+		}
+	}
+
+	TArray<FName> InvalidKeys;
+	ValidateWrapperObjectMap(ADT_Boolean, &InvalidKeys);
+
+	if (InvalidKeys.Num() > 0)
+	{
+		const FString ObjName = ThisAsObject()->GetName();
+		const FString NetRoleStr = (LocalRole == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
+		for (auto Key : InvalidKeys)
+		{
+			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] Attribute %s removed."), *NetRoleStr, *ObjName, *Key.ToString());
+		}
+	}
+#else
+	ValidateWrapperObjectMap(ADT_Boolean);
+#endif
+}
+
+void IAttributeCarrierInterface::OnRep_IntegerWrapperList()
+{
+#if ATTR_DETAIL_LOG
+	TArray<UAttributeIntegerWrapperObject*> NewAddedWrappers;
+#endif
+	const ENetRole LocalRole = GetNetRole();
+	const auto WrapperList = GetAllIntegerAttributeWrappers();
+	for (auto Wrapper : WrapperList)
+	{
+		if (!Wrapper)
+			continue;
+
+		const FName AttributeName = Wrapper->GetAttributeName();
+		// Add new synced wrapper to map
+		if (!IntegerWrapperMap.Contains(AttributeName))
+		{
+			IntegerWrapperMap.Add(AttributeName, Wrapper);
+
+			//Notify the client
+			if (LocalRole != ENetRole::ROLE_Authority)
+			{
+				Sync_OnIntegerWrapperAdded(Wrapper);
+			}
+#if ATTR_DETAIL_LOG
+			NewAddedWrappers.Add(Wrapper);
+#endif
+		}
+	}
+
+#if ATTR_DETAIL_LOG
+	if (NewAddedWrappers.Num() > 0)
+	{
+		const FString ObjName = ThisAsObject()->GetName();
+		const FString NetRoleStr = (LocalRole == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
+		for (auto Wrapper : NewAddedWrappers)
+		{
+			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] New attribute %s added."), *NetRoleStr, *ObjName,
+				*Wrapper->GetAttributeName().ToString());
+			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] %s"), *NetRoleStr, *ObjName, *Wrapper->ToString());
+		}
+	}
+
+	TArray<FName> InvalidKeys;
+	ValidateWrapperObjectMap(ADT_Integer, &InvalidKeys);
+
+	if (InvalidKeys.Num() > 0)
+	{
+		const FString ObjName = ThisAsObject()->GetName();
+		const FString NetRoleStr = (LocalRole == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
+		for (auto Key : InvalidKeys)
+		{
+			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] Attribute %s removed."), *NetRoleStr, *ObjName, *Key.ToString());
+		}
+	}
+#else
+	ValidateWrapperObjectMap(ADT_Integer);
+#endif
+}
+
+void IAttributeCarrierInterface::OnRep_FloatWrapperList()
+{
+#if ATTR_DETAIL_LOG
+	TArray<UAttributeFloatWrapperObject*> NewAddedWrappers;
+#endif
+	const ENetRole LocalRole = GetNetRole();
+	const auto WrapperList = GetAllFloatAttributeWrappers();
+	for (auto Wrapper : WrapperList)
+	{
+		if (!Wrapper)
+			return;
+
+		const FName AttributeName = Wrapper->GetAttributeName();
+		// Add new synced wrapper to map
+		if (!FloatWrapperMap.Contains(AttributeName))
+		{
+			FloatWrapperMap.Add(AttributeName, Wrapper);
+
+			//Notify the client
+			if (LocalRole != ENetRole::ROLE_Authority)
+			{
+				Sync_OnFloatWrapperAdded(Wrapper);
+			}
+#if ATTR_DETAIL_LOG
+			NewAddedWrappers.Add(Wrapper);
+#endif
+		}
+	}
+
+#if ATTR_DETAIL_LOG
+	if (NewAddedWrappers.Num() > 0)
+	{
+		const FString ObjName = ThisAsObject()->GetName();
+		const FString NetRoleStr = (LocalRole == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
+		for (auto Wrapper : NewAddedWrappers)
+		{
+			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] New attribute %s added."), *NetRoleStr, *ObjName,
+				*Wrapper->GetAttributeName().ToString());
+			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] %s"), *NetRoleStr, *ObjName, *Wrapper->ToString());
+		}
+	}
+
+	TArray<FName> InvalidKeys;
+	ValidateWrapperObjectMap(ADT_Float, &InvalidKeys);
+
+	if (InvalidKeys.Num() > 0)
+	{
+		const FString ObjName = ThisAsObject()->GetName();
+		const FString NetRoleStr = (LocalRole == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
+		for (auto Key : InvalidKeys)
+		{
+			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] Attribute %s removed."), *NetRoleStr, *ObjName, *Key.ToString());
+		}
+	}
+#else
+	ValidateWrapperObjectMap(ADT_Float);
+#endif
+}
