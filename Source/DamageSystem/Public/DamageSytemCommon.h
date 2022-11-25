@@ -1,0 +1,3 @@
+#pragma once
+
+DAMAGESYSTEM_API DECLARE_LOG_CATEGORY_CLASS(LogDamageSystem, Log, All)

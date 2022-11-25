@@ -1,5 +1,5 @@
 ﻿#include "DamageReceiver/DamageReceiverComponent.h"
-
+#include "DamageType/ExtendedDamageInstance.h"
 #include "Net/UnrealNetwork.h"
 
 void UDamageReceiverComponent::InitializeAttributes()
@@ -9,7 +9,7 @@ void UDamageReceiverComponent::InitializeAttributes()
 	// Max Health
 	if (AddIntegerAttribute("MaxHealth", 100, "Health"))
 	{
-		auto NewAttribute = GetBooleanAttributeWrapperByName("MaxHealth");
+		auto NewAttribute = GetIntegerAttributeWrapperByName("MaxHealth");
 		if (NewAttribute)
 		{
 			NewAttribute->OnValueChanged.AddUObject(this, &UDamageReceiverComponent::OnMaxHealthChanged);
@@ -27,12 +27,26 @@ void UDamageReceiverComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 	//DOREPLIFETIME_WITH_PARAMS_FAST(UDamageReceiverComponent, MaxHealth, SharedParam);
 }
 
-void UDamageReceiverComponent::OnMaxHealthChanged()
+void UDamageReceiverComponent::TakeDamage(UExtendedDamageInstance* DamageInstance, FExtendedDamageEvent InEvent)
+{
+	// Update health
+	
+
+	// Trigger delegate
+	OnTakeDamage.Execute(this, DamageInstance, InEvent);
+}
+
+void UDamageReceiverComponent::Sync_OnIntegerWrapperAdded(UAttributeIntegerWrapperObject* InWrapper)
+{
+	Super::Sync_OnIntegerWrapperAdded(InWrapper);
+
+	if (InWrapper->GetAttributeName() == "MaxHealth")
+	{
+		InWrapper->OnValueChanged.AddUObject(this, &UDamageReceiverComponent::OnMaxHealthChanged);
+	}
+}
+
+void UDamageReceiverComponent::OnMaxHealthChanged(UAttributeIntegerWrapperObject* WrapperObject, int32 InValue)
 {
 	
 }
-
-// void UDamageReceiverComponent::OnRep_MaxHealth(const FAttributeIntegerWrapper& OldValue)
-// {
-// 	UE_LOG(LogTemp, Log, TEXT("MaxHealth %d -> %d"), OldValue.Value, MaxHealth.Value);
-// }

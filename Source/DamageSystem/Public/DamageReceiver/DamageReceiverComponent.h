@@ -5,7 +5,8 @@
 #include "AttributeSystem/Attribute/Attribute.h"
 #include "DamageReceiverComponent.generated.h"
 
-class FAttributeBase;
+struct FExtendedDamageEvent;
+class UExtendedDamageInstance;
 
 UCLASS()
 class DAMAGESYSTEM_API UDamageReceiverComponent : public UAttributeBasedComponent
@@ -16,13 +17,15 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-protected:
-	void OnMaxHealthChanged();
+	virtual void TakeDamage(UExtendedDamageInstance* DamageInstance, FExtendedDamageEvent InEvent);
 
-	// UFUNCTION()
-	// void OnRep_MaxHealth(const FAttributeIntegerWrapper& OldValue);
+protected:
+	virtual void Sync_OnIntegerWrapperAdded(UAttributeIntegerWrapperObject* InWrapper) override;
+
+	void OnMaxHealthChanged(UAttributeIntegerWrapperObject* WrapperObject, int32 InValue);
 
 public:
-	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="DamageReceiverComponent", ReplicatedUsing=OnRep_MaxHealth)
-	// FAttributeIntegerWrapper MaxHealth;
+	DECLARE_DYNAMIC_DELEGATE_ThreeParams(FDamageReceiverComponentTakeDamageSignature, UDamageReceiverComponent*, DamagedComponent,
+		UExtendedDamageInstance*, DamageInstance, const FExtendedDamageEvent&, DamageEvent);
+	FDamageReceiverComponentTakeDamageSignature OnTakeDamage;
 };

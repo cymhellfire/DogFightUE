@@ -25,6 +25,7 @@ public class DamageSystem : ModuleRules
                 "Slate",
                 "SlateCore",
                 "NetCore",
+                "Kismet",
             }
         );
     }
