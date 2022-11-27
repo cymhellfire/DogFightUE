@@ -485,7 +485,7 @@ void IAttributeCarrierInterface::OnRep_BooleanWrapperList()
 	if (NewAddedWrappers.Num() > 0)
 	{
 		const FString ObjName = ThisAsObject()->GetName();
-		const FString NetRoleStr = (LocalRole == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
+		const FString NetRoleStr = TO_NET_ROLE_STR(LocalRole);
 		for (auto Wrapper : NewAddedWrappers)
 		{
 			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] New attribute %s added."), *NetRoleStr, *ObjName,
@@ -500,7 +500,7 @@ void IAttributeCarrierInterface::OnRep_BooleanWrapperList()
 	if (InvalidKeys.Num() > 0)
 	{
 		const FString ObjName = ThisAsObject()->GetName();
-		const FString NetRoleStr = (LocalRole == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
+		const FString NetRoleStr = TO_NET_ROLE_STR(LocalRole);
 		for (auto Key : InvalidKeys)
 		{
 			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] Attribute %s removed."), *NetRoleStr, *ObjName, *Key.ToString());
@@ -544,7 +544,7 @@ void IAttributeCarrierInterface::OnRep_IntegerWrapperList()
 	if (NewAddedWrappers.Num() > 0)
 	{
 		const FString ObjName = ThisAsObject()->GetName();
-		const FString NetRoleStr = (LocalRole == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
+		const FString NetRoleStr = TO_NET_ROLE_STR(LocalRole);
 		for (auto Wrapper : NewAddedWrappers)
 		{
 			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] New attribute %s added."), *NetRoleStr, *ObjName,
@@ -559,7 +559,7 @@ void IAttributeCarrierInterface::OnRep_IntegerWrapperList()
 	if (InvalidKeys.Num() > 0)
 	{
 		const FString ObjName = ThisAsObject()->GetName();
-		const FString NetRoleStr = (LocalRole == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
+		const FString NetRoleStr = TO_NET_ROLE_STR(LocalRole);
 		for (auto Key : InvalidKeys)
 		{
 			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] Attribute %s removed."), *NetRoleStr, *ObjName, *Key.ToString());
@@ -603,7 +603,7 @@ void IAttributeCarrierInterface::OnRep_FloatWrapperList()
 	if (NewAddedWrappers.Num() > 0)
 	{
 		const FString ObjName = ThisAsObject()->GetName();
-		const FString NetRoleStr = (LocalRole == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
+		const FString NetRoleStr = TO_NET_ROLE_STR(LocalRole);
 		for (auto Wrapper : NewAddedWrappers)
 		{
 			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] New attribute %s added."), *NetRoleStr, *ObjName,
@@ -618,7 +618,7 @@ void IAttributeCarrierInterface::OnRep_FloatWrapperList()
 	if (InvalidKeys.Num() > 0)
 	{
 		const FString ObjName = ThisAsObject()->GetName();
-		const FString NetRoleStr = (LocalRole == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
+		const FString NetRoleStr = TO_NET_ROLE_STR(LocalRole);
 		for (auto Key : InvalidKeys)
 		{
 			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] Attribute %s removed."), *NetRoleStr, *ObjName, *Key.ToString());

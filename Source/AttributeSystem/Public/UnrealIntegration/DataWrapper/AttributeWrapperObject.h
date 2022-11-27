@@ -9,11 +9,15 @@ class FAttributeBoolean;
 class FAttributeInteger;
 class FAttributeFloat;
 class UAttributeModifierDescObject;
+class IAttributeCarrierInterface;
+class FAttributeWrapperObjectHelper;
 
 UCLASS()
 class ATTRIBUTESYSTEM_API UAttributeWrapperObjectBase : public UObject
 {
 	GENERATED_BODY()
+	friend FAttributeWrapperObjectHelper;
+	friend IAttributeCarrierInterface;
 public:
 	// Enable networking
 	virtual bool IsSupportedForNetworking() const override { return true; }
@@ -63,6 +67,8 @@ UCLASS()
 class ATTRIBUTESYSTEM_API UAttributeBooleanWrapperObject : public UAttributeWrapperObjectBase
 {
 	GENERATED_BODY()
+	friend FAttributeWrapperObjectHelper;
+	friend IAttributeCarrierInterface;
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -71,14 +77,10 @@ public:
 		return BaseValue;
 	}
 
-	void SetBaseValue(bool InValue);
-
 	bool GetValue() const
 	{
 		return Value;
 	}
-
-	void SetValue(bool InValue);
 
 	virtual FString ToString() const override
 	{
@@ -87,6 +89,9 @@ public:
 	}
 
 protected:
+	void SetBaseValue(bool InValue);
+	void SetValue(bool InValue);
+
 	UFUNCTION()
 	void OnRep_BaseValue(bool OldValue);
 
@@ -110,6 +115,9 @@ UCLASS()
 class ATTRIBUTESYSTEM_API UAttributeIntegerWrapperObject : public UAttributeWrapperObjectBase
 {
 	GENERATED_BODY()
+
+	friend FAttributeWrapperObjectHelper;
+	friend IAttributeCarrierInterface;
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -118,14 +126,10 @@ public:
 		return BaseValue;
 	}
 
-	void SetBaseValue(int32 InValue);
-
 	int32 GetValue() const
 	{
 		return Value;
 	}
-
-	void SetValue(int32 InValue);
 
 	virtual FString ToString() const override
 	{
@@ -133,6 +137,9 @@ public:
 	}
 
 protected:
+	void SetBaseValue(int32 InValue);
+	void SetValue(int32 InValue);
+
 	UFUNCTION()
 	void OnRep_BaseValue(int32 OldValue);
 
@@ -156,6 +163,8 @@ UCLASS()
 class ATTRIBUTESYSTEM_API UAttributeFloatWrapperObject : public UAttributeWrapperObjectBase
 {
 	GENERATED_BODY()
+	friend FAttributeWrapperObjectHelper;
+	friend IAttributeCarrierInterface;
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -164,14 +173,10 @@ public:
 		return BaseValue;
 	}
 
-	void SetBaseValue(float InValue);
-
 	float GetValue() const
 	{
 		return Value;
 	}
-
-	void SetValue(float InValue);
 
 	virtual FString ToString() const override
 	{
@@ -179,6 +184,9 @@ public:
 	}
 
 protected:
+	void SetBaseValue(float InValue);
+	void SetValue(float InValue);
+
 	UFUNCTION()
 	void OnRep_BaseValue(float OldValue);
 

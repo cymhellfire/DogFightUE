@@ -1,6 +1,7 @@
 #include "DamageType/ExtendedDamageInstance.h"
 
 #include "DamageReceiver/DamageReceiverComponent.h"
+#include "DamageType/ExtendedDamageType.h"
 
 void UExtendedDamageInstance::PreApplyToComponent(FExtendedDamageEvent DamageEvent)
 {
@@ -21,4 +22,12 @@ void UExtendedDamageInstance::PostApplyToComponent(FExtendedDamageEvent DamageEv
 {
 	// Invoke blueprint implementation
 	K2_PostApplyToComponent(DamageEvent);
+}
+
+void UExtendedDamageInstance::SetDamageType(UClass* InType)
+{
+	if (InType->IsChildOf(UExtendedDamageType::StaticClass()))
+	{
+		DamageType = InType;
+	}
 }

@@ -34,6 +34,9 @@ public:
 
 	virtual void PostApplyToComponent(FExtendedDamageEvent DamageEvent);
 
+	UFUNCTION()
+	void SetDamageType(UClass* InType);
+
 protected:
 	UFUNCTION(BlueprintImplementableEvent, Category="ExtendedDamageInstance", DisplayName="Pre Apply To Component")
 	void K2_PreApplyToComponent(const FExtendedDamageEvent& DamageEvent);

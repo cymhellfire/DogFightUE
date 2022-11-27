@@ -16,13 +16,22 @@ public:
 
 	virtual void TakeDamage(UExtendedDamageInstance* DamageInstance, FExtendedDamageEvent InEvent);
 
+	virtual void SetHealth(int32 InValue);
+
 protected:
 	virtual void Sync_OnIntegerWrapperAdded(UAttributeIntegerWrapperObject* InWrapper) override;
 
 	void OnMaxHealthChanged(UAttributeIntegerWrapperObject* WrapperObject, int32 InValue);
 
+	UFUNCTION()
+	void OnRep_Health(int32 OldValue);
+
 public:
 	DECLARE_MULTICAST_DELEGATE_ThreeParams(FDamageReceiverComponentTakeDamageSignature, UDamageReceiverComponent*,
 		UExtendedDamageInstance*, const FExtendedDamageEvent&);
 	FDamageReceiverComponentTakeDamageSignature OnTakeDamage;
+
+protected:
+	UPROPERTY(Transient, ReplicatedUsing=OnRep_Health)
+	int32 Health;
 };
