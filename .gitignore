@@ -87,8 +87,8 @@ Content/untitled_category/*
 
 # Unlua intermediate files
 /Plugins/UnLuaExtensions/LuaSocket/Binaries/Win64/
-/Plugins/UnLuaExtensions/LuaSocket/Intermediate/Build/Win64/UnrealEditor/Development/LuaSocket/
+/Plugins/UnLuaExtensions/LuaSocket/Intermediate/
 /Plugins/UnLuaExtensions/LuaRapidjson/Binaries/Win64/
-/Plugins/UnLuaExtensions/LuaRapidjson/Intermediate/Build/Win64/UnrealEditor/Development/LuaRapidjson/
-/Plugins/UnLuaExtensions/LuaProtobuf/Intermediate/Build/Win64/UnrealEditor/Development/LuaProtobuf/
+/Plugins/UnLuaExtensions/LuaRapidjson/Intermediate/
+/Plugins/UnLuaExtensions/LuaProtobuf/Intermediate/
 /Plugins/UnLuaExtensions/LuaProtobuf/Binaries/Win64/
