@@ -30,6 +30,8 @@ void UDamageCalculatorBase::ApplyDamage(AActor* DamagedActor, float BaseDamage, 
 	if (DamageEvent.IsSet())
 	{
 		DamageInstance->PreApplyToComponent(DamageEvent.GetValue());
+
+		DamageInstance->ApplyToComponent(DamageEvent.GetValue());
 	}
 
 	// Origin unreal behavior
@@ -41,8 +43,24 @@ void UDamageCalculatorBase::ApplyDamage(AActor* DamagedActor, float BaseDamage, 
 	}
 }
 
+void UDamageCalculatorBase::RegisterNewDamageInstance(FName InName,	UExtendedDamageInstance* NewInstance)
+{
+	if (DamageInstanceTable.Contains(InName))
+	{
+		UE_LOG(LogDamageSystem, Error, TEXT("[DamageCalculatorBase] Duplicated damage instance name detected: %"), *InName.ToString());
+		return;
+	}
+
+	DamageInstanceTable.Add(InName, NewInstance);
+}
+
 UExtendedDamageInstance* UDamageCalculatorBase::GetDamageInstanceByName(FName InName) const
 {
 	auto Result = DamageInstanceTable.Find(InName);
 	return Result ? *Result : nullptr;
+}
+
+TArray<FString> UDamageCalculatorBase::GetDamageInstanceList_Implementation()
+{
+	return TArray<FString>();
 }

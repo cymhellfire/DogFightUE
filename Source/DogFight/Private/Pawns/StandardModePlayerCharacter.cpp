@@ -22,6 +22,7 @@
 #include "Actors/Weapons/WeaponDisplayRelative.h"
 #include "Actors/Weapons/WeaponActionBase.h"
 #include "Card/CardDescObject.h"
+#include "DamageReceiver/DamageReceiverComponent.h"
 #include "Engine/ActorChannel.h"
 #include "Pawns/TestAttributeComponent.h"
 #include "UI/Widget/CharacterFloatingTextPanelWidget.h"
@@ -80,6 +81,8 @@ AStandardModePlayerCharacter::AStandardModePlayerCharacter()
 
 	// Create AttributeComponent
 	AttributeComponent = CreateDefaultSubobject<UTestAttributeComponent>("AttributeComponent");
+
+	DamageReceiverComponent = CreateDefaultSubobject<UDamageReceiverComponent>("DamageReceiverComponent");
 
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;

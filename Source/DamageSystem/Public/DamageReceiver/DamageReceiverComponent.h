@@ -1,12 +1,9 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "DamageType/ExtendedDamageInstance.h"
 #include "UnrealIntegration/UObject/AttributeBasedComponent.h"
-#include "AttributeSystem/Attribute/Attribute.h"
 #include "DamageReceiverComponent.generated.h"
-
-struct FExtendedDamageEvent;
-class UExtendedDamageInstance;
 
 UCLASS()
 class DAMAGESYSTEM_API UDamageReceiverComponent : public UAttributeBasedComponent
@@ -25,7 +22,7 @@ protected:
 	void OnMaxHealthChanged(UAttributeIntegerWrapperObject* WrapperObject, int32 InValue);
 
 public:
-	DECLARE_DYNAMIC_DELEGATE_ThreeParams(FDamageReceiverComponentTakeDamageSignature, UDamageReceiverComponent*, DamagedComponent,
-		UExtendedDamageInstance*, DamageInstance, const FExtendedDamageEvent&, DamageEvent);
+	DECLARE_MULTICAST_DELEGATE_ThreeParams(FDamageReceiverComponentTakeDamageSignature, UDamageReceiverComponent*,
+		UExtendedDamageInstance*, const FExtendedDamageEvent&);
 	FDamageReceiverComponentTakeDamageSignature OnTakeDamage;
 };

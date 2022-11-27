@@ -6,6 +6,7 @@
 #include "GameMode/DogFightGameModeBase.h"
 #include "DogFightTypes.h"
 #include "Card/GameCardTypes.h"
+#include "DamageCalculator/DamageCalculatorBase.h"
 #include "DebugTools/ImGuiCommon.h"
 #include "DebugTools/StandardGameMode_DT.h"
 #include "StandardGameMode.generated.h"
@@ -16,7 +17,7 @@ class AStandardPlayerState;
 class UGameplayCardPool;
 class UGameplayAbilityPool;
 class ADogFightAIController;
-class UDamageCalculatorBase;
+class UDogFightDamageCalculatorBase;
 
 enum EGameModeDelayAction : uint8
 {
@@ -93,6 +94,8 @@ public:
 	virtual void PreInitializeComponents() override;
 
 	virtual float CalculateDamage(AActor* DamageTaker, float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+	virtual void ApplyDamageTo(AActor* DamagedActor, float BaseDamage, FName DamageTypeName, AActor* DamageCauser, AController* DamageInstigator) override;
 
 	FName GetGamePhase() const;
 
@@ -303,14 +306,20 @@ public:
 
 	/** Class to calculate the damage to apply during game. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="DogFightGameMode")
-	TSubclassOf<UDamageCalculatorBase> DamageCalculatorClass;
+	TSubclassOf<UDogFightDamageCalculatorBase> DamageCalculatorClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="DogFightGameMode")
+	FString DamageCalculatorPath;
 
 protected:
 
 	TArray<int32> HumanPlayerIdList;
 
 	UPROPERTY()
-	UDamageCalculatorBase* DamageCalculator;
+	UDogFightDamageCalculatorBase* DamageCalculator;
+
+	UPROPERTY()
+	UDamageCalculatorBase* NewDamageCalculator;
 
 	UPROPERTY()
 	AShieldManager* ShieldManager;

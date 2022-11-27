@@ -33,7 +33,7 @@ void UDamageReceiverComponent::TakeDamage(UExtendedDamageInstance* DamageInstanc
 	
 
 	// Trigger delegate
-	OnTakeDamage.Execute(this, DamageInstance, InEvent);
+	OnTakeDamage.Broadcast(this, DamageInstance, InEvent);
 }
 
 void UDamageReceiverComponent::Sync_OnIntegerWrapperAdded(UAttributeIntegerWrapperObject* InWrapper)

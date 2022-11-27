@@ -12,9 +12,12 @@ public:
 
 	virtual void ApplyDamage(AActor* DamagedActor, float BaseDamage, FName DamageTypeName, AActor* DamageCauser, AController* Instigator);
 
+	virtual void RegisterNewDamageInstance(FName InName, UExtendedDamageInstance* NewInstance);
+
 	UExtendedDamageInstance* GetDamageInstanceByName(FName InName) const;
 
-
+	UFUNCTION(BlueprintNativeEvent, Category="DamageCalculatorBase")
+	TArray<FString> GetDamageInstanceList();
 protected:
 	UPROPERTY(Transient)
 	TMap<FName, UExtendedDamageInstance*> DamageInstanceTable;
