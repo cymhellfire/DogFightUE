@@ -1,6 +1,5 @@
 #pragma once
 
-#include "UnrealIntegration/DataWrapper/AttributeWrapper.h"
 #include "UnrealIntegration/UObject/AttributeBasedComponent.h"
 #include "TestAttributeComponent.generated.h"
 
@@ -22,7 +21,7 @@ public:
 	void RemoveTestModifier();
 
 protected:
-	void OnTestAttributeValueChanged(TSharedPtr<FAttributeBase> Attribute);
+	// void OnTestAttributeValueChanged(TSharedPtr<FAttributeBase> Attribute);
 
 	FTimerHandle RemoveAttributeTimer;
 };

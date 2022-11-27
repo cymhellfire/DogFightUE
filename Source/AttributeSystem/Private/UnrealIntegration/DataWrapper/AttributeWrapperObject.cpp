@@ -107,11 +107,11 @@ void UAttributeBooleanWrapperObject::OnRep_BaseValue(bool OldValue)
 #if ATTR_DETAIL_LOG
 	const FString ObjName = GetOuter()->GetName();
 	const FString NetRoleStr = (GetNetRole() == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
-	UE_LOG(LogAttributeSystem, Log, TEXT("%s [%s] Attribute %s BaseValue: %s -> %s"), *NetRoleStr, *ObjName,
+	UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] Attribute %s BaseValue: %s -> %s"), *NetRoleStr, *ObjName,
 		*GetAttributeName().ToString(),	BOOL_TO_STR(OldValue), BOOL_TO_STR(BaseValue));
 #endif
 
-	OnBaseValueChanged.Broadcast();
+	OnBaseValueChanged.Broadcast(this, BaseValue);
 }
 
 void UAttributeBooleanWrapperObject::OnRep_Value(bool OldValue)
@@ -119,11 +119,11 @@ void UAttributeBooleanWrapperObject::OnRep_Value(bool OldValue)
 #if ATTR_DETAIL_LOG
 	const FString ObjName = GetOuter()->GetName();
 	const FString NetRoleStr = (GetNetRole() == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
-	UE_LOG(LogAttributeSystem, Log, TEXT("%s [%s] Attribute %s Value: %s -> %s"), *NetRoleStr, *ObjName,
+	UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] Attribute %s Value: %s -> %s"), *NetRoleStr, *ObjName,
 		*GetAttributeName().ToString(), BOOL_TO_STR(OldValue), BOOL_TO_STR(Value));
 #endif
 
-	OnValueChanged.Broadcast();
+	OnValueChanged.Broadcast(this, Value);
 }
 
 void UAttributeIntegerWrapperObject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -158,11 +158,11 @@ void UAttributeIntegerWrapperObject::OnRep_BaseValue(int32 OldValue)
 #if ATTR_DETAIL_LOG
 	const FString ObjName = GetOuter()->GetName();
 	const FString NetRoleStr = (GetNetRole() == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
-	UE_LOG(LogAttributeSystem, Log, TEXT("%s [%s] Attribute %s BaseValue: %d -> %d"), *NetRoleStr, *ObjName,
+	UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] Attribute %s BaseValue: %d -> %d"), *NetRoleStr, *ObjName,
 		*GetAttributeName().ToString(),	OldValue, BaseValue);
 #endif
 
-	OnBaseValueChanged.Broadcast();
+	OnBaseValueChanged.Broadcast(this, BaseValue);
 }
 
 void UAttributeIntegerWrapperObject::OnRep_Value(int32 OldValue)
@@ -170,11 +170,11 @@ void UAttributeIntegerWrapperObject::OnRep_Value(int32 OldValue)
 #if ATTR_DETAIL_LOG
 	const FString ObjName = GetOuter()->GetName();
 	const FString NetRoleStr = (GetNetRole() == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
-	UE_LOG(LogAttributeSystem, Log, TEXT("%s [%s] Attribute %s Value: %d -> %d"), *NetRoleStr, *ObjName,
+	UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] Attribute %s Value: %d -> %d"), *NetRoleStr, *ObjName,
 		*GetAttributeName().ToString(), OldValue, Value);
 #endif
 
-	OnValueChanged.Broadcast();
+	OnValueChanged.Broadcast(this, Value);
 }
 
 void UAttributeFloatWrapperObject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -209,11 +209,11 @@ void UAttributeFloatWrapperObject::OnRep_BaseValue(float OldValue)
 #if ATTR_DETAIL_LOG
 	const FString ObjName = GetOuter()->GetName();
 	const FString NetRoleStr = (GetNetRole() == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
-	UE_LOG(LogAttributeSystem, Log, TEXT("%s [%s] Attribute %s BaseValue: %.3f -> %.3f"), *NetRoleStr, *ObjName,
+	UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] Attribute %s BaseValue: %.3f -> %.3f"), *NetRoleStr, *ObjName,
 		*GetAttributeName().ToString(),	OldValue, BaseValue);
 #endif
 
-	OnBaseValueChanged.Broadcast();
+	OnBaseValueChanged.Broadcast(this, BaseValue);
 }
 
 void UAttributeFloatWrapperObject::OnRep_Value(float OldValue)
@@ -221,11 +221,11 @@ void UAttributeFloatWrapperObject::OnRep_Value(float OldValue)
 #if ATTR_DETAIL_LOG
 	const FString ObjName = GetOuter()->GetName();
 	const FString NetRoleStr = (GetNetRole() == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
-	UE_LOG(LogAttributeSystem, Log, TEXT("%s [%s] Attribute %s Value: %.3f -> %.3f"), *NetRoleStr, *ObjName,
+	UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] Attribute %s Value: %.3f -> %.3f"), *NetRoleStr, *ObjName,
 		*GetAttributeName().ToString(),	OldValue, Value);
 #endif
 
-	OnValueChanged.Broadcast();
+	OnValueChanged.Broadcast(this, Value);
 }
 
 UAttributeBooleanWrapperObject* FAttributeWrapperObjectHelper::CreateWrapperObjectForBooleanAttribute(UObject* Instigator,

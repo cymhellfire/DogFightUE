@@ -273,6 +273,11 @@ void AProjectileBase::Dead()
 	// Damage target
 	if (FMath::Abs(DamageRadius) < 0.01f)
 	{
+		if (AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode()))
+		{
+			StandardGameMode->ApplyDamageTo(HitActor, BaseDamage, "DefaultDamage", this, OwnerController);
+		}
+
 		if (IDamageableActorInterface* DamageableActor = Cast<IDamageableActorInterface>(HitActor))
 		{
 			DamageableActor->ApplyDamage(BaseDamage, FDamageEvent{DamageType}, OwnerController, this);
@@ -284,6 +289,7 @@ void AProjectileBase::Dead()
 		GetWorld()->OverlapMultiByChannel(OverlapList, GetActorLocation(), GetActorRotation().Quaternion(),
 			ECollisionChannel::ECC_Camera, FCollisionShape::MakeSphere(DamageRadius));
 
+		AStandardGameMode* StandardGameMode = Cast<AStandardGameMode>(GetWorld()->GetAuthGameMode());
 		TArray<AActor*> DamagedActorList;
 		for (FOverlapResult Result : OverlapList)
 		{
@@ -297,6 +303,11 @@ void AProjectileBase::Dead()
 						DamageableActor->ApplyDamage(BaseDamage, FDamageEvent{DamageType}, OwnerController, this);
 					}
 					DamagedActorList.Add(TargetActor);
+
+					if (StandardGameMode)
+					{
+						StandardGameMode->ApplyDamageTo(TargetActor, BaseDamage, "DefaultDamage", this, OwnerController);
+					}
 				}
 			}
 		}

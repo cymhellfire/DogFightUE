@@ -369,6 +369,8 @@ void UDogFightGameInstance::HandleNetworkFailure(UWorld* World, UNetDriver* NetD
 
 void UDogFightGameInstance::Init()
 {
+	Super::Init();
+
 	// Create Save Manager
 	SaveGameManager = NewObject<USaveGameManager>(this, FName(TEXT("SaveGameManager")));
 

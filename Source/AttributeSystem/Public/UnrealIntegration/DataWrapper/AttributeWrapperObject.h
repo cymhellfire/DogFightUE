@@ -9,11 +9,15 @@ class FAttributeBoolean;
 class FAttributeInteger;
 class FAttributeFloat;
 class UAttributeModifierDescObject;
+class IAttributeCarrierInterface;
+class FAttributeWrapperObjectHelper;
 
 UCLASS()
 class ATTRIBUTESYSTEM_API UAttributeWrapperObjectBase : public UObject
 {
 	GENERATED_BODY()
+	friend FAttributeWrapperObjectHelper;
+	friend IAttributeCarrierInterface;
 public:
 	// Enable networking
 	virtual bool IsSupportedForNetworking() const override { return true; }
@@ -50,11 +54,6 @@ protected:
 	}
 
 public:
-	DECLARE_MULTICAST_DELEGATE(FAttributeWrapperObjectDelegate);
-	FAttributeWrapperObjectDelegate OnBaseValueChanged;
-	FAttributeWrapperObjectDelegate OnValueChanged;
-
-//protected:
 	// Only replicate array content in this class since all description objects are replicated by outer actor.
 	UPROPERTY(ReplicatedUsing=OnRep_AppliedModifierDesc, Transient)
 	TArray<UAttributeModifierDescObject*> AppliedModifierDesc;
@@ -68,6 +67,8 @@ UCLASS()
 class ATTRIBUTESYSTEM_API UAttributeBooleanWrapperObject : public UAttributeWrapperObjectBase
 {
 	GENERATED_BODY()
+	friend FAttributeWrapperObjectHelper;
+	friend IAttributeCarrierInterface;
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -76,14 +77,10 @@ public:
 		return BaseValue;
 	}
 
-	void SetBaseValue(bool InValue);
-
 	bool GetValue() const
 	{
 		return Value;
 	}
-
-	void SetValue(bool InValue);
 
 	virtual FString ToString() const override
 	{
@@ -92,11 +89,19 @@ public:
 	}
 
 protected:
+	void SetBaseValue(bool InValue);
+	void SetValue(bool InValue);
+
 	UFUNCTION()
 	void OnRep_BaseValue(bool OldValue);
 
 	UFUNCTION()
 	void OnRep_Value(bool OldValue);
+
+public:
+	DECLARE_MULTICAST_DELEGATE_TwoParams(FAttributeBooleanWrapperObjectValueDelegate, UAttributeBooleanWrapperObject*, bool);
+	FAttributeBooleanWrapperObjectValueDelegate OnBaseValueChanged;
+	FAttributeBooleanWrapperObjectValueDelegate OnValueChanged;
 
 protected:
 	UPROPERTY(ReplicatedUsing=OnRep_BaseValue, Transient)
@@ -110,6 +115,9 @@ UCLASS()
 class ATTRIBUTESYSTEM_API UAttributeIntegerWrapperObject : public UAttributeWrapperObjectBase
 {
 	GENERATED_BODY()
+
+	friend FAttributeWrapperObjectHelper;
+	friend IAttributeCarrierInterface;
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -118,14 +126,10 @@ public:
 		return BaseValue;
 	}
 
-	void SetBaseValue(int32 InValue);
-
 	int32 GetValue() const
 	{
 		return Value;
 	}
-
-	void SetValue(int32 InValue);
 
 	virtual FString ToString() const override
 	{
@@ -133,11 +137,19 @@ public:
 	}
 
 protected:
+	void SetBaseValue(int32 InValue);
+	void SetValue(int32 InValue);
+
 	UFUNCTION()
 	void OnRep_BaseValue(int32 OldValue);
 
 	UFUNCTION()
 	void OnRep_Value(int32 OldValue);
+
+public:
+	DECLARE_MULTICAST_DELEGATE_TwoParams(FAttributeIntegerWrapperObjectValueDelegate, UAttributeIntegerWrapperObject*, int32);
+	FAttributeIntegerWrapperObjectValueDelegate OnBaseValueChanged;
+	FAttributeIntegerWrapperObjectValueDelegate OnValueChanged;
 
 protected:
 	UPROPERTY(ReplicatedUsing=OnRep_BaseValue, Transient)
@@ -151,6 +163,8 @@ UCLASS()
 class ATTRIBUTESYSTEM_API UAttributeFloatWrapperObject : public UAttributeWrapperObjectBase
 {
 	GENERATED_BODY()
+	friend FAttributeWrapperObjectHelper;
+	friend IAttributeCarrierInterface;
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -159,14 +173,10 @@ public:
 		return BaseValue;
 	}
 
-	void SetBaseValue(float InValue);
-
 	float GetValue() const
 	{
 		return Value;
 	}
-
-	void SetValue(float InValue);
 
 	virtual FString ToString() const override
 	{
@@ -174,11 +184,19 @@ public:
 	}
 
 protected:
+	void SetBaseValue(float InValue);
+	void SetValue(float InValue);
+
 	UFUNCTION()
 	void OnRep_BaseValue(float OldValue);
 
 	UFUNCTION()
 	void OnRep_Value(float OldValue);
+
+public:
+	DECLARE_MULTICAST_DELEGATE_TwoParams(FAttributeFloatWrapperObjectValueDelegate, UAttributeFloatWrapperObject*, float);
+	FAttributeFloatWrapperObjectValueDelegate OnBaseValueChanged;
+	FAttributeFloatWrapperObjectValueDelegate OnValueChanged;
 
 protected:
 	UPROPERTY(ReplicatedUsing=OnRep_BaseValue, Transient)

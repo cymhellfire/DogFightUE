@@ -12,7 +12,7 @@ struct ATTRIBUTESYSTEM_API FAttributeCreateArgument
 	FName AttrName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AttributeArgument")
-	TEnumAsByte<EAttributeDataType> DataType;
+	TEnumAsByte<EAttributeDataType> DataType = ADT_None;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AttributeArgument")
 	TArray<FString> Tags;

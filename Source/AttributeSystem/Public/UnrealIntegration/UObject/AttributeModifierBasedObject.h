@@ -10,9 +10,6 @@ class ATTRIBUTESYSTEM_API UAttributeModifierBasedObject : public UObject, public
 {
 	GENERATED_BODY()
 public:
-	UFUNCTION(BlueprintCallable, Category="AttributeModifierCarrier")
-	virtual bool CreateModifier(const FModifierCreateArgument& InArgument) override;
-
 	virtual TSharedPtr<FAttributeModifierBase> GetModifier() override
 	{
 		return Modifier;

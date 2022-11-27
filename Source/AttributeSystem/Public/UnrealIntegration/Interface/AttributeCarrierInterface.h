@@ -3,7 +3,6 @@
 #include "CoreMinimal.h"
 #include "AttributeSystem/Attribute/AttributeCommon.h"
 #include "UnrealIntegration/Marco/AttributeCarrierMarcos.h"
-#include "UnrealIntegration/DataWrapper/AttributeWrapper.h"
 #include "UnrealIntegration/DataWrapper/AttributeWrapperObject.h"
 #include "AttributeCarrierInterface.generated.h"
 
@@ -29,6 +28,35 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
 	virtual bool AddAttribute(const FAttributeCreateArgument& InArgument);
+
+	/**
+	 * @brief Create a new boolean type attribute for this class.
+	 * @param InName			Name of new attribute.
+	 * @param InitValue			Initial value of new attribute.
+	 * @param Tags				Tag string of new attribute.
+	 * @return Whether the creating succeed
+	 */
+	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
+	virtual bool AddBooleanAttribute(FName InName, bool InitValue = false, FString Tags = "");
+
+	/**
+	 * @brief Create a new integer type attribute for this class.
+	 * @param InName			Name of new attribute.
+	 * @param InitValue			Initial value of new attribute.
+	 * @param Tags				Tag string of new attribute.
+	 * @return Whether the creating succeed
+	 */
+	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
+	virtual bool AddIntegerAttribute(FName InName, int32 InitValue = 0, FString Tags = "");
+
+	/**
+	 * @brief Create a new float type attribute for this class.
+	 * @param InName			Name of new attribute.
+	 * @param InitValue			Initial value of new attribute.
+	 * @param Tags				Tag string of new attribute.
+	 * @return Whether the creating succeed
+	 */
+	virtual bool AddFloatAttribute(FName InName, float InitValue = 0.f, FString Tags = "");
 
 	/**
 	 * @brief Get value from a boolean attribute with given name.
@@ -87,6 +115,10 @@ public:
 	virtual bool ReplicateModifierDescObjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags) = 0;
 
 protected:
+	// ------------------------------------|==========|------------------------------------
+	// ------------------------------------|Attributes|------------------------------------
+	// ------------------------------------|==========|------------------------------------
+
 	/**
 	 * @brief Notify the class a new attribute is added.
 	 * @param InAttribute			New added attribute.
@@ -136,6 +168,10 @@ protected:
 	 * @return Net role.
 	 */
 	virtual ENetRole GetNetRole() = 0;
+
+	// ------------------------------------|==========|------------------------------------
+	// ------------------------------------| Modifier |------------------------------------
+	// ------------------------------------|==========|------------------------------------
 
 	/**
 	 * Find a suitable attribute and apply passed in modifier to it.
@@ -242,6 +278,64 @@ protected:
 	 * @param OutInvalidKeys	Invalid keys that has been removed. (Optional)
 	 */
 	void ValidateWrapperObjectMap(EAttributeDataType InDataType, TArray<FName>* OutInvalidKeys = nullptr);
+
+	/**
+	 * @brief Get all recorded boolean attribute wrappers.
+	 * @return List of all attribute wrappers.
+	 */
+	virtual TArray<UAttributeBooleanWrapperObject*> GetAllBooleanAttributeWrappers() const = 0;
+
+	/**
+	 * @brief Get all recorded integer attribute wrappers.
+	 * @return List of all attribute wrappers.
+	 */
+	virtual TArray<UAttributeIntegerWrapperObject*> GetAllIntegerAttributeWrappers() const = 0;
+
+	/**
+	 * @brief Get all recorded float attribute wrappers.
+	 * @return List of all attribute wrappers.
+	 */
+	virtual TArray<UAttributeFloatWrapperObject*> GetAllFloatAttributeWrappers() const = 0;
+
+	// ------------------------------------|==========|------------------------------------
+	// ------------------------------------|Networking|------------------------------------
+	// ------------------------------------|==========|------------------------------------
+
+	/**
+	 * @brief Network OnRep function for boolean attribute wrapper list. Override it for customize purposes.
+	 */
+	UFUNCTION()
+	virtual void OnRep_BooleanWrapperList();
+
+	/**
+	 * @brief Network OnRep function for integer attribute wrapper list. Override it for customize purposes.
+	 */
+	UFUNCTION()
+	virtual void OnRep_IntegerWrapperList();
+
+	/**
+	 * @brief Network OnRep function for float attribute wrapper list. Override it for customize purposes.
+	 */
+	UFUNCTION()
+	virtual void OnRep_FloatWrapperList();
+
+	/**
+	 * @brief Notify the class a new boolean attribute wrapper is synced from network for adding. (Client only.)
+	 * @param InWrapper New wrapper added.
+	 */
+	virtual void Sync_OnBooleanWrapperAdded(UAttributeBooleanWrapperObject* InWrapper) {}
+
+	/**
+	 * @brief Notify the class a new integer attribute wrapper is synced from network for adding.  (Client only.)
+	 * @param InWrapper New wrapper added.
+	 */
+	virtual void Sync_OnIntegerWrapperAdded(UAttributeIntegerWrapperObject* InWrapper) {}
+
+	/**
+	 * @brief Notify the class a new float attribute wrapper is synced from network for adding.  (Client only.)
+	 * @param InWrapper New wrapper added.
+	 */
+	virtual void Sync_OnFloatWrapperAdded(UAttributeFloatWrapperObject* InWrapper) {}
 
 	// Map container that do NOT replicated. These maps are maintained by OnRep functions on client side.
 	TMap<FName, TWeakObjectPtr<UAttributeBooleanWrapperObject>> BooleanWrapperMap;

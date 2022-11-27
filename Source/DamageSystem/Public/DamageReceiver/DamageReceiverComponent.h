@@ -1,12 +1,9 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "DamageType/ExtendedDamageInstance.h"
 #include "UnrealIntegration/UObject/AttributeBasedComponent.h"
-#include "AttributeSystem/Attribute/Attribute.h"
-#include "UnrealIntegration/DataWrapper/AttributeWrapper.h"
 #include "DamageReceiverComponent.generated.h"
-
-class FAttributeBase;
 
 UCLASS()
 class DAMAGESYSTEM_API UDamageReceiverComponent : public UAttributeBasedComponent
@@ -17,13 +14,24 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-protected:
-	// void OnMaxHealthChanged(TSharedPtr<FAttributeBase> InAttribute);
+	virtual void TakeDamage(UExtendedDamageInstance* DamageInstance, FExtendedDamageEvent InEvent);
 
-	// UFUNCTION()
-	// void OnRep_MaxHealth(const FAttributeIntegerWrapper& OldValue);
+	virtual void SetHealth(int32 InValue);
+
+protected:
+	virtual void Sync_OnIntegerWrapperAdded(UAttributeIntegerWrapperObject* InWrapper) override;
+
+	void OnMaxHealthChanged(UAttributeIntegerWrapperObject* WrapperObject, int32 InValue);
+
+	UFUNCTION()
+	void OnRep_Health(int32 OldValue);
 
 public:
-	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="DamageReceiverComponent", ReplicatedUsing=OnRep_MaxHealth)
-	// FAttributeIntegerWrapper MaxHealth;
+	DECLARE_MULTICAST_DELEGATE_ThreeParams(FDamageReceiverComponentTakeDamageSignature, UDamageReceiverComponent*,
+		UExtendedDamageInstance*, const FExtendedDamageEvent&);
+	FDamageReceiverComponentTakeDamageSignature OnTakeDamage;
+
+protected:
+	UPROPERTY(Transient, ReplicatedUsing=OnRep_Health)
+	int32 Health;
 };

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Game/DamageCalculatorBase.h"
+#include "Game/DogFightDamageCalculatorBase.h"
 #include "StandardModeDamageCalculator.generated.h"
 
 class UReceiveDamageComponent;
@@ -12,7 +12,7 @@ class UReceiveDamageComponent;
  * Damage Calculator for Standard Game Mode
  */
 UCLASS()
-class DOGFIGHT_API UStandardModeDamageCalculator : public UDamageCalculatorBase
+class DOGFIGHT_API UStandardModeDamageCalculator : public UDogFightDamageCalculatorBase
 {
 	GENERATED_BODY()
 

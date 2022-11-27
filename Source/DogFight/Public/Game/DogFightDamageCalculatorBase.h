@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "DamageCalculatorBase.generated.h"
+#include "DogFightDamageCalculatorBase.generated.h"
 
 /**
  * Damage calculator class.
  */
 UCLASS()
-class DOGFIGHT_API UDamageCalculatorBase : public UObject
+class DOGFIGHT_API UDogFightDamageCalculatorBase : public UObject
 {
 	GENERATED_BODY()
 

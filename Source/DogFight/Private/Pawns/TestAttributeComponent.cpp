@@ -29,10 +29,10 @@ void UTestAttributeComponent::InitializeAttributes()
 
 	if (AddAttribute(CreateArgument))
 	{
-		if (auto TestAttr = GetAttribute(AttrName))
-		{
-			TestAttr->OnValueChanged.AddUObject(this, &UTestAttributeComponent::OnTestAttributeValueChanged);
-		}
+		// if (auto TestAttr = GetAttribute(AttrName))
+		// {
+		// 	TestAttr->OnValueChanged.AddUObject(this, &UTestAttributeComponent::OnTestAttributeValueChanged);
+		// }
 	}
 }
 
@@ -61,15 +61,15 @@ void UTestAttributeComponent::RemoveTestModifier()
 	}
 }
 
-void UTestAttributeComponent::OnTestAttributeValueChanged(TSharedPtr<FAttributeBase> Attribute)
-{
-	// Sync value from attribute system
-	if (auto ConvertAttr = StaticCastSharedPtr<FAttributeInteger>(Attribute))
-	{
-		auto Wrapper = GetIntegerAttributeWrapperByName(Attribute->GetName());
-		if (Wrapper)
-		{
-			UE_LOG(LogTemp, Log, TEXT("[TestComponent] Value changed: %s"), *Wrapper->ToString());
-		}
-	}
-}
+// void UTestAttributeComponent::OnTestAttributeValueChanged(TSharedPtr<FAttributeBase> Attribute)
+// {
+// 	// Sync value from attribute system
+// 	if (auto ConvertAttr = StaticCastSharedPtr<FAttributeInteger>(Attribute))
+// 	{
+// 		auto Wrapper = GetIntegerAttributeWrapperByName(Attribute->GetName());
+// 		if (Wrapper)
+// 		{
+// 			UE_LOG(LogTemp, Log, TEXT("[TestComponent] Value changed: %s"), *Wrapper->ToString());
+// 		}
+// 	}
+// }

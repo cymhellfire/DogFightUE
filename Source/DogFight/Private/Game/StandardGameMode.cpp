@@ -20,7 +20,7 @@
 #include "AI/StandardModeAIController.h"
 #include "Common/BitmaskOperation.h"
 #include "Actors/Weapons/WeaponBase.h"
-#include "Game/DamageCalculatorBase.h"
+#include "Game/DogFightDamageCalculatorBase.h"
 #include "Game/GameplayAbilityPool.h"
 #include "Game/GameWorkflow/GameModeStateMachine.h"
 #include "Game/GameWorkflow/StandardGameMode/StandardGameModeCharacterReturnPhase.h"
@@ -41,6 +41,7 @@
 #include "Game/GameWorkflow/StandardGameMode/StandardGameModeSpawnPlayersPhase.h"
 #include "Game/GameWorkflow/StandardGameMode/StandardGameModeTimedPhase.h"
 #include "Game/GameWorkflow/StandardGameMode/StandardGameModeWaitForRagdollPhase.h"
+#include "GameService/DamageCalculatorService.h"
 
 AStandardGameMode::AStandardGameMode(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -241,6 +242,14 @@ float AStandardGameMode::CalculateDamage(AActor* DamageTaker, float Damage, FDam
 	return FinalDamage;
 }
 
+void AStandardGameMode::ApplyDamageTo(AActor* DamagedActor, float BaseDamage, FName DamageTypeName,
+                                      AActor* DamageCauser, AController* DamageInstigator)
+{
+	if (NewDamageCalculator)
+	{
+		NewDamageCalculator->ApplyDamage(DamagedActor, BaseDamage, DamageTypeName, DamageCauser, DamageInstigator);
+	}
+}
 
 FName AStandardGameMode::GetGamePhase() const
 {
@@ -699,7 +708,15 @@ void AStandardGameMode::BeginPlay()
 	// Create damage calculator
 	if (IsValid(DamageCalculatorClass))
 	{
-		DamageCalculator = NewObject<UDamageCalculatorBase>(this, DamageCalculatorClass, FName(TEXT("DamageCalculator")));
+		DamageCalculator = NewObject<UDogFightDamageCalculatorBase>(this, DamageCalculatorClass, FName(TEXT("DamageCalculator")));
+	}
+
+	if (!DamageCalculatorPath.IsEmpty())
+	{
+		if (UDamageCalculatorService* CalculatorService = UGameService::GetGameService<UDamageCalculatorService>())
+		{
+			NewDamageCalculator = CalculatorService->CreateDamageCalculator(DamageCalculatorPath, this);
+		}
 	}
 
 #if WITH_IMGUI

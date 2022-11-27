@@ -9,13 +9,14 @@
 #include "Actors/Interfaces/GameAnimatedCharacterInterface.h"
 #include "Actors/Interfaces/WeaponCarrierInterface.h"
 #include "GameFramework/Character.h"
+#include "Interface/DamageReceiverActorInterface.h"
 #include "StandardModePlayerCharacter.generated.h"
 
 class UCardDescObject;
 
 UCLASS(Config=Game)
 class DOGFIGHT_API AStandardModePlayerCharacter : public ACharacter, public IDamageableActorInterface, public IGameAnimatedCharacterInterface,
-	public IBuffableActorInterface, public IGameplayTagsActorInterface, public IWeaponCarrierInterface
+	public IBuffableActorInterface, public IGameplayTagsActorInterface, public IWeaponCarrierInterface, public IDamageReceiverActorInterface
 {
 	GENERATED_BODY()
 
@@ -85,6 +86,14 @@ public:
 	FWeaponCarrierWithOwnerSignature OnWeaponActionFinishedEvent;
 	FWeaponCarrierWithOwnerSignature OnCarrierReachedActionDistanceEvent;
 #pragma endregion
+
+#pragma region DamageReceiverActor
+	virtual UDamageReceiverComponent* GetDamageReceiverComponent() override
+	{
+		return DamageReceiverComponent;
+	}
+
+#pragma endregion 
 
 protected:
 	// Called when the game starts or when spawned
@@ -258,6 +267,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Unit", meta=(AllowPrivateAccess="true"))
 	class UTestAttributeComponent* AttributeComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Unit", meta=(AllowPrivateAccess="true"))
+	UDamageReceiverComponent* DamageReceiverComponent;
 
 	/** The target bone to follow during ragdoll activate. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Animation")

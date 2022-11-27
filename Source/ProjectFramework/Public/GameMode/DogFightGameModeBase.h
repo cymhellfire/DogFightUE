@@ -38,6 +38,8 @@ public:
 
 	virtual float CalculateDamage(AActor* DamageTaker, float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 
+	virtual void ApplyDamageTo(AActor* DamagedActor, float BaseDamage, FName DamageTypeName, AActor* DamageCauser, AController* DamageInstigator) {}
+
 	virtual EPlayerRelation GetPlayersRelation(AController* PlayerA, AController* PlayerB);
 
 protected:

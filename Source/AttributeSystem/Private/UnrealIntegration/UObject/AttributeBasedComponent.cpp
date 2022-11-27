@@ -62,39 +62,9 @@ bool UAttributeBasedComponent::ReplicateSubobjects(UActorChannel* Channel, FOutB
 	return bWroteSomething;
 }
 
-bool UAttributeBasedComponent::AddAttribute(const FAttributeCreateArgument& InArgument)
-{
-	return IAttributeCarrierInterface::AddAttribute(InArgument);
-}
-
-bool UAttributeBasedComponent::GetAttributeBoolValue(FName InName, bool& OutValue)
-{
-	return IAttributeCarrierInterface::GetAttributeBoolValue(InName, OutValue);
-}
-
-bool UAttributeBasedComponent::GetAttributeIntegerValue(FName InName, int32& OutValue)
-{
-	return IAttributeCarrierInterface::GetAttributeIntegerValue(InName, OutValue);
-}
-
-bool UAttributeBasedComponent::GetAttributeFloatValue(FName InName, float& OutValue)
-{
-	return IAttributeCarrierInterface::GetAttributeFloatValue(InName, OutValue);
-}
-
 bool UAttributeBasedComponent::RemoveAttribute(FName InName)
 {
 	return AttributeMap.Remove(InName) == 1;
-}
-
-bool UAttributeBasedComponent::AddModifierObject(TScriptInterface<IAttributeModifierCarrierInterface> InModifierObject)
-{
-	return IAttributeCarrierInterface::AddModifierObject(InModifierObject);
-}
-
-bool UAttributeBasedComponent::RemoveModifierObject(TScriptInterface<IAttributeModifierCarrierInterface> InModifierObject)
-{
-	return IAttributeCarrierInterface::RemoveModifierObject(InModifierObject);
 }
 
 bool UAttributeBasedComponent::ReplicateModifierDescObjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
@@ -228,153 +198,15 @@ void UAttributeBasedComponent::OnFloatAttributeWrapperObjectCreated(UAttributeFl
 
 void UAttributeBasedComponent::OnRep_BooleanWrapperList()
 {
-#if ATTR_DETAIL_LOG
-	TArray<UAttributeBooleanWrapperObject*> NewAddedWrappers;
-#endif
-	for (auto Wrapper : BooleanWrapperList)
-	{
-		if (!Wrapper)
-			continue;
-
-		const FName AttributeName = Wrapper->GetAttributeName();
-		// Add new synced wrapper to map
-		if (!BooleanWrapperMap.Contains(AttributeName))
-		{
-			BooleanWrapperMap.Add(AttributeName, Wrapper);
-#if ATTR_DETAIL_LOG
-			NewAddedWrappers.Add(Wrapper);
-#endif
-		}
-	}
-
-#if ATTR_DETAIL_LOG
-	if (NewAddedWrappers.Num() > 0)
-	{
-		const FString ObjName = GetName();
-		const FString NetRoleStr = (GetNetRole() == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
-		for (auto Wrapper : NewAddedWrappers)
-		{
-			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] New attribute %s added."), *NetRoleStr, *ObjName,
-				*Wrapper->GetAttributeName().ToString());
-			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] %s"), *NetRoleStr, *ObjName, *Wrapper->ToString());
-		}
-	}
-
-	TArray<FName> InvalidKeys;
-	ValidateWrapperObjectMap(ADT_Boolean, &InvalidKeys);
-
-	if (InvalidKeys.Num() > 0)
-	{
-		const FString ObjName = GetName();
-		const FString NetRoleStr = (GetNetRole() == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
-		for (auto Key : InvalidKeys)
-		{
-			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] Attribute %s removed."), *NetRoleStr, *ObjName, *Key.ToString());
-		}
-	}
-#else
-	ValidateWrapperObjectMap(ADT_Boolean);
-#endif
+	IAttributeCarrierInterface::OnRep_BooleanWrapperList();
 }
 
 void UAttributeBasedComponent::OnRep_IntegerWrapperList()
 {
-#if ATTR_DETAIL_LOG
-	TArray<UAttributeIntegerWrapperObject*> NewAddedWrappers;
-#endif
-	for (auto Wrapper : IntegerWrapperList)
-	{
-		if (!Wrapper)
-			continue;
-
-		const FName AttributeName = Wrapper->GetAttributeName();
-		// Add new synced wrapper to map
-		if (!IntegerWrapperMap.Contains(AttributeName))
-		{
-			IntegerWrapperMap.Add(AttributeName, Wrapper);
-#if ATTR_DETAIL_LOG
-			NewAddedWrappers.Add(Wrapper);
-#endif
-		}
-	}
-
-#if ATTR_DETAIL_LOG
-	if (NewAddedWrappers.Num() > 0)
-	{
-		const FString ObjName = GetName();
-		const FString NetRoleStr = (GetNetRole() == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
-		for (auto Wrapper : NewAddedWrappers)
-		{
-			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] New attribute %s added."), *NetRoleStr, *ObjName,
-				*Wrapper->GetAttributeName().ToString());
-			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] %s"), *NetRoleStr, *ObjName, *Wrapper->ToString());
-		}
-	}
-
-	TArray<FName> InvalidKeys;
-	ValidateWrapperObjectMap(ADT_Integer, &InvalidKeys);
-
-	if (InvalidKeys.Num() > 0)
-	{
-		const FString ObjName = GetName();
-		const FString NetRoleStr = (GetNetRole() == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
-		for (auto Key : InvalidKeys)
-		{
-			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] Attribute %s removed."), *NetRoleStr, *ObjName, *Key.ToString());
-		}
-	}
-#else
-	ValidateWrapperObjectMap(ADT_Integer);
-#endif
+	IAttributeCarrierInterface::OnRep_IntegerWrapperList();
 }
 
 void UAttributeBasedComponent::OnRep_FloatWrapperList()
 {
-#if ATTR_DETAIL_LOG
-	TArray<UAttributeFloatWrapperObject*> NewAddedWrappers;
-#endif
-	for (auto Wrapper : FloatWrapperList)
-	{
-		if (!Wrapper)
-			return;
-
-		const FName AttributeName = Wrapper->GetAttributeName();
-		// Add new synced wrapper to map
-		if (!FloatWrapperMap.Contains(AttributeName))
-		{
-			FloatWrapperMap.Add(AttributeName, Wrapper);
-#if ATTR_DETAIL_LOG
-			NewAddedWrappers.Add(Wrapper);
-#endif
-		}
-	}
-
-#if ATTR_DETAIL_LOG
-	if (NewAddedWrappers.Num() > 0)
-	{
-		const FString ObjName = GetName();
-		const FString NetRoleStr = (GetNetRole() == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
-		for (auto Wrapper : NewAddedWrappers)
-		{
-			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] New attribute %s added."), *NetRoleStr, *ObjName,
-				*Wrapper->GetAttributeName().ToString());
-			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] %s"), *NetRoleStr, *ObjName, *Wrapper->ToString());
-		}
-	}
-
-	TArray<FName> InvalidKeys;
-	ValidateWrapperObjectMap(ADT_Float, &InvalidKeys);
-
-	if (InvalidKeys.Num() > 0)
-	{
-		const FString ObjName = GetName();
-		const FString NetRoleStr = (GetNetRole() == ROLE_Authority ? TEXT("Host") : TEXT("Client"));
-		for (auto Key : InvalidKeys)
-		{
-			UE_LOG(LogAttributeSystem, Log, TEXT("%s: [%s] Attribute %s removed."), *NetRoleStr, *ObjName, *Key.ToString());
-		}
-	}
-#else
-	ValidateWrapperObjectMap(ADT_Float);
-#endif
+	IAttributeCarrierInterface::OnRep_FloatWrapperList();
 }
