@@ -14,5 +14,11 @@ public class DogFightEditorTarget : TargetRules
 			"DogFight", 
 			"DogFightEditor",
 		});
+		RegisterModulesCreatedByRider();
+	}
+
+	private void RegisterModulesCreatedByRider()
+	{
+		ExtraModuleNames.AddRange(new string[] {"GameFlow"});
 	}
 }
