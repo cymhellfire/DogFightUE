@@ -1,17 +1,17 @@
 ﻿using UnrealBuildTool;
 
-public class GameFlow : ModuleRules
+public class LuaIntegration : ModuleRules
 {
-    public GameFlow(ReadOnlyTargetRules Target) : base(Target)
+    public LuaIntegration(ReadOnlyTargetRules Target) : base(Target)
     {
         PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
-                "Core", 
+                "Core",
                 "ProjectFramework",
-                "LuaIntegration",
+                "UnLua",
             }
         );
 

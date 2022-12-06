@@ -19,6 +19,6 @@ public class DogFightEditorTarget : TargetRules
 
 	private void RegisterModulesCreatedByRider()
 	{
-		ExtraModuleNames.AddRange(new string[] {"GameFlow"});
+		ExtraModuleNames.AddRange(new string[] {"GameFlow", "LuaIntegration" });
 	}
 }

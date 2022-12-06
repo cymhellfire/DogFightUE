@@ -27,6 +27,12 @@ public:
 	 */
 	virtual void OnResume();
 
+	/**
+	 * @brief Mark this state is finished.
+	 */
+	UFUNCTION(BlueprintCallable, Category="GameFlowState")
+	void Finish();
+
 	UFUNCTION(BlueprintImplementableEvent, Category="GameFlowState")
 	void K2_OnEnter();
 
@@ -38,4 +44,8 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category="GameFlowState")
 	void K2_OnResume();
+
+public:
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGameFlowStateEvent, UGameFlowStateBase*, InState);
+	FGameFlowStateEvent OnGameFlowStateFinished;
 };

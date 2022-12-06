@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "LuaGameService.h"
+#include "GameService/LuaGameService.h"
 #include "Card/Card.h"
 #include "CardGameService.generated.h"
 

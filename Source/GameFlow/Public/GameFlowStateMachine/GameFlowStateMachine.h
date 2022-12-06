@@ -4,15 +4,22 @@
 #include "GameFlowStateMachine.generated.h"
 
 class UGameFlowStateBase;
+class UGameFlowStateCirculation;
 
 UCLASS()
 class GAMEFLOW_API UGameFlowStateMachine : public UObject, public FTickableGameObject
 {
 	GENERATED_BODY()
 public:
+	UGameFlowStateMachine();
+
 	void RegisterGameFlowState(FName InName, UGameFlowStateBase* InState);
 
 	void SwitchState(FName InName);
+
+	void PushState(FName InName);
+
+	void PopState();
 
 	// FTickableGameObject
 	virtual void Tick(float DeltaTime) override;
@@ -30,6 +37,10 @@ public:
 protected:
 	void DoStateSwitch();
 
+	void DoStatePush();
+
+	void DoStatePop();
+
 protected:
 	UPROPERTY(Transient)
 	TMap<FName, UGameFlowStateBase*> GameFlowStateMap;
@@ -37,9 +48,9 @@ protected:
 	UPROPERTY(Transient)
 	UGameFlowStateBase* CurrentState;
 
-	uint8 bPendingSwitchState : 1;
-
 	FName NextState;
+
+	TWeakObjectPtr<UGameFlowStateCirculation> CurrentCirculation;
 
 	TArray<UGameFlowStateBase*> StateStack;
 };

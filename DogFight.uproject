@@ -47,6 +47,11 @@
       "Name": "GameFlow",
       "Type": "Runtime",
       "LoadingPhase": "Default"
+    },
+    {
+      "Name": "LuaIntegration",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
     }
   ],
   "Plugins": [

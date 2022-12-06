@@ -19,3 +19,8 @@ void UGameFlowStateBase::OnResume()
 {
 	K2_OnResume();
 }
+
+void UGameFlowStateBase::Finish()
+{
+	OnGameFlowStateFinished.Broadcast(this);
+}

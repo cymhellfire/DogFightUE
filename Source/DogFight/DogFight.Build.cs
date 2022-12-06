@@ -38,6 +38,7 @@ public class DogFight : ModuleRules
 				"ProjectFramework",
 				"AttributeSystem",
 				"DamageSystem",
+				"LuaIntegration",
 			}
 		);
 		
