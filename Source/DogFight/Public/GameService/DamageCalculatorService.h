@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LuaGameService.h"
+#include "GameService/LuaGameService.h"
 #include "DamageCalculatorService.generated.h"
 
 class UDamageCalculatorBase;

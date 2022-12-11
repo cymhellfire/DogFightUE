@@ -38,6 +38,7 @@ public class DogFight : ModuleRules
 				"ProjectFramework",
 				"AttributeSystem",
 				"DamageSystem",
+				"LuaIntegration",
 			}
 		);
 		
@@ -45,7 +46,8 @@ public class DogFight : ModuleRules
 			new string[]
 			{
 				"CardSystem",
-				"NetCore",
+				"NetCore", 
+				"GameFlow",
 			}
 		);
 		

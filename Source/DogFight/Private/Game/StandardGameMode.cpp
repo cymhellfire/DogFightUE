@@ -41,7 +41,9 @@
 #include "Game/GameWorkflow/StandardGameMode/StandardGameModeSpawnPlayersPhase.h"
 #include "Game/GameWorkflow/StandardGameMode/StandardGameModeTimedPhase.h"
 #include "Game/GameWorkflow/StandardGameMode/StandardGameModeWaitForRagdollPhase.h"
+#include "GameFlow/Public/GameFlowStateMachine/GameFlowStateMachine.h"
 #include "GameService/DamageCalculatorService.h"
+#include "GameService/GameFlowStateService.h"
 
 AStandardGameMode::AStandardGameMode(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -114,6 +116,11 @@ void AStandardGameMode::Tick(float DeltaSeconds)
 		GameModeStateMachine->StateMachineTick();
 	}
 
+	if (IsValid(GameFlowStateMachine))
+	{
+		GameFlowStateMachine->Tick(DeltaSeconds);
+	}
+
 	if (DelayActionQueue.Num() > 0)
 	{
 		for(EGameModeDelayAction DelayAction : DelayActionQueue)
@@ -181,6 +188,16 @@ void AStandardGameMode::PreInitializeComponents()
 	{
 		// Create phase state machine
 		InitializeStateMachine();
+	}
+
+	// Create new state machine
+	if (auto GameFlowStateService = UGameService::GetGameService<UGameFlowStateService>())
+	{
+		GameFlowStateMachine = GameFlowStateService->CreateStateMachine("StandardStateMachine", this);
+		if (GameFlowStateMachine)
+		{
+			GameFlowStateMachine->InitStateMachine();
+		}
 	}
 
 	// Spawn Timeline actor

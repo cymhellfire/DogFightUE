@@ -1,0 +1,13 @@
+require "UnLua"
+
+local $Class$ = Class("GameFlow.GameFlowState.GameFlowStateLogicBase")
+
+function $Class$:OnEnter()
+    print("$Class$: OnEnter")
+end
+
+function $Class$:OnExit()
+    print("$Class$: OnExit")
+end
+
+return $Class$

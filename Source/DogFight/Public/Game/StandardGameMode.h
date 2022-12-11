@@ -18,6 +18,7 @@ class UGameplayCardPool;
 class UGameplayAbilityPool;
 class ADogFightAIController;
 class UDogFightDamageCalculatorBase;
+class UGameFlowStateMachine;
 
 enum EGameModeDelayAction : uint8
 {
@@ -326,6 +327,9 @@ protected:
 
 	UPROPERTY(Transient)
 	UGameModeStateMachine* GameModeStateMachine;
+
+	UPROPERTY(Transient)
+	UGameFlowStateMachine* GameFlowStateMachine;
 
 #pragma region Debug
 public:

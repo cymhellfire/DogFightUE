@@ -5,7 +5,7 @@
 #include "LuaGameService.generated.h"
 
 UCLASS(Abstract)
-class DOGFIGHT_API ULuaGameService : public UGameService, public IUnLuaInterface
+class LUAINTEGRATION_API ULuaGameService : public UGameService, public IUnLuaInterface
 {
 	GENERATED_BODY()
 public:

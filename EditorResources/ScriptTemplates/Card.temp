@@ -1,6 +1,6 @@
 require("UnLua")
 
-local $Class$ = Class("DogFight.Cards.CardBase")
+local $Class$ = Class("DogFight.Card.CardBase")
 
 ---卡牌初始化函数
 function $Class$:OnInitialized()

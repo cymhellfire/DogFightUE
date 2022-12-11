@@ -1,23 +1,32 @@
 #include "Utils/DogFightUtilsFunctionLibrary.h"
 
-#define LUA_SCRIPT_BASE_PATH		TEXT("Script/DogFight")
+#define LUA_SCRIPT_BASE_PATH		TEXT("Script/")
 #define LUA_TEMPLATE_BASE_PATH		TEXT("EditorResources/ScriptTemplates")
 
-FString UDogFightUtilsFunctionLibrary::GenerateLuaScriptPath(FString Template, FString Path, FString ScriptName)
+FString UDogFightUtilsFunctionLibrary::GenerateLuaScriptPath(const FLuaScriptCreateArgument& InArgument)
 {
-	FString NewFileName = Template + ScriptName + ".lua";
-	if (!Path.IsEmpty())
+	FString NewFileName = InArgument.ScriptName + ".lua";
+	if (InArgument.bUsePrefix)
 	{
-		NewFileName = Path / NewFileName;
+		NewFileName = InArgument.TemplateName + NewFileName;
 	}
-	return FString::Printf(TEXT("%s%s/%s/%s"), *FPaths::ProjectContentDir(), LUA_SCRIPT_BASE_PATH,
-		*Template, *NewFileName);
+
+	if (!InArgument.Path.IsEmpty())
+	{
+		NewFileName = InArgument.Path / NewFileName;
+	}
+	return FString::Printf(TEXT("%s%s%s/%s/%s"), *FPaths::ProjectContentDir(), LUA_SCRIPT_BASE_PATH, *InArgument.ModuleName,
+		*InArgument.TemplateName, *NewFileName);
 }
 
-FString UDogFightUtilsFunctionLibrary::CreateLuaScriptByTemplate(FString Template, FString Path, FString ScriptName)
+FString UDogFightUtilsFunctionLibrary::CreateLuaScriptByTemplate(const FLuaScriptCreateArgument& InArgument)
 {
-	const FString NewClassName = Template + ScriptName;
-	FString NewScriptPath = GenerateLuaScriptPath(Template, Path, ScriptName);
+	FString NewClassName = InArgument.ScriptName;
+	if (InArgument.bUsePrefix)
+	{
+		NewClassName = InArgument.TemplateName + NewClassName;
+	}
+	FString NewScriptPath = GenerateLuaScriptPath(InArgument);
 
 	// Check duplicated files
 	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
@@ -27,7 +36,7 @@ FString UDogFightUtilsFunctionLibrary::CreateLuaScriptByTemplate(FString Templat
 	}
 
 	// Check template file
-	FString TemplatePath = FString::Printf(TEXT("%s%s/%s.temp"), *FPaths::ProjectDir(), LUA_TEMPLATE_BASE_PATH, *Template);
+	FString TemplatePath = FString::Printf(TEXT("%s%s/%s.temp"), *FPaths::ProjectDir(), LUA_TEMPLATE_BASE_PATH, *InArgument.TemplateName);
 	if (!PlatformFile.FileExists(*TemplatePath))
 	{
 		return "Template file doesn't exist!";
