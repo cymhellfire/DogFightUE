@@ -12,6 +12,7 @@ public class GameFlow : ModuleRules
                 "Core", 
                 "ProjectFramework",
                 "LuaIntegration",
+                "UnLua",
             }
         );
 

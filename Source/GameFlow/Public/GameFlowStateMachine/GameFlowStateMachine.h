@@ -4,6 +4,7 @@
 #include "GameFlowStateMachine.generated.h"
 
 class UGameFlowStateBase;
+class UGameFlowStateCreateArgument;
 class UGameFlowStateCirculation;
 
 UCLASS()
@@ -13,13 +14,16 @@ class GAMEFLOW_API UGameFlowStateMachine : public UObject, public FTickableGameO
 public:
 	UGameFlowStateMachine();
 
-	void RegisterGameFlowState(FName InName, UGameFlowStateBase* InState);
+	void InitStateMachine();
 
-	void SwitchState(FName InName);
-
-	void PushState(FName InName);
+	UFUNCTION(BlueprintCallable, Category="GameFlowStateMachine")
+	void PushState(UGameFlowStateCreateArgument* InArgument);
 
 	void PopState();
+
+	void SetNextState(UGameFlowStateCreateArgument* InArgument);
+
+	void SetInsertState(UGameFlowStateCreateArgument* InArgument);
 
 	// FTickableGameObject
 	virtual void Tick(float DeltaTime) override;
@@ -35,22 +39,18 @@ public:
 	}
 
 protected:
-	void DoStateSwitch();
+	void FinishStateMachine();
 
-	void DoStatePush();
+	UFUNCTION(BlueprintImplementableEvent, Category="GameFlowStateMachine")
+	void K2_InitStateMachine();
 
-	void DoStatePop();
+	UFUNCTION()
+	void OnCirculationFinished(UGameFlowStateCirculation* InCirculation);
 
 protected:
 	UPROPERTY(Transient)
-	TMap<FName, UGameFlowStateBase*> GameFlowStateMap;
+	TArray<UGameFlowStateCirculation*> StateStack;
 
 	UPROPERTY(Transient)
-	UGameFlowStateBase* CurrentState;
-
-	FName NextState;
-
-	TWeakObjectPtr<UGameFlowStateCirculation> CurrentCirculation;
-
-	TArray<UGameFlowStateBase*> StateStack;
+	UGameFlowStateCirculation* CurrentCirculation;
 };

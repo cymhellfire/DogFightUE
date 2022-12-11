@@ -46,7 +46,8 @@ public class DogFight : ModuleRules
 			new string[]
 			{
 				"CardSystem",
-				"NetCore",
+				"NetCore", 
+				"GameFlow",
 			}
 		);
 		

@@ -1,119 +1,87 @@
 #include "GameFlowStateMachine/GameFlowStateMachine.h"
 #include "GameFlowCommon.h"
-#include "GameFlowState/GameFlowStateBase.h"
 #include "GameFlowStateMachine/GameFlowStateCirculation.h"
+#include "GameFlowState/GameFlowStateCreateArgument.h"
 
 UGameFlowStateMachine::UGameFlowStateMachine()
 {
 
 }
 
-void UGameFlowStateMachine::RegisterGameFlowState(FName InName, UGameFlowStateBase* InState)
+void UGameFlowStateMachine::InitStateMachine()
 {
-	if (GameFlowStateMap.Contains(InName))
-	{
-		UE_LOG(LogGameFlow, Error, TEXT("[UGameFlowStateMachine] Duplicated name detected when add new game flow state: %s"), *InName.ToString());
-		return;
-	}
-
-	GameFlowStateMap.Add(InName, InState);
+	K2_InitStateMachine();
 }
 
-void UGameFlowStateMachine::SwitchState(FName InName)
+void UGameFlowStateMachine::PushState(UGameFlowStateCreateArgument* InArgument)
 {
-	if (!GameFlowStateMap.Contains(InName))
+	if (!IsValid(InArgument))
 	{
-		UE_LOG(LogGameFlow, Error, TEXT("[UGameFlowStateMachine] Cannot find game flow state with name: %s"), *InName.ToString());
 		return;
 	}
 
-	// Record next state name for later switching
-	NextState = InName;
-}
-
-void UGameFlowStateMachine::PushState(FName InName)
-{
-	if (!GameFlowStateMap.Contains(InName))
+	// Create new circulation and push it into stack
+	auto NewCirculation = NewObject<UGameFlowStateCirculation>(this);
+	NewCirculation->OnCirculationFinished.AddDynamic(this, &UGameFlowStateMachine::OnCirculationFinished);
+	NewCirculation->InitCirculation(this, InArgument);
+	if (IsValid(CurrentCirculation))
 	{
-		UE_LOG(LogGameFlow, Error, TEXT("[UGameFlowStateMachine] Cannot find game flow state with name: %s"), *InName.ToString());
-		return;
+		StateStack.Push(CurrentCirculation);
 	}
-
-	// Record pushed state name for later switching
-	NextState = InName;
+	CurrentCirculation = NewCirculation;
 }
 
 void UGameFlowStateMachine::PopState()
 {
 	if (StateStack.Num() == 0)
 	{
-		UE_LOG(LogGameFlow, Error, TEXT("[UGameFlowStateMachine] No state in stack to pop."));
+		FinishStateMachine();
 		return;
+	}
+
+	// Resume popped circulation
+	CurrentCirculation = StateStack.Pop();
+	CurrentCirculation->ResumeState();
+}
+
+void UGameFlowStateMachine::SetNextState(UGameFlowStateCreateArgument* InArgument)
+{
+	if (IsValid(CurrentCirculation))
+	{
+		CurrentCirculation->SetNextStateArgument(InArgument);
+	}
+}
+
+void UGameFlowStateMachine::SetInsertState(UGameFlowStateCreateArgument* InArgument)
+{
+	if (IsValid(CurrentCirculation))
+	{
+		CurrentCirculation->InsertNewState(InArgument);
 	}
 }
 
 void UGameFlowStateMachine::Tick(float DeltaTime)
 {
-	if (CurrentCirculation.IsValid())
+	if (IsValid(CurrentCirculation))
 	{
 		CurrentCirculation->Tick(DeltaTime);
 	}
 }
 
-void UGameFlowStateMachine::DoStateSwitch()
+void UGameFlowStateMachine::FinishStateMachine()
 {
-	// Exit current state
-	if (CurrentState)
-	{
-		CurrentState->OnExit();
-	}
-
-	// Enter new state
-	if (auto FindPtr = GameFlowStateMap.Find(NextState))
-	{
-		auto NewState = *FindPtr;
-		NewState->OnEnter(SET_Default);
-		CurrentState = NewState;
-	}
+	UE_LOG(LogGameFlow, Log, TEXT("[GameFlowStateMachine] State machine finished."));
 }
 
-void UGameFlowStateMachine::DoStatePush()
+void UGameFlowStateMachine::OnCirculationFinished(UGameFlowStateCirculation* InCirculation)
 {
-	// Interrupt current state
-	if (CurrentState)
+	InCirculation->OnCirculationFinished.RemoveDynamic(this, &UGameFlowStateMachine::OnCirculationFinished);
+
+	if (InCirculation != CurrentCirculation)
 	{
-		CurrentState->OnInterrupted();
+		UE_LOG(LogGameFlow, Error, TEXT("[GameFlowStateMachine] A circulation that not at stack top is finished."));
+		return;
 	}
 
-	// Enter new state
-	if (auto FindPtr = GameFlowStateMap.Find(NextState))
-	{
-		// Push current state into stack
-		StateStack.Push(CurrentState);
-
-		auto NewState = *FindPtr;
-		NewState->OnEnter(SET_Interrupt);
-		CurrentState = NewState;
-	}
-}
-
-void UGameFlowStateMachine::DoStatePop()
-{
-	// Exit current state
-	if (CurrentState)
-	{
-		CurrentState->OnExit();
-	}
-
-	// Pop state from stack
-	if (auto NewState = StateStack.Pop())
-	{
-		// Invoke resume of new state
-		NewState->OnResume();
-		CurrentState = NewState;
-	}
-	else
-	{
-		UE_LOG(LogGameFlow, Error, TEXT("[UGameFlowStateMachine] No state to pop in stack."));
-	}
+	PopState();
 }

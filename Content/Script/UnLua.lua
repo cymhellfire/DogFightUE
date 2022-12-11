@@ -57,6 +57,12 @@ local function Class(super_name)
 	new_class.__index = Index
 	new_class.__newindex = NewIndex
 	new_class.Super = super_class
+	-- Instantiate function
+	new_class.New = function(self, object)
+		object = object or {}
+		setmetatable(object, self)
+		return object
+	end
 
   return new_class
 end

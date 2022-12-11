@@ -5,6 +5,7 @@
 
 class UGameFlowStateMachine;
 class UGameFlowStateBase;
+class UGameFlowStateCreateArgument;
 
 UCLASS()
 class GAMEFLOW_API UGameFlowStateCirculation : public UObject
@@ -13,14 +14,29 @@ class GAMEFLOW_API UGameFlowStateCirculation : public UObject
 public:
 	UGameFlowStateCirculation();
 
-	void InitCirculation(UGameFlowStateMachine* InStateMachine);
+	void InitCirculation(UGameFlowStateMachine* InStateMachine, UGameFlowStateCreateArgument* InitStateArgument);
 
-	void SetNextStateName(FName InName);
+	void SetNextStateArgument(UGameFlowStateCreateArgument* InArgument);
+
+	/**
+	 * @brief Pause current state and insert a new state immediately.
+	 * @param InArgument New state name.
+	 */
+	void InsertNewState(UGameFlowStateCreateArgument* InArgument);
+
+	/**
+	 * @brief Resume interrupted state before.
+	 */
+	void ResumeState();
 
 	void Tick(float DeltaTime);
 
 protected:
 	void DoStateSwitch();
+
+	void DoStateInsert();
+
+	void FinishCirculation();
 
 	UFUNCTION()
 	void OnGameFlowStateFinished(UGameFlowStateBase* InState);
@@ -31,9 +47,15 @@ public:
 
 protected:
 	uint8 bStateFinished : 1;
+	uint8 bHasStateToInsert : 1;
 
-	FName NextStateName;
+	UPROPERTY(Transient)
+	UGameFlowStateCreateArgument* NextStateArgument;
+	UPROPERTY(Transient)
+	UGameFlowStateCreateArgument* InsertStateArgument;
 
 	TWeakObjectPtr<UGameFlowStateMachine> ParentStateMachine;
-	TWeakObjectPtr<UGameFlowStateBase> CurrentState;
+
+	UPROPERTY(Transient)
+	UGameFlowStateBase* CurrentState;
 };

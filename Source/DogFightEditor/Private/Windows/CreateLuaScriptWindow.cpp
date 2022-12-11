@@ -11,7 +11,7 @@ void FCreateLuaScriptWindow::OpenCreateLuaScriptWindow()
 
 	TSharedPtr<SWindow> CreateScriptWindow = SNew(SWindow)
 		.Title(WindowTitle)
-		.ClientSize(FVector2D(600.f, 200.f))
+		.ClientSize(FVector2D(600.f, 240.f))
 		.SupportsMinimize(false)
 		.SupportsMaximize(false)
 		.SizingRule(ESizingRule::FixedSize)
