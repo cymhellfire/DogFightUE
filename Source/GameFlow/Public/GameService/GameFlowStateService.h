@@ -16,10 +16,10 @@ public:
 	UGameFlowStateMachine* CreateStateMachine(const FString& InPath, UObject* Instigator);
 
 	UFUNCTION(BlueprintImplementableEvent, Category="GameFlowStateService")
-	UGameFlowStateBase* CreateGameFlowState(UGameFlowStateCreateArgument* InArgument);
-
-	UFUNCTION(BlueprintImplementableEvent, Category="GameFlowStateService")
 	UGameFlowStateCreateArgument* GetGameFlowStateCreateArgument(UObject* Instigator);
+
+	UFUNCTION(BlueprintCallable, Category="GameFlowStateService")
+	UGameFlowStateBase* CreateGameFlowState(UGameFlowStateCreateArgument* InArgument);
 
 	virtual FString GetModuleName_Implementation() const override
 	{
