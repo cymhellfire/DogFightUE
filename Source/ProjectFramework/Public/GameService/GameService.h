@@ -4,7 +4,7 @@
 #include "GameInstance/DogFightGameInstance.h"
 #include "GameService.generated.h"
 
-UCLASS(Abstract)
+UCLASS(Abstract, BlueprintType)
 class PROJECTFRAMEWORK_API UGameService : public UObject, public FTickableGameObject
 {
 	GENERATED_BODY()
