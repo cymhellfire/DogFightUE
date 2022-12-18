@@ -42,7 +42,7 @@ void UGameFlowStateBase::Finish()
 
 void UGameFlowStateBase::SetNextState(UGameFlowStateCreateArgument* InArgument)
 {
-	if (auto ParentStateMachine = GetTypedOuter<UGameFlowStateMachine>())
+	if (auto ParentStateMachine = GetParentStateMachine())
 	{
 		ParentStateMachine->SetNextState(InArgument);
 	}
@@ -50,8 +50,13 @@ void UGameFlowStateBase::SetNextState(UGameFlowStateCreateArgument* InArgument)
 
 void UGameFlowStateBase::InsertState(UGameFlowStateCreateArgument* InArgument)
 {
-	if (auto ParentStateMachine = GetTypedOuter<UGameFlowStateMachine>())
+	if (auto ParentStateMachine = GetParentStateMachine())
 	{
 		ParentStateMachine->SetInsertState(InArgument);
 	}
+}
+
+UGameFlowStateMachine* UGameFlowStateBase::GetParentStateMachine()
+{
+	return GetTypedOuter<UGameFlowStateMachine>();
 }

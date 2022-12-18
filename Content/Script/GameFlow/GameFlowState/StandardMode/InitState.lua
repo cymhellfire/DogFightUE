@@ -1,4 +1,5 @@
 require "UnLua"
+require "LuaIntegration.Common.UnrealUtils"
 
 local InitState = Class("GameFlow.GameFlowState.GameFlowStateLogicBase")
 
@@ -20,7 +21,19 @@ function InitState:OnEnter()
     print("InitState: OnEnter")
     print("InitState: Instigator " .. self.OwnerState.CreateArgument.Instigator:GetName())
 
-    coroutine.resume(coroutine.create(DelayFinish), self, "StandardMode.SpawnState")
+    --coroutine.resume(coroutine.create(DelayFinish), self, "StandardMode.SpawnState")
+
+    local EventService = GameServices.LuaEventService
+    if EventService then
+        EventService:RegisterListener("LuaEvent_ReadyPlayerCount", self, self.OnReadyPlayerCountChanged)
+    end
+end
+
+function InitState:OnReadyPlayerCountChanged(InCount)
+    local GameInstance = GetGameInstance()
+    local AllPlayerCount = GameInstance and GameInstance.GamePlayerCount or 0
+
+    print("Ready Player: " .. InCount .. "/" .. AllPlayerCount)
 end
 
 return InitState

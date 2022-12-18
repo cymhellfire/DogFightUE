@@ -4,6 +4,9 @@
 #include "GameService/GameService.h"
 #include "LuaGameService.generated.h"
 
+/**
+ * Basic class for all game services that need bind lua script.
+ */
 UCLASS(Abstract)
 class LUAINTEGRATION_API ULuaGameService : public UGameService, public IUnLuaInterface
 {
