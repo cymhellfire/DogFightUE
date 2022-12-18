@@ -1,6 +1,14 @@
 #include "PlayerController/FreeForAllPlayerController.h"
 
 #include "GameMode/FreeForAllGameMode.h"
+#include "PlayerController/PlayerControllerComponent/InGameMessageReceiverComponent.h"
+
+AFreeForAllPlayerController::AFreeForAllPlayerController(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	// Create in-game message receiver
+	InGameMessageReceiverComponent = CreateDefaultSubobject<UInGameMessageReceiverComponent>("InGameMessageReceiver");
+}
 
 void AFreeForAllPlayerController::BeginPlay()
 {
@@ -8,9 +16,9 @@ void AFreeForAllPlayerController::BeginPlay()
 
 	if (IsLocalPlayerController())
 	{
-		ServerMarkPlayerReady();
-		// GetWorld()->GetTimerManager().SetTimer(RandomTimer, this, &AFreeForAllPlayerController::OnTimerExpired,
-		// 	FMath::RandRange(2, 5));
+		// ServerMarkPlayerReady();
+		GetWorld()->GetTimerManager().SetTimer(RandomTimer, this, &AFreeForAllPlayerController::OnTimerExpired,
+			FMath::RandRange(2, 5));
 	}
 }
 

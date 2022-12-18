@@ -23,17 +23,25 @@ function InitState:OnEnter()
 
     --coroutine.resume(coroutine.create(DelayFinish), self, "StandardMode.SpawnState")
 
-    local EventService = GameServices.LuaEventService
-    if EventService then
-        EventService:RegisterListener("LuaEvent_ReadyPlayerCount", self, self.OnReadyPlayerCountChanged)
-    end
+    GameServices.LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_ReadyPlayerCount,
+        self, self.OnReadyPlayerCountChanged)
 end
 
 function InitState:OnReadyPlayerCountChanged(InCount)
     local GameInstance = GetGameInstance()
-    local AllPlayerCount = GameInstance and GameInstance.GamePlayerCount or 0
+    --local AllPlayerCount = GameInstance and GameInstance.GamePlayerCount or 0
+    local AllPlayerCount = 2
 
     print("Ready Player: " .. InCount .. "/" .. AllPlayerCount)
+
+    UE.UInGameMessageFunctionLibrary.SetTitleMessage("Ready Player: " .. InCount .. "/" .. AllPlayerCount)
+
+    if tonumber(InCount) >= AllPlayerCount then
+        GameServices.LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_ReadyPlayerCount,
+            self, self.OnReadyPlayerCountChanged)
+
+        self.OwnerState:Finish()
+    end
 end
 
 return InitState

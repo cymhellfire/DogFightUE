@@ -11,6 +11,7 @@ public class DogFightGame : ModuleRules
             {
                 "Core", 
                 "GameFlow",
+                "LuaIntegration",
             }
         );
 
@@ -28,7 +29,6 @@ public class DogFightGame : ModuleRules
             new string[]
             {
                 "ProjectFramework",
-                "LuaIntegration",
             });
     }
 }

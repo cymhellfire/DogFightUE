@@ -17,30 +17,30 @@ function LuaEventService:SendEventToLua_OneParam(InEvent, InParam)
     self:TriggerDelegate(InEvent, InParam)
 end
 
-function LuaEventService:TriggerDelegate(EventName, ...)
-    local Delegate = self.EventDelegateMap[EventName]
+function LuaEventService:TriggerDelegate(EventIndex, ...)
+    local Delegate = self.EventDelegateMap[EventIndex]
     if Delegate then
         Delegate:Trigger(...)
     end
 end
 
-function LuaEventService:RegisterListener(EventName, Object, Callback)
+function LuaEventService:RegisterListener(EventIndex, Object, Callback)
     -- Create new delegate for event
-    if not table.containsKey(self.EventDelegateMap, EventName) then
+    if not table.containsKey(self.EventDelegateMap, EventIndex) then
         local EventDelegate = require("LuaIntegration.Common.EventDelegate")
-        self.EventDelegateMap[EventName] = EventDelegate:New()
+        self.EventDelegateMap[EventIndex] = EventDelegate:New()
     end
 
-    local Delegate = self.EventDelegateMap[EventName]
+    local Delegate = self.EventDelegateMap[EventIndex]
     Delegate:Add(Object, Callback)
 end
 
-function LuaEventService:UnregisterListener(EventName, Object, Callback)
-    if not table.containsKey(self.EventDelegateMap, EventName) then
+function LuaEventService:UnregisterListener(EventIndex, Object, Callback)
+    if not table.containsKey(self.EventDelegateMap, EventIndex) then
         return
     end
 
-    local Delegate = self.EventDelegateMap[EventName]
+    local Delegate = self.EventDelegateMap[EventIndex]
     Delegate:Remove(Object, Callback)
 end
 

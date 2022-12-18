@@ -37,10 +37,10 @@ function table.containsValue(table, value)
 end
 
 ---Remove single given value from table.
-function table.removeValue(table, value)
-    for i, v in ipairs(table) do
+function table.removeValue(tab, value)
+    for i, v in ipairs(tab) do
         if v == value then
-            table.remove(table, i)
+            table.remove(tab, i)
             break
         end
     end

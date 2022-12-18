@@ -12,10 +12,10 @@ class LUAINTEGRATION_API ULuaEventService : public ULuaGameService
 	GENERATED_BODY()
 public:
 	UFUNCTION(BlueprintImplementableEvent, Category="LuaEventService")
-	void SendEventToLua(const FString& EventName);
+	void SendEventToLua(int32 EventIndex);
 
 	UFUNCTION(BlueprintImplementableEvent, Category="LuaEventService")
-	void SendEventToLua_OneParam(const FString& EventName, const FString& Param);
+	void SendEventToLua_OneParam(int32 EventIndex, const FString& Param);
 
 	// IUnLuaInterface
 	virtual FString GetModuleName_Implementation() const override
