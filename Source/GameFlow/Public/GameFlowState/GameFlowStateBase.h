@@ -4,6 +4,7 @@
 #include "UnLuaInterface.h"
 #include "GameFlowStateBase.generated.h"
 
+class UGameFlowStateMachine;
 class UGameFlowStateCreateArgument;
 
 UCLASS()
@@ -47,6 +48,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="GameFlowState")
 	void InsertState(UGameFlowStateCreateArgument* InArgument);
+
+	UFUNCTION(BlueprintCallable, Category="GameFlowState")
+	UGameFlowStateMachine* GetParentStateMachine();
 
 	UFUNCTION(BlueprintImplementableEvent, Category="GameFlowState")
 	void K2_OnEnter();

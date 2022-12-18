@@ -23,18 +23,4 @@ function GameFlowStateService:CreateStateMachine(InPath, Instigator)
     return NewInstance
 end
 
-function GameFlowStateService:CreateGameFlowState(InArgument)
-    if not InArgument then
-        return
-    end
-
-    local Class = UE.UGameFlowStateBase.StaticClass()
-    local NewInstance = NewObject(Class, InArgument.Instigator, nil)
-    -- Set the create argument
-    if NewInstance then
-        NewInstance:SetCreateArgument(InArgument)
-    end
-    return NewInstance
-end
-
 return GameFlowStateService

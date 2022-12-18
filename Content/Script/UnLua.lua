@@ -61,6 +61,9 @@ local function Class(super_name)
 	new_class.New = function(self, object)
 		object = object or {}
 		setmetatable(object, self)
+		if object.ctor then
+			object:ctor()
+		end
 		return object
 	end
 

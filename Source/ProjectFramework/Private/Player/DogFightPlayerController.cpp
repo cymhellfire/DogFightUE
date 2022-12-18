@@ -5,21 +5,23 @@
 
 #include "GameInstance/DogFightGameInstance.h"
 #include "Common/Localization.h"
+#include "GameService/GameService.h"
+#include "GameService/LanGameService.h"
 
 void ADogFightPlayerController::ClientReturnToMainMenuWithReason_Implementation(EReturnToMainMenuReason::Type Reason)
 {
 	if (UGameInstance* const GameInstance = GetGameInstance())
 	{
 		// Remove the error handler first
-		if (UDogFightGameInstance* DogFightGameInstance = Cast<UDogFightGameInstance>(GameInstance))
+		if (auto LanGameService = UGameService::GetGameService<ULanGameService>())
 		{
-			DogFightGameInstance->RemoveNetworkFailureHandler();
+			LanGameService->RemoveNetworkFailureHandler();
 		}
 
 		GameInstance->ReturnToMainMenu();
 
 		// Add reason message
-		if (UDogFightGameInstance* DogFightGameInstance = Cast<UDogFightGameInstance>(GameInstance))
+		if (auto LanGameService = UGameService::GetGameService<ULanGameService>())
 		{
 #if UE_EDITOR
 			const FString ErrorContextString = UEnum::GetDisplayValueAsText(Reason).ToString();
@@ -28,7 +30,7 @@ void ADogFightPlayerController::ClientReturnToMainMenuWithReason_Implementation(
 #endif
 			UE_LOG(LogProjectFramework, Log, TEXT("DisplayValueAsText: %s"), *ErrorContextString);
 			
-			DogFightGameInstance->AddPendingMessage(FText::FromStringTable(ST_UI_LOC, TEXT("NetErrorTitle")),
+			LanGameService->AddPendingMessage(FText::FromStringTable(ST_UI_LOC, TEXT("NetErrorTitle")),
 				FText::FromStringTable(ST_UI_LOC, ErrorContextString));
 		}
 	}
@@ -64,11 +66,10 @@ void ADogFightPlayerController::ClientHostUploadPlayerInfo_Implementation()
 void ADogFightPlayerController::CleanupSessionOnReturnMain()
 {
 	const UWorld* World = GetWorld();
-	UDogFightGameInstance* DogFightGameInstance = World != nullptr ? Cast<UDogFightGameInstance>(World->GetGameInstance()) : nullptr;
-	if (ensure(DogFightGameInstance != nullptr))
+	if (auto LanGameService = UGameService::GetGameService<ULanGameService>())
 	{
 		// Let game instance handle the session stuff
-		DogFightGameInstance->CleanupSessionOnReturnToMenu();
+		LanGameService->CleanupSessionOnReturnToMenu();
 	}
 }
 
