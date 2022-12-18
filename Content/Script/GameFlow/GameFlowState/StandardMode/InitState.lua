@@ -40,6 +40,15 @@ function InitState:OnReadyPlayerCountChanged(InCount)
         GameServices.LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_ReadyPlayerCount,
             self, self.OnReadyPlayerCountChanged)
 
+        -- Setup next state
+        local Instigator = self.OwnerState.CreateArgument.Instigator
+        local NewArgument = GameServices.GameFlowStateService:GetGameFlowStateCreateArgument(Instigator)
+        if NewArgument then
+            NewArgument.StateName = "StandardMode.SpawnState"
+            NewArgument.Instigator = Instigator
+            self.OwnerState:SetNextState(NewArgument)
+        end
+
         self.OwnerState:Finish()
     end
 end

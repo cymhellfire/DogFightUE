@@ -22,6 +22,7 @@ public class DogFightGame : ModuleRules
                 "Engine",
                 "Slate",
                 "SlateCore",
+                "NetCore",
             }
         );
         
