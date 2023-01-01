@@ -45,3 +45,32 @@ function table.removeValue(tab, value)
         end
     end
 end
+
+local function deepCopy(org, copies)
+    copies = copies or {}
+    local orgType = type(org)
+    local copy
+    if orgType == "table" then
+        if copies[org] then
+            copy = copies[org]
+        else
+            copy = {}
+            copies[org] = copy
+            for orgKey, orgValue in next, org, nil do
+                copy[deepCopy(orgKey, copies)] = deepCopy(orgValue, copies)
+            end
+            setmetatable(copy, deepCopy(getmetatable(org), copies))
+        end
+    else
+        -- Handle simple type
+        copy = org
+    end
+    return copy
+end
+
+---Deep copy given table and return new one
+---@param orgTab table Table to copy
+---@return table New copied table
+function table.deepCopy(orgTab)
+    return deepCopy(orgTab)
+end
