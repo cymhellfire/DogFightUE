@@ -1,17 +1,17 @@
 #pragma once
 
 #include "GameMode/GameFlowBasedGameMode.h"
-#include "FreeForAllGameMode.generated.h"
+#include "TopDownStyleGameMode.generated.h"
 
-class AFreeForAllPlayerController;
+class ATopDownStylePlayerController;
 class UInGameMessageSenderComponent;
 
 UCLASS()
-class DOGFIGHTGAME_API AFreeForAllGameMode : public AGameFlowBasedGameMode
+class DOGFIGHTGAME_API ATopDownStyleGameMode : public AGameFlowBasedGameMode
 {
 	GENERATED_BODY()
 public:
-	AFreeForAllGameMode(const FObjectInitializer& ObjectInitializer);
+	ATopDownStyleGameMode(const FObjectInitializer& ObjectInitializer);
 
 	virtual void PostInitializeComponents() override;
 
@@ -19,9 +19,9 @@ public:
 
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
-	void PlayerReadyForGame(AFreeForAllPlayerController* InPC);
+	void PlayerReadyForGame(ATopDownStylePlayerController* InPC);
 
-	TArray<TWeakObjectPtr<AFreeForAllPlayerController>> GetAllPlayerControllers() const
+	TArray<TWeakObjectPtr<ATopDownStylePlayerController>> GetAllPlayerControllers() const
 	{
 		return AllPlayerControllers;
 	}
@@ -36,7 +36,7 @@ protected:
 	UInGameMessageSenderComponent* InGameMessageSenderComponent;
 
 	/* All player controllers in current game. */
-	TArray<TWeakObjectPtr<AFreeForAllPlayerController>> AllPlayerControllers;
+	TArray<TWeakObjectPtr<ATopDownStylePlayerController>> AllPlayerControllers;
 
 	int32 ReadyPlayerCount;
 };

@@ -1,6 +1,6 @@
 #include "GameMode/GameModeComponent/InGameMessageSenderComponent.h"
-#include "GameMode/FreeForAllGameMode.h"
-#include "PlayerController/FreeForAllPlayerController.h"
+#include "GameMode/TopDownStyleGameMode.h"
+#include "PlayerController/TopDownStylePlayerController.h"
 #include "PlayerController/PlayerControllerComponent/InGameMessageReceiverComponent.h"
 
 UInGameMessageSenderComponent::UInGameMessageSenderComponent(const FObjectInitializer& ObjectInitializer)
@@ -13,7 +13,7 @@ void UInGameMessageSenderComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 
-	ParentGameMode = GetOwner<AFreeForAllGameMode>();
+	ParentGameMode = GetOwner<ATopDownStyleGameMode>();
 }
 
 void UInGameMessageSenderComponent::BroadcastTitleMessage(const FText& Message)

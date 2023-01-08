@@ -1,39 +1,39 @@
-#include "GameMode/FreeForAllGameMode.h"
+#include "GameMode/TopDownStyleGameMode.h"
 #include "Common/LuaEventDef.h"
 #include "GameMode/GameModeComponent/InGameMessageSenderComponent.h"
 #include "GameService/GameService.h"
 #include "GameService/LuaEventService.h"
-#include "PlayerController/FreeForAllPlayerController.h"
+#include "PlayerController/TopDownStylePlayerController.h"
 
-AFreeForAllGameMode::AFreeForAllGameMode(const FObjectInitializer& ObjectInitializer)
+ATopDownStyleGameMode::ATopDownStyleGameMode(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	// Create in-game message sender
 	InGameMessageSenderComponent = CreateDefaultSubobject<UInGameMessageSenderComponent>("InGameMessageSender");
 }
 
-void AFreeForAllGameMode::PostInitializeComponents()
+void ATopDownStyleGameMode::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 }
 
-void AFreeForAllGameMode::BeginPlay()
+void ATopDownStyleGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-void AFreeForAllGameMode::PostLogin(APlayerController* NewPlayer)
+void ATopDownStyleGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
 	// Record new player controller
-	if (auto PC = Cast<AFreeForAllPlayerController>(NewPlayer))
+	if (auto PC = Cast<ATopDownStylePlayerController>(NewPlayer))
 	{
 		AllPlayerControllers.Add(PC);
 	}
 }
 
-void AFreeForAllGameMode::PlayerReadyForGame(AFreeForAllPlayerController* InPC)
+void ATopDownStyleGameMode::PlayerReadyForGame(ATopDownStylePlayerController* InPC)
 {
 	ReadyPlayerCount++;
 

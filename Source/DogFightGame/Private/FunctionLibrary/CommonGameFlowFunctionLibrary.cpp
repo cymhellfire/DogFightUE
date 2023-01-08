@@ -1,15 +1,15 @@
 #include "FunctionLibrary/CommonGameFlowFunctionLibrary.h"
 
 #include "FunctionLibrary/LuaIntegrationFunctionLibrary.h"
-#include "GameMode/FreeForAllGameMode.h"
-#include "PlayerController/FreeForAllPlayerController.h"
+#include "GameMode/TopDownStyleGameMode.h"
+#include "PlayerController/TopDownStylePlayerController.h"
 
-TArray<AFreeForAllPlayerController*> UCommonGameFlowFunctionLibrary::GetAllPlayerControllers()
+TArray<ATopDownStylePlayerController*> UCommonGameFlowFunctionLibrary::GetAllPlayerControllers()
 {
-	TArray<AFreeForAllPlayerController*> Result;
+	TArray<ATopDownStylePlayerController*> Result;
 	if (auto CurWorld = ULuaIntegrationFunctionLibrary::GetCurrentWorld())
 	{
-		if (auto GameMode = Cast<AFreeForAllGameMode>(CurWorld->GetAuthGameMode()))
+		if (auto GameMode = Cast<ATopDownStyleGameMode>(CurWorld->GetAuthGameMode()))
 		{
 			auto PCList = GameMode->GetAllPlayerControllers();
 			for (auto PC : PCList)
@@ -25,7 +25,7 @@ TArray<AFreeForAllPlayerController*> UCommonGameFlowFunctionLibrary::GetAllPlaye
 	return Result;
 }
 
-void UCommonGameFlowFunctionLibrary::SpawnPlayerCharacterPawn(AFreeForAllPlayerController* Controller)
+void UCommonGameFlowFunctionLibrary::SpawnPlayerCharacterPawn(ATopDownStylePlayerController* Controller)
 {
 	if (!IsValid(Controller))
 	{

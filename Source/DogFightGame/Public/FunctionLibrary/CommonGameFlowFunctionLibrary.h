@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "CommonGameFlowFunctionLibrary.generated.h"
 
-class AFreeForAllPlayerController;
+class ATopDownStylePlayerController;
 
 UCLASS()
 class DOGFIGHTGAME_API UCommonGameFlowFunctionLibrary : public UBlueprintFunctionLibrary
@@ -16,8 +16,8 @@ public:
 	 * @return Array of all player controllers.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameFlow")
-	static TArray<AFreeForAllPlayerController*> GetAllPlayerControllers();
+	static TArray<ATopDownStylePlayerController*> GetAllPlayerControllers();
 
 	UFUNCTION(BlueprintCallable, Category="CommonGameFlow")
-	static void SpawnPlayerCharacterPawn(AFreeForAllPlayerController* Controller);
+	static void SpawnPlayerCharacterPawn(ATopDownStylePlayerController* Controller);
 };

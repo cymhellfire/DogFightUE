@@ -2,17 +2,17 @@
 
 #include "CoreMinimal.h"
 #include "Player/DogFightPlayerController.h"
-#include "FreeForAllPlayerController.generated.h"
+#include "TopDownStylePlayerController.generated.h"
 
 class AFreeForAllPlayerCharacter;
 class UInGameMessageReceiverComponent;
 
 UCLASS()
-class DOGFIGHTGAME_API AFreeForAllPlayerController : public ADogFightPlayerController
+class DOGFIGHTGAME_API ATopDownStylePlayerController : public ADogFightPlayerController
 {
 	GENERATED_BODY()
 public:
-	AFreeForAllPlayerController(const FObjectInitializer& ObjectInitializer);
+	ATopDownStylePlayerController(const FObjectInitializer& ObjectInitializer);
 
 	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -22,6 +22,11 @@ public:
 	UInGameMessageReceiverComponent* GetInGameMessageReceiverComponent() const
 	{
 		return InGameMessageReceiverComponent;
+	}
+
+	AFreeForAllPlayerCharacter* GetCharacterPawn() const
+	{
+		return CharacterPawn;
 	}
 
 protected:
