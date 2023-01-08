@@ -1,6 +1,7 @@
 require "UnLua"
 require "LuaIntegration.Common.UnrealUtils"
 
+---@class InitState Initial state after player enter the game level until all players are loaded.
 local InitState = Class("GameFlow.GameFlowState.GameFlowStateLogicBase")
 
 local function DelayFinish(self, NextStateName)
@@ -39,6 +40,15 @@ function InitState:OnReadyPlayerCountChanged(InCount)
     if tonumber(InCount) >= AllPlayerCount then
         GameServices.LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_ReadyPlayerCount,
             self, self.OnReadyPlayerCountChanged)
+
+        -- Setup next state
+        local Instigator = self.OwnerState.CreateArgument.Instigator
+        local NewArgument = GameServices.GameFlowStateService:GetGameFlowStateCreateArgument(Instigator)
+        if NewArgument then
+            NewArgument.StateName = "StandardMode.SpawnState"
+            NewArgument.Instigator = Instigator
+            self.OwnerState:SetNextState(NewArgument)
+        end
 
         self.OwnerState:Finish()
     end

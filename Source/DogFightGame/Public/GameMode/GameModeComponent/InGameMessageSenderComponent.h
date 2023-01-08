@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "InGameMessageSenderComponent.generated.h"
 
-class AFreeForAllGameMode;
+class ATopDownStyleGameMode;
 
 /**
  * Component that handles all in-game messages sending.
@@ -20,5 +20,5 @@ public:
 	void BroadcastTitleMessage(const FText& Message);
 
 protected:
-	TWeakObjectPtr<AFreeForAllGameMode> ParentGameMode;
+	TWeakObjectPtr<ATopDownStyleGameMode> ParentGameMode;
 };

@@ -1,6 +1,6 @@
 #include "FunctionLibrary/InGameMessageFunctionLibrary.h"
 #include "FunctionLibrary/LuaIntegrationFunctionLibrary.h"
-#include "GameMode/FreeForAllGameMode.h"
+#include "GameMode/TopDownStyleGameMode.h"
 #include "GameMode/GameModeComponent/InGameMessageSenderComponent.h"
 
 void UInGameMessageFunctionLibrary::SetTitleMessage(const FText& InText)
@@ -11,7 +11,7 @@ void UInGameMessageFunctionLibrary::SetTitleMessage(const FText& InText)
 		return;
 	}
 
-	if (auto GameMode = Cast<AFreeForAllGameMode>(CurWorld->GetAuthGameMode()))
+	if (auto GameMode = Cast<ATopDownStyleGameMode>(CurWorld->GetAuthGameMode()))
 	{
 		if (auto InGameMessageSender = GameMode->GetInGameMessageSender())
 		{
