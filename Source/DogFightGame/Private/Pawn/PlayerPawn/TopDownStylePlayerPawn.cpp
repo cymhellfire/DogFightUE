@@ -2,6 +2,7 @@
 
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Components/SphereComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "Pawn/PlayerCharacter/FreeForAllPlayerCharacter.h"
 #include "Pawn/PlayerPawn/Component/TopDownStyleCameraComponent.h"
 #include "Pawn/PlayerPawn/Component/TopDownStyleMovementComponent.h"
@@ -31,8 +32,23 @@ void ATopDownStylePlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerI
 	PlayerInputComponent->BindAction("SetDestination", IE_Released, this, &ATopDownStylePlayerPawn::OnSetDestination);
 }
 
+void ATopDownStylePlayerPawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	FDoRepLifetimeParams SharedParam;
+	SharedParam.bIsPushBased = true;
+
+	DOREPLIFETIME_WITH_PARAMS_FAST(ATopDownStylePlayerPawn, bEnableCharacterMove, SharedParam);
+}
+
 void ATopDownStylePlayerPawn::OnSetDestination()
 {
+	if (!bEnableCharacterMove)
+	{
+		return;
+	}
+
 	if (auto PC = Cast<APlayerController>(GetController()))
 	{
 		FHitResult HitResult;
@@ -52,4 +68,15 @@ void ATopDownStylePlayerPawn::ServerMoveCharacter_Implementation(const FVector& 
 			UAIBlueprintHelperLibrary::SimpleMoveToLocation(Character->GetController(), Destination);
 		}
 	}
+}
+
+void ATopDownStylePlayerPawn::ServerSetCharacterMovable_Implementation(bool bEnable)
+{
+	if (bEnableCharacterMove == bEnable)
+	{
+		return;
+	}
+
+	MARK_PROPERTY_DIRTY_FROM_NAME(ATopDownStylePlayerPawn, bEnableCharacterMove, this);
+	bEnableCharacterMove = bEnable;
 }

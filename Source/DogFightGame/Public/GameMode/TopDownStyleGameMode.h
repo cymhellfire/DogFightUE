@@ -31,6 +31,13 @@ public:
 		return InGameMessageSenderComponent;
 	}
 
+	// ----------------- Gameplay Section ---------------------
+	/**
+	 * @brief Switch the character movement on/off for all players in current game.
+	 * @param bEnable Whether to enable character movement.
+	 */
+	void SetEnableCharacterMoveForAllPlayers(bool bEnable);
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="GameMode")
 	UInGameMessageSenderComponent* InGameMessageSenderComponent;

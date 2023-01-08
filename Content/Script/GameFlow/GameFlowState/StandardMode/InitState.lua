@@ -1,6 +1,7 @@
 require "UnLua"
 require "LuaIntegration.Common.UnrealUtils"
 
+---@class InitState Initial state after player enter the game level until all players are loaded.
 local InitState = Class("GameFlow.GameFlowState.GameFlowStateLogicBase")
 
 local function DelayFinish(self, NextStateName)

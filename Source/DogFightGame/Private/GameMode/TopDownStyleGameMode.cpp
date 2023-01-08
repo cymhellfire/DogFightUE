@@ -3,6 +3,7 @@
 #include "GameMode/GameModeComponent/InGameMessageSenderComponent.h"
 #include "GameService/GameService.h"
 #include "GameService/LuaEventService.h"
+#include "Pawn/PlayerPawn/TopDownStylePlayerPawn.h"
 #include "PlayerController/TopDownStylePlayerController.h"
 
 ATopDownStyleGameMode::ATopDownStyleGameMode(const FObjectInitializer& ObjectInitializer)
@@ -40,5 +41,19 @@ void ATopDownStyleGameMode::PlayerReadyForGame(ATopDownStylePlayerController* In
 	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>())
 	{
 		LuaEventService->SendEventToLua_OneParam(ELuaEvent::Type::LuaEvent_ReadyPlayerCount, FString::Printf(TEXT("%d"), ReadyPlayerCount));
+	}
+}
+
+void ATopDownStyleGameMode::SetEnableCharacterMoveForAllPlayers(bool bEnable)
+{
+	for (auto PC : AllPlayerControllers)
+	{
+		if (PC.IsValid())
+		{
+			if (auto PlayerPawn = Cast<ATopDownStylePlayerPawn>(PC->GetPawn()))
+			{
+				PlayerPawn->ServerSetCharacterMovable(bEnable);
+			}
+		}
 	}
 }

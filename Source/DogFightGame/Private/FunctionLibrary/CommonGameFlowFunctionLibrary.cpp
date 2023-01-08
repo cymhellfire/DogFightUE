@@ -7,17 +7,14 @@
 TArray<ATopDownStylePlayerController*> UCommonGameFlowFunctionLibrary::GetAllPlayerControllers()
 {
 	TArray<ATopDownStylePlayerController*> Result;
-	if (auto CurWorld = ULuaIntegrationFunctionLibrary::GetCurrentWorld())
+	if (auto GameMode = GetCurrentTopDownStyleGameMode())
 	{
-		if (auto GameMode = Cast<ATopDownStyleGameMode>(CurWorld->GetAuthGameMode()))
+		auto PCList = GameMode->GetAllPlayerControllers();
+		for (auto PC : PCList)
 		{
-			auto PCList = GameMode->GetAllPlayerControllers();
-			for (auto PC : PCList)
+			if (PC.IsValid())
 			{
-				if (PC.IsValid())
-				{
-					Result.Add(PC.Get());
-				}
+				Result.Add(PC.Get());
 			}
 		}
 	}
@@ -33,4 +30,25 @@ void UCommonGameFlowFunctionLibrary::SpawnPlayerCharacterPawn(ATopDownStylePlaye
 	}
 
 	Controller->SpawnCharacterPawn();
+}
+
+void UCommonGameFlowFunctionLibrary::SetCharacterMoveEnableForAllPlayers(bool bEnable)
+{
+	if (auto GameMode = GetCurrentTopDownStyleGameMode())
+	{
+		GameMode->SetEnableCharacterMoveForAllPlayers(bEnable);
+	}
+}
+
+ATopDownStyleGameMode* UCommonGameFlowFunctionLibrary::GetCurrentTopDownStyleGameMode()
+{
+	if (auto CurWorld = ULuaIntegrationFunctionLibrary::GetCurrentWorld())
+	{
+		if (auto GameMode = Cast<ATopDownStyleGameMode>(CurWorld->GetAuthGameMode()))
+		{
+			return GameMode;
+		}
+	}
+
+	return nullptr;
 }

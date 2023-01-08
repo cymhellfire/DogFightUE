@@ -14,6 +14,7 @@ public:
 	ATopDownStylePlayerPawn(const FObjectInitializer& ObjectInitializer);
 
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UTopDownStyleCameraComponent* GetCameraComponent() const
 	{
@@ -23,6 +24,9 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerMoveCharacter(const FVector& Destination);
 
+	UFUNCTION(Server, Reliable)
+	void ServerSetCharacterMovable(bool bEnable);
+
 protected:
 	UFUNCTION(BlueprintCallable, Category="TopDownStylePlayerPawn")
 	void OnSetDestination();
@@ -30,4 +34,7 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="PlayerPawn")
 	UTopDownStyleCameraComponent* CameraComponent;
+
+	UPROPERTY(Replicated)
+	uint8 bEnableCharacterMove : 1;
 };
