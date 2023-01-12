@@ -92,3 +92,7 @@ Content/untitled_category/*
 /Plugins/UnLuaExtensions/LuaRapidjson/Intermediate/
 /Plugins/UnLuaExtensions/LuaProtobuf/Intermediate/
 /Plugins/UnLuaExtensions/LuaProtobuf/Binaries/Win64/
+
+# Other programs
+/Programs/ExcelExporter/bin/Debug/
+/Programs/ExcelExporter/obj/Debug/
