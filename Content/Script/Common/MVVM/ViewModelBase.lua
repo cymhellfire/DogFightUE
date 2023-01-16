@@ -11,8 +11,13 @@ local function Index(t, k)
     return rawget(t.BindingTable, k)
 end
 
-function ViewModelBase.New()
-    return table.deepCopy(ViewModelBase)
+local function InstantiateViewModel(InViewModel)
+    local NewVM = table.deepCopy(ViewModelBase)
+    -- Append the binding table to new ViewModel
+    if InViewModel and InViewModel["BindingTable"] then
+        NewVM["BindingTable"] = InViewModel["BindingTable"]
+    end
+    return NewVM
 end
 
 function ViewModelBase:SetupBinding(InView, BindTable)
@@ -75,5 +80,7 @@ function ViewModelBase:__TriggerDelegate(key, value)
         end
     end
 end
+
+_G.InstantiateViewModel = InstantiateViewModel
 
 return ViewModelBase

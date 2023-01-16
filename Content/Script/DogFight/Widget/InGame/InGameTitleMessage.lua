@@ -1,11 +1,13 @@
 require "UnLua"
 
 local InGameTitleMessage = Class("Common.MVVM.ModelBase")
-local InGameTitleMessageVM = require("DogFight.Widget.InGame.InGameTitleMessageVM")
+local ViewModelBase = require("Common.MVVM.ViewModelBase")
 local DataBinding = require("Common.MVVM.DataBinding")
+local InGameTitleMessageVM = require("DogFight.Widget.InGame.InGameTitleMessageVM")
 
 function InGameTitleMessage:Initialize()
-    self:BindViewModel(InGameTitleMessageVM, {
+    local NewVM = InstantiateViewModel(InGameTitleMessageVM)
+    self:BindViewModel(NewVM, {
         {BindKey = "TitleMessage",   UIKey = "TitleMessage_Text",   DataBinding = DataBinding.TextContextBinding(), }
     })
 
