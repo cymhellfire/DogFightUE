@@ -9,5 +9,6 @@ namespace ELuaEvent
 	{
 		LuaEvent_ReadyPlayerCount,
 		LuaEvent_ReceiveTitleMessage,
+		LuaEvent_GameTimelineChanged,
 	};
 }

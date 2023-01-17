@@ -1,5 +1,6 @@
 require "UnLua"
 
+---@class $Class$
 local $Class$ = Class("DogFight.CardModifiers.CardModifierBase")
 
 ---卡牌修改器构造参数集

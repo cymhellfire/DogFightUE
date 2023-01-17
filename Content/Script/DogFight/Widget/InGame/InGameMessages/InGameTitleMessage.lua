@@ -3,7 +3,7 @@ require "UnLua"
 local InGameTitleMessage = Class("Common.MVVM.ModelBase")
 local ViewModelBase = require("Common.MVVM.ViewModelBase")
 local DataBinding = require("Common.MVVM.DataBinding")
-local InGameTitleMessageVM = require("DogFight.Widget.InGame.InGameTitleMessageVM")
+local InGameTitleMessageVM = require("DogFight.Widget.InGame.InGameMessages.InGameTitleMessageVM")
 
 function InGameTitleMessage:Initialize()
     local NewVM = InstantiateViewModel(InGameTitleMessageVM)

@@ -1,5 +1,6 @@
 #include "GameMode/TopDownStyleGameMode.h"
 #include "Common/LuaEventDef.h"
+#include "GameMode/TopDownStyleGameState.h"
 #include "GameMode/GameModeComponent/InGameMessageSenderComponent.h"
 #include "GameService/GameService.h"
 #include "GameService/LuaEventService.h"
@@ -42,6 +43,16 @@ void ATopDownStyleGameMode::PlayerReadyForGame(ATopDownStylePlayerController* In
 	{
 		LuaEventService->SendEventToLua_OneParam(ELuaEvent::Type::LuaEvent_ReadyPlayerCount, FString::Printf(TEXT("%d"), ReadyPlayerCount));
 	}
+}
+
+UGameTimelineComponent* ATopDownStyleGameMode::GetGameTimelineComponent() const
+{
+	if (auto GS = GetGameState<ATopDownStyleGameState>())
+	{
+		return GS->GetGameTimelineComponent();
+	}
+
+	return nullptr;
 }
 
 void ATopDownStyleGameMode::SetEnableCharacterMoveForAllPlayers(bool bEnable)

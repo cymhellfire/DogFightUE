@@ -35,6 +35,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category="CommonGameFlow")
 	static void SetCharacterMoveEnableForAllPlayers(bool bEnable);
 
+	/**
+	 * Initialize timeline for current game.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameFlow")
+	static void InitializeGameTimeline();
+
+	/**
+	 * Get player id list of current timeline.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameFlow")
+	static TArray<int32> GetCurrentTimeline();
+
 protected:
 	static ATopDownStyleGameMode* GetCurrentTopDownStyleGameMode(); 
 };

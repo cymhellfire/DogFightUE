@@ -20,4 +20,10 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="LuaIntegrationFunction")
 	static UGameInstance* GetGameInstance();
+
+	/**
+	 * Load the class from given path.
+	 */
+	UFUNCTION(BlueprintCallable, Category="LuaIntegrationFunction")
+	static UClass* LoadClassByPath(FString InPath, UObject* InOuter);
 };

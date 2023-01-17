@@ -19,3 +19,19 @@ UGameInstance* ULuaIntegrationFunctionLibrary::GetGameInstance()
 
 	return nullptr;
 }
+
+UClass* ULuaIntegrationFunctionLibrary::LoadClassByPath(FString InPath, UObject* InOuter)
+{
+	if (InPath.IsEmpty())
+	{
+		return nullptr;
+	}
+
+	UClass* LoadedClass = LoadClass<UObject>(nullptr, *InPath);
+	if (LoadedClass)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Load finished."));
+	}
+
+	return LoadedClass;
+}

@@ -2,6 +2,7 @@
 
 #include "FunctionLibrary/LuaIntegrationFunctionLibrary.h"
 #include "GameMode/TopDownStyleGameMode.h"
+#include "GameMode/GameStateComponent/GameTimelineComponent.h"
 #include "PlayerController/TopDownStylePlayerController.h"
 
 TArray<ATopDownStylePlayerController*> UCommonGameFlowFunctionLibrary::GetAllPlayerControllers()
@@ -38,6 +39,30 @@ void UCommonGameFlowFunctionLibrary::SetCharacterMoveEnableForAllPlayers(bool bE
 	{
 		GameMode->SetEnableCharacterMoveForAllPlayers(bEnable);
 	}
+}
+
+void UCommonGameFlowFunctionLibrary::InitializeGameTimeline()
+{
+	if (auto GameMode = GetCurrentTopDownStyleGameMode())
+	{
+		if (auto Timeline = GameMode->GetGameTimelineComponent())
+		{
+			Timeline->InitializeTimeline();
+		}
+	}
+}
+
+TArray<int32> UCommonGameFlowFunctionLibrary::GetCurrentTimeline()
+{
+	if (auto GameMode = GetCurrentTopDownStyleGameMode())
+	{
+		if (auto Timeline = GameMode->GetGameTimelineComponent())
+		{
+			return Timeline->GetTimeline();
+		}
+	}
+
+	return TArray<int32>();
 }
 
 ATopDownStyleGameMode* UCommonGameFlowFunctionLibrary::GetCurrentTopDownStyleGameMode()

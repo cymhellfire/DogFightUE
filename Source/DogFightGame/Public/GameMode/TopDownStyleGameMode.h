@@ -5,6 +5,7 @@
 
 class ATopDownStylePlayerController;
 class UInGameMessageSenderComponent;
+class UGameTimelineComponent;
 
 UCLASS()
 class DOGFIGHTGAME_API ATopDownStyleGameMode : public AGameFlowBasedGameMode
@@ -30,6 +31,8 @@ public:
 	{
 		return InGameMessageSenderComponent;
 	}
+
+	UGameTimelineComponent* GetGameTimelineComponent() const;
 
 	// ----------------- Gameplay Section ---------------------
 	/**

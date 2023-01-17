@@ -74,3 +74,15 @@ end
 function table.deepCopy(orgTab)
     return deepCopy(orgTab)
 end
+
+---Print all elements in given table.
+---@param inTable table Table to dump
+function table.dump(inTable)
+    if type(inTable) ~= "table" then
+        return
+    end
+
+    for k, v in pairs(inTable) do
+        print(k .. ": " .. v)
+    end
+end
