@@ -115,6 +115,16 @@ TArray<int32> UGameTimelineComponent::GetTimeline() const
 	return CurrentTimeline;
 }
 
+int32 UGameTimelineComponent::GetFirstPlayerId() const
+{
+	if (CurrentTimeline.Num() > 0)
+	{
+		return CurrentTimeline[0];
+	}
+
+	return -1;
+}
+
 void UGameTimelineComponent::OnRep_CurrentTimeline()
 {
 	OnGameTimelineChanged.Broadcast();

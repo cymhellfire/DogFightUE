@@ -24,6 +24,12 @@ public:
 	 */
 	TArray<int32> GetTimeline() const;
 
+	/**
+	 * @brief			Get the first player Id in current order.
+	 * @return			The Id of first player in timeline.
+	 */
+	int32 GetFirstPlayerId() const;
+
 protected:
 	/**
 	 * @brief					Generate a randomized priority value list with given player number.

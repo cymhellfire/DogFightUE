@@ -14,6 +14,13 @@ public:
 
 	virtual void BeginPlay() override;
 
+	void SetCurrentPlayerId(int32 InId);
+
+	int32 GetCurrentPlayerId() const
+	{
+		return CurrentPlayerId;
+	}
+
 	UGameTimelineComponent* GetGameTimelineComponent() const
 	{
 		return GameTimelineComponent;
@@ -23,6 +30,9 @@ protected:
 	UFUNCTION()
 	void OnTimelineChanged();
 
+	UFUNCTION()
+	void OnRep_CurrentPlayerId();
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="TopDownGame")
 	FBox WorldBounds;
@@ -30,4 +40,7 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="TopDownGameState")
 	UGameTimelineComponent* GameTimelineComponent;
+
+	UPROPERTY(Transient, ReplicatedUsing=OnRep_CurrentPlayerId)
+	int32 CurrentPlayerId;
 };

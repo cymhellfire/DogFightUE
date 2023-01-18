@@ -2,6 +2,7 @@
 
 #include "FunctionLibrary/LuaIntegrationFunctionLibrary.h"
 #include "GameMode/TopDownStyleGameMode.h"
+#include "GameMode/TopDownStyleGameState.h"
 #include "GameMode/GameStateComponent/GameTimelineComponent.h"
 #include "PlayerController/TopDownStylePlayerController.h"
 
@@ -65,6 +66,35 @@ TArray<int32> UCommonGameFlowFunctionLibrary::GetCurrentTimeline()
 	return TArray<int32>();
 }
 
+
+int32 UCommonGameFlowFunctionLibrary::GetCurrentPlayerId()
+{
+	if (auto GameState = GetCurrentTopDownStyleGameState())
+	{
+		return GameState->GetCurrentPlayerId();
+	}
+	return -1;
+}
+
+void UCommonGameFlowFunctionLibrary::SetCurrentPlayerId(int32 InId)
+{
+	if (auto GameState = GetCurrentTopDownStyleGameState())
+	{
+		GameState->SetCurrentPlayerId(InId);
+	}
+}
+
+void UCommonGameFlowFunctionLibrary::SyncCurrentPlayerIdWithTimeline()
+{
+	if (auto GameState = GetCurrentTopDownStyleGameState())
+	{
+		if (auto Timeline = GameState->GetGameTimelineComponent())
+		{
+			GameState->SetCurrentPlayerId(Timeline->GetFirstPlayerId());
+		}
+	}
+}
+
 ATopDownStyleGameMode* UCommonGameFlowFunctionLibrary::GetCurrentTopDownStyleGameMode()
 {
 	if (auto CurWorld = ULuaIntegrationFunctionLibrary::GetCurrentWorld())
@@ -73,6 +103,16 @@ ATopDownStyleGameMode* UCommonGameFlowFunctionLibrary::GetCurrentTopDownStyleGam
 		{
 			return GameMode;
 		}
+	}
+
+	return nullptr;
+}
+
+ATopDownStyleGameState* UCommonGameFlowFunctionLibrary::GetCurrentTopDownStyleGameState()
+{
+	if (auto GameMode = GetCurrentTopDownStyleGameMode())
+	{
+		return GameMode->GetGameState<ATopDownStyleGameState>();
 	}
 
 	return nullptr;

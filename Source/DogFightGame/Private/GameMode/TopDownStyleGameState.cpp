@@ -1,6 +1,7 @@
 #include "GameMode/TopDownStyleGameState.h"
 
 #include "GameMode/GameStateComponent/GameTimelineComponent.h"
+#include "Net/UnrealNetwork.h"
 
 ATopDownStyleGameState::ATopDownStyleGameState(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -21,6 +22,16 @@ void ATopDownStyleGameState::BeginPlay()
 	}
 }
 
+void ATopDownStyleGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	FDoRepLifetimeParams SharedParam;
+	SharedParam.bIsPushBased = true;
+
+	DOREPLIFETIME_WITH_PARAMS_FAST(ATopDownStyleGameState, CurrentPlayerId, SharedParam);
+}
+
 void ATopDownStyleGameState::OnTimelineChanged()
 {
 	auto CurTimeline = GameTimelineComponent->GetTimeline();
@@ -30,4 +41,23 @@ void ATopDownStyleGameState::OnTimelineChanged()
 		UE_LOG(LogTemp, Warning, TEXT("[TopDownGameState] %d -> %d"), i, CurTimeline[i]);
 	}
 	UE_LOG(LogTemp, Warning, TEXT("[TopDownGameState] End of time line."));
+}
+
+void ATopDownStyleGameState::SetCurrentPlayerId(int32 InId)
+{
+	if (InId != CurrentPlayerId)
+	{
+		MARK_PROPERTY_DIRTY_FROM_NAME(ATopDownStyleGameState, CurrentPlayerId, this);
+		CurrentPlayerId = InId;
+
+		if (HasAuthority())
+		{
+			OnRep_CurrentPlayerId();
+		}
+	}
+}
+
+void ATopDownStyleGameState::OnRep_CurrentPlayerId()
+{
+	
 }

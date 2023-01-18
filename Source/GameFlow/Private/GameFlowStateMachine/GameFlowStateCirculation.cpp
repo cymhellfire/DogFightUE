@@ -81,6 +81,7 @@ void UGameFlowStateCirculation::DoStateSwitch()
 	if (auto GameFlowStateService = UGameService::GetGameService<UGameFlowStateService>())
 	{
 		CurrentState = GameFlowStateService->CreateGameFlowState(NextStateArgument);
+		NextStateArgument = nullptr;
 
 		if (IsValid(CurrentState))
 		{
@@ -89,8 +90,6 @@ void UGameFlowStateCirculation::DoStateSwitch()
 			CurrentState->OnEnter();
 		}
 	}
-
-	NextStateArgument = nullptr;
 }
 
 void UGameFlowStateCirculation::DoStateInsert()
