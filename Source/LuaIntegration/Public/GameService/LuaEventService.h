@@ -17,6 +17,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category="LuaEventService")
 	void SendEventToLua_OneParam(int32 EventIndex, const FString& Param);
 
+	UFUNCTION(BlueprintImplementableEvent, Category="LuaEventService")
+	void SendEventToLua_OneParam_Int(int32 EventIndex, int32 Param);
+
 	// IUnLuaInterface
 	virtual FString GetModuleName_Implementation() const override
 	{

@@ -13,6 +13,17 @@ function CardBase:BP_Initialize()
     end
 end
 
+function CardBase:BP_GetCardBasicDesc(OutName, OutDesc)
+    -- Invoke SetupCardDesc of any subclass
+    if type(self.SetupCardDesc) == "function" then
+        local Desc = self:SetupCardDesc()
+        OutName = Desc["Name"] or OutName
+        OutDesc = Desc["Desc"] or OutDesc
+    end
+
+    return OutName, OutDesc
+end
+
 --========================== Attribute ==========================--
 
 ---Create new attribute to this card based on given arguments.

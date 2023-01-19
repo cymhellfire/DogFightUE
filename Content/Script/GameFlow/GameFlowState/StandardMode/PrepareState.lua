@@ -3,20 +3,6 @@ require "UnLua"
 ---@class PrepareState State that allow players move around to take the position for game process.
 local PrepareState = Class("GameFlow.GameFlowState.GameFlowStateLogicBase")
 
-local function DelayFinish(self, NextStateName)
-    UE.UKismetSystemLibrary.Delay(self.OwnerState, 3)
-
-    -- local Instigator = self.OwnerState.CreateArgument.Instigator
-    -- local NewArgument = GameServices.GameFlowStateService:GetGameFlowStateCreateArgument(Instigator)
-    -- if NewArgument then
-    --     NewArgument.StateName = NextStateName
-    --     NewArgument.Instigator = Instigator
-    --     self.OwnerState:SetNextState(NewArgument)
-    -- end
-
-    self.OwnerState:Finish()
-end
-
 local function CharacterMoveCountDown(self, Duration)
     -- Enable character movement
     UE.UCommonGameFlowFunctionLibrary.SetCharacterMoveEnableForAllPlayers(true)

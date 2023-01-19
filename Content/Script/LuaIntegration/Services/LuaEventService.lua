@@ -17,6 +17,10 @@ function LuaEventService:SendEventToLua_OneParam(InEvent, InParam)
     self:TriggerDelegate(InEvent, InParam)
 end
 
+function LuaEventService:SendEventToLua_OneParam_Int(InEvent, InParam)
+    self:TriggerDelegate(InEvent, InParam)
+end
+
 function LuaEventService:TriggerDelegate(EventIndex, ...)
     local Delegate = self.EventDelegateMap[EventIndex]
     if Delegate then

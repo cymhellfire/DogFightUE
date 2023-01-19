@@ -1,0 +1,28 @@
+﻿#pragma once
+
+#include "CommonFunctionLibraryBase.h"
+#include "CommonGameplayFunctionLibrary.generated.h"
+
+class UCard;
+
+UCLASS()
+class DOGFIGHTGAME_API UCommonGameplayFunctionLibrary : public UCommonFunctionLibraryBase
+{
+	GENERATED_BODY()
+public:
+	/**
+	 * Get PlayerState by player id.
+	 * @param InPlayerId		Id of player that acquire state for.
+	 * @return					The PlayerState of corresponding player.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
+	static APlayerState* GetPlayerStateById(int32 InPlayerId);
+
+	/**
+	 * Given player specified card.
+	 * @param InPlayerId		Id of player that cards given to.
+	 * @param InCard			The card that given to player.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
+	static void DispatchCardToPlayer(int32 InPlayerId, UCard* InCard);
+};

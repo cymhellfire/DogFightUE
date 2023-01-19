@@ -21,6 +21,8 @@ public:
 		return CurrentPlayerId;
 	}
 
+	APlayerState* GetPlayerStateById(int32 InPlayerId) const;
+
 	UGameTimelineComponent* GetGameTimelineComponent() const
 	{
 		return GameTimelineComponent;

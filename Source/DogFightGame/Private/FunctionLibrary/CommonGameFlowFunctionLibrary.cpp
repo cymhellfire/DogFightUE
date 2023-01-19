@@ -1,6 +1,7 @@
 #include "FunctionLibrary/CommonGameFlowFunctionLibrary.h"
 
 #include "FunctionLibrary/LuaIntegrationFunctionLibrary.h"
+#include "GameFramework/PlayerState.h"
 #include "GameMode/TopDownStyleGameMode.h"
 #include "GameMode/TopDownStyleGameState.h"
 #include "GameMode/GameStateComponent/GameTimelineComponent.h"
@@ -95,25 +96,18 @@ void UCommonGameFlowFunctionLibrary::SyncCurrentPlayerIdWithTimeline()
 	}
 }
 
-ATopDownStyleGameMode* UCommonGameFlowFunctionLibrary::GetCurrentTopDownStyleGameMode()
+int32 UCommonGameFlowFunctionLibrary::GetLocalPlayerId()
 {
-	if (auto CurWorld = ULuaIntegrationFunctionLibrary::GetCurrentWorld())
+	if (auto World = ULuaIntegrationFunctionLibrary::GetCurrentWorld())
 	{
-		if (auto GameMode = Cast<ATopDownStyleGameMode>(CurWorld->GetAuthGameMode()))
+		if (auto PC = GEngine->GetFirstLocalPlayerController(World))
 		{
-			return GameMode;
+			if (auto PS = PC->GetPlayerState<APlayerState>())
+			{
+				return PS->GetPlayerId();
+			}
 		}
 	}
 
-	return nullptr;
-}
-
-ATopDownStyleGameState* UCommonGameFlowFunctionLibrary::GetCurrentTopDownStyleGameState()
-{
-	if (auto GameMode = GetCurrentTopDownStyleGameMode())
-	{
-		return GameMode->GetGameState<ATopDownStyleGameState>();
-	}
-
-	return nullptr;
+	return -1;
 }

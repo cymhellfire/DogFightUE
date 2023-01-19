@@ -22,6 +22,13 @@ function TestCard:OnInitialized()
     end
 end
 
+function TestCard:SetupCardDesc()
+    return {
+        Name = "TestCard",
+        Desc = "TestCardDesc",
+    }
+end
+
 function TestCard:AcquireCardTargetsImplementation()
     local NewSettings = UE.FTargetAcquireSettings()
     NewSettings.Type = UE.ECardTargetType.CTT_Actor

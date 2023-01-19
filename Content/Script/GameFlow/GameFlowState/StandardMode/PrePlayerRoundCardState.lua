@@ -6,6 +6,12 @@ local PrePlayerRoundCardState = Class("GameFlow.GameFlowState.GameFlowStateLogic
 function PrePlayerRoundCardState:OnEnter()
     print("PrePlayerRoundCardState: OnEnter")
 
+    -- Dispatch cards to current player
+    local CurPlayerId = UE.UCommonGameFlowFunctionLibrary.GetCurrentPlayerId()
+    if CurPlayerId > 0 then
+        self:DispatchCard(CurPlayerId, 2)
+    end
+
     -- Construct next state
     local Instigator = self.OwnerState.CreateArgument.Instigator
     local NewArgument = GameServices.GameFlowStateService:GetGameFlowStateCreateArgument(Instigator)
@@ -20,6 +26,31 @@ end
 
 function PrePlayerRoundCardState:OnExit()
     print("PrePlayerRoundCardState: OnExit")
+end
+
+---Give cards to specified player.
+---@param InPlayerId number Id of player cards give to.
+---@param InCount number Total count of cards will dispatch.
+function PrePlayerRoundCardState:DispatchCard(InPlayerId, InCount)
+    local TargetPlayerState = UE.UCommonGameplayFunctionLibrary.GetPlayerStateById(InPlayerId)
+    -- Skip if no player state matches the ID
+    if not TargetPlayerState then
+        return
+    end
+
+    for i = 1, InCount do
+        local NewCardName = GameServices.CardGeneratorService:GetRandomCard()
+        local NewCard = nil
+        -- Create new card by name
+        if NewCardName then
+            NewCard = GameServices.CardGameService:CreateCard(NewCardName, TargetPlayerState)
+        end
+
+        -- Dispatch new card to player
+        if NewCard then
+            UE.UCommonGameplayFunctionLibrary.DispatchCardToPlayer(InPlayerId, NewCard)
+        end
+    end
 end
 
 return PrePlayerRoundCardState

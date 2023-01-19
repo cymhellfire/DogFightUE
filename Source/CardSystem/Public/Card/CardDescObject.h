@@ -12,4 +12,10 @@ class CARDSYSTEM_API UCardDescObject : public UAttributeBasedObject
 	GENERATED_BODY()
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	void SetCardName(FString InName);
+
+protected:
+	UPROPERTY(Transient, Replicated)
+	FString CardName;
 };

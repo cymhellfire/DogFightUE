@@ -1,5 +1,6 @@
 #include "GameMode/TopDownStyleGameState.h"
 
+#include "GameFramework/PlayerState.h"
 #include "GameMode/GameStateComponent/GameTimelineComponent.h"
 #include "Net/UnrealNetwork.h"
 
@@ -60,4 +61,19 @@ void ATopDownStyleGameState::SetCurrentPlayerId(int32 InId)
 void ATopDownStyleGameState::OnRep_CurrentPlayerId()
 {
 	
+}
+
+APlayerState* ATopDownStyleGameState::GetPlayerStateById(int32 InPlayerId) const
+{
+	APlayerState* Result = nullptr;
+	for (auto PS : PlayerArray)
+	{
+		if (PS && PS->GetPlayerId() == InPlayerId)
+		{
+			Result = PS;
+			break;
+		}
+	}
+
+	return Result;
 }

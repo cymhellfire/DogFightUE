@@ -2,12 +2,13 @@
 
 UWorld* ULuaIntegrationFunctionLibrary::GetCurrentWorld()
 {
-	if (auto WorldContext = GEngine->GetWorldContextFromGameViewport(GEngine->GameViewport))
+	UWorld* CurWorld = nullptr;
+	if (GWorld)
 	{
-		return WorldContext->World();
+		CurWorld = GWorld->GetWorld();
+		UE_LOG(LogTemp, Log, TEXT("Debug-GWorld: %s %p"), *CurWorld->GetName(), CurWorld);
 	}
-
-	return nullptr;
+	return CurWorld;
 }
 
 UGameInstance* ULuaIntegrationFunctionLibrary::GetGameInstance()
@@ -20,7 +21,7 @@ UGameInstance* ULuaIntegrationFunctionLibrary::GetGameInstance()
 	return nullptr;
 }
 
-UClass* ULuaIntegrationFunctionLibrary::LoadClassByPath(FString InPath, UObject* InOuter)
+UClass* ULuaIntegrationFunctionLibrary::LoadClassByPath(FString InPath)
 {
 	if (InPath.IsEmpty())
 	{
@@ -28,10 +29,6 @@ UClass* ULuaIntegrationFunctionLibrary::LoadClassByPath(FString InPath, UObject*
 	}
 
 	UClass* LoadedClass = LoadClass<UObject>(nullptr, *InPath);
-	if (LoadedClass)
-	{
-		UE_LOG(LogTemp, Log, TEXT("Load finished."));
-	}
 
 	return LoadedClass;
 }

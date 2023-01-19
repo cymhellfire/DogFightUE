@@ -1,14 +1,12 @@
 #pragma once
 
-#include "CoreMinimal.h"
+#include "CommonFunctionLibraryBase.h"
 #include "CommonGameFlowFunctionLibrary.generated.h"
 
-class ATopDownStyleGameMode;
-class ATopDownStyleGameState;
 class ATopDownStylePlayerController;
 
 UCLASS()
-class DOGFIGHTGAME_API UCommonGameFlowFunctionLibrary : public UBlueprintFunctionLibrary
+class DOGFIGHTGAME_API UCommonGameFlowFunctionLibrary : public UCommonFunctionLibraryBase
 {
 	GENERATED_BODY()
 public:
@@ -67,8 +65,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category="CommonGameFlow")
 	static void SyncCurrentPlayerIdWithTimeline();
 
-protected:
-	static ATopDownStyleGameMode* GetCurrentTopDownStyleGameMode();
-
-	static ATopDownStyleGameState* GetCurrentTopDownStyleGameState();
+	/**
+	 * Get the player ID of local player.
+	 * @return			ID of local player (-1 is illegal).
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameFlow")
+	static int32 GetLocalPlayerId();
 };

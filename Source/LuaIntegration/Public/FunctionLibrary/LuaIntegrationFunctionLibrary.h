@@ -25,5 +25,5 @@ public:
 	 * Load the class from given path.
 	 */
 	UFUNCTION(BlueprintCallable, Category="LuaIntegrationFunction")
-	static UClass* LoadClassByPath(FString InPath, UObject* InOuter);
+	static UClass* LoadClassByPath(FString InPath);
 };

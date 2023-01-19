@@ -10,8 +10,8 @@ local function GetGameInstance()
     return UE.ULuaIntegrationFunctionLibrary.GetGameInstance()
 end
 
-local function LoadClass(InPath, InOuter)
-    return UE.ULuaIntegrationFunctionLibrary.LoadClassByPath(InPath, InOuter)
+local function LoadClass(InPath)
+    return UE.ULuaIntegrationFunctionLibrary.LoadClassByPath(InPath)
 end
 
 _G.GetCurrentWorld = GetCurrentWorld

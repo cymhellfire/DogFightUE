@@ -32,7 +32,7 @@ end
 function ListViewWrapper:LoadDataByList(InDataList)
     if self.ItemClass == nil then
         ---@type UClass Item class to spawn.
-        self.ItemClass = LoadClass(ClassPath, self.ParentWidget)
+        self.ItemClass = LoadClass(ClassPath)
     end
 
     if self.ItemClass then

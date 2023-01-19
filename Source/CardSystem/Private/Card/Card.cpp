@@ -31,6 +31,15 @@ void UCard::Initialize()
 
 	// Invoke blueprint side implementation
 	BP_Initialize();
+
+	// Invoke the description gathering
+	FString CardName;
+	FString CardDesc;
+	BP_GetCardBasicDesc(CardName, CardDesc);
+	if (DescObject)
+	{
+		DescObject->SetCardName(CardName);
+	}
 }
 
 void UCard::AddAttribute(const FAttributeCreateArgument& InArgument)

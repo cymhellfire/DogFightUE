@@ -33,6 +33,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category="Card")
 	void BP_Initialize();
 
+	UFUNCTION(BlueprintImplementableEvent, Category="Card", DisplayName="Get Card Basic Desc")
+	void BP_GetCardBasicDesc(FString& OutName, FString& OutDesc);
+
 	// ------------------- Attribute ----------------------
 
 	UFUNCTION(BlueprintCallable, Category="Card")
