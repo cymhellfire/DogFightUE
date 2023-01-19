@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Common/InputMappingDef.h"
 #include "Player/CardTargetProviderInterface.h"
 #include "Player/DogFightPlayerController.h"
 #include "TopDownStylePlayerController.generated.h"
@@ -20,6 +21,13 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual void SetupInputComponent() override;
+
+	// -----=========== Input ===========-----
+	UFUNCTION(Client, Reliable)
+	void ClientAddInputMapping(EInputMappingType::Type InputType);
+
+	UFUNCTION(Client, Reliable)
+	void ClientRemoveInputMapping(EInputMappingType::Type InputType);
 
 	// -----=========== Character ===========-----
 	void SpawnCharacterPawn();

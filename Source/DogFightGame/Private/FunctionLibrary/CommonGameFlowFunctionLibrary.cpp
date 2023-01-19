@@ -116,6 +116,16 @@ ATopDownStylePlayerController* UCommonGameFlowFunctionLibrary::GetLocalPlayerCon
 	return nullptr;
 }
 
+ULocalPlayer* UCommonGameFlowFunctionLibrary::GetLocalPlayer()
+{
+	if (auto GameInstance = ULuaIntegrationFunctionLibrary::GetGameInstance())
+	{
+		return GameInstance->GetLocalPlayerByIndex(0);
+	}
+
+	return nullptr;
+}
+
 int32 UCommonGameFlowFunctionLibrary::GetLocalPlayerId()
 {
 	if (auto PC = GetLocalPlayerController())

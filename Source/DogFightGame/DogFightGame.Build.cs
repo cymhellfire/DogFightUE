@@ -26,6 +26,7 @@ public class DogFightGame : ModuleRules
                 "SlateCore",
                 "NetCore",
                 "AIModule",
+                "EnhancedInput",
             }
         );
         

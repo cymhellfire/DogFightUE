@@ -41,6 +41,9 @@ function InitState:OnReadyPlayerCountChanged(InCount)
         GameServices.LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_ReadyPlayerCount,
             self, self.OnReadyPlayerCountChanged)
 
+        -- Add camera movement input to all players
+        GameServices.GameInputService:MulticastAddInputMapping(UE.EInputMappingType.InputMapping_CameraMove)
+
         -- Setup next state
         local Instigator = self.OwnerState.CreateArgument.Instigator
         local NewArgument = GameServices.GameFlowStateService:GetGameFlowStateCreateArgument(Instigator)

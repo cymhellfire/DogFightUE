@@ -64,21 +64,21 @@ void UGameTimelineComponent::InitializeTimeline()
 void UGameTimelineComponent::InitializeRandomPriorityList(int32 InPlayerNum)
 {
 	RandomPriorityList.Empty();
-	for (int32 i = 0; i < InPlayerNum; ++i)
+	for (int32 i = InPlayerNum -1; i >= 0; --i)
 	{
 		RandomPriorityList.Add(i);
 	}
 
 	// Randomize the order with Fisher-Yates Shuffle algorithm
 	// No need to check the number at 0 position
-	for (int i = RandomPriorityList.Num() - 1; i > 0; --i)
-	{
-		const int32 Temp = RandomPriorityList[i];
-		const int32 SwitchTargetIndex = FMath::RandRange(0, i);
-		// Switch value
-		RandomPriorityList[i] = RandomPriorityList[SwitchTargetIndex];
-		RandomPriorityList[SwitchTargetIndex] = Temp;
-	}
+	// for (int i = RandomPriorityList.Num() - 1; i > 0; --i)
+	// {
+	// 	const int32 Temp = RandomPriorityList[i];
+	// 	const int32 SwitchTargetIndex = FMath::RandRange(0, i);
+	// 	// Switch value
+	// 	RandomPriorityList[i] = RandomPriorityList[SwitchTargetIndex];
+	// 	RandomPriorityList[SwitchTargetIndex] = Temp;
+	// }
 }
 
 int32 UGameTimelineComponent::GetRandomizedPriority()

@@ -2,6 +2,8 @@
 
 #include "Card/Card.h"
 #include "GameMode/TopDownStyleGameMode.h"
+#include "GameService/GameInputService.h"
+#include "GameService/GameService.h"
 #include "Net/UnrealNetwork.h"
 #include "Pawn/PlayerCharacter/FreeForAllPlayerCharacter.h"
 #include "Player/TopDownStylePlayerState.h"
@@ -47,6 +49,24 @@ void ATopDownStylePlayerController::SetupInputComponent()
 	Super::SetupInputComponent();
 
 	CardTargetProviderComponent->InitializeInput();
+}
+
+void ATopDownStylePlayerController::ClientAddInputMapping_Implementation(EInputMappingType::Type InputType)
+{
+	// Add the input mapping on client side
+	if (auto GameInputService = UGameService::GetGameService<UGameInputService>())
+	{
+		GameInputService->AddInputMapping(InputType);
+	}
+}
+
+void ATopDownStylePlayerController::ClientRemoveInputMapping_Implementation(EInputMappingType::Type InputType)
+{
+	// Remove the input mapping on client side
+	if (auto GameInputService = UGameService::GetGameService<UGameInputService>())
+	{
+		GameInputService->RemoveInputMapping(InputType);
+	}
 }
 
 void ATopDownStylePlayerController::SpawnCharacterPawn()

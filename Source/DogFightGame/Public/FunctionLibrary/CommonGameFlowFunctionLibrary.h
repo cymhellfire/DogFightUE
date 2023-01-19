@@ -81,6 +81,13 @@ public:
 	static ATopDownStylePlayerController* GetLocalPlayerController();
 
 	/**
+	 * Get the local player.
+	 * @return			First local player.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameFlow")
+	static ULocalPlayer* GetLocalPlayer();
+
+	/**
 	 * Get the player ID of local player.
 	 * @return			ID of local player (-1 is illegal).
 	 */

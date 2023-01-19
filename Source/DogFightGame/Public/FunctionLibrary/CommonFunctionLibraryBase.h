@@ -11,7 +11,7 @@ class DOGFIGHTGAME_API UCommonFunctionLibraryBase : public UBlueprintFunctionLib
 {
 	GENERATED_BODY()
 
-protected:
+public:
 	static ATopDownStyleGameMode* GetCurrentTopDownStyleGameMode();
 
 	static ATopDownStyleGameState* GetCurrentTopDownStyleGameState();
