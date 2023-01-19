@@ -42,6 +42,21 @@ void UCard::Initialize()
 	}
 }
 
+void UCard::SetInstanceId(int32 InId)
+{
+	if (InId == CardInstanceId)
+	{
+		return;
+	}
+
+	CardInstanceId = InId;
+	// Also sync to desc object
+	if (DescObject)
+	{
+		DescObject->SetCardInstanceId(InId);
+	}
+}
+
 void UCard::AddAttribute(const FAttributeCreateArgument& InArgument)
 {
 	if (DescObject)
@@ -109,6 +124,12 @@ void UCard::Execute()
 
 void UCard::SetOwnerController(AController* InOwner)
 {
+	if (!IsValid(InOwner))
+	{
+		UE_LOG(LogCardSystem, Error, TEXT("[Card] Owner controller cannot be nullptr."));
+		return;
+	}
+
 	// Check if this controller implemented specified interfaces
 	if (InOwner->Implements<UCardTargetProviderInterface>())
 	{

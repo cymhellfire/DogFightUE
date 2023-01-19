@@ -1,7 +1,8 @@
 local WidgetCardListItemVM = {}
 
 WidgetCardListItemVM.BindingTable = {
-    CardName = ""
+    CardName = "",
+    BackgroundColor = "",
 }
 
 return WidgetCardListItemVM

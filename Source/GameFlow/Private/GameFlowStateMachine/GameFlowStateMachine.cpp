@@ -85,3 +85,8 @@ void UGameFlowStateMachine::OnCirculationFinished(UGameFlowStateCirculation* InC
 
 	PopState();
 }
+
+FName UGameFlowStateMachine::GetCurrentStateName() const
+{
+	return IsValid(CurrentCirculation) ? CurrentCirculation->GetCurrentStateName() : NAME_None;
+}

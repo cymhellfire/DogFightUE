@@ -32,3 +32,12 @@ UClass* ULuaIntegrationFunctionLibrary::LoadClassByPath(FString InPath)
 
 	return LoadedClass;
 }
+
+bool ULuaIntegrationFunctionLibrary::IsDerivedFrom(UObject* InObject, UClass* InClass)
+{
+	if (IsValid(InObject) && IsValid(InClass))
+	{
+		return InObject->GetClass()->IsChildOf(InClass);
+	}
+	return false;
+}

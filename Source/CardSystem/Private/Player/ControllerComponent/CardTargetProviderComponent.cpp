@@ -22,7 +22,7 @@ void UCardTargetProviderComponent::InitializeInput()
 	PlayerController = GetTypedOuter<APlayerController>();
 	if (PlayerController.IsValid())
 	{
-		PlayerController->InputComponent->BindAction("SetDestination", IE_Pressed, this, &UCardTargetProviderComponent::OnSelectTargetPressed);
+		PlayerController->InputComponent->BindAction("ConfirmSelection", IE_Pressed, this, &UCardTargetProviderComponent::OnSelectTargetPressed);
 		PlayerController->InputComponent->BindAction("CancelSelection", IE_Pressed, this, &UCardTargetProviderComponent::OnCancelSelectionPressed);
 	}
 	else

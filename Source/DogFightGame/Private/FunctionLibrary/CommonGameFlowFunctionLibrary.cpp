@@ -25,6 +25,16 @@ TArray<ATopDownStylePlayerController*> UCommonGameFlowFunctionLibrary::GetAllPla
 	return Result;
 }
 
+FName UCommonGameFlowFunctionLibrary::GetCurrentGameFlowStateName()
+{
+	if (auto GameMode = GetCurrentTopDownStyleGameMode())
+	{
+		return GameMode->GetCurrentGameFlowStateName();
+	}
+
+	return NAME_None;
+}
+
 void UCommonGameFlowFunctionLibrary::SpawnPlayerCharacterPawn(ATopDownStylePlayerController* Controller)
 {
 	if (!IsValid(Controller))
@@ -96,16 +106,23 @@ void UCommonGameFlowFunctionLibrary::SyncCurrentPlayerIdWithTimeline()
 	}
 }
 
-int32 UCommonGameFlowFunctionLibrary::GetLocalPlayerId()
+ATopDownStylePlayerController* UCommonGameFlowFunctionLibrary::GetLocalPlayerController()
 {
 	if (auto World = ULuaIntegrationFunctionLibrary::GetCurrentWorld())
 	{
-		if (auto PC = GEngine->GetFirstLocalPlayerController(World))
+		return Cast<ATopDownStylePlayerController>(GEngine->GetFirstLocalPlayerController(World));
+	}
+
+	return nullptr;
+}
+
+int32 UCommonGameFlowFunctionLibrary::GetLocalPlayerId()
+{
+	if (auto PC = GetLocalPlayerController())
+	{
+		if (auto PS = PC->GetPlayerState<APlayerState>())
 		{
-			if (auto PS = PC->GetPlayerState<APlayerState>())
-			{
-				return PS->GetPlayerId();
-			}
+			return PS->GetPlayerId();
 		}
 	}
 

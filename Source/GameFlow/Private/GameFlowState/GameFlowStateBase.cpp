@@ -1,5 +1,6 @@
 #include "GameFlowState/GameFlowStateBase.h"
 
+#include "GameFlowState/GameFlowStateCreateArgument.h"
 #include "GameFlowStateMachine/GameFlowStateMachine.h"
 
 void UGameFlowStateBase::OnEnter()
@@ -59,4 +60,9 @@ void UGameFlowStateBase::InsertState(UGameFlowStateCreateArgument* InArgument)
 UGameFlowStateMachine* UGameFlowStateBase::GetParentStateMachine()
 {
 	return GetTypedOuter<UGameFlowStateMachine>();
+}
+
+FName UGameFlowStateBase::GetStateName() const
+{
+	return IsValid(CreateArgument) ? CreateArgument->StateName : NAME_None;
 }

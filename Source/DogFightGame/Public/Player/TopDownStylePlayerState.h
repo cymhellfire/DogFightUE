@@ -52,6 +52,20 @@ public:
 		return CardDescObjectList;
 	}
 
+	/**
+	 * Get card by specified instance id.
+	 * @param InId			Instance id that search card with.
+	 * @return				Card with given instance id.
+	 */
+	UCard* GetCardByInstanceId(int32 InId);
+
+	/**
+	 * Try to start using process on card with given instance id.
+	 * @param InId			Instance id of card want to use.
+	 */
+	UFUNCTION(Server, Reliable)
+	void ServerTryToUseCardByInstanceId(int32 InId);
+
 protected:
 	void AddCardDescObject(UCardDescObject* InDescObject);
 
@@ -59,6 +73,9 @@ protected:
 
 	UFUNCTION()
 	void OnRep_CardDescObjectList();
+
+	UFUNCTION()
+	void OnCardFinished(ECardExecutionResult Result, UCard* Card);
 
 protected:
 	UPROPERTY(Transient)

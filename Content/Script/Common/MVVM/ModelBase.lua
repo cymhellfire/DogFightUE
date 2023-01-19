@@ -6,6 +6,7 @@ function ModelBase:BindViewModel(InVM, InTable)
     if not InVM then
         return
     end
+    ---@type table
     self.ViewModel = InVM
     -- Add all binding to view model
     self.ViewModel:SetupBinding(self, InTable)

@@ -3,6 +3,7 @@
 #include "Card/Card.h"
 #include "CardSystem/Public/Card/CardDescObject.h"
 #include "Common/LuaEventDef.h"
+#include "GameService/CardGameService.h"
 #include "GameService/GameService.h"
 #include "GameService/LuaEventService.h"
 #include "Net/UnrealNetwork.h"
@@ -90,5 +91,49 @@ void ATopDownStylePlayerState::OnRep_CardDescObjectList()
 	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>())
 	{
 		LuaEventService->SendEventToLua_OneParam_Int(ELuaEvent::Type::LuaEvent_CardListChanged, GetPlayerId());
+	}
+}
+
+UCard* ATopDownStylePlayerState::GetCardByInstanceId(int32 InId)
+{
+	for (auto Card : CardObjectList)
+	{
+		if (Card->GetInstanceId() == InId)
+		{
+			return Card;
+		}
+	}
+
+	return nullptr;
+}
+
+void ATopDownStylePlayerState::ServerTryToUseCardByInstanceId_Implementation(int32 InId)
+{
+	if (auto Card = GetCardByInstanceId(InId))
+	{
+		UE_LOG(LogTemp, Log, TEXT("[ATopDownStylePlayerState] Start use card with id: %d"), InId);
+		Card->OnCardExecutionFinished.AddDynamic(this, &ATopDownStylePlayerState::OnCardFinished);
+		Card->Execute();
+	}
+}
+
+void ATopDownStylePlayerState::OnCardFinished(ECardExecutionResult Result, UCard* Card)
+{
+	if (IsValid(Card))
+	{
+		Card->OnCardExecutionFinished.RemoveDynamic(this, &ATopDownStylePlayerState::OnCardFinished);
+	}
+
+	if (Result == ECardExecutionResult::CER_Default)
+	{
+		UE_LOG(LogTemp, Log, TEXT("[ATopDownStylePlayerState] Finished use card."));
+		// Remove card from list
+		RemoveCardObject(Card);
+
+		// Destroy the card instance
+		if (auto CardGameService = UGameService::GetGameService<UCardGameService>())
+		{
+			CardGameService->DestroyCard(Card);
+		}
 	}
 }

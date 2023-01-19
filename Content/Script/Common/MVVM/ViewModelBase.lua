@@ -11,6 +11,9 @@ local function Index(t, k)
     return rawget(t.BindingTable, k)
 end
 
+---Create a new ViewModel based on given prototype.
+---@param InViewModel table ViewModel prototype
+---@return table New ViewModel instance
 local function InstantiateViewModel(InViewModel)
     local NewVM = table.deepCopy(ViewModelBase)
     -- Append the binding table to new ViewModel

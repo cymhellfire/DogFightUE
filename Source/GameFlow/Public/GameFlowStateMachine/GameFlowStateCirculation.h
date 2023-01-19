@@ -31,6 +31,8 @@ public:
 
 	void Tick(float DeltaTime);
 
+	FName GetCurrentStateName() const;
+
 protected:
 	void DoStateSwitch();
 

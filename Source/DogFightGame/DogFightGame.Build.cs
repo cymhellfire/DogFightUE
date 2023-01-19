@@ -13,6 +13,7 @@ public class DogFightGame : ModuleRules
                 "GameFlow",
                 "LuaIntegration",
                 "ProjectFramework",
+                "CardSystem",
             }
         );
 
@@ -25,7 +26,6 @@ public class DogFightGame : ModuleRules
                 "SlateCore",
                 "NetCore",
                 "AIModule",
-                "CardSystem",
             }
         );
         

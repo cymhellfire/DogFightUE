@@ -32,9 +32,10 @@ end
 ---@param InPlayerId number Id of player cards give to.
 ---@param InCount number Total count of cards will dispatch.
 function PrePlayerRoundCardState:DispatchCard(InPlayerId, InCount)
-    local TargetPlayerState = UE.UCommonGameplayFunctionLibrary.GetPlayerStateById(InPlayerId)
-    -- Skip if no player state matches the ID
-    if not TargetPlayerState then
+    --local TargetPlayerState = UE.UCommonGameplayFunctionLibrary.GetPlayerStateById(InPlayerId)
+    local TargetPlayerCtrl = UE.UCommonGameplayFunctionLibrary.GetPlayerControllerById(InPlayerId)
+    -- Skip if no player controller matches the ID
+    if not TargetPlayerCtrl then
         return
     end
 
@@ -43,7 +44,7 @@ function PrePlayerRoundCardState:DispatchCard(InPlayerId, InCount)
         local NewCard = nil
         -- Create new card by name
         if NewCardName then
-            NewCard = GameServices.CardGameService:CreateCard(NewCardName, TargetPlayerState)
+            NewCard = GameServices.CardGameService:CreateCard(NewCardName, TargetPlayerCtrl)
         end
 
         -- Dispatch new card to player

@@ -13,6 +13,8 @@ public:
 	virtual void PostInitializeComponents() override;
 	virtual void Tick(float DeltaSeconds) override;
 
+	FName GetCurrentGameFlowStateName() const;
+
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="GameFlowBasedGameMode")
 	FString StateMachineName;

@@ -1,14 +1,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Player/CardTargetProviderInterface.h"
 #include "Player/DogFightPlayerController.h"
 #include "TopDownStylePlayerController.generated.h"
 
 class AFreeForAllPlayerCharacter;
 class UInGameMessageReceiverComponent;
+class UCardTargetProviderComponent;
 
 UCLASS()
-class DOGFIGHTGAME_API ATopDownStylePlayerController : public ADogFightPlayerController
+class DOGFIGHTGAME_API ATopDownStylePlayerController : public ADogFightPlayerController, public ICardTargetProviderInterface
 {
 	GENERATED_BODY()
 public:
@@ -17,7 +19,14 @@ public:
 	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	virtual void SetupInputComponent() override;
+
+	// -----=========== Character ===========-----
 	void SpawnCharacterPawn();
+
+	// -----=========== Card ===========-----
+	UFUNCTION(Server, Reliable)
+	void ServerUseCardByInstanceId(int32 InId);
 
 	UInGameMessageReceiverComponent* GetInGameMessageReceiverComponent() const
 	{
@@ -29,6 +38,9 @@ public:
 		return CharacterPawn;
 	}
 
+	// ICardTargetProviderInterface interface
+	virtual void StartAcquireTargets(FTargetAcquireSettings Settings, TFunction<void(bool bSuccess, TArray<FAcquiredTargetInfo>)> Callback) override;
+
 protected:
 	UFUNCTION(Server, Reliable)
 	void ServerMarkPlayerReady();
@@ -36,9 +48,15 @@ protected:
 	UFUNCTION()
 	void OnTimerExpired();
 
+	UFUNCTION()
+	void OnCardTargetAcquired(bool bSuccess);
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="PlayerController")
 	UInGameMessageReceiverComponent* InGameMessageReceiverComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="PlayerController")
+	UCardTargetProviderComponent* CardTargetProviderComponent;
 
 	UPROPERTY(Replicated, Transient)
 	AFreeForAllPlayerCharacter* CharacterPawn;
@@ -48,4 +66,6 @@ protected:
 
 protected:
 	FTimerHandle RandomTimer;
+
+	TFunction<void(bool, TArray<FAcquiredTargetInfo>)> AcquireTargetCallback;
 };

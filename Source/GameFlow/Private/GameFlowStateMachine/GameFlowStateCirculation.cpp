@@ -128,3 +128,8 @@ void UGameFlowStateCirculation::OnGameFlowStateFinished(UGameFlowStateBase* InSt
 	// Mark state finished
 	bStateFinished = true;
 }
+
+FName UGameFlowStateCirculation::GetCurrentStateName() const
+{
+	return IsValid(CurrentState) ? CurrentState->GetStateName() : NAME_None;
+}

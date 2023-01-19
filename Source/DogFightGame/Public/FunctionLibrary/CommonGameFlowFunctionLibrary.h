@@ -19,6 +19,14 @@ public:
 	static TArray<ATopDownStylePlayerController*> GetAllPlayerControllers();
 
 	/**
+	 * Get the name of current processing game flow state.
+	 *
+	 * @return Name of current state.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommmonGameFlow")
+	static FName GetCurrentGameFlowStateName();
+
+	/**
 	 * Spawn character pawn for specified player controller.
 	 *
 	 * @param Controller The player control to spawn character.
@@ -64,6 +72,13 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameFlow")
 	static void SyncCurrentPlayerIdWithTimeline();
+
+	/**
+	 * Get the player controller of local player.
+	 * @return			Player controller.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameFlow")
+	static ATopDownStylePlayerController* GetLocalPlayerController();
 
 	/**
 	 * Get the player ID of local player.

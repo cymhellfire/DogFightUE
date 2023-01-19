@@ -15,7 +15,18 @@ public:
 
 	void SetCardName(FString InName);
 
+	void SetCardInstanceId(int32 InId);
+
+	UFUNCTION(BlueprintCallable, Category="CardDescObject")
+	int32 GetCardInstanceId() const
+	{
+		return CardInstanceId;
+	}
+
 protected:
 	UPROPERTY(Transient, Replicated)
 	FString CardName;
+
+	UPROPERTY(Transient, Replicated)
+	int32 CardInstanceId;
 };

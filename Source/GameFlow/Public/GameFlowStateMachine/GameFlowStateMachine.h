@@ -25,6 +25,8 @@ public:
 
 	void SetInsertState(UGameFlowStateCreateArgument* InArgument);
 
+	FName GetCurrentStateName() const;
+
 	// FTickableGameObject
 	virtual void Tick(float DeltaTime) override;
 

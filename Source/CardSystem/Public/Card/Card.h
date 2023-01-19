@@ -36,6 +36,24 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category="Card", DisplayName="Get Card Basic Desc")
 	void BP_GetCardBasicDesc(FString& OutName, FString& OutDesc);
 
+	UFUNCTION(BlueprintCallable, Category="Card")
+	void SetInstanceId(int32 InId);
+
+	UFUNCTION(BlueprintCallable, Category="Card")
+	int32 GetInstanceId() const
+	{
+		return CardInstanceId;
+	}
+
+	UFUNCTION(BlueprintCallable, Category="Card")
+	void SetOwnerController(AController* InOwner);
+
+	AController* GetOwnerController() const
+	{
+		return OwnerController.IsValid() ? OwnerController.Get() : nullptr;
+	}
+
+
 	// ------------------- Attribute ----------------------
 
 	UFUNCTION(BlueprintCallable, Category="Card")
@@ -66,13 +84,6 @@ public:
 	 * Execute this card logic flow.
 	 */
 	void Execute();
-
-	void SetOwnerController(AController* InOwner);
-
-	AController* GetOwnerController() const
-	{
-		return OwnerController.IsValid() ? OwnerController.Get() : nullptr;
-	}
 
 public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FCardExecutedSignature, ECardExecutionResult, Result, UCard*, Card);
@@ -146,6 +157,9 @@ public:
 protected:
 	UPROPERTY(Transient)
 	UCardDescObject* DescObject;
+
+	/** Id used to distinguish different cards. */
+	int32 CardInstanceId;
 
 	/** The owner controller to handle necessary RPC function call. */
 	TWeakObjectPtr<AController> OwnerController;

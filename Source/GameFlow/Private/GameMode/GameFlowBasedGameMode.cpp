@@ -30,3 +30,8 @@ void AGameFlowBasedGameMode::Tick(float DeltaSeconds)
 		GameFlowStateMachine->Tick(DeltaSeconds);
 	}
 }
+
+FName AGameFlowBasedGameMode::GetCurrentGameFlowStateName() const
+{
+	return IsValid(GameFlowStateMachine) ? GameFlowStateMachine->GetCurrentStateName() : NAME_None;
+}
