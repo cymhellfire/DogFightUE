@@ -51,6 +51,12 @@ protected:
 	UFUNCTION()
 	void OnCardTargetAcquired(bool bSuccess);
 
+	UFUNCTION(Client, Reliable)
+	void ClientStartAcquireTargets(FTargetAcquireSettings Settings);
+
+	UFUNCTION(Server, Reliable)
+	void ServerFinishAcquireTargets(bool bSuccess, const TArray<FAcquiredTargetInfo>& TargetInfos);
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="PlayerController")
 	UInGameMessageReceiverComponent* InGameMessageReceiverComponent;

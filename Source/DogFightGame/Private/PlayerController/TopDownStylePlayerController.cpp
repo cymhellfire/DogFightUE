@@ -97,21 +97,32 @@ void ATopDownStylePlayerController::StartAcquireTargets(FTargetAcquireSettings S
 {
 	AcquireTargetCallback = Callback;
 
-	CardTargetProviderComponent->AcquireTarget(Settings);
+	// Notify the client to start acquire target process
+	ClientStartAcquireTargets(Settings);
 }
 
 void ATopDownStylePlayerController::OnCardTargetAcquired(bool bSuccess)
 {
+	if (bSuccess)
+	{
+		ServerFinishAcquireTargets(bSuccess, CardTargetProviderComponent->GetLastTargetInfoList());
+	}
+	else
+	{
+		ServerFinishAcquireTargets(bSuccess, TArray<FAcquiredTargetInfo>());
+	}
+}
+
+void ATopDownStylePlayerController::ClientStartAcquireTargets_Implementation(FTargetAcquireSettings Settings)
+{
+	CardTargetProviderComponent->AcquireTarget(Settings);
+}
+
+void ATopDownStylePlayerController::ServerFinishAcquireTargets_Implementation(bool bSuccess, const TArray<FAcquiredTargetInfo>& TargetInfos)
+{
 	if (AcquireTargetCallback)
 	{
-		if (bSuccess)
-		{
-			AcquireTargetCallback(bSuccess, CardTargetProviderComponent->GetLastTargetInfoList());
-		}
-		else
-		{
-			AcquireTargetCallback(bSuccess, TArray<FAcquiredTargetInfo>());
-		}
+		AcquireTargetCallback(bSuccess, TargetInfos);
 
 		// The callback should be clear once invoked
 		AcquireTargetCallback.Reset();
