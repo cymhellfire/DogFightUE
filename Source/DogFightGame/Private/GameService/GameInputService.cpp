@@ -4,6 +4,7 @@
 #include "InputMappingContext.h"
 #include "Common/DogFightGameLog.h"
 #include "FunctionLibrary/CommonGameFlowFunctionLibrary.h"
+#include "FunctionLibrary/CommonGameplayFunctionLibrary.h"
 #include "GameMode/TopDownStyleGameMode.h"
 #include "PlayerController/TopDownStylePlayerController.h"
 
@@ -34,6 +35,22 @@ void UGameInputService::MulticastRemoveInputMapping(EInputMappingType::Type Mapp
 				PC->ClientRemoveInputMapping(MappingType);
 			}
 		}
+	}
+}
+
+void UGameInputService::AddInputMappingByPlayerId(int32 InPlayerId, EInputMappingType::Type MappingType)
+{
+	if (auto PC = UCommonGameplayFunctionLibrary::GetPlayerControllerById(InPlayerId))
+	{
+		PC->ClientAddInputMapping(MappingType);
+	}
+}
+
+void UGameInputService::RemoveInputMappingByPlayerId(int32 InPlayerId, EInputMappingType::Type MappingType)
+{
+	if (auto PC = UCommonGameplayFunctionLibrary::GetPlayerControllerById(InPlayerId))
+	{
+		PC->ClientRemoveInputMapping(MappingType);
 	}
 }
 

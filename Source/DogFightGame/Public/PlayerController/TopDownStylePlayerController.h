@@ -9,6 +9,7 @@
 class AFreeForAllPlayerCharacter;
 class UInGameMessageReceiverComponent;
 class UCardTargetProviderComponent;
+class UInputAction;
 
 UCLASS()
 class DOGFIGHTGAME_API ATopDownStylePlayerController : public ADogFightPlayerController, public ICardTargetProviderInterface

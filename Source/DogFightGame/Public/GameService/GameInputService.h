@@ -27,6 +27,22 @@ public:
 	UFUNCTION(BlueprintCallable, Category="GameInput")
 	void MulticastRemoveInputMapping(EInputMappingType::Type MappingType);
 
+	/**
+	 * Add input mapping to specified player.
+	 * @param InPlayerId			Id of player to add mapping.
+	 * @param MappingType			Input mapping type.
+	 */
+	UFUNCTION(BlueprintCallable, Category="GameInput")
+	void AddInputMappingByPlayerId(int32 InPlayerId, EInputMappingType::Type MappingType);
+
+	/**
+	 * Remove input mapping from specified player.
+	 * @param InPlayerId			Id of player to remove mapping.
+	 * @param MappingType			Input mapping type.
+	 */
+	UFUNCTION(BlueprintCallable, Category="GameInput")
+	void RemoveInputMappingByPlayerId(int32 InPlayerId, EInputMappingType::Type MappingType);
+
 	void AddInputMapping(EInputMappingType::Type MappingType);
 
 	void RemoveInputMapping(EInputMappingType::Type MappingType);

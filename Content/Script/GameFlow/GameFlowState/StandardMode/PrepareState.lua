@@ -4,6 +4,9 @@ require "UnLua"
 local PrepareState = Class("GameFlow.GameFlowState.GameFlowStateLogicBase")
 
 local function CharacterMoveCountDown(self, Duration)
+    -- Add character movement input to all players
+    GameServices.GameInputService:MulticastAddInputMapping(UE.EInputMappingType.InputMapping_CharacterMove)
+
     -- Enable character movement
     UE.UCommonGameFlowFunctionLibrary.SetCharacterMoveEnableForAllPlayers(true)
 
@@ -17,6 +20,9 @@ local function CharacterMoveCountDown(self, Duration)
 
     -- Disable character movement
     UE.UCommonGameFlowFunctionLibrary.SetCharacterMoveEnableForAllPlayers(false)
+
+    -- Remove character movement input to all players
+    GameServices.GameInputService:MulticastRemoveInputMapping(UE.EInputMappingType.InputMapping_CharacterMove)
 
     -- Construct next state
     local Instigator = self.OwnerState.CreateArgument.Instigator
@@ -32,7 +38,6 @@ end
 function PrepareState:OnEnter()
     print("PrepareState: OnEnter")
 
-    --coroutine.resume(coroutine.create(DelayFinish), self, "StandardMode.InitState")
     coroutine.resume(coroutine.create(CharacterMoveCountDown), self, 5)
 end
 

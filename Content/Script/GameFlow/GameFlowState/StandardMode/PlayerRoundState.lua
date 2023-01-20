@@ -6,6 +6,10 @@ local PlayerRoundState = Class("GameFlow.GameFlowState.GameFlowStateLogicBase")
 function PlayerRoundState:OnEnter()
     print("PlayerRoundState: OnEnter")
 
+    -- Add use card mapping to current player
+    local CurPlayerId = UE.UCommonGameFlowFunctionLibrary.GetCurrentPlayerId()
+    GameServices.GameInputService:AddInputMappingByPlayerId(CurPlayerId, UE.EInputMappingType.InputMapping_CardUsing)
+
     -- Construct next state
     local Instigator = self.OwnerState.CreateArgument.Instigator
     local NewArgument = GameServices.GameFlowStateService:GetGameFlowStateCreateArgument(Instigator)

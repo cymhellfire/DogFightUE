@@ -1,6 +1,7 @@
 ﻿#include "Player/ControllerComponent/CardTargetProviderComponent.h"
 
 #include "CardSystem.h"
+#include "EnhancedInputComponent.h"
 
 UCardTargetProviderComponent::UCardTargetProviderComponent()
 {
@@ -20,18 +21,25 @@ void UCardTargetProviderComponent::AcquireTarget(FTargetAcquireSettings InSettin
 void UCardTargetProviderComponent::InitializeInput()
 {
 	PlayerController = GetTypedOuter<APlayerController>();
-	if (PlayerController.IsValid())
+	if (!PlayerController.IsValid())
 	{
-		PlayerController->InputComponent->BindAction("ConfirmSelection", IE_Pressed, this, &UCardTargetProviderComponent::OnSelectTargetPressed);
-		PlayerController->InputComponent->BindAction("CancelSelection", IE_Pressed, this, &UCardTargetProviderComponent::OnCancelSelectionPressed);
+		return;
 	}
-	else
+
+	if (auto EnhancedInput = Cast<UEnhancedInputComponent>(PlayerController->InputComponent))
 	{
-		UE_LOG(LogCardSystem, Error, TEXT("[CardTargetProviderComponent] Expect an outer with APlayerController type, some functionalities are unavailable."));
+		if (ConfirmSelectInputAction)
+		{
+			EnhancedInput->BindAction(ConfirmSelectInputAction, ETriggerEvent::Triggered, this, &UCardTargetProviderComponent::OnSelectTargetPressed);
+		}
+		if (CancelUsingCardInputAction)
+		{
+			EnhancedInput->BindAction(CancelUsingCardInputAction, ETriggerEvent::Triggered, this, &UCardTargetProviderComponent::OnCancelSelectionPressed);
+		}
 	}
 }
 
-void UCardTargetProviderComponent::OnSelectTargetPressed()
+void UCardTargetProviderComponent::OnSelectTargetPressed(const FInputActionInstance& Instance)
 {
 	// Ignore when selecting is not enabled
 	if (!bTargetSelecting)
@@ -82,7 +90,7 @@ void UCardTargetProviderComponent::OnAllTargetAcquired()
 	OnCardTargetAcquired.Broadcast(true);
 }
 
-void UCardTargetProviderComponent::OnCancelSelectionPressed()
+void UCardTargetProviderComponent::OnCancelSelectionPressed(const FInputActionInstance& Instance)
 {
 	if (bTargetSelecting)
 	{
