@@ -29,7 +29,14 @@ local function IsDerivedFrom(InObject, InClass)
     return UE.ULuaIntegrationFunctionLibrary.IsDerivedFrom(InObject, InClass)
 end
 
+---Get the first local player controller.
+---@return APlayerController Player controller.
+local function GetLocalPlayerController()
+    return UE.ULuaIntegrationFunctionLibrary.GetFirstLocalPlayerController()
+end
+
 _G.GetCurrentWorld = GetCurrentWorld
 _G.GetGameInstance = GetGameInstance
 _G.LoadClass = LoadClass
 _G.IsDerivedFrom = IsDerivedFrom
+_G.GetLocalPlayerController = GetLocalPlayerController

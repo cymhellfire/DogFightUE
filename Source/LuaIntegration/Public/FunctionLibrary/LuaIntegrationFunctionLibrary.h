@@ -8,18 +8,25 @@ class LUAINTEGRATION_API ULuaIntegrationFunctionLibrary : public UBlueprintFunct
 	GENERATED_BODY()
 public:
 	/**
-	 * @brief Get the current active world.
+	 * Get the current active world.
 	 * @return Current playing world.
 	 */
 	UFUNCTION(BlueprintCallable, Category="LuaIntegrationFunction")
 	static UWorld* GetCurrentWorld();
 
 	/**
-	 * @brief Get the game instance.
+	 * Get the game instance.
 	 * @return Current game instance.
 	 */
 	UFUNCTION(BlueprintCallable, Category="LuaIntegrationFunction")
 	static UGameInstance* GetGameInstance();
+
+	/**
+	 * Get the player controller of first local player.
+	 * @return			Player controller.
+	 */
+	UFUNCTION(BlueprintCallable, Category="LuaIntegrationFunction")
+	static APlayerController* GetFirstLocalPlayerController();
 
 	/**
 	 * Load the class from given path.

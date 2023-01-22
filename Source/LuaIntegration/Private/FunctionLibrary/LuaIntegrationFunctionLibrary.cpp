@@ -21,6 +21,16 @@ UGameInstance* ULuaIntegrationFunctionLibrary::GetGameInstance()
 	return nullptr;
 }
 
+APlayerController* ULuaIntegrationFunctionLibrary::GetFirstLocalPlayerController()
+{
+	if (auto GameInstance = GetGameInstance())
+	{
+		return GameInstance->GetFirstLocalPlayerController();
+	}
+
+	return nullptr;
+}
+
 UClass* ULuaIntegrationFunctionLibrary::LoadClassByPath(FString InPath)
 {
 	if (InPath.IsEmpty())
