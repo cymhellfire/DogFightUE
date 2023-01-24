@@ -9,6 +9,7 @@
 #include "Player/TopDownStylePlayerState.h"
 #include "Player/ControllerComponent/CardTargetProviderComponent.h"
 #include "PlayerController/PlayerControllerComponent/InGameMessageReceiverComponent.h"
+#include "PlayerController/PlayerControllerComponent/InGameWidgetManipulatorComponent.h"
 
 ATopDownStylePlayerController::ATopDownStylePlayerController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -18,6 +19,8 @@ ATopDownStylePlayerController::ATopDownStylePlayerController(const FObjectInitia
 	// Create target acquire component
 	CardTargetProviderComponent = CreateDefaultSubobject<UCardTargetProviderComponent>("CardTargetProvider");
 	CardTargetProviderComponent->OnCardTargetAcquired.AddDynamic(this, &ATopDownStylePlayerController::OnCardTargetAcquired);
+	// Create in-game widget manipulator
+	InGameWidgetManipulatorComponent = CreateDefaultSubobject<UInGameWidgetManipulatorComponent>("InGameWidgetManipulator");
 
 	bShowMouseCursor = true;
 }

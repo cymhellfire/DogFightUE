@@ -6,7 +6,6 @@ UWorld* ULuaIntegrationFunctionLibrary::GetCurrentWorld()
 	if (GWorld)
 	{
 		CurWorld = GWorld->GetWorld();
-		UE_LOG(LogTemp, Log, TEXT("Debug-GWorld: %s %p"), *CurWorld->GetName(), CurWorld);
 	}
 	return CurWorld;
 }

@@ -8,6 +8,7 @@
 
 class AFreeForAllPlayerCharacter;
 class UInGameMessageReceiverComponent;
+class UInGameWidgetManipulatorComponent;
 class UCardTargetProviderComponent;
 class UInputAction;
 
@@ -42,6 +43,11 @@ public:
 		return InGameMessageReceiverComponent;
 	}
 
+	UInGameWidgetManipulatorComponent* GetInGameWidgetManipulatorComponent() const
+	{
+		return InGameWidgetManipulatorComponent;
+	}
+
 	AFreeForAllPlayerCharacter* GetCharacterPawn() const
 	{
 		return CharacterPawn;
@@ -69,6 +75,9 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="PlayerController")
 	UInGameMessageReceiverComponent* InGameMessageReceiverComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="PlayerController")
+	UInGameWidgetManipulatorComponent* InGameWidgetManipulatorComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="PlayerController")
 	UCardTargetProviderComponent* CardTargetProviderComponent;
