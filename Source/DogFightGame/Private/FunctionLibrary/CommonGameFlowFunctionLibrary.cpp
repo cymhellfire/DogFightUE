@@ -55,6 +55,7 @@ void UCommonGameFlowFunctionLibrary::SetCharacterMoveEnableForAllPlayers(bool bE
 
 void UCommonGameFlowFunctionLibrary::InitializeGameTimeline()
 {
+	// Use game mode to get timeline component to ensure this operation cannot be finished on client side.
 	if (auto GameMode = GetCurrentTopDownStyleGameMode())
 	{
 		if (auto Timeline = GameMode->GetGameTimelineComponent())
@@ -66,9 +67,9 @@ void UCommonGameFlowFunctionLibrary::InitializeGameTimeline()
 
 TArray<int32> UCommonGameFlowFunctionLibrary::GetCurrentTimeline()
 {
-	if (auto GameMode = GetCurrentTopDownStyleGameMode())
+	if (auto GS = GetCurrentTopDownStyleGameState())
 	{
-		if (auto Timeline = GameMode->GetGameTimelineComponent())
+		if (auto Timeline = GS->GetGameTimelineComponent())
 		{
 			return Timeline->GetTimeline();
 		}

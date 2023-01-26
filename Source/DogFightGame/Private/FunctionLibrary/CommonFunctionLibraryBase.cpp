@@ -18,9 +18,9 @@ ATopDownStyleGameMode* UCommonFunctionLibraryBase::GetCurrentTopDownStyleGameMod
 
 ATopDownStyleGameState* UCommonFunctionLibraryBase::GetCurrentTopDownStyleGameState()
 {
-	if (auto GameMode = GetCurrentTopDownStyleGameMode())
+	if (auto CurWorld = ULuaIntegrationFunctionLibrary::GetCurrentWorld())
 	{
-		return GameMode->GetGameState<ATopDownStyleGameState>();
+		return Cast<ATopDownStyleGameState>(CurWorld->GetGameState());
 	}
 
 	return nullptr;
