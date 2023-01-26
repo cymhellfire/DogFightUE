@@ -1,5 +1,7 @@
 require "UnLua"
 
+---@class WidgetCardList
+---@field public CardList_ListView UListView
 local WidgetCardList = Class("Common.MVVM.ModelBase")
 local ViewModelBase = require("Common.MVVM.ViewModelBase")
 local DataBinding = require("Common.MVVM.DataBinding")
@@ -15,7 +17,7 @@ function WidgetCardList:Initialize()
     -- Cache local player id
     self.LocalPlayerId = UE.UCommonGameFlowFunctionLibrary.GetLocalPlayerId()
     print("Cache local player id: ".. self.LocalPlayerId)
-    GameServices.LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_CardListChanged, self, self.OnCardListChanged)
+    GetGameService(GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_CardListChanged, self, self.OnCardListChanged)
 end
 
 function WidgetCardList:PostInitialized()

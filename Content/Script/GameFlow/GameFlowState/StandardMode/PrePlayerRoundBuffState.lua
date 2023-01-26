@@ -9,7 +9,7 @@ function PrePlayerRoundBuffState:OnEnter()
 
     -- Construct next state
     local Instigator = self.OwnerState.CreateArgument.Instigator
-    local NewArgument = GameServices.GameFlowStateService:GetGameFlowStateCreateArgument(Instigator)
+    local NewArgument = GetGameService(GameServiceNameDef.GameFlowStateService):GetGameFlowStateCreateArgument(Instigator)
     if NewArgument then
         NewArgument.StateName = "StandardMode.PrePlayerRoundCardState"
         NewArgument.Instigator = Instigator

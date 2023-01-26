@@ -14,7 +14,7 @@ function PrePlayerRoundCardState:OnEnter()
 
     -- Construct next state
     local Instigator = self.OwnerState.CreateArgument.Instigator
-    local NewArgument = GameServices.GameFlowStateService:GetGameFlowStateCreateArgument(Instigator)
+    local NewArgument = GetGameService(GameServiceNameDef.GameFlowStateService):GetGameFlowStateCreateArgument(Instigator)
     if NewArgument then
         NewArgument.StateName = "StandardMode.PlayerRoundState"
         NewArgument.Instigator = Instigator
@@ -40,11 +40,11 @@ function PrePlayerRoundCardState:DispatchCard(InPlayerId, InCount)
     end
 
     for i = 1, InCount do
-        local NewCardName = GameServices.CardGeneratorService:GetRandomCard()
+        local NewCardName = GetGameService(GameServiceNameDef.CardGeneratorService):GetRandomCard()
         local NewCard = nil
         -- Create new card by name
         if NewCardName then
-            NewCard = GameServices.CardGameService:CreateCard(NewCardName, TargetPlayerCtrl)
+            NewCard = GetGameService(GameServiceNameDef.CardGameService):CreateCard(NewCardName, TargetPlayerCtrl)
         end
 
         -- Dispatch new card to player

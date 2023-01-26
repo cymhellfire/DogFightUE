@@ -6,26 +6,27 @@ local GameServiceBase = Class()
 function GameServiceBase:StartupScript(ServiceName)
     print("ServiceStart: " .. ServiceName)
 
-    -- Register this service to global scope
-    if _G.GameServices == nil then
-        _G.GameServices = {}
+    -- Register this service name to global scope
+    if _G.GameServiceNameDef == nil then
+        ---@type table Contains names of all game services alive.
+        _G.GameServiceNameDef = {}
     end
 
     -- Name duplication check
-    if _G.GameServices[ServiceName] ~= nil then
+    if _G.GameServiceNameDef[ServiceName] ~= nil then
         print("[GameServiceBase] Duplicated service name detected: " .. ServiceName)
         return
     end
 
-    _G.GameServices[ServiceName] = self
+    _G.GameServiceNameDef[ServiceName] = ServiceName
 end
 
 function GameServiceBase:ShutdownScript(ServiceName)
     print("ServiceStop: " .. ServiceName)
 
     -- Unregister this service from global scope
-    if _G.GameServices ~= nil and _G.GameServices[ServiceName] == self then
-        _G.GameServices[ServiceName] = nil
+    if _G.GameServiceNameDef ~= nil and _G.GameServiceNameDef[ServiceName] ~= nil then
+        _G.GameServiceNameDef[ServiceName] = nil
     end
 end
 

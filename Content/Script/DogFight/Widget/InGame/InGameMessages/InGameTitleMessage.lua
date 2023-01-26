@@ -11,7 +11,7 @@ function InGameTitleMessage:Initialize()
         {BindKey = "TitleMessage",   UIKey = "TitleMessage_Text",   DataBinding = DataBinding.TextContextBinding(), }
     })
 
-    GameServices.LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_ReceiveTitleMessage, self, self.OnReceiveTitleMessage)
+    GetGameService(GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_ReceiveTitleMessage, self, self.OnReceiveTitleMessage)
 end
 
 function InGameTitleMessage:OnReceiveTitleMessage(InMsg)

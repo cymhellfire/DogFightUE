@@ -8,7 +8,7 @@ function InitState:OnEnter()
     print("InitState: OnEnter")
     print("InitState: Instigator " .. self.OwnerState.CreateArgument.Instigator:GetName())
 
-    GameServices.LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_ReadyPlayerCount,
+    GetGameService(GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_ReadyPlayerCount,
         self, self.OnReadyPlayerCountChanged)
 end
 
@@ -22,15 +22,15 @@ function InitState:OnReadyPlayerCountChanged(InCount)
     UE.UInGameMessageFunctionLibrary.SetTitleMessage("Ready Player: " .. InCount .. "/" .. AllPlayerCount)
 
     if tonumber(InCount) >= AllPlayerCount then
-        GameServices.LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_ReadyPlayerCount,
+        GetGameService(GameServiceNameDef.LuaEventService):UnregisterListener(UE.ELuaEvent.LuaEvent_ReadyPlayerCount,
             self, self.OnReadyPlayerCountChanged)
 
         -- Add camera movement input to all players
-        GameServices.GameInputService:MulticastAddInputMapping(UE.EInputMappingType.InputMapping_CameraMove)
+        GetGameService(GameServiceNameDef.GameInputService):MulticastAddInputMapping(UE.EInputMappingType.InputMapping_CameraMove)
 
         -- Setup next state
         local Instigator = self.OwnerState.CreateArgument.Instigator
-        local NewArgument = GameServices.GameFlowStateService:GetGameFlowStateCreateArgument(Instigator)
+        local NewArgument = GetGameService(GameServiceNameDef.GameFlowStateService):GetGameFlowStateCreateArgument(Instigator)
         if NewArgument then
             NewArgument.StateName = "StandardMode.SpawnState"
             NewArgument.Instigator = Instigator

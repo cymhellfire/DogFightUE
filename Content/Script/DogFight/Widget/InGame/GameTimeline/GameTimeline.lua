@@ -12,7 +12,7 @@ function GameTimeline:Initialize()
         --{BindKey = "TitleMessage",   UIKey = "TitleMessage_Text",   DataBinding = DataBinding.TextContextBinding(), }
     })
 
-    GameServices.LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_GameTimelineChanged, self, self.OnTimelineChanged)
+    GetGameService("LuaEventService"):RegisterListener(UE.ELuaEvent.LuaEvent_GameTimelineChanged, self, self.OnTimelineChanged)
 end
 
 function GameTimeline:PostInitialized()
