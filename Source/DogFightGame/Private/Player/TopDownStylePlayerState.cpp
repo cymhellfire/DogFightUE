@@ -3,6 +3,7 @@
 #include "Card/Card.h"
 #include "CardSystem/Public/Card/CardDescObject.h"
 #include "Common/LuaEventDef.h"
+#include "Engine/ActorChannel.h"
 #include "GameService/CardGameService.h"
 #include "GameService/GameService.h"
 #include "GameService/LuaEventService.h"
@@ -16,6 +17,19 @@ void ATopDownStylePlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 	SharedParams.bIsPushBased = true;
 
 	DOREPLIFETIME_WITH_PARAMS_FAST(ATopDownStylePlayerState, CardDescObjectList, SharedParams);
+}
+
+bool ATopDownStylePlayerState::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch,
+	FReplicationFlags* RepFlags)
+{
+	bool bWriteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+
+	for (auto DescObject : CardDescObjectList)
+	{
+		bWriteSomething |= Channel->ReplicateSubobject(DescObject, *Bunch, *RepFlags);
+	}
+
+	return bWriteSomething;
 }
 
 void ATopDownStylePlayerState::AddCardObject(UCard* InCard)
