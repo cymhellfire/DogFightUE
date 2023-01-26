@@ -8,11 +8,11 @@ function PlayerRoundState:OnEnter()
 
     -- Add use card mapping to current player
     local CurPlayerId = UE.UCommonGameFlowFunctionLibrary.GetCurrentPlayerId()
-    GameServices.GameInputService:AddInputMappingByPlayerId(CurPlayerId, UE.EInputMappingType.InputMapping_CardUsing)
+    GetGameService(GameServiceNameDef.GameInputService):AddInputMappingByPlayerId(CurPlayerId, UE.EInputMappingType.InputMapping_CardUsing)
 
     -- Construct next state
     local Instigator = self.OwnerState.CreateArgument.Instigator
-    local NewArgument = GameServices.GameFlowStateService:GetGameFlowStateCreateArgument(Instigator)
+    local NewArgument = GetGameService(GameServiceNameDef.GameFlowStateService):GetGameFlowStateCreateArgument(Instigator)
     if NewArgument then
         NewArgument.StateName = "StandardMode.PostPlayerRoundCardState"
         NewArgument.Instigator = Instigator
@@ -24,6 +24,10 @@ end
 
 function PlayerRoundState:OnExit()
     print("PlayerRoundState: OnExit")
+
+    -- Remove use card mapping from current player
+    local CurPlayerId = UE.UCommonGameFlowFunctionLibrary.GetCurrentPlayerId()
+    GetGameService(GameServiceNameDef.GameInputService):RemoveInputMappingByPlayerId(CurPlayerId, UE.EInputMappingType.InputMapping_CardUsing)
 end
 
 return PlayerRoundState
