@@ -38,22 +38,29 @@ function ListViewWrapper:LoadDataByList(InDataList)
     if self.ItemClass then
         -- Clear exists items first
         self:ClearObjectRef()
+        ---@type TArray
         local DataItemList = UE.TArray(UE.UObject)
-        -- Create UObject for carrying the data
-        for i = 1, #InDataList do
-            ---@type GenericListViewItem
-            local NewItemObject = NewObject(self.ItemClass, self.ParentWidget)
-            NewItemObject:SetData(InDataList[i])
-            -- Record new item to array
-            DataItemList:Add(NewItemObject)
+        if InDataList then
+            -- Create UObject for carrying the data
+            for i = 1, #InDataList do
+                ---@type GenericListViewItem
+                local NewItemObject = NewObject(self.ItemClass, self.ParentWidget)
+                NewItemObject:SetData(InDataList[i])
+                -- Record new item to array
+                DataItemList:Add(NewItemObject)
 
-            -- Record to data item list and add a reference to it to prevent GC
-            self:AddObjectRef(NewItemObject)
+                -- Record to data item list and add a reference to it to prevent GC
+                self:AddObjectRef(NewItemObject)
+            end
         end
 
         -- Set object to unreal side
         if self.ParentWidget then
-            self.ParentWidget:BP_SetListItems(DataItemList)
+            if DataItemList:Length() > 0 then
+                self.ParentWidget:BP_SetListItems(DataItemList)
+            else
+                self.ParentWidget:ClearListItems()
+            end
         end
     end
 end

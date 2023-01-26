@@ -126,6 +126,12 @@ void ATopDownStylePlayerState::ServerTryToUseCardByInstanceId_Implementation(int
 	if (auto Card = GetCardByInstanceId(InId))
 	{
 		UE_LOG(LogTemp, Log, TEXT("[ATopDownStylePlayerState] Start use card with id: %d"), InId);
+		// Notify server
+		ServerBeginUseCard(InId);
+
+		// Callback to notify client that card is started
+		ClientBeginUseCard(InId);
+
 		Card->OnCardExecutionFinished.AddDynamic(this, &ATopDownStylePlayerState::OnCardFinished);
 		Card->Execute();
 	}
@@ -141,13 +147,51 @@ void ATopDownStylePlayerState::OnCardFinished(ECardExecutionResult Result, UCard
 	if (Result == ECardExecutionResult::CER_Default)
 	{
 		UE_LOG(LogTemp, Log, TEXT("[ATopDownStylePlayerState] Finished use card."));
-		// Remove card from list
+		// Remove card from list first
 		RemoveCardObject(Card);
+
+		// Notify server
+		ServerCardFinished(Card->GetInstanceId());
+
+		// Notify client
+		ClientCardFinished(Card->GetInstanceId());
 
 		// Destroy the card instance
 		if (auto CardGameService = UGameService::GetGameService<UCardGameService>())
 		{
 			CardGameService->DestroyCard(Card);
 		}
+	}
+}
+
+void ATopDownStylePlayerState::ClientBeginUseCard_Implementation(int32 InId)
+{
+	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>())
+	{
+		LuaEventService->SendEventToLua_OneParam_Int(ELuaEvent::Type::LuaEvent_MyCardBeginUsing, InId);
+	}
+}
+
+void ATopDownStylePlayerState::ServerBeginUseCard_Implementation(int32 InId)
+{
+	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>())
+	{
+		LuaEventService->SendEventToLua_TwoParam_Int(ELuaEvent::Type::LuaEvent_PlayerCardBeginUsing, GetPlayerId(), InId);
+	}
+}
+
+void ATopDownStylePlayerState::ClientCardFinished_Implementation(int32 InId)
+{
+	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>())
+	{
+		LuaEventService->SendEventToLua_OneParam_Int(ELuaEvent::Type::LuaEvent_MyCardFinished, InId);
+	}
+}
+
+void ATopDownStylePlayerState::ServerCardFinished_Implementation(int32 InId)
+{
+	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>())
+	{
+		LuaEventService->SendEventToLua_TwoParam_Int(ELuaEvent::Type::LuaEvent_PlayerCardFinished, GetPlayerId(), InId);
 	}
 }

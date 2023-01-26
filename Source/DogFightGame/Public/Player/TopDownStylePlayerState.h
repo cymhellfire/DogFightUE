@@ -68,6 +68,34 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerTryToUseCardByInstanceId(int32 InId);
 
+	/**
+	 * Notify client side a card is started using.
+	 * @param InId			Instance id of card is using.
+	 */
+	UFUNCTION(Client, Reliable)
+	void ClientBeginUseCard(int32 InId);
+
+	/**
+	 * Notify server side a card is started using.
+	 * @param InId			Instance id of card to use.
+	 */
+	UFUNCTION(Server, Reliable)
+	void ServerBeginUseCard(int32 InId);
+
+	/**
+	 * Notify client side a card is finished.
+	 * @param InId			Instance id of card finished.
+	 */
+	UFUNCTION(Client, Reliable)
+	void ClientCardFinished(int32 InId);
+
+	/**
+	 * Notify server side a card is finished.
+	 * @param InId			Instance id of card finished.
+	 */
+	UFUNCTION(Server, Reliable)
+	void ServerCardFinished(int32 InId);
+
 protected:
 	void AddCardDescObject(UCardDescObject* InDescObject);
 

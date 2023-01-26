@@ -5,7 +5,7 @@ local PrepareState = Class("GameFlow.GameFlowState.GameFlowStateLogicBase")
 
 local function CharacterMoveCountDown(self, Duration)
     -- Add character movement input to all players
-    GameServices.GameInputService:MulticastAddInputMapping(UE.EInputMappingType.InputMapping_CharacterMove)
+    GetGameService(GameServiceNameDef.GameInputService):MulticastAddInputMapping(UE.EInputMappingType.InputMapping_CharacterMove)
 
     -- Enable character movement
     UE.UCommonGameFlowFunctionLibrary.SetCharacterMoveEnableForAllPlayers(true)
@@ -22,11 +22,11 @@ local function CharacterMoveCountDown(self, Duration)
     UE.UCommonGameFlowFunctionLibrary.SetCharacterMoveEnableForAllPlayers(false)
 
     -- Remove character movement input to all players
-    GameServices.GameInputService:MulticastRemoveInputMapping(UE.EInputMappingType.InputMapping_CharacterMove)
+    GetGameService(GameServiceNameDef.GameInputService):MulticastRemoveInputMapping(UE.EInputMappingType.InputMapping_CharacterMove)
 
     -- Construct next state
     local Instigator = self.OwnerState.CreateArgument.Instigator
-    local NewArgument = GameServices.GameFlowStateService:GetGameFlowStateCreateArgument(Instigator)
+    local NewArgument = GetGameService(GameServiceNameDef.GameFlowStateService):GetGameFlowStateCreateArgument(Instigator)
     if NewArgument then
         NewArgument.StateName = "StandardMode.InitTimelineState"
         NewArgument.Instigator = Instigator

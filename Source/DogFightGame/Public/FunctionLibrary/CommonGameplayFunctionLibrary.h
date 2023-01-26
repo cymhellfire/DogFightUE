@@ -43,6 +43,14 @@ public:
 	static void UseCardByInstanceId(int32 InInstanceId);
 
 	/**
+	 * Get card count of specified player.
+	 * @param InPlayerId		Player id to get card count.
+	 * @return					Total card count of player.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
+	static int32 GetPlayerCardNums(int32 InPlayerId);
+
+	/**
 	 * Add specified game widget to player with given id.
 	 * @param WidgetName		Name of widget to show.
 	 * @param InPlayerId		Id of player to add widget.

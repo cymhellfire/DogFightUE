@@ -42,6 +42,16 @@ void UCommonGameplayFunctionLibrary::UseCardByInstanceId(int32 InInstanceId)
 	}
 }
 
+int32 UCommonGameplayFunctionLibrary::GetPlayerCardNums(int32 InPlayerId)
+{
+	if (auto PS = Cast<ATopDownStylePlayerState>(GetPlayerStateById(InPlayerId)))
+	{
+		return PS->GetCardNum();
+	}
+
+	return -1;
+}
+
 void UCommonGameplayFunctionLibrary::AddWidgetByPlayerId(FString WidgetName, int32 InPlayerId)
 {
 	ForEachPlayerControllerDo([WidgetName](ATopDownStylePlayerController* InPC)

@@ -24,6 +24,18 @@ function WidgetCardList:PostInitialized()
     self.CardListWrapper = ListWrapper.New(self.CardList_ListView)
 end
 
+function WidgetCardList:Construct()
+    -- Register callback for card using events
+    GetGameService(GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_MyCardBeginUsing, self, self.OnCardBeginUsing)
+    GetGameService(GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_MyCardFinished, self, self.OnCardFinished)
+end
+
+function WidgetCardList:Destruct()
+    -- Unregister callback
+    GetGameService(GameServiceNameDef.LuaEventService):UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardBeginUsing, self, self.OnCardBeginUsing)
+    GetGameService(GameServiceNameDef.LuaEventService):UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardFinished, self, self.OnCardFinished)
+end
+
 function WidgetCardList:OnCardListChanged(InPlayerId)
     if InPlayerId ~= self.LocalPlayerId then
         return
@@ -36,8 +48,20 @@ function WidgetCardList:OnCardListChanged(InPlayerId)
         if CardDescArray:Length() > 0 then
             local CardDescTable = CardDescArray:ToTable()
             self.CardListWrapper:LoadDataByList(CardDescTable)
+        elseif self.CardListWrapper then
+            self.CardListWrapper:Clear()
         end
     end
+end
+
+function WidgetCardList:OnCardBeginUsing(InId)
+    -- Disable card list selection
+    self.CardList_ListView:SetSelectionMode(UE.ESelectionMode.None)
+end
+
+function WidgetCardList:OnCardFinished(InId)
+    -- Recover card list selection
+    self.CardList_ListView:SetSelectionMode(UE.ESelectionMode.Single)
 end
 
 return WidgetCardList

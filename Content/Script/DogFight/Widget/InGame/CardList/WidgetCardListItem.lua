@@ -17,6 +17,15 @@ function WidgetCardListItem:Initialize()
     self.NormalColor = UE.FLinearColor(1, 1, 1, 0.3)
     ---@type FLinearColor
     self.SelectColor = UE.FLinearColor(1, 1, 1, 0.7)
+    ---@type FLinearColor
+    self.UsingColor = UE.FLinearColor(1, 1, 0, 0.8)
+end
+
+function WidgetCardListItem:Construct()
+    self.bSelectable = true
+    -- Register callback for card using events
+    GetGameService(GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_MyCardBeginUsing, self, self.OnCardBeginUsing)
+    GetGameService(GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_MyCardFinished, self, self.OnCardFinished)
 end
 
 function WidgetCardListItem:OnListItemObjectSet(InObject)
@@ -34,6 +43,18 @@ function WidgetCardListItem:BP_OnItemSelectionChanged(bSelected)
         print("use card with instance id: " .. CardInstanceId)
         UE.UCommonGameplayFunctionLibrary.UseCardByInstanceId(CardInstanceId)
     end
+end
+
+function WidgetCardListItem:OnCardBeginUsing(InId)
+    -- Change visual if this card is using
+    local CurInstanceId = self.Data:GetCardInstanceId()
+    if CurInstanceId == InId then
+        self.ViewModel.BackgroundColor = self.UsingColor
+    end
+end
+
+function WidgetCardListItem:OnCardFinished(InId)
+    
 end
 
 return WidgetCardListItem
