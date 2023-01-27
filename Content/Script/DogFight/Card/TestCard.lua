@@ -45,9 +45,9 @@ function TestCard:CardLogicImplementation()
     --         print("Get target: " .. Target:GetName())
     --     end
     -- end
-    local WFTParam = UE.FWaitForTimeCardCommandParam()
-    WFTParam.Time = 2
-    UE.UCardCommandLibrary.WaitForTime(self, WFTParam)
+    -- local WFTParam = UE.FWaitForTimeCardCommandParam()
+    -- WFTParam.Time = 2
+    -- UE.UCardCommandLibrary.WaitForTime(self, WFTParam)
 
     local PTNParam = UE.FPrintTargetNameCardCommandParam()
     PTNParam.TargetBatch = 0

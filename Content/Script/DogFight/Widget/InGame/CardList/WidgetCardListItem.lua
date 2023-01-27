@@ -26,6 +26,14 @@ function WidgetCardListItem:Construct()
     -- Register callback for card using events
     GetGameService(GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_MyCardBeginUsing, self, self.OnCardBeginUsing)
     GetGameService(GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_MyCardFinished, self, self.OnCardFinished)
+    GetGameService(GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_MyCardCancelled, self, self.OnCardCancelled)
+end
+
+function WidgetCardListItem:Destruct()
+    -- Unregister callback for card using events
+    GetGameService(GameServiceNameDef.LuaEventService):UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardBeginUsing, self, self.OnCardBeginUsing)
+    GetGameService(GameServiceNameDef.LuaEventService):UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardFinished, self, self.OnCardFinished)
+    GetGameService(GameServiceNameDef.LuaEventService):UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardCancelled, self, self.OnCardCancelled)
 end
 
 function WidgetCardListItem:OnListItemObjectSet(InObject)
@@ -33,10 +41,18 @@ function WidgetCardListItem:OnListItemObjectSet(InObject)
     if self.Data then
         self.ViewModel.CardName = self.Data.CardName
     end
+    self.ViewModel.BackgroundColor = self.NormalColor
+end
+
+---Update the background image color based on select state
+---@param Item table ListItem to change color
+---@param bSelected boolean Whether the item is selected
+local function UpdateBackgroundColor(Item, bSelected)
+    Item.ViewModel.BackgroundColor = (bSelected and Item.SelectColor or Item.NormalColor)
 end
 
 function WidgetCardListItem:BP_OnItemSelectionChanged(bSelected)
-    self.ViewModel.BackgroundColor = (bSelected and self.SelectColor or self.NormalColor)
+    UpdateBackgroundColor(self, bSelected)
 
     if bSelected and self.Data then
         local CardInstanceId = self.Data:GetCardInstanceId()
@@ -54,7 +70,11 @@ function WidgetCardListItem:OnCardBeginUsing(InId)
 end
 
 function WidgetCardListItem:OnCardFinished(InId)
-    
+
+end
+
+function WidgetCardListItem:OnCardCancelled(InId)
+    UpdateBackgroundColor(self, false)
 end
 
 return WidgetCardListItem

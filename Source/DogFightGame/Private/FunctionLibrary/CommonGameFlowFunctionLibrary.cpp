@@ -56,28 +56,49 @@ void UCommonGameFlowFunctionLibrary::SetCharacterMoveEnableForAllPlayers(bool bE
 void UCommonGameFlowFunctionLibrary::InitializeGameTimeline()
 {
 	// Use game mode to get timeline component to ensure this operation cannot be finished on client side.
-	if (auto GameMode = GetCurrentTopDownStyleGameMode())
+	if (auto Timeline = GetCurrentTimeline_Server())
 	{
-		if (auto Timeline = GameMode->GetGameTimelineComponent())
-		{
-			Timeline->InitializeTimeline();
-		}
+		Timeline->InitializeTimeline();
 	}
 }
 
 TArray<int32> UCommonGameFlowFunctionLibrary::GetCurrentTimeline()
 {
-	if (auto GS = GetCurrentTopDownStyleGameState())
+	if (auto Timeline = GetCurrentTimeline_Common())
 	{
-		if (auto Timeline = GS->GetGameTimelineComponent())
-		{
-			return Timeline->GetTimeline();
-		}
+		return Timeline->GetTimeline();
 	}
 
 	return TArray<int32>();
 }
 
+void UCommonGameFlowFunctionLibrary::MoveTimelineForward()
+{
+	if (auto Timeline = GetCurrentTimeline_Server())
+	{
+		Timeline->MoveForward();
+	}
+}
+
+UGameTimelineComponent* UCommonGameFlowFunctionLibrary::GetCurrentTimeline_Server()
+{
+	// Only server can access the game mode.
+	if (auto GameMode = GetCurrentTopDownStyleGameMode())
+	{
+		return GameMode->GetGameTimelineComponent();
+	}
+	return nullptr;
+}
+
+UGameTimelineComponent* UCommonGameFlowFunctionLibrary::GetCurrentTimeline_Common()
+{
+	// Game state is available both on server and client.
+	if (auto GameState = GetCurrentTopDownStyleGameState())
+	{
+		return GameState->GetGameTimelineComponent();
+	}
+	return nullptr;
+}
 
 int32 UCommonGameFlowFunctionLibrary::GetCurrentPlayerId()
 {

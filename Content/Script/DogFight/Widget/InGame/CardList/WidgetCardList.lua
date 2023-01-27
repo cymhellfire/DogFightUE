@@ -28,12 +28,14 @@ function WidgetCardList:Construct()
     -- Register callback for card using events
     GetGameService(GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_MyCardBeginUsing, self, self.OnCardBeginUsing)
     GetGameService(GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_MyCardFinished, self, self.OnCardFinished)
+    GetGameService(GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_MyCardCancelled, self, self.OnCardCancelled)
 end
 
 function WidgetCardList:Destruct()
     -- Unregister callback
     GetGameService(GameServiceNameDef.LuaEventService):UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardBeginUsing, self, self.OnCardBeginUsing)
     GetGameService(GameServiceNameDef.LuaEventService):UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardFinished, self, self.OnCardFinished)
+    GetGameService(GameServiceNameDef.LuaEventService):UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardCancelled, self, self.OnCardCancelled)
 end
 
 function WidgetCardList:OnCardListChanged(InPlayerId)
@@ -57,6 +59,12 @@ end
 function WidgetCardList:OnCardBeginUsing(InId)
     -- Disable card list selection
     self.CardList_ListView:SetSelectionMode(UE.ESelectionMode.None)
+end
+
+function WidgetCardList:OnCardCancelled(InId)
+    -- Recover and reset card list selection
+    self.CardList_ListView:SetSelectionMode(UE.ESelectionMode.Single)
+    self.CardList_ListView:BP_ClearSelection()
 end
 
 function WidgetCardList:OnCardFinished(InId)

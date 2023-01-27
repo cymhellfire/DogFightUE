@@ -125,6 +125,16 @@ int32 UGameTimelineComponent::GetFirstPlayerId() const
 	return -1;
 }
 
+void UGameTimelineComponent::MoveForward()
+{
+	// Move the first entry to the tail
+	auto TempEntry = TimelineEntryList[0];
+	TimelineEntryList.RemoveAt(0);
+	TimelineEntryList.Add(TempEntry);
+
+	UpdateTimeline();
+}
+
 void UGameTimelineComponent::OnRep_CurrentTimeline()
 {
 	OnGameTimelineChanged.Broadcast();

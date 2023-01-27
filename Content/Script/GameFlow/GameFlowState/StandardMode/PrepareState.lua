@@ -38,7 +38,7 @@ end
 function PrepareState:OnEnter()
     print("PrepareState: OnEnter")
 
-    coroutine.resume(coroutine.create(CharacterMoveCountDown), self, 5)
+    coroutine.resume(coroutine.create(CharacterMoveCountDown), self, 2)
 end
 
 function PrepareState:OnExit()

@@ -83,6 +83,19 @@ public:
 	void ServerBeginUseCard(int32 InId);
 
 	/**
+	 * Notify client side a card is cancelled.
+	 * @param InId			Instance id of card cancelled.
+	 */
+	UFUNCTION(Client, Reliable)
+	void ClientCancelCard(int32 InId);
+
+	/**
+	 * Notify server side a card is cancelled.
+	 * @param InId			Instance id of card cancelled.
+	 */
+	void ServerCancelCard(int32 InId);
+
+	/**
 	 * Notify client side a card is finished.
 	 * @param InId			Instance id of card finished.
 	 */

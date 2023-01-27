@@ -2,6 +2,7 @@
 
 #include "Card/Card.h"
 #include "CardSystem/Public/Card/CardDescObject.h"
+#include "Common/DogFightGameLog.h"
 #include "Common/LuaEventDef.h"
 #include "Engine/ActorChannel.h"
 #include "GameService/CardGameService.h"
@@ -146,7 +147,7 @@ void ATopDownStylePlayerState::OnCardFinished(ECardExecutionResult Result, UCard
 
 	if (Result == ECardExecutionResult::CER_Default)
 	{
-		UE_LOG(LogTemp, Log, TEXT("[ATopDownStylePlayerState] Finished use card."));
+		UE_LOG(LogDogFightGame, Log, TEXT("[ATopDownStylePlayerState] Finished use card."));
 		// Remove card from list first
 		RemoveCardObject(Card);
 
@@ -161,6 +162,16 @@ void ATopDownStylePlayerState::OnCardFinished(ECardExecutionResult Result, UCard
 		{
 			CardGameService->DestroyCard(Card);
 		}
+	}
+	else if (Result == ECardExecutionResult::CER_Cancelled)
+	{
+		UE_LOG(LogDogFightGame, Log, TEXT("[ATopDownStylePlayerState] Cancelled use card."));
+
+		// Notify server
+		ServerCancelCard(Card->GetInstanceId());
+
+		// Notify client
+		ClientCancelCard(Card->GetInstanceId());
 	}
 }
 
@@ -177,6 +188,22 @@ void ATopDownStylePlayerState::ServerBeginUseCard_Implementation(int32 InId)
 	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>())
 	{
 		LuaEventService->SendEventToLua_TwoParam_Int(ELuaEvent::Type::LuaEvent_PlayerCardBeginUsing, GetPlayerId(), InId);
+	}
+}
+
+void ATopDownStylePlayerState::ClientCancelCard_Implementation(int32 InId)
+{
+	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>())
+	{
+		LuaEventService->SendEventToLua_OneParam_Int(ELuaEvent::Type::LuaEvent_MyCardCancelled, InId);
+	}
+}
+
+void ATopDownStylePlayerState::ServerCancelCard(int32 InId)
+{
+	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>())
+	{
+		LuaEventService->SendEventToLua_TwoParam_Int(ELuaEvent::Type::LuaEvent_PlayerCardCancelled, GetPlayerId(), InId);
 	}
 }
 

@@ -12,7 +12,7 @@ local function SpawnPlayerCharacter(self)
             UE.UCommonGameFlowFunctionLibrary.SpawnPlayerCharacterPawn(CurPC)
 
             -- Delay 2 second for every player
-            UE.UKismetSystemLibrary.Delay(self.OwnerState, 2)
+            UE.UKismetSystemLibrary.Delay(self.OwnerState, 0.5)
         end
     end
 

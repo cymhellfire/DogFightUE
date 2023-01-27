@@ -6,11 +6,16 @@ local GameEndCheckState = Class("GameFlow.GameFlowState.GameFlowStateLogicBase")
 function GameEndCheckState:OnEnter()
     print("GameEndCheckState: OnEnter")
 
+    -- Move the timeline forward
+    UE.UCommonGameFlowFunctionLibrary.MoveTimelineForward()
+    UE.UCommonGameFlowFunctionLibrary.SyncCurrentPlayerIdWithTimeline()
+
     -- Construct next state
     local Instigator = self.OwnerState.CreateArgument.Instigator
     local NewArgument = GetGameService(GameServiceNameDef.GameFlowStateService):GetGameFlowStateCreateArgument(Instigator)
     if NewArgument then
-        NewArgument.StateName = "StandardMode.GameSummaryState"
+        --NewArgument.StateName = "StandardMode.GameSummaryState"
+        NewArgument.StateName = "StandardMode.PrePlayerRoundBuffState"
         NewArgument.Instigator = Instigator
         self.OwnerState:SetNextState(NewArgument)
     end

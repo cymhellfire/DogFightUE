@@ -30,6 +30,11 @@ public:
 	 */
 	int32 GetFirstPlayerId() const;
 
+	/**
+	 * @brief Move the timeline forward.
+	 */
+	void MoveForward();
+
 protected:
 	/**
 	 * @brief					Generate a randomized priority value list with given player number.

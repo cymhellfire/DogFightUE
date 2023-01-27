@@ -46,6 +46,15 @@ public:
 
 	static UWorld* GetActiveWorld()
 	{
+#if WITH_EDITOR
+		// Use GWorld here to ensure simulating multiplayer game locally can work
+		UWorld* CurWorld = nullptr;
+		if (GWorld)
+		{
+			CurWorld = GWorld->GetWorld();
+		}
+		return CurWorld;
+#else
 		const FWorldContext* Context = GEngine->GetWorldContextFromGameViewport(GEngine->GameViewport);
 		if (Context)
 		{
@@ -53,6 +62,7 @@ public:
 		}
 
 		return nullptr;
+#endif
 	}
 
 	virtual TStatId GetStatId() const override

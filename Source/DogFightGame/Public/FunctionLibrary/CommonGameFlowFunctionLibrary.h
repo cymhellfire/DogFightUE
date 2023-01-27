@@ -4,6 +4,7 @@
 #include "CommonGameFlowFunctionLibrary.generated.h"
 
 class ATopDownStylePlayerController;
+class UGameTimelineComponent;
 
 UCLASS()
 class DOGFIGHTGAME_API UCommonGameFlowFunctionLibrary : public UCommonFunctionLibraryBase
@@ -55,6 +56,12 @@ public:
 	static TArray<int32> GetCurrentTimeline();
 
 	/**
+	 * Move current timeline forward.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameFlow")
+	static void MoveTimelineForward();
+
+	/**
 	 * Get the ID of owner of current player round.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameFlow")
@@ -93,4 +100,15 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameFlow")
 	static int32 GetLocalPlayerId();
+
+protected:
+	/**
+	 * Get current timeline which only works on server side.
+	 */
+	static UGameTimelineComponent* GetCurrentTimeline_Server();
+
+	/**
+	 * Get current timeline which both works on server and client.
+	 */
+	static UGameTimelineComponent* GetCurrentTimeline_Common();
 };
