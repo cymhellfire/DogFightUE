@@ -47,7 +47,7 @@ public:
 	static UWorld* GetActiveWorld()
 	{
 #if WITH_EDITOR
-		// Use GWorld here to ensure simulating multiplayer game locally can work
+		// Use GWorld here to ensure simulating multiplayer game locally in editor can work
 		UWorld* CurWorld = nullptr;
 		if (GWorld)
 		{

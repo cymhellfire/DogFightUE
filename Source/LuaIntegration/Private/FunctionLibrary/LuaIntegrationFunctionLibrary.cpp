@@ -2,12 +2,23 @@
 
 UWorld* ULuaIntegrationFunctionLibrary::GetCurrentWorld()
 {
+#if WITH_EDITOR
+	// Use GWorld here to ensure simulating multiplayer game locally in editor can work
 	UWorld* CurWorld = nullptr;
 	if (GWorld)
 	{
 		CurWorld = GWorld->GetWorld();
 	}
 	return CurWorld;
+#else
+	const FWorldContext* Context = GEngine->GetWorldContextFromGameViewport(GEngine->GameViewport);
+	if (Context)
+	{
+		return Context->World();
+	}
+
+	return nullptr;
+#endif
 }
 
 UGameInstance* ULuaIntegrationFunctionLibrary::GetGameInstance()
