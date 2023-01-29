@@ -5,6 +5,7 @@
 
 class UCard;
 class ATopDownStylePlayerController;
+class ATopDownStylePlayerState;
 
 UCLASS()
 class DOGFIGHTGAME_API UCommonGameplayFunctionLibrary : public UCommonFunctionLibraryBase
@@ -82,7 +83,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
 	static void RemoveWidgetPlayerId(FString WidgetName, int32 InPlayerId);
 
+	/**
+	 * Get the total count of alive player in current game.
+	 * @return			Number of players are still alive.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
+	static int32 GetAlivePlayerNum();
 protected:
+	/**
+	 * Do specified function on every player state in current game meet the id mask.
+	 */
+	static void ForEachPlayerStateDo(TFunction<void(ATopDownStylePlayerState*)> ExecuteFunc, int32 PlayerIdMask = -1);
+
 	/**
 	 * Do specified function on every player controller in current game meet the id mask.
 	 */

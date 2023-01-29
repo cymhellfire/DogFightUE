@@ -96,6 +96,44 @@ void UCommonGameplayFunctionLibrary::RemoveWidgetPlayerId(FString WidgetName, in
 		}, InPlayerId);
 }
 
+int32 UCommonGameplayFunctionLibrary::GetAlivePlayerNum()
+{
+	int32 Result = 0;
+	ForEachPlayerStateDo([&Result](ATopDownStylePlayerState* PS)
+	{
+		if (PS->CurrentState == ETopDownStylePlayerState::PS_Alive)
+		{
+			Result++;
+		}
+	});
+
+	return Result;
+}
+
+void UCommonGameplayFunctionLibrary::ForEachPlayerStateDo(TFunction<void(ATopDownStylePlayerState*)> ExecuteFunc,
+	int32 PlayerIdMask)
+{
+	if (auto GameState = GetCurrentTopDownStyleGameState())
+	{
+		for (auto PS : GameState->PlayerArray)
+		{
+			if (!PS)
+				continue;
+
+			// Check the player id mask
+			if (PlayerIdMask != -1 && PlayerIdMask != PS->GetPlayerId())
+			{
+				continue;
+			}
+
+			if (auto CastPS = Cast<ATopDownStylePlayerState>(PS))
+			{
+				ExecuteFunc(CastPS);
+			}
+		}
+	}
+}
+
 void UCommonGameplayFunctionLibrary::ForEachPlayerControllerDo(TFunction<void(ATopDownStylePlayerController*)> ExecuteFunc
 	, int32 PlayerIdMask)
 {

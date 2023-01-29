@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "CommonPlayerType.h"
 #include "GameFramework/PlayerState.h"
 #include "TopDownStylePlayerState.generated.h"
 
@@ -119,6 +120,10 @@ protected:
 
 	UFUNCTION()
 	void OnCardFinished(ECardExecutionResult Result, UCard* Card);
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="PlayerState")
+	TEnumAsByte<ETopDownStylePlayerState::Type> CurrentState = ETopDownStylePlayerState::PS_Alive;
 
 protected:
 	UPROPERTY(Transient)
