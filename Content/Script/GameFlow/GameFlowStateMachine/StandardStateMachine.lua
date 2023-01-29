@@ -3,7 +3,7 @@ require "UnLua"
 local StandardStateMachine = Class()
 
 function StandardStateMachine:K2_InitStateMachine()
-    local InitStateArgument = GameServices.GameFlowStateService:GetGameFlowStateCreateArgument(self)
+    local InitStateArgument = GetGameService(GameServiceNameDef.GameFlowStateService):GetGameFlowStateCreateArgument(self)
     InitStateArgument.StateName = "StandardMode.InitState"
     InitStateArgument.Instigator = self
 

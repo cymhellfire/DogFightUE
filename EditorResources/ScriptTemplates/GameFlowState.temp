@@ -1,5 +1,6 @@
 require "UnLua"
 
+---@class $Class$
 local $Class$ = Class("GameFlow.GameFlowState.GameFlowStateLogicBase")
 
 function $Class$:OnEnter()

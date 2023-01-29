@@ -34,6 +34,7 @@ UGameService* UDogFightGameInstance::GetGameService(FName ClassName)
 		return GameServiceMap[ClassName];
 	}
 
+	UE_LOG(LogProjectFramework, Error, TEXT("[GameInstance] No game service with name: %s"), *ClassName.ToString());
 	return nullptr;
 }
 

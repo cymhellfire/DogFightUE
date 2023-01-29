@@ -4,6 +4,7 @@
 #include "GameFramework/SpectatorPawn.h"
 #include "TopDownStylePlayerPawn.generated.h"
 
+class UInputAction;
 class UTopDownStyleCameraComponent;
 
 UCLASS()
@@ -28,8 +29,18 @@ public:
 	void ServerSetCharacterMovable(bool bEnable);
 
 protected:
-	UFUNCTION(BlueprintCallable, Category="TopDownStylePlayerPawn")
-	void OnSetDestination();
+	UFUNCTION()
+	void OnSetDestination(const FInputActionInstance& Instance);
+
+	UFUNCTION()
+	void OnMoveInputTriggered(const FInputActionInstance& Instance);
+
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="TopDownStylePlayerPawn")
+	UInputAction* MoveInputAction;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="TopDownStylePlayerPawn")
+	UInputAction* SetCharDestAction;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="PlayerPawn")

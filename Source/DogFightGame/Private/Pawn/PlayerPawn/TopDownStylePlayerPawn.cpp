@@ -1,5 +1,6 @@
 ﻿#include "Pawn/PlayerPawn/TopDownStylePlayerPawn.h"
 
+#include "EnhancedInputComponent.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Components/SphereComponent.h"
 #include "Net/UnrealNetwork.h"
@@ -24,12 +25,20 @@ void ATopDownStylePlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerI
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	// Movement input
-	PlayerInputComponent->BindAxis("MoveForward", this, &ATopDownStylePlayerPawn::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &ATopDownStylePlayerPawn::MoveRight);
+	if (auto EnhancedInput = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		// Movement input
+		if (MoveInputAction)
+		{
+			EnhancedInput->BindAction(MoveInputAction, ETriggerEvent::Triggered, this, &ATopDownStylePlayerPawn::OnMoveInputTriggered);
+		}
 
-	// Character movement input
-	PlayerInputComponent->BindAction("SetDestination", IE_Released, this, &ATopDownStylePlayerPawn::OnSetDestination);
+		// Character movement input
+		if (SetCharDestAction)
+		{
+			EnhancedInput->BindAction(SetCharDestAction, ETriggerEvent::Triggered, this, &ATopDownStylePlayerPawn::OnSetDestination);
+		}
+	}
 }
 
 void ATopDownStylePlayerPawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -42,7 +51,7 @@ void ATopDownStylePlayerPawn::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 	DOREPLIFETIME_WITH_PARAMS_FAST(ATopDownStylePlayerPawn, bEnableCharacterMove, SharedParam);
 }
 
-void ATopDownStylePlayerPawn::OnSetDestination()
+void ATopDownStylePlayerPawn::OnSetDestination(const FInputActionInstance& Instance)
 {
 	if (!bEnableCharacterMove)
 	{
@@ -57,6 +66,13 @@ void ATopDownStylePlayerPawn::OnSetDestination()
 			ServerMoveCharacter(HitResult.Location);
 		}
 	}
+}
+
+void ATopDownStylePlayerPawn::OnMoveInputTriggered(const FInputActionInstance& Instance)
+{
+	FVector2D InputValue = Instance.GetValue().Get<FVector2D>();
+	MoveRight(InputValue.X);
+	MoveForward(InputValue.Y);
 }
 
 void ATopDownStylePlayerPawn::ServerMoveCharacter_Implementation(const FVector& Destination)

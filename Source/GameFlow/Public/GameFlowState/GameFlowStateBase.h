@@ -52,6 +52,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="GameFlowState")
 	UGameFlowStateMachine* GetParentStateMachine();
 
+	UFUNCTION(BlueprintCallable, Category="GameFlowState")
+	FName GetStateName() const;
+
 	UFUNCTION(BlueprintImplementableEvent, Category="GameFlowState")
 	void K2_OnEnter();
 

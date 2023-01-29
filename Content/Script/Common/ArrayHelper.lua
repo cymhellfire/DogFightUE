@@ -1,8 +1,8 @@
 local ArrayHelper = {}
 
 ---Convert input table into a Unreal string array.
----@param InTable table @Table to convert
----@return TArray @New array
+---@param InTable table Table to convert
+---@return TArray New array
 function ArrayHelper.StringArrayFromTable(InTable)
     if type(InTable) ~= "table" then
         return nil

@@ -39,6 +39,7 @@ public class DogFight : ModuleRules
 				"AttributeSystem",
 				"DamageSystem",
 				"LuaIntegration",
+				"DogFightGame",
 			}
 		);
 		

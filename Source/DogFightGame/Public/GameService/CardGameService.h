@@ -8,7 +8,7 @@
 class AStandardModePlayerCharacter;
 
 UCLASS()
-class DOGFIGHT_API UCardGameService : public ULuaGameService
+class DOGFIGHTGAME_API UCardGameService : public ULuaGameService
 {
 	GENERATED_BODY()
 public:

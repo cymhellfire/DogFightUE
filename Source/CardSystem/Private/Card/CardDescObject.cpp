@@ -6,4 +6,21 @@ void UCardDescObject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	FDoRepLifetimeParams SharedParams;
+	SharedParams.bIsPushBased = true;
+
+	DOREPLIFETIME_WITH_PARAMS_FAST(UCardDescObject, CardName, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(UCardDescObject, CardInstanceId, SharedParams);
+}
+
+void UCardDescObject::SetCardName(FString InName)
+{
+	MARK_PROPERTY_DIRTY_FROM_NAME(UCardDescObject, CardName, this);
+	CardName = InName;
+}
+
+void UCardDescObject::SetCardInstanceId(int32 InId)
+{
+	MARK_PROPERTY_DIRTY_FROM_NAME(UCardDescObject, CardInstanceId, this);
+	CardInstanceId = InId;
 }

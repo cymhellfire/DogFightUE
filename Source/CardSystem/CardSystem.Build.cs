@@ -28,6 +28,7 @@ public class CardSystem : ModuleRules
 				"SlateCore",
 				"InputCore",
 				"NetCore",
+				"EnhancedInput",
 			}
 		);
 	}

@@ -16,6 +16,12 @@ public:
 		return LuaScriptPath;
 	}
 protected:
+	virtual void NativeOnInitialized() override;
+
+	UFUNCTION(BlueprintImplementableEvent, Category="LuaUserWidget")
+	void PostInitialized();
+
+protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="LuaUserWidget")
 	FString LuaScriptPath;
 };

@@ -12,6 +12,8 @@ public class DogFightGame : ModuleRules
                 "Core", 
                 "GameFlow",
                 "LuaIntegration",
+                "ProjectFramework",
+                "CardSystem",
             }
         );
 
@@ -24,13 +26,9 @@ public class DogFightGame : ModuleRules
                 "SlateCore",
                 "NetCore",
                 "AIModule",
+                "EnhancedInput",
             }
         );
         
-        PublicDependencyModuleNames.AddRange(
-            new string[]
-            {
-                "ProjectFramework",
-            });
     }
 }

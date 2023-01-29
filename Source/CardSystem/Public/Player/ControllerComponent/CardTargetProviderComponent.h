@@ -4,6 +4,8 @@
 #include "Player/CardTargetProviderInterface.h"
 #include "CardTargetProviderComponent.generated.h"
 
+class UInputAction;
+
 /**
  * Logic component that provides card target selecting functionalities.
  */
@@ -28,13 +30,21 @@ public:
 
 	void InitializeInput();
 
+public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCardTargetAcquireFinished, bool, bSuccessed);
 	FCardTargetAcquireFinished OnCardTargetAcquired;
 
-protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="CardTargetProvider")
+	UInputAction* ConfirmSelectInputAction;
 
-	void OnSelectTargetPressed();
-	void OnCancelSelectionPressed();
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="CardTargetProvider")
+	UInputAction* CancelUsingCardInputAction;
+
+protected:
+	UFUNCTION()
+	void OnSelectTargetPressed(const FInputActionInstance& Instance);
+	UFUNCTION()
+	void OnCancelSelectionPressed(const FInputActionInstance& Instance);
 
 	void OnAllTargetAcquired();
 

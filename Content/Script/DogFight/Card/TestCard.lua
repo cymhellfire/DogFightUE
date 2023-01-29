@@ -12,7 +12,7 @@ function TestCard:OnInitialized()
     })
 
     -- Create modifier from service
-    local ModifierService = _G.GameServices.CardModifierGameService
+    local ModifierService = GetGameService(GameServiceNameDef.CardModifierGameService)
     if ModifierService ~= nil then
         local Modifier1 = ModifierService:CreateCardModifier("CardModifierTest", self)
         self:AddModifierObject(Modifier1)
@@ -20,6 +20,13 @@ function TestCard:OnInitialized()
         self:AddModifierObject(Modifier2)
         self:RemoveModifierObject(Modifier1)
     end
+end
+
+function TestCard:SetupCardDesc()
+    return {
+        Name = "TestCard",
+        Desc = "TestCardDesc",
+    }
 end
 
 function TestCard:AcquireCardTargetsImplementation()
@@ -38,9 +45,9 @@ function TestCard:CardLogicImplementation()
     --         print("Get target: " .. Target:GetName())
     --     end
     -- end
-    local WFTParam = UE.FWaitForTimeCardCommandParam()
-    WFTParam.Time = 2
-    UE.UCardCommandLibrary.WaitForTime(self, WFTParam)
+    -- local WFTParam = UE.FWaitForTimeCardCommandParam()
+    -- WFTParam.Time = 2
+    -- UE.UCardCommandLibrary.WaitForTime(self, WFTParam)
 
     local PTNParam = UE.FPrintTargetNameCardCommandParam()
     PTNParam.TargetBatch = 0

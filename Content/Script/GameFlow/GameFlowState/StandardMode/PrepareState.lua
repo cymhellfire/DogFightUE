@@ -3,21 +3,10 @@ require "UnLua"
 ---@class PrepareState State that allow players move around to take the position for game process.
 local PrepareState = Class("GameFlow.GameFlowState.GameFlowStateLogicBase")
 
-local function DelayFinish(self, NextStateName)
-    UE.UKismetSystemLibrary.Delay(self.OwnerState, 3)
-
-    -- local Instigator = self.OwnerState.CreateArgument.Instigator
-    -- local NewArgument = GameServices.GameFlowStateService:GetGameFlowStateCreateArgument(Instigator)
-    -- if NewArgument then
-    --     NewArgument.StateName = NextStateName
-    --     NewArgument.Instigator = Instigator
-    --     self.OwnerState:SetNextState(NewArgument)
-    -- end
-
-    self.OwnerState:Finish()
-end
-
 local function CharacterMoveCountDown(self, Duration)
+    -- Add character movement input to all players
+    GetGameService(GameServiceNameDef.GameInputService):MulticastAddInputMapping(UE.EInputMappingType.InputMapping_CharacterMove)
+
     -- Enable character movement
     UE.UCommonGameFlowFunctionLibrary.SetCharacterMoveEnableForAllPlayers(true)
 
@@ -31,13 +20,25 @@ local function CharacterMoveCountDown(self, Duration)
 
     -- Disable character movement
     UE.UCommonGameFlowFunctionLibrary.SetCharacterMoveEnableForAllPlayers(false)
+
+    -- Remove character movement input to all players
+    GetGameService(GameServiceNameDef.GameInputService):MulticastRemoveInputMapping(UE.EInputMappingType.InputMapping_CharacterMove)
+
+    -- Construct next state
+    local Instigator = self.OwnerState.CreateArgument.Instigator
+    local NewArgument = GetGameService(GameServiceNameDef.GameFlowStateService):GetGameFlowStateCreateArgument(Instigator)
+    if NewArgument then
+        NewArgument.StateName = "StandardMode.InitTimelineState"
+        NewArgument.Instigator = Instigator
+        self.OwnerState:SetNextState(NewArgument)
+    end
+    self.OwnerState:Finish()
 end
 
 function PrepareState:OnEnter()
     print("PrepareState: OnEnter")
 
-    --coroutine.resume(coroutine.create(DelayFinish), self, "StandardMode.InitState")
-    coroutine.resume(coroutine.create(CharacterMoveCountDown), self, 5)
+    coroutine.resume(coroutine.create(CharacterMoveCountDown), self, 2)
 end
 
 function PrepareState:OnExit()

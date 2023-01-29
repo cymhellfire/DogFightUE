@@ -2,6 +2,7 @@ require("UnLua")
 
 local AttributeEnum = require "DogFight.DataBridge.AttributeEnum"
 
+---@class CardBase Base class for all cards.
 local CardBase = Class()
 
 --========================== Workflow ==========================--
@@ -11,6 +12,23 @@ function CardBase:BP_Initialize()
     if type(self.OnInitialized) == "function" then
         self:OnInitialized()
     end
+end
+
+function CardBase:BP_GetCardBasicDesc(OutName, OutDesc)
+    -- Invoke SetupCardDesc of any subclass
+    if type(self.SetupCardDesc) == "function" then
+        local Desc = self:SetupCardDesc()
+        OutName = Desc["Name"] or OutName
+        OutDesc = Desc["Desc"] or OutDesc
+    end
+
+    return OutName, OutDesc
+end
+
+---Assign a new instance id to this card.
+---@param InId number New instance id.
+function CardBase:SetCardInstanceId(InId)
+    self:SetInstanceId(InId)
 end
 
 --========================== Attribute ==========================--

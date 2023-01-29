@@ -1,6 +1,6 @@
 require "UnLua"
 
-local InGameTitleMessageVM = require("Common.MVVM.ViewModelBase").New()
+local InGameTitleMessageVM = {}
 
 InGameTitleMessageVM.BindingTable = {
     ["TitleMessage"] = "1",
