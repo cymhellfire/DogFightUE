@@ -19,7 +19,8 @@ function InitState:OnReadyPlayerCountChanged(InCount)
 
     print("Ready Player: " .. InCount .. "/" .. AllPlayerCount)
 
-    UE.UInGameMessageFunctionLibrary.SetTitleMessage("Ready Player: " .. InCount .. "/" .. AllPlayerCount)
+    local NewTitle = GetLocalizedString("ST_InGameUI", "UI_WaitingPlayersTitle", {tostring(InCount), tostring(AllPlayerCount)})
+    UE.UInGameMessageFunctionLibrary.SetTitleMessage(NewTitle)
 
     if tonumber(InCount) >= AllPlayerCount then
         GetGameService(GameServiceNameDef.LuaEventService):UnregisterListener(UE.ELuaEvent.LuaEvent_ReadyPlayerCount,

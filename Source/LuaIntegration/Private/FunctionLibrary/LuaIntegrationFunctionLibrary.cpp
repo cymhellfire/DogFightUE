@@ -1,5 +1,8 @@
 #include "FunctionLibrary/LuaIntegrationFunctionLibrary.h"
 
+#include "GameInstance/DogFightGameInstance.h"
+#include "GameService/LocalizationService.h"
+
 UWorld* ULuaIntegrationFunctionLibrary::GetCurrentWorld()
 {
 #if WITH_EDITOR
@@ -60,4 +63,39 @@ bool ULuaIntegrationFunctionLibrary::IsDerivedFrom(UObject* InObject, UClass* In
 		return InObject->GetClass()->IsChildOf(InClass);
 	}
 	return false;
+}
+
+FText ULuaIntegrationFunctionLibrary::GetLocalizedString(const FString& InTable, const FString& InKey)
+{
+	if (auto GameInstance = Cast<UDogFightGameInstance>(GetGameInstance()))
+	{
+		if (auto LocalizationService = Cast<ULocalizationService>(GameInstance->GetGameServiceBySuperClass(ULocalizationService::StaticClass())))
+		{
+			auto Result = LocalizationService->GetLocalizeString(InTable, InKey);
+			if (!Result.IsEmpty())
+			{
+				return Result;
+			}
+		}
+	}
+
+	return FText::FromString(FString::Printf(TEXT("Missing localization string: [%s - %s]"), *InTable, *InKey));
+}
+
+FText ULuaIntegrationFunctionLibrary::GetLocalizedStringWithParam(const FString& InTable, const FString& InKey,
+	const TArray<FString>& ParamList)
+{
+	if (auto GameInstance = Cast<UDogFightGameInstance>(GetGameInstance()))
+	{
+		if (auto LocalizationService = Cast<ULocalizationService>(GameInstance->GetGameServiceBySuperClass(ULocalizationService::StaticClass())))
+		{
+			auto Result = LocalizationService->GetLocalizeStringWithFormat(InTable, InKey, ParamList);
+			if (!Result.IsEmpty())
+			{
+				return Result;
+			}
+		}
+	}
+
+	return FText::FromString(FString::Printf(TEXT("Missing localization string: [%s - %s]"), *InTable, *InKey));
 }
