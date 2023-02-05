@@ -38,6 +38,10 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerUseCardByInstanceId(int32 InId);
 
+	// -----=========== Effect ===========-----
+	UFUNCTION(Client, Reliable)
+	void ClientSpawnGameEffectAtPos(int32 EffectId, FVector Pos, FRotator Rot);
+
 	UInGameMessageReceiverComponent* GetInGameMessageReceiverComponent() const
 	{
 		return InGameMessageReceiverComponent;

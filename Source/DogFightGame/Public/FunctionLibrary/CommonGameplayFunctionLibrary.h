@@ -90,6 +90,15 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
 	static int32 GetAlivePlayerNum();
+
+	/**
+	 * Spawn game effect with given id at specified location on every connected client.
+	 * @param EffectId			Id of game effect to spawn.
+	 * @param Pos				Spawn position.
+	 * @param Rot				Spawn rotation.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay|Effect")
+	static void SpawnGameEffectAtPos(int32 EffectId, FVector Pos, FRotator Rot);
 protected:
 	/**
 	 * Do specified function on every player state in current game meet the id mask.

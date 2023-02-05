@@ -134,7 +134,7 @@ void UGameEffectService::PreloadGameEffects()
 
 void UGameEffectService::ClearEffectCache()
 {
-	EffectDataMap.Empty();
+	EffectCacheMap.Empty();
 }
 
 AGameEffectBase* UGameEffectService::SpawnEffectWithConfig(FGameEffectConfigDataRow* Config, const FTransform& SpawnTrans)

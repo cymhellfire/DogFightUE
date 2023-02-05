@@ -110,6 +110,14 @@ int32 UCommonGameplayFunctionLibrary::GetAlivePlayerNum()
 	return Result;
 }
 
+void UCommonGameplayFunctionLibrary::SpawnGameEffectAtPos(int32 EffectId, FVector Pos, FRotator Rot)
+{
+	ForEachPlayerControllerDo([EffectId, Pos, Rot](ATopDownStylePlayerController* PlayerController)
+	{
+		PlayerController->ClientSpawnGameEffectAtPos(EffectId, Pos, Rot);
+	});
+}
+
 void UCommonGameplayFunctionLibrary::ForEachPlayerStateDo(TFunction<void(ATopDownStylePlayerState*)> ExecuteFunc,
                                                           int32 PlayerIdMask)
 {

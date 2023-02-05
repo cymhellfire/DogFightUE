@@ -13,11 +13,7 @@ local function LoopVfx(self)
 
         local EffectId = (i % 5 == 0) and 1 or 0
 
-        ---@type UGameEffectService
-        local GameEffectService = GetGameService(GameServiceNameDef.GameEffectService)
-        if GameEffectService then
-            GameEffectService:SpawnEffectAtPos(EffectId, UE.FVector(PosX, PosY, 0), UE.FRotator(0, 0, 0))
-        end
+        UE.UCommonGameplayFunctionLibrary.SpawnGameEffectAtPos(EffectId, UE.FVector(PosX, PosY, 0), UE.FRotator(0, 0, 0))
     end
 end
 

@@ -20,13 +20,24 @@ void AGameEffectNiagara::PlayEffect()
 {
 	Super::PlayEffect();
 
+#if WITH_EDITOR
+	const bool bIsRuntime = GetWorld()->WorldType == EWorldType::Game || GetWorld()->WorldType == EWorldType::PIE;
+#endif
+
 	if (NiagaraComponent)
 	{
 		if (IsValid(NiagaraComponent->GetAsset()))
 		{
 			NiagaraComponent->ActivateSystem();
 			bNiagaraOn = true;
+#if WITH_EDITOR
+			if (bIsRuntime)
+			{
+				NiagaraComponent->OnSystemFinished.AddDynamic(this, &AGameEffectNiagara::OnNiagaraSystemFinished);
+			}
+#else
 			NiagaraComponent->OnSystemFinished.AddDynamic(this, &AGameEffectNiagara::OnNiagaraSystemFinished);
+#endif
 		}
 	}
 
@@ -36,7 +47,14 @@ void AGameEffectNiagara::PlayEffect()
 		{
 			AudioComponent->Play();
 			bAudioOn = true;
+#if WITH_EDITOR
+			if (bIsRuntime)
+			{
+				AudioComponent->OnAudioFinished.AddDynamic(this, &AGameEffectNiagara::OnAudioFinished);
+			}
+#else
 			AudioComponent->OnAudioFinished.AddDynamic(this, &AGameEffectNiagara::OnAudioFinished);
+#endif
 		}
 	}
 }
