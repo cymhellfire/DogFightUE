@@ -27,6 +27,9 @@ public class DogFightGame : ModuleRules
                 "NetCore",
                 "AIModule",
                 "EnhancedInput",
+                "Niagara",
+                "LevelSequence",
+                "MovieScene",
             }
         );
         

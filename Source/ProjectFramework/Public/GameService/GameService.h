@@ -14,6 +14,11 @@ public:
 	virtual void Startup() {}
 	virtual void Shutdown() {}
 
+	virtual FName GetRegisterName() const
+	{
+		return GetClass()->GetFName();
+	}
+
 	template <typename T>
 	static T* GetGameService()
 	{

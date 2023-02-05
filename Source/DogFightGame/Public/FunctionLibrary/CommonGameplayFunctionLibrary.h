@@ -6,6 +6,7 @@
 class UCard;
 class ATopDownStylePlayerController;
 class ATopDownStylePlayerState;
+class AGameEffectBase;
 
 UCLASS()
 class DOGFIGHTGAME_API UCommonGameplayFunctionLibrary : public UCommonFunctionLibraryBase
@@ -33,14 +34,14 @@ public:
 	 * @param InPlayerId		Id of player that cards given to.
 	 * @param InCard			The card that given to player.
 	 */
-	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay|Card")
 	static void DispatchCardToPlayer(int32 InPlayerId, UCard* InCard);
 
 	/**
 	 * Let local player use card by instance id.
 	 * @param InInstanceId		Instance Id of card that to be used.
 	 */
-	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay|Card")
 	static void UseCardByInstanceId(int32 InInstanceId);
 
 	/**
@@ -48,7 +49,7 @@ public:
 	 * @param InPlayerId		Player id to get card count.
 	 * @return					Total card count of player.
 	 */
-	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay|Card")
 	static int32 GetPlayerCardNums(int32 InPlayerId);
 
 	/**
@@ -56,7 +57,7 @@ public:
 	 * @param WidgetName		Name of widget to show.
 	 * @param InPlayerId		Id of player to add widget.
 	 */
-	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay|UI")
 	static void AddWidgetByPlayerId(FString WidgetName, int32 InPlayerId);
 
 	/**
@@ -64,7 +65,7 @@ public:
 	 * @param WidgetName		Name of widget to show.
 	 * @param InPlayerId		Id of player to change visibility.
 	 */
-	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay|UI")
 	static void ShowWidgetByPlayerId(FString WidgetName, int32 InPlayerId);
 
 	/**
@@ -72,15 +73,15 @@ public:
 	 * @param WidgetName		Name of widget to hide.
 	 * @param InPlayerId		Id of player to hide widget.
 	 */
-	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
-	static void HideWidgetbyPlayerId(FString WidgetName, int32 InPlayerId);
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay|UI")
+	static void HideWidgetByPlayerId(FString WidgetName, int32 InPlayerId);
 
 	/**
 	 * Remove specified game widget from player with given id.
 	 * @param WidgetName		Name of widget to remove.
 	 * @param InPlayerId		Id of player to remove widget.
 	 */
-	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay|UI")
 	static void RemoveWidgetPlayerId(FString WidgetName, int32 InPlayerId);
 
 	/**
