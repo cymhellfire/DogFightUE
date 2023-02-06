@@ -41,6 +41,18 @@ protected:
 	TArray<TWeakObjectPtr<AGameEffectBase>> GameEffectPool;
 };
 
+USTRUCT(BlueprintType)
+struct FGameEffectUtilsDesc
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="GameEffectUtilsDesc")
+	int32 EffectId;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="GameEffectUtilsDesc")
+	FString EffectName;
+};
+
 UCLASS(Abstract, Blueprintable)
 class DOGFIGHTGAME_API UGameEffectService : public ULuaGameService
 {
@@ -65,6 +77,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category="GameEffectService")
 	AGameEffectBase* SpawnEffectAtPos(int32 EffectId, FVector Pos, FRotator Rot);
 
+	/**
+	 * Get the game effect description for utility scene.
+	 * @return					List of all game effect description struct.
+	 */
+	UFUNCTION(BlueprintCallable, Category="GameEffectService")
+	TArray<FGameEffectUtilsDesc> GetAllEffectUtilDesc() const;
+
 	virtual FString GetModuleName_Implementation() const override
 	{
 		return "DogFight.Services.GameEffectService";
@@ -84,6 +103,7 @@ protected:
 
 	AGameEffectBase* SpawnEffectWithConfig(FGameEffectConfigDataRow* Config, const FTransform& SpawnTrans = FTransform::Identity);
 
+	UFUNCTION()
 	void OnGameEffectFinished(AGameEffectBase* InEffect);
 
 public:

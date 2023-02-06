@@ -58,6 +58,34 @@ AGameEffectBase* UGameEffectService::SpawnEffectAtPos(int32 EffectId, FVector Po
 	return Effect;
 }
 
+TArray<FGameEffectUtilsDesc> UGameEffectService::GetAllEffectUtilDesc() const
+{
+	TArray<FGameEffectUtilsDesc> Result;
+	for (auto Pair : EffectDataMap)
+	{
+		if (auto EffectCfg = Pair.Value)
+		{
+			if (EffectCfg->EffectResource.IsNull())
+			{
+				continue;
+			}
+
+			UClass* EffectClass = EffectCfg->EffectResource.IsValid() ? EffectCfg->EffectResource.Get() :
+				EffectCfg->EffectResource.LoadSynchronous();
+			if (auto CDO = Cast<AGameEffectBase>(EffectClass->ClassDefaultObject))
+			{
+				FGameEffectUtilsDesc NewDesc;
+				NewDesc.EffectId = Pair.Key;
+				NewDesc.EffectName = CDO->EffectName;
+
+				Result.Emplace(NewDesc);
+			}
+		}
+	}
+
+	return Result;
+}
+
 void UGameEffectService::AddPreloadEffect(int32 EffectId)
 {
 	PreloadEffectIdList.AddUnique(EffectId);
@@ -155,7 +183,7 @@ AGameEffectBase* UGameEffectService::SpawnEffectWithConfig(FGameEffectConfigData
 		{
 			NewEffect->EffectId = EffectId;
 			// Register finish callback
-			NewEffect->OnEffectFinished.AddUObject(this, &UGameEffectService::OnGameEffectFinished);
+			NewEffect->OnEffectFinished.AddDynamic(this, &UGameEffectService::OnGameEffectFinished);
 
 			Result = NewEffect;
 		}

@@ -1,17 +1,24 @@
 require "Common.ListView.GenericListViewItem"
 require "LuaIntegration.Common.UnrealUtils"
 
+---@field ParentWidget UListView The ListView this wrapper works for
+---@field ParentView UUserWidget The container widget of this list view.
+---@field DataObjectList table Stores references to all list item object.
 ---@class ListViewWrapper Wrapper class of ListView operations.
 local ListViewWrapper = {}
 
 local ClassPath = "/Game/DogFightGame/UI/Common/BP_Data_CommonListItemObject.BP_Data_CommonListItemObject_C"
 
-function ListViewWrapper.New(InListView)
+---Create a new wrapper for specified ListView.
+---@param InWidget UUserWidget Container widget of the list view.
+---@param InListView UListView List view instance that wrapper work with.
+---@return ListViewWrapper New list view wrapper.
+function ListViewWrapper.New(InWidget, InListView)
     local NewWrapper = table.deepCopy(ListViewWrapper)
 
     -- Initialize new wrapper with ListView
     if NewWrapper then
-        NewWrapper:Initialize(InListView)
+        NewWrapper:Initialize(InListView, InWidget)
     end
 
     return NewWrapper
@@ -19,11 +26,11 @@ end
 
 ---Initialize wrapper with given ListView.
 ---@param InListView UListView ListView instance to initialize with.
-function ListViewWrapper:Initialize(InListView)
-    ---@type UListView The ListView this wrapper works for
+---@param InWidget UUserWidget Container widget of the list view.
+function ListViewWrapper:Initialize(InListView, InWidget)
     self.ParentWidget = InListView
+    self.ParentView = InWidget
 
-    ---@type table Stores references to all list item object.
     self.DataObjectList = {}
 end
 
@@ -45,6 +52,7 @@ function ListViewWrapper:LoadDataByList(InDataList)
             for i = 1, #InDataList do
                 ---@type GenericListViewItem
                 local NewItemObject = NewObject(self.ItemClass, self.ParentWidget)
+                NewItemObject:InitializeWithList(self)
                 NewItemObject:SetData(InDataList[i])
                 -- Record new item to array
                 DataItemList:Add(NewItemObject)

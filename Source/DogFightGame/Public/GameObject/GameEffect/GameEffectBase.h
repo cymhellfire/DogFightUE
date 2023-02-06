@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameEffectBase.generated.h"
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FGameEffectFinishDelegate, AGameEffectBase*)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGameEffectFinishDelegate, AGameEffectBase*, Effect);
 
 /**
  * Base class of all in-game effects.
@@ -26,5 +26,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="GameEffect")
 	FString EffectName;
 
+	UPROPERTY(BlueprintAssignable, Category="GameEffect")
 	FGameEffectFinishDelegate OnEffectFinished;
 };
