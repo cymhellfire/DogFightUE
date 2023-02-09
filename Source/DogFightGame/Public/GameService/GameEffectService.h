@@ -2,6 +2,7 @@
 
 #include "Engine/DataTable.h"
 #include "GameService/LuaGameService.h"
+#include "Interface/ActorPoolInterface/ActorPoolInterface.h"
 #include "GameEffectService.generated.h"
 
 class UDataTable;
@@ -27,20 +28,6 @@ struct FGameEffectConfigDataRow : public FTableRowBase
 	int32 PreloadCount;
 };
 
-/**
- * Actor pool for managing all preload instances of one game effect.
- */
-struct FGameEffectActorPool
-{
-public:
-	void AddInstance(AGameEffectBase* Instance);
-
-	AGameEffectBase* GetInstance();
-
-protected:
-	TArray<TWeakObjectPtr<AGameEffectBase>> GameEffectPool;
-};
-
 USTRUCT(BlueprintType)
 struct FGameEffectUtilsDesc
 {
@@ -54,7 +41,7 @@ struct FGameEffectUtilsDesc
 };
 
 UCLASS(Abstract, Blueprintable)
-class DOGFIGHTGAME_API UGameEffectService : public ULuaGameService
+class DOGFIGHTGAME_API UGameEffectService : public ULuaGameService, public IActorPoolInterface
 {
 	GENERATED_BODY()
 
@@ -115,7 +102,6 @@ protected:
 
 	// ---------------------- Preload section ------------------------------
 	TArray<int32> PreloadEffectIdList;
-	TMap<int32, TSharedPtr<FGameEffectActorPool>> EffectCacheMap;
 
 	FDelegateHandle PostLoadMapHandle;
 };

@@ -31,20 +31,15 @@ AGameEffectBase* UGameEffectService::SpawnEffectAtPos(int32 EffectId, FVector Po
 		return nullptr;
 	}
 
-	AGameEffectBase* Effect = nullptr;
 	// Get instance from existing pool first
-	if (auto PoolPtr = EffectCacheMap.Find(EffectId))
+	AGameEffectBase* Effect = GetInstanceById<AGameEffectBase>(EffectId);
+	if (Effect)
 	{
-		auto Pool = *PoolPtr;
-		if (auto EffectInstance = Pool->GetInstance())
-		{
-			EffectInstance->SetActorLocation(Pos);
-			EffectInstance->SetActorRotation(Rot);
-			Effect = EffectInstance;
-		}
+		Effect->SetActorLocation(Pos);
+		Effect->SetActorRotation(Rot);
 	}
 	// Spawn new instance
-	if (Effect == nullptr)
+	else
 	{
 		Effect = SpawnEffectWithConfig(EffectDataMap[EffectId], FTransform(Rot.Quaternion(), Pos));
 	}
@@ -144,8 +139,7 @@ void UGameEffectService::PreloadGameEffects()
 				if (auto NewEffect = SpawnEffectWithConfig(Config))
 				{
 					// Push new instance to pool
-					auto EffectPool = EffectCacheMap.FindOrAdd(EffectId);
-					EffectPool->AddInstance(NewEffect);
+					ReclaimInstance(EffectId, NewEffect);
 				}
 				else
 				{
@@ -162,7 +156,7 @@ void UGameEffectService::PreloadGameEffects()
 
 void UGameEffectService::ClearEffectCache()
 {
-	EffectCacheMap.Empty();
+	ClearPool();
 }
 
 AGameEffectBase* UGameEffectService::SpawnEffectWithConfig(FGameEffectConfigDataRow* Config, const FTransform& SpawnTrans)
@@ -208,50 +202,5 @@ void UGameEffectService::OnGameEffectFinished(AGameEffectBase* InEffect)
 	}
 
 	// Push the instance back to pool
-	auto EffectPool = EffectCacheMap.FindRef(InEffect->EffectId);
-	if (EffectPool.IsValid())
-	{
-		EffectPool->AddInstance(InEffect);
-	}
-	else
-	{
-		// Create new cache pool
-		TSharedPtr<FGameEffectActorPool> NewPool = MakeShareable(new FGameEffectActorPool);
-		NewPool->AddInstance(InEffect);
-		EffectCacheMap.Add(InEffect->EffectId, NewPool);
-	}
-}
-
-void FGameEffectActorPool::AddInstance(AGameEffectBase* Instance)
-{
-	if (!IsValid(Instance))
-	{
-		return;
-	}
-
-	// Make all instance passed in inactive
-	Instance->SetActorHiddenInGame(true);
-
-	GameEffectPool.Push(Instance);
-}
-
-AGameEffectBase* FGameEffectActorPool::GetInstance()
-{
-	if (GameEffectPool.Num() > 0)
-	{
-		// Stack workflow
-		auto Result = GameEffectPool.Pop();
-		while (!Result.IsValid() && GameEffectPool.Num() > 0)
-		{
-			Result = GameEffectPool.Pop();
-		}
-		if (Result.IsValid())
-		{
-			// Active the instance before give away
-			Result->SetActorHiddenInGame(false);
-			return Result.Get();
-		}
-	}
-
-	return nullptr;
+	ReclaimInstance(InEffect->EffectId, InEffect);
 }
