@@ -13,7 +13,12 @@ ProjectileConfig.Data = {
         Id = 1,
         ResPath = "/Game/DogFightGame/Blueprints/Projectile/BP_Proj_Default",
         ScriptPath = "DogFight.Projectiles.ProjectileLogic.DefaultLogic",
-    }
+    },
+    [ProjectileNameDef.BouncyProjectile] = {
+        Id = 2,
+        ResPath = "/Game/DogFightGame/Blueprints/Projectile/BP_Proj_Bouncy",
+        ScriptPath = "",
+    },
 }
 
 ---Convert a projectile name to corresponding id.

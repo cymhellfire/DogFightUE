@@ -15,6 +15,8 @@ function ProjectilePreviewMenu:PostInitialized()
 
     self.ProjectileListWrapper = ListWrapper.New(self, self.ProjectileList_ListView)
     self:InitProjectileList()
+
+    self.ProjectileSpawnMode_ComboBox.OnSelectionChanged:Add(self, self.OnSpawnModeChanged)
 end
 
 ---Initialize projectile list.
@@ -52,6 +54,13 @@ function ProjectilePreviewMenu:SetPreviewProjectileId(InId)
     local PlayerController = self:GetUtilController()
     if PlayerController then
         PlayerController:SetProjectileId(InId)
+    end
+end
+
+function ProjectilePreviewMenu:OnSpawnModeChanged(InMode)
+    local PlayerController = self:GetUtilController()
+    if PlayerController then
+        PlayerController:SetProjectileSpawnMode(InMode)
     end
 end
 
