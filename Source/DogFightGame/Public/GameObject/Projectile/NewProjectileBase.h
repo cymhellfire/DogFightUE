@@ -6,6 +6,7 @@
 
 class USphereComponent;
 class UProjectileMovementComponent;
+class UWarheadBase;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FProjectileDeadDelegate, class ANewProjectileBase*, Projectile);
 
@@ -57,12 +58,21 @@ protected:
 
 	void LaunchWithVelocity(const FVector& MuzzleVelocity);
 
+	UFUNCTION()
+	void OnProjectileStopped(const FHitResult& ImpactResult);
+
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Projectile")
 	int32 Id;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
-	float Lifespan;
+	float Lifetime;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
+	TSoftObjectPtr<UWarheadBase> Warhead;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
+	bool bDeadWhenStop;
 
 	UPROPERTY(BlueprintAssignable, Category="Projectile")
 	FProjectileDeadDelegate OnProjectileDead;
@@ -76,4 +86,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Projectile")
 	UProjectileMovementComponent* MovementComponent;
+
+	uint8 bAlive : 1;
 };

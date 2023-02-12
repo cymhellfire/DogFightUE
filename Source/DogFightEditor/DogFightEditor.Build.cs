@@ -12,7 +12,8 @@ public class DogFightEditor : ModuleRules
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
-                "Core",
+                "Core", 
+                "UnrealEd",
             }
         );
 
@@ -28,6 +29,7 @@ public class DogFightEditor : ModuleRules
                 "MainFrame",
                 "InputCore",
                 "EditorStyle",
+                "DogFightGame",
             }
         );
     }

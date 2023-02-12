@@ -4,6 +4,11 @@
 #include "FunctionLibrary/LuaIntegrationFunctionLibrary.h"
 #include "GameObject/Projectile/NewProjectileBase.h"
 
+UProjectileService::UProjectileService()
+{
+	ActorPoolPosition = FVector(0, 0, -20000);
+}
+
 void UProjectileService::Startup()
 {
 	Super::Startup();
@@ -110,5 +115,6 @@ void UProjectileService::OnProjectileDead(ANewProjectileBase* Projectile)
 		// Reset projectile before reclaim it
 		Projectile->Reset();
 		ReclaimInstance(Projectile->Id, Projectile);
+		Projectile->SetActorLocation(ActorPoolPosition);
 	}
 }

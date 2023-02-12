@@ -52,6 +52,8 @@ class DOGFIGHTGAME_API UProjectileService : public ULuaGameService, public IActo
 	GENERATED_BODY()
 
 public:
+	UProjectileService();
+
 	virtual void Startup() override;
 
 	/**
@@ -98,6 +100,10 @@ protected:
 
 	UFUNCTION()
 	void OnProjectileDead(ANewProjectileBase* Projectile);
+
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="ProjectileService")
+	FVector ActorPoolPosition;
 
 protected:
 

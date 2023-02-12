@@ -2,6 +2,9 @@ require "UnLua"
 
 ---@field CurProjectileId number Current previewing projectile id.
 ---@field ProjectileSpawnMethod function Function for spawning preview projectiles.
+---@field DefaultModeSpawnHeight number Projectile spawn height offset for default mode.
+---@field DefaultModeTargetHeight number Target height offset for default mode.
+---@field DropModeSpawnHeight number Projectile spawn height offset for drop mode.
 ---@class UtilSceneController : BP_Ctrl_UtilsScene_C
 local UtilSceneController = Class()
 
@@ -16,10 +19,12 @@ local function SpawnProjectileDefault(self, InPos)
     ---@type ProjectileService
     local ProjectileService = GetGameService(GameServiceNameDef.ProjectileService)
     if ProjectileService then
-        local NewProjectile = ProjectileService:SpawnProjectileAtPos(self.CurProjectileId, self:K2_GetActorLocation(), self:K2_GetActorRotation())
+        local MyPos = self:K2_GetActorLocation()
+        local NewProjectile = ProjectileService:SpawnProjectileAtPos(self.CurProjectileId, 
+            UE.FVector(MyPos.X, MyPos.Y, MyPos.Z + self.DefaultModeSpawnHeight), self:K2_GetActorRotation())
         -- Launch new projectile to target
         if NewProjectile then
-            local FinalPos = UE.FVector(InPos.X, InPos.Y, InPos.Z + 200)
+            local FinalPos = UE.FVector(InPos.X, InPos.Y, InPos.Z + self.DefaultModeTargetHeight)
             NewProjectile:LaunchToTargetWithSpeed(FinalPos, 1000)
         end
     end
@@ -36,7 +41,7 @@ local function SpawnProjectileDrop(self, InPos)
     ---@type ProjectileService
     local ProjectileService = GetGameService(GameServiceNameDef.ProjectileService)
     if ProjectileService then
-        local SpawnPos = UE.FVector(InPos.X, InPos.Y, InPos.Z + 1000)
+        local SpawnPos = UE.FVector(InPos.X, InPos.Y, InPos.Z + self.DropModeSpawnHeight)
         local NewProjectile = ProjectileService:SpawnProjectileAtPos(self.CurProjectileId, SpawnPos, UE.FRotator(0, 0, 0))
         -- Move the projectile slightly
         if NewProjectile then
@@ -54,6 +59,10 @@ local ProjectileSpawnMode = {
 function UtilSceneController:ReceiveBeginPlay()
     -- Initial spawn mode
     self.ProjectileSpawnMethod = SpawnProjectileDefault
+
+    self.DefaultModeSpawnHeight = 50
+    self.DefaultModeTargetHeight = 50
+    self.DropModeSpawnHeight = 100
 end
 
 ---Set the projectile to spawn.
@@ -68,6 +77,18 @@ function UtilSceneController:SetProjectileSpawnMode(InMode)
     if ProjectileSpawnMode[InMode] then
         self.ProjectileSpawnMethod = ProjectileSpawnMode[InMode]
     end
+end
+
+function UtilSceneController:SetDefaultModeSpawnHeight(InValue)
+    self.DefaultModeSpawnHeight = InValue
+end
+
+function UtilSceneController:SetDefaultModeTargetHeight(InValue)
+    self.DefaultModeTargetHeight = InValue
+end
+
+function UtilSceneController:SetDropModeSpawnHeight(InValue)
+    self.DropModeSpawnHeight = InValue
 end
 
 function UtilSceneController:OnTargetClicked(InPos)

@@ -1,6 +1,9 @@
 #include "GameObject/Projectile/NewProjectileBase.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "GameInstance/DogFightGameInstance.h"
+#include "GameObject/Warhead/WarheadBase.h"
+#include "GameService/GameEffectService.h"
 
 ANewProjectileBase::ANewProjectileBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -20,8 +23,11 @@ ANewProjectileBase::ANewProjectileBase(const FObjectInitializer& ObjectInitializ
 	// Create projectile movement component
 	MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>("MovementComponent");
 	MovementComponent->bRotationFollowsVelocity = true;
+	MovementComponent->OnProjectileStop.AddDynamic(this, &ANewProjectileBase::OnProjectileStopped);
 
-	Lifespan = 0.f;
+	// Initial values
+	Lifetime = 0.f;
+	bDeadWhenStop = true;
 }
 
 void ANewProjectileBase::Reset()
@@ -39,25 +45,56 @@ void ANewProjectileBase::LifeSpanExpired()
 void ANewProjectileBase::OnActivated()
 {
 	// Register lifespan timer once activated
-	if (Lifespan > 0)
+	if (Lifetime > 0)
 	{
-		SetLifeSpan(Lifespan);
+		SetLifeSpan(Lifetime);
 	}
 
 	// Reassign updated component to ensure movement component can update correctly
 	MovementComponent->SetUpdatedComponent(CollisionComponent);
+
+	// Enable collision
+	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+	// Mark projectile as alive
+	bAlive = true;
 }
 
 void ANewProjectileBase::Dead()
 {
+	if (!bAlive)
+		return;
+
 	// Clear the lifespan timer if it's still working
 	if (TimerHandle_LifeSpanExpired.IsValid())
 	{
 		GetWorld()->GetTimerManager().ClearTimer(TimerHandle_LifeSpanExpired);
 	}
 
+	// Use warhead
+	if (!Warhead.IsNull())
+	{
+		auto WarheadPtr = Warhead.IsValid() ? Warhead.Get() : Warhead.LoadSynchronous();
+		if (WarheadPtr)
+		{
+			if (auto GameInstance = Cast<UDogFightGameInstance>(GetGameInstance()))
+			{
+				if (auto GameEffectService = Cast<UGameEffectService>(GameInstance->GetGameServiceBySuperClass(UGameEffectService::StaticClass())))
+				{
+					GameEffectService->SpawnEffectAtPos(WarheadPtr->GameEffectId, GetActorLocation(),
+						WarheadPtr->bUseProjectileRotation ? GetActorRotation() : FRotator::ZeroRotator);
+				}
+			}
+		}
+	}
+
+	// Disable collision
+	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 	// Trigger delegate
 	OnProjectileDead.Broadcast(this);
+
+	bAlive = false;
 }
 
 void ANewProjectileBase::LaunchWithVelocity(const FVector& MuzzleVelocity)
@@ -67,6 +104,14 @@ void ANewProjectileBase::LaunchWithVelocity(const FVector& MuzzleVelocity)
 
 	// Set muzzle velocity
 	MovementComponent->SetVelocityInLocalSpace(MuzzleVelocity);
+}
+
+void ANewProjectileBase::OnProjectileStopped(const FHitResult& ImpactResult)
+{
+	if (bDeadWhenStop)
+	{
+		Dead();
+	}
 }
 
 void ANewProjectileBase::LaunchToTargetWithVelocity_Implementation(const FVector& Target, const FVector& MuzzleVelocity)
