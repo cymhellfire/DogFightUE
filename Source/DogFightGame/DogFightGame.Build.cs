@@ -14,6 +14,7 @@ public class DogFightGame : ModuleRules
                 "LuaIntegration",
                 "ProjectFramework",
                 "CardSystem",
+                "UnLua",
             }
         );
 

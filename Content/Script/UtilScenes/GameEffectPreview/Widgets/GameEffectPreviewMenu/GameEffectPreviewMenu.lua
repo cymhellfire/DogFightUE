@@ -74,4 +74,10 @@ function GameEffectPreviewMenu:ReplayEffect()
     end
 end
 
+---Respond to switcher hide self
+function GameEffectPreviewMenu:OnSwitchOff()
+    -- Clear record to stop the auto play.
+    self.CurEffect = nil
+end
+
 return GameEffectPreviewMenu
