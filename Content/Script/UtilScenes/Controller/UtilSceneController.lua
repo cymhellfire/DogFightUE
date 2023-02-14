@@ -5,6 +5,9 @@ require "UnLua"
 ---@field DefaultModeSpawnHeight number Projectile spawn height offset for default mode.
 ---@field DefaultModeTargetHeight number Target height offset for default mode.
 ---@field DropModeSpawnHeight number Projectile spawn height offset for drop mode.
+---@field AimModeSpawnHeight number Projectile spawn height offset for aim mode.
+---@field ProjectileTarget AActor Projectile target for aim mode.
+---@field DirectionalLight ADirectionalLight Directional light of current scene.
 ---@class UtilSceneController : BP_Ctrl_UtilsScene_C
 local UtilSceneController = Class()
 
@@ -50,10 +53,32 @@ local function SpawnProjectileDrop(self, InPos)
     end
 end
 
+---Aim mode that use a moving object as target.
+---@param self UtilSceneController Player controller instance.
+---@param InPos FVector Target position.
+local function SpawnProjectileAim(self, InPos)
+    if not self.CurProjectileId then
+        return
+    end
+
+    ---@type ProjectileService
+    local ProjectileService = GetGameService(GameServiceNameDef.ProjectileService)
+    if ProjectileService then
+        local MyPos = self:K2_GetActorLocation()
+        local SpawnPos = UE.FVector(MyPos.X, MyPos.Y, MyPos.Z + self.AimModeSpawnHeight)
+        local NewProjectile = ProjectileService:SpawnProjectileAtPos(self.CurProjectileId, SpawnPos, UE.FRotator(0, 0, 0))
+        -- Let the projectile seek to target
+        if NewProjectile and self.ProjectileTarget then
+            NewProjectile:HomingToTargetWithSpeed(self.ProjectileTarget, 1000)
+        end
+    end
+end
+
 ---Projectile spawn mode table.
 local ProjectileSpawnMode = {
     UI_ProjectileSpawnMode_Default = SpawnProjectileDefault,
     UI_ProjectileSpawnMode_Drop = SpawnProjectileDrop,
+    UI_ProjectileSpawnMode_Aim = SpawnProjectileAim,
 }
 
 function UtilSceneController:ReceiveBeginPlay()
@@ -63,6 +88,22 @@ function UtilSceneController:ReceiveBeginPlay()
     self.DefaultModeSpawnHeight = 50
     self.DefaultModeTargetHeight = 50
     self.DropModeSpawnHeight = 100
+    self.AimModeSpawnHeight = 100
+
+    -- Get the directional light
+    self.DirectionalLight = UE.UGameplayStatics.GetActorOfClass(self, UE.ADirectionalLight.StaticClass())
+
+    -- Get the projectile target actor
+    local AllActor = UE.UGameplayStatics.GetAllActorsOfClass(self, UE.AStaticMeshActor.StaticClass())
+    local ActorList = AllActor:ToTable()
+    for _, v in ipairs(ActorList) do
+        local ObjectName = v:GetName()
+        if string.find(ObjectName, "ProjectileTarget") then
+            self.ProjectileTarget = v
+            print("Find projectile target.")
+            break
+        end
+    end
 end
 
 ---Set the projectile to spawn.
@@ -91,10 +132,24 @@ function UtilSceneController:SetDropModeSpawnHeight(InValue)
     self.DropModeSpawnHeight = InValue
 end
 
+function UtilSceneController:SetAimModeSpawnHeight(InValue)
+    self.AimModeSpawnHeight = InValue
+end
+
 function UtilSceneController:OnTargetClicked(InPos)
     print("OnTargetClicked: Click at [" .. InPos.X .. "," .. InPos.Y .. "," .. InPos.Z .. "]")
     if self.ProjectileSpawnMethod then
         self.ProjectileSpawnMethod(self, InPos)
+    end
+end
+
+function UtilSceneController:SetDirectionalLightIntensity(InValue)
+    if self.DirectionalLight then
+        ---@type UDirectionalLightComponent
+        local Light = self.DirectionalLight:GetComponentByClass(UE.UDirectionalLightComponent.StaticClass())
+        if Light then
+            Light:SetIntensity(InValue)
+        end
     end
 end
 

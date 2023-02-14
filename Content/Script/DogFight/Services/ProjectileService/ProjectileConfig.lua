@@ -19,6 +19,11 @@ ProjectileConfig.Data = {
         ResPath = "/Game/DogFightGame/Blueprints/Projectile/BP_Proj_Bouncy",
         ScriptPath = "",
     },
+    [ProjectileNameDef.HomingProjectile] = {
+        Id = 3,
+        ResPath = "/Game/DogFightGame/Blueprints/Projectile/BP_Proj_Homing",
+        ScriptPath = "",
+    }
 }
 
 ---Convert a projectile name to corresponding id.

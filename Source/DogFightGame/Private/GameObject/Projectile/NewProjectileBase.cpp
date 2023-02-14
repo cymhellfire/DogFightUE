@@ -126,3 +126,28 @@ void ANewProjectileBase::LaunchToTargetWithSpeed_Implementation(const FVector& T
 	auto MuzzleVelocity = TargetDirection.GetSafeNormal() * MuzzleSpeed;
 	LaunchWithVelocity(MuzzleVelocity);
 }
+
+void ANewProjectileBase::HomingToTargetWithVelocity_Implementation(AActor* Target, const FVector& MuzzleVelocity)
+{
+	if (!IsValid(Target))
+	{
+		return;
+	}
+
+	// Set the homing target
+	MovementComponent->HomingTargetComponent = Target->GetRootComponent();
+	LaunchWithVelocity(MuzzleVelocity);
+}
+
+void ANewProjectileBase::HomingToTargetWithSpeed_Implementation(AActor* Target, float MuzzleSpeed)
+{
+	if (!IsValid(Target))
+	{
+		return;
+	}
+
+	auto CurLocation = GetActorLocation();
+	auto TargetDirection = Target->GetActorLocation() - CurLocation;
+	auto MuzzleVelocity = TargetDirection.GetSafeNormal() * MuzzleSpeed;
+	HomingToTargetWithVelocity(Target, MuzzleVelocity);
+}

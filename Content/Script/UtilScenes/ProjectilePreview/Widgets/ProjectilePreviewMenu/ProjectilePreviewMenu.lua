@@ -11,6 +11,7 @@ local NumberHelper = require("Common.NumberHelper")
 local OptionPanelIndex = {
     UI_ProjectileSpawnMode_Default = 0,
     UI_ProjectileSpawnMode_Drop = 1,
+    UI_ProjectileSpawnMode_Aim = 2,
 }
 
 function ProjectilePreviewMenu:PostInitialized()
@@ -20,6 +21,7 @@ function ProjectilePreviewMenu:PostInitialized()
         {BindKey = "DefaultModeSpawnHeight",    UIKey = "DefaultSpawnHeight_Text", DataBinding = DataBinding.TextContextBinding() },
         {BindKey = "DefaultModeTargetHeight",   UIKey = "DefaultTargetHeight_Text", DataBinding = DataBinding.TextContextBinding() },
         {BindKey = "DropModeSpawnHeight",   UIKey = "DropSpawnHeight_Text",     DataBinding = DataBinding.TextContextBinding() },
+        {BindKey = "AimModeSpawnHeight",    UIKey = "AimSpawnHeight_Text",      DataBinding = DataBinding.TextContextBinding() },
     })
 
     self.ProjectileListWrapper = ListWrapper.New(self, self.ProjectileList_ListView)
@@ -30,6 +32,7 @@ function ProjectilePreviewMenu:PostInitialized()
     self.DefaultSpawnHeight_Slider.OnValueChanged:Add(self, self.OnDefaultSpawnHeightChanged)
     self.DefaultTargetHeight_Slider.OnValueChanged:Add(self, self.OnDefaultTargetHeightChanged)
     self.DropSpawnHeight_Slider.OnValueChanged:Add(self, self.OnDropSpawnHeightChanged)
+    self.AimSpawnHeight_Slider.OnValueChanged:Add(self, self.OnAimSpawnHeightChanged)
 end
 
 ---Initialize projectile list.
@@ -104,6 +107,14 @@ function ProjectilePreviewMenu:OnDropSpawnHeightChanged(InValue)
     local PlayerController = self:GetUtilController()
     if PlayerController then
         PlayerController:SetDropModeSpawnHeight(InValue)
+    end
+end
+
+function ProjectilePreviewMenu:OnAimSpawnHeightChanged(InValue)
+    self.ViewModel.AimModeSpawnHeight = NumberHelper.format_num(InValue, 2)
+    local PlayerController = self:GetUtilController()
+    if PlayerController then
+        PlayerController:SetAimModeSpawnHeight(InValue)
     end
 end
 

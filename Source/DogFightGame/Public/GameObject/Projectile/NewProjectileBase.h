@@ -52,6 +52,24 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Projectile", NetMulticast, Reliable)
 	void LaunchToTargetWithSpeed(const FVector& Target, float MuzzleSpeed);
 
+	/**
+	 * Launch this projectile with muzzle velocity and let this projectile seek to target actor.
+	 * Projectile with bIsHomingProjectile off won't act as expect.
+	 * @param Target			Target actor that this projectile homing.
+	 * @param MuzzleVelocity	Initial velocity of this projectile.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Projectile", NetMulticast, Reliable)
+	void HomingToTargetWithVelocity(AActor* Target, const FVector& MuzzleVelocity);
+
+	/**
+	 * Launch this projectile with muzzle velocity and let this projectile seek to target actor.
+	 * Projectile with bIsHomingProjectile off won't act as expect.
+	 * @param Target			Target actor that this projectile homing.
+	 * @param MuzzleSpeed		The initial length of muzzle velocity.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Projectile", NetMulticast, Reliable)
+	void HomingToTargetWithSpeed(AActor* Target, float MuzzleSpeed);
+
 protected:
 	void OnActivated();
 	void Dead();
