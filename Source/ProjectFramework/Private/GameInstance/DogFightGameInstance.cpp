@@ -125,7 +125,7 @@ void UDogFightGameInstance::StartupGameService()
 			}
 			
 			UGameService* NewGameService = NewObject<UGameService>(this, NewServiceClass, It->GetFName());
-			GameServiceMap.Add(It->GetFName(), NewGameService);
+			GameServiceMap.Add(NewGameService->GetRegisterName(), NewGameService);
 
 			// Invoke Startup function
 			NewGameService->Startup();
@@ -142,7 +142,7 @@ void UDogFightGameInstance::StartupGameService()
 			continue;
 
 		UGameService* NewGameService = NewObject<UGameService>(this, Blueprint, Blueprint->GetFName());
-		GameServiceMap.Add(Blueprint->GetFName(), NewGameService);
+		GameServiceMap.Add(NewGameService->GetRegisterName(), NewGameService);
 
 		// Startup
 		NewGameService->Startup();

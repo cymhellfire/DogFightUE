@@ -2,6 +2,7 @@
 
 #include "Card/Card.h"
 #include "GameMode/TopDownStyleGameMode.h"
+#include "GameService/GameEffectService.h"
 #include "GameService/GameInputService.h"
 #include "GameService/GameService.h"
 #include "Net/UnrealNetwork.h"
@@ -113,6 +114,14 @@ void ATopDownStylePlayerController::ServerUseCardByInstanceId_Implementation(int
 	{
 		// Let player state start the using process
 		PS->ServerTryToUseCardByInstanceId(InId);
+	}
+}
+
+void ATopDownStylePlayerController::ClientSpawnGameEffectAtPos_Implementation(int32 EffectId, FVector Pos, FRotator Rot)
+{
+	if (auto GameEffectService = Cast<UGameEffectService>(UGameService::GetGameServiceBySuperClass<UGameEffectService>()))
+	{
+		GameEffectService->SpawnEffectAtPos(EffectId, Pos, Rot);
 	}
 }
 

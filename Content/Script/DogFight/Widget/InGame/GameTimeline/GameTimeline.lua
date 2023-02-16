@@ -17,7 +17,7 @@ end
 
 function GameTimeline:PostInitialized()
     ---@type ListViewWrapper List wrapper for timeline player list.
-    self.TimelineViewList = ListWrapper.New(self.Timeline_ListView)
+    self.TimelineViewList = ListWrapper.New(self, self.Timeline_ListView)
 end
 
 function GameTimeline:OnTimelineChanged()

@@ -4,6 +4,7 @@
 #include "Modules/ModuleManager.h"
 
 class FMainWindowToolbar;
+class FWarheadAssetTypeActions;
 
 class FDogFightEditorModule : public IModuleInterface
 {
@@ -14,4 +15,6 @@ public:
 private:
     TSharedPtr<ISlateStyle> Style;
     TSharedPtr<FMainWindowToolbar> MainWindowToolbar;
+
+    TSharedPtr<FWarheadAssetTypeActions> WarheadAssetTypeActions;
 };

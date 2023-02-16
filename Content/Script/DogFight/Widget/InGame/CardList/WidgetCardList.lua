@@ -21,7 +21,7 @@ function WidgetCardList:Initialize()
 end
 
 function WidgetCardList:PostInitialized()
-    self.CardListWrapper = ListWrapper.New(self.CardList_ListView)
+    self.CardListWrapper = ListWrapper.New(self, self.CardList_ListView)
 end
 
 function WidgetCardList:Construct()

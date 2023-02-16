@@ -74,7 +74,7 @@ void UCommonGameplayFunctionLibrary::ShowWidgetByPlayerId(FString WidgetName, in
 		}, InPlayerId);
 }
 
-void UCommonGameplayFunctionLibrary::HideWidgetbyPlayerId(FString WidgetName, int32 InPlayerId)
+void UCommonGameplayFunctionLibrary::HideWidgetByPlayerId(FString WidgetName, int32 InPlayerId)
 {
 	ForEachPlayerControllerDo([WidgetName](ATopDownStylePlayerController* InPC)
 		{
@@ -110,8 +110,16 @@ int32 UCommonGameplayFunctionLibrary::GetAlivePlayerNum()
 	return Result;
 }
 
+void UCommonGameplayFunctionLibrary::SpawnGameEffectAtPos(int32 EffectId, FVector Pos, FRotator Rot)
+{
+	ForEachPlayerControllerDo([EffectId, Pos, Rot](ATopDownStylePlayerController* PlayerController)
+	{
+		PlayerController->ClientSpawnGameEffectAtPos(EffectId, Pos, Rot);
+	});
+}
+
 void UCommonGameplayFunctionLibrary::ForEachPlayerStateDo(TFunction<void(ATopDownStylePlayerState*)> ExecuteFunc,
-	int32 PlayerIdMask)
+                                                          int32 PlayerIdMask)
 {
 	if (auto GameState = GetCurrentTopDownStyleGameState())
 	{

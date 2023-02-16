@@ -14,6 +14,7 @@ public class DogFightGame : ModuleRules
                 "LuaIntegration",
                 "ProjectFramework",
                 "CardSystem",
+                "UnLua",
             }
         );
 
@@ -27,6 +28,9 @@ public class DogFightGame : ModuleRules
                 "NetCore",
                 "AIModule",
                 "EnhancedInput",
+                "Niagara",
+                "LevelSequence",
+                "MovieScene",
             }
         );
         
