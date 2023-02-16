@@ -5,7 +5,7 @@
 #include "NewProjectileBase.generated.h"
 
 class USphereComponent;
-class UProjectileMovementComponent;
+class UExtendProjectileMovementComponent;
 class UWarheadBase;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FProjectileDeadDelegate, class ANewProjectileBase*, Projectile);
@@ -103,7 +103,7 @@ protected:
 	UStaticMeshComponent* MeshComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Projectile")
-	UProjectileMovementComponent* MovementComponent;
+	UExtendProjectileMovementComponent* MovementComponent;
 
 	uint8 bAlive : 1;
 };

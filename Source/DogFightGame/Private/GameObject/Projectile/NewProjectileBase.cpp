@@ -1,7 +1,7 @@
 #include "GameObject/Projectile/NewProjectileBase.h"
 #include "Components/SphereComponent.h"
-#include "GameFramework/ProjectileMovementComponent.h"
 #include "GameInstance/DogFightGameInstance.h"
+#include "GameObject/Projectile/ExtendProjectileMovementComponent.h"
 #include "GameObject/Warhead/WarheadBase.h"
 #include "GameService/GameEffectService.h"
 
@@ -21,7 +21,7 @@ ANewProjectileBase::ANewProjectileBase(const FObjectInitializer& ObjectInitializ
 	MeshComponent->SetupAttachment(RootComponent);
 
 	// Create projectile movement component
-	MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>("MovementComponent");
+	MovementComponent = CreateDefaultSubobject<UExtendProjectileMovementComponent>("MovementComponent");
 	MovementComponent->bRotationFollowsVelocity = true;
 	MovementComponent->OnProjectileStop.AddDynamic(this, &ANewProjectileBase::OnProjectileStopped);
 
@@ -52,6 +52,7 @@ void ANewProjectileBase::OnActivated()
 
 	// Reassign updated component to ensure movement component can update correctly
 	MovementComponent->SetUpdatedComponent(CollisionComponent);
+	MovementComponent->OnActivated();
 
 	// Enable collision
 	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
