@@ -23,6 +23,10 @@ ProjectileConfig.Data = {
         Id = 3,
         ResPath = "/Game/DogFightGame/Blueprints/Projectile/BP_Proj_Homing",
         ScriptPath = "",
+    },
+    [ProjectileNameDef.PeriodHomingProjectile] = {
+        Id = 4,
+        ResPath = "/Game/DogFightGame/Blueprints/Projectile/BP_Proj_PeriodHoming",
     }
 }
 

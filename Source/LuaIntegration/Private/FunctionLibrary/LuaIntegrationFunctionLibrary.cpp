@@ -9,9 +9,20 @@ UWorld* ULuaIntegrationFunctionLibrary::GetCurrentWorld()
 #if WITH_EDITOR
 	// Use GWorld here to ensure simulating multiplayer game locally in editor can work
 	UWorld* CurWorld = nullptr;
-	if (GWorld)
+
+	// Cache the PIE instance id once it's updated
+	static int32 LastUpdatePIEInstance = -1;
+	if (LastUpdatePIEInstance != GPlayInEditorID && GPlayInEditorID != -1)
 	{
-		CurWorld = GWorld->GetWorld();
+		LastUpdatePIEInstance = GPlayInEditorID;
+	}
+
+	if (LastUpdatePIEInstance != -1)
+	{
+		if (auto WorldContext = GEngine->GetWorldContextFromPIEInstance(LastUpdatePIEInstance))
+		{
+			return WorldContext->World();
+		}
 	}
 	return CurWorld;
 #else

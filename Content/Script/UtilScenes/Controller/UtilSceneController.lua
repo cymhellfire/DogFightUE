@@ -6,6 +6,8 @@ require "UnLua"
 ---@field DefaultModeTargetHeight number Target height offset for default mode.
 ---@field DropModeSpawnHeight number Projectile spawn height offset for drop mode.
 ---@field AimModeSpawnHeight number Projectile spawn height offset for aim mode.
+---@field AimInitialSpread number Projectile initial spread in aim mode.
+---@field AutoSpawn boolean Whether to spawn preview projectiles automatically.
 ---@field ProjectileTarget AActor Projectile target for aim mode.
 ---@field DirectionalLight ADirectionalLight Directional light of current scene.
 ---@class UtilSceneController : BP_Ctrl_UtilsScene_C
@@ -69,7 +71,7 @@ local function SpawnProjectileAim(self, InPos)
         local NewProjectile = ProjectileService:SpawnProjectileAtPos(self.CurProjectileId, SpawnPos, UE.FRotator(0, 0, 0))
         -- Let the projectile seek to target
         if NewProjectile and self.ProjectileTarget then
-            NewProjectile:HomingToTargetWithSpeed(self.ProjectileTarget, 1000)
+            NewProjectile:HomingToTargetWithSpeed(self.ProjectileTarget, 1000, self.AimInitialSpread)
         end
     end
 end
@@ -89,6 +91,8 @@ function UtilSceneController:ReceiveBeginPlay()
     self.DefaultModeTargetHeight = 50
     self.DropModeSpawnHeight = 100
     self.AimModeSpawnHeight = 100
+    self.AimInitialSpread = 0
+    self.AutoSpawnInterval = 1
 
     -- Get the directional light
     self.DirectionalLight = UE.UGameplayStatics.GetActorOfClass(self, UE.ADirectionalLight.StaticClass())
@@ -136,8 +140,54 @@ function UtilSceneController:SetAimModeSpawnHeight(InValue)
     self.AimModeSpawnHeight = InValue
 end
 
+function UtilSceneController:SetAimInitialSpread(InValue)
+    self.AimInitialSpread = InValue
+end
+
+function UtilSceneController:SetAutoSpawnInterval(InValue)
+    self.AutoSpawnInterval = InValue
+
+    -- Refresh auto spawn interval
+    if self.AutoSpawn then
+        ---@type TimerService
+        local TimerService = GetGameService(GameServiceNameDef.TimerService)
+        if TimerService then
+            if self.AutoSpawnTimer then
+                TimerService:UnregisterTimer(self.AutoSpawnTimer)
+            end
+            self.AutoSpawnTimer = TimerService:RegisterTimer(self, self.OnAutoSpawnTimerExpired, self.AutoSpawnInterval, true)
+        end
+    end
+end
+
+function UtilSceneController:SetAutoSpawn(InValue)
+    self.AutoSpawn = InValue
+
+    if InValue then
+        -- Register new timer for auto spawn
+        ---@type TimerService
+        local TimerService = GetGameService(GameServiceNameDef.TimerService)
+        if TimerService then
+            self.AutoSpawnTimer = TimerService:RegisterTimer(self, self.OnAutoSpawnTimerExpired, self.AutoSpawnInterval, true)
+        end
+    else
+        -- Unregister timer for auto spawn
+        ---@type TimerService
+        local TimerService = GetGameService(GameServiceNameDef.TimerService)
+        if TimerService and self.AutoSpawnTimer then
+            TimerService:UnregisterTimer(self.AutoSpawnTimer)
+            self.AutoSpawnTimer = nil
+        end
+    end
+end
+
+function UtilSceneController:OnAutoSpawnTimerExpired()
+    local RandomPos = UE.FVector(math.random(-500, 500), math.random(-500, 500), 0)
+    self:OnTargetClicked(RandomPos)
+end
+
 function UtilSceneController:OnTargetClicked(InPos)
-    print("OnTargetClicked: Click at [" .. InPos.X .. "," .. InPos.Y .. "," .. InPos.Z .. "]")
+    --print("OnTargetClicked: Click at [" .. InPos.X .. "," .. InPos.Y .. "," .. InPos.Z .. "]")
     if self.ProjectileSpawnMethod then
         self.ProjectileSpawnMethod(self, InPos)
     end

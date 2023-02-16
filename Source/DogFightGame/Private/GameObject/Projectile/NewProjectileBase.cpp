@@ -92,6 +92,8 @@ void ANewProjectileBase::Dead()
 	// Disable collision
 	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+	MovementComponent->OnDeactivated();
+
 	// Trigger delegate
 	OnProjectileDead.Broadcast(this);
 
@@ -140,7 +142,7 @@ void ANewProjectileBase::HomingToTargetWithVelocity_Implementation(AActor* Targe
 	LaunchWithVelocity(MuzzleVelocity);
 }
 
-void ANewProjectileBase::HomingToTargetWithSpeed_Implementation(AActor* Target, float MuzzleSpeed)
+void ANewProjectileBase::HomingToTargetWithSpeed_Implementation(AActor* Target, float MuzzleSpeed, float Spread)
 {
 	if (!IsValid(Target))
 	{
@@ -148,7 +150,18 @@ void ANewProjectileBase::HomingToTargetWithSpeed_Implementation(AActor* Target, 
 	}
 
 	auto CurLocation = GetActorLocation();
-	auto TargetDirection = Target->GetActorLocation() - CurLocation;
-	auto MuzzleVelocity = TargetDirection.GetSafeNormal() * MuzzleSpeed;
+	auto TargetDirection = (Target->GetActorLocation() - CurLocation).GetSafeNormal();
+
+	// Calculate spread
+	if (Spread > 0)
+	{
+		const FTransform FacingTransform(TargetDirection.Rotation());
+		auto UpVector = FacingTransform.GetUnitAxis(EAxis::Z);
+		TargetDirection = FMath::Lerp(TargetDirection, UpVector, Spread);
+		// Rotate with random rotation
+		TargetDirection = TargetDirection.RotateAngleAxis(FMath::RandRange(0.f, 360.f), FacingTransform.GetUnitAxis(EAxis::X));
+	}
+
+	auto MuzzleVelocity = TargetDirection * MuzzleSpeed;
 	HomingToTargetWithVelocity(Target, MuzzleVelocity);
 }

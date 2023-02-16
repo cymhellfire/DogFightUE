@@ -6,6 +6,8 @@ ProjectilePreviewMenuVM.BindingTable = {
     DefaultModeTargetHeight = "",
     DropModeSpawnHeight = "",
     AimModeSpawnHeight = "",
+    AimInitialSpread = "",
+    AutoSpawnInterval = "",
 }
 
 return ProjectilePreviewMenuVM

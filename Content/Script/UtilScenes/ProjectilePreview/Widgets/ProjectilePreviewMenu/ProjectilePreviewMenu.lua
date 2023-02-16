@@ -22,6 +22,8 @@ function ProjectilePreviewMenu:PostInitialized()
         {BindKey = "DefaultModeTargetHeight",   UIKey = "DefaultTargetHeight_Text", DataBinding = DataBinding.TextContextBinding() },
         {BindKey = "DropModeSpawnHeight",   UIKey = "DropSpawnHeight_Text",     DataBinding = DataBinding.TextContextBinding() },
         {BindKey = "AimModeSpawnHeight",    UIKey = "AimSpawnHeight_Text",      DataBinding = DataBinding.TextContextBinding() },
+        {BindKey = "AimInitialSpread",      UIKey = "AimInitialSpread_Text",    DataBinding = DataBinding.TextContextBinding() },
+        {BindKey = "AutoSpawnInterval",     UIKey = "AutoSpawnInterval_Text",   DataBinding = DataBinding.TextContextBinding() },
     })
 
     self.ProjectileListWrapper = ListWrapper.New(self, self.ProjectileList_ListView)
@@ -33,6 +35,9 @@ function ProjectilePreviewMenu:PostInitialized()
     self.DefaultTargetHeight_Slider.OnValueChanged:Add(self, self.OnDefaultTargetHeightChanged)
     self.DropSpawnHeight_Slider.OnValueChanged:Add(self, self.OnDropSpawnHeightChanged)
     self.AimSpawnHeight_Slider.OnValueChanged:Add(self, self.OnAimSpawnHeightChanged)
+    self.AimInitialSpread_Slider.OnValueChanged:Add(self, self.OnAimInitialSpreadChanged)
+    self.AutoSpawn_CheckBox.OnCheckStateChanged:Add(self, self.OnAutoSpawnChanged)
+    self.AutoSpawnInterval_Slider.OnValueChanged:Add(self, self.OnAutoSpawnIntervalChanged)
 end
 
 ---Initialize projectile list.
@@ -115,6 +120,29 @@ function ProjectilePreviewMenu:OnAimSpawnHeightChanged(InValue)
     local PlayerController = self:GetUtilController()
     if PlayerController then
         PlayerController:SetAimModeSpawnHeight(InValue)
+    end
+end
+
+function ProjectilePreviewMenu:OnAimInitialSpreadChanged(InValue)
+    self.ViewModel.AimInitialSpread = NumberHelper.format_num(InValue, 2)
+    local PlayerController = self:GetUtilController()
+    if PlayerController then
+        PlayerController:SetAimInitialSpread(InValue)
+    end
+end
+
+function ProjectilePreviewMenu:OnAutoSpawnChanged(InChecked)
+    local PlayerController = self:GetUtilController()
+    if PlayerController then
+        PlayerController:SetAutoSpawn(InChecked)
+    end
+end
+
+function ProjectilePreviewMenu:OnAutoSpawnIntervalChanged(InValue)
+    self.ViewModel.AutoSpawnInterval = NumberHelper.format_num(InValue, 2)
+    local PlayerController = self:GetUtilController()
+    if PlayerController then
+        PlayerController:SetAutoSpawnInterval(InValue)
     end
 end
 

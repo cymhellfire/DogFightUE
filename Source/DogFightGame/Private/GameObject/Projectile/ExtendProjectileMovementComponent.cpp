@@ -47,29 +47,35 @@ FVector UExtendProjectileMovementComponent::ComputeHomingAcceleration(const FVec
 
 void UExtendProjectileMovementComponent::OnActivated()
 {
-	// Setup period homing countdown
-	if (StartHomingTime > 0)
+	if (bPeriodHoming)
 	{
-		// Record the current homing target for later recover
-		PendingHomingTarget = HomingTargetComponent;
-		HomingTargetComponent.Reset();
-		GetWorld()->GetTimerManager().SetTimer(StartHomingTimerHandle, this, &UExtendProjectileMovementComponent::OnStartHomingTimerExpired, StartHomingTime);
-	}
-	if (StopHomingTime > 0)
-	{
-		GetWorld()->GetTimerManager().SetTimer(StopHomingTimerHandle, this, &UExtendProjectileMovementComponent::OnStopHomingTimerExpired, StopHomingTime);
+		// Setup period homing countdown
+		if (StartHomingTime > 0)
+		{
+			// Record the current homing target for later recover
+			PendingHomingTarget = HomingTargetComponent;
+			HomingTargetComponent.Reset();
+			GetWorld()->GetTimerManager().SetTimer(StartHomingTimerHandle, this, &UExtendProjectileMovementComponent::OnStartHomingTimerExpired, StartHomingTime);
+		}
+		if (StopHomingTime > 0)
+		{
+			GetWorld()->GetTimerManager().SetTimer(StopHomingTimerHandle, this, &UExtendProjectileMovementComponent::OnStopHomingTimerExpired, StopHomingTime);
+		}
 	}
 }
 
 void UExtendProjectileMovementComponent::OnDeactivated()
 {
-	if (StartHomingTimerHandle.IsValid())
+	if (bPeriodHoming)
 	{
-		GetWorld()->GetTimerManager().ClearTimer(StartHomingTimerHandle);
-	}
-	if (StopHomingTimerHandle.IsValid())
-	{
-		GetWorld()->GetTimerManager().ClearTimer(StopHomingTimerHandle);
+		if (StartHomingTimerHandle.IsValid())
+		{
+			GetWorld()->GetTimerManager().ClearTimer(StartHomingTimerHandle);
+		}
+		if (StopHomingTimerHandle.IsValid())
+		{
+			GetWorld()->GetTimerManager().ClearTimer(StopHomingTimerHandle);
+		}
 	}
 }
 

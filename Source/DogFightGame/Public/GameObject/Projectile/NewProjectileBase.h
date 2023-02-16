@@ -66,9 +66,10 @@ public:
 	 * Projectile with bIsHomingProjectile off won't act as expect.
 	 * @param Target			Target actor that this projectile homing.
 	 * @param MuzzleSpeed		The initial length of muzzle velocity.
+	 * @param Spread			How spread the projectile will be.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Projectile", NetMulticast, Reliable)
-	void HomingToTargetWithSpeed(AActor* Target, float MuzzleSpeed);
+	void HomingToTargetWithSpeed(AActor* Target, float MuzzleSpeed, float Spread);
 
 protected:
 	void OnActivated();
