@@ -2,7 +2,6 @@
 #include "Components/SphereComponent.h"
 #include "GameInstance/DogFightGameInstance.h"
 #include "GameObject/Projectile/ExtendProjectileMovementComponent.h"
-#include "GameObject/Warhead/WarheadBase.h"
 #include "GameService/GameEffectService.h"
 
 ANewProjectileBase::ANewProjectileBase(const FObjectInitializer& ObjectInitializer)
@@ -38,8 +37,8 @@ void ANewProjectileBase::Reset()
 
 void ANewProjectileBase::LifeSpanExpired()
 {
-	// Invoke dead here and let actor pool handle this projectile
-	Dead();
+	// Invoke StopSimulating here and let actor pool handle this projectile
+	MovementComponent->StopSimulating(FHitResult());
 }
 
 void ANewProjectileBase::OnActivated()
@@ -73,18 +72,14 @@ void ANewProjectileBase::Dead()
 	}
 
 	// Use warhead
-	if (!Warhead.IsNull())
+	if (WarheadData.GameEffectId >= 0)
 	{
-		auto WarheadPtr = Warhead.IsValid() ? Warhead.Get() : Warhead.LoadSynchronous();
-		if (WarheadPtr)
+		if (auto GameInstance = Cast<UDogFightGameInstance>(GetGameInstance()))
 		{
-			if (auto GameInstance = Cast<UDogFightGameInstance>(GetGameInstance()))
+			if (auto GameEffectService = Cast<UGameEffectService>(GameInstance->GetGameServiceBySuperClass(UGameEffectService::StaticClass())))
 			{
-				if (auto GameEffectService = Cast<UGameEffectService>(GameInstance->GetGameServiceBySuperClass(UGameEffectService::StaticClass())))
-				{
-					GameEffectService->SpawnEffectAtPos(WarheadPtr->GameEffectId, GetActorLocation(),
-						WarheadPtr->bUseProjectileRotation ? GetActorRotation() : FRotator::ZeroRotator);
-				}
+				GameEffectService->SpawnEffectAtPos(WarheadData.GameEffectId, GetActorLocation(),
+					WarheadData.bUseProjectileRotation ? GetActorRotation() : FRotator::ZeroRotator);
 			}
 		}
 	}

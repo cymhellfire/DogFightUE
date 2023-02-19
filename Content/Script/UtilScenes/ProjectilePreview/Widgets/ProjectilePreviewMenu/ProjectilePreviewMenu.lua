@@ -46,9 +46,8 @@ function ProjectilePreviewMenu:InitProjectileList()
     local ProjectileService = GetGameService(GameServiceNameDef.ProjectileService)
     if ProjectileService then
         local AllDesc = ProjectileService:GetAllProjectileUtilsDesc()
-        local DescTable = AllDesc:ToTable()
         local ItemList = {}
-        for _, v in ipairs(DescTable) do
+        for _, v in ipairs(AllDesc) do
             ItemList[#ItemList + 1] = {
                 Id = v.Id,
                 Name = v.DisplayName,

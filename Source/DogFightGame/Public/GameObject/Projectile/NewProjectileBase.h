@@ -2,11 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "UnLuaInterface.h"
+#include "GameObject/Warhead/Warhead.h"
 #include "NewProjectileBase.generated.h"
 
 class USphereComponent;
 class UExtendProjectileMovementComponent;
-class UWarheadBase;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FProjectileDeadDelegate, class ANewProjectileBase*, Projectile);
 
@@ -87,8 +87,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
 	float Lifetime;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
-	TSoftObjectPtr<UWarheadBase> Warhead;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Projectile")
+	int32 WarheadId;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Projectile")
+	FWarhead WarheadData;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
 	bool bDeadWhenStop;
