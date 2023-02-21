@@ -1,19 +1,22 @@
+require "UnLua"
 local WarheadNameDef = require("DogFight.Services.WarheadService.WarheadNameDef")
 
----@class WarheadConfig Warhead config table.
-local WarheadConfig = {}
+---@class WarheadConfig : ServiceConfigBase Warhead config table.
+local WarheadConfig = Class("DogFight.Services.ServiceConfigBase")
 
-WarheadConfig = {
+local Config = {
     [WarheadNameDef.Default] = {
         Id = 0,
-        Name = WarheadNameDef.Default,
         EffectId = 0,
     },
     [WarheadNameDef.Nuke] = {
         Id = 1,
-        Name = WarheadNameDef.Nuke,
         EffectId = 1,
     },
 }
+
+function WarheadConfig:GetData()
+    return Config
+end
 
 return WarheadConfig

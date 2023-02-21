@@ -1,14 +1,17 @@
 require "UnLua"
 
----@class ProjectileService : UProjectileService Service that handle in-game projectiles operations.
+---@class ProjectileService : GameServiceBase, UProjectileService Service that handle in-game projectiles operations.
 local ProjectileService = Class("DogFight.Services.GameServiceBase")
-local ProjectileConfig = require("DogFight.Services.ProjectileService.ProjectileConfig")
+
+function ProjectileService:GetConfigPath()
+    return "DogFight.Services.ProjectileService.ProjectileConfig"
+end
 
 ---Get description data of all projectile config.
 ---@return table All description data of projectiles.
 function ProjectileService:GetAllProjectileUtilsDesc()
     local Result = {}
-    for k, v in pairs(ProjectileConfig.Data) do
+    for k, v in pairs(self.Config.Data) do
         local NewDesc = {}
         NewDesc.Id = v.Id
         NewDesc.DisplayName = k
@@ -18,17 +21,13 @@ function ProjectileService:GetAllProjectileUtilsDesc()
     return Result
 end
 
-function ProjectileService:GetDefineNameOfProjectile(Id)
-    return ProjectileConfig:ProjectileIdToName(Id)
-end
-
 ---Spawn projectile by name.
 ---@param InName string Name of projectile to spawn.
 ---@param InPos FVector Position to place new projectile.
 ---@param InRot FRotator Initial rotation of new projectile.
 ---@return ProjectileBase New spawned projectile.
 function ProjectileService:SpawnProjectileByName(InName, InPos, InRot)
-    local ProjectileId = ProjectileConfig:ProjectileNameToId(InName)
+    local ProjectileId = self.Config:NameToId(InName)
     if ProjectileId then
         return self:SpawnProjectileAtPos(ProjectileId, InPos, InRot)
     end
@@ -38,8 +37,7 @@ end
 ---@param InId number Id of projectile config.
 ---@return ANewProjectileBase New projectile instance.
 function ProjectileService:SpawnNewProjectileInstance_Implementation(InId)
-    local ProjectileName = ProjectileConfig:ProjectileIdToName(InId)
-    local Config = ProjectileConfig.Data[ProjectileName]
+    local Config = self.Config:GetConfigById(InId)
     if Config then
         local CurWorld = GetCurrentWorld()
         local ProjectileClass = LoadClass(Config.ResPath)

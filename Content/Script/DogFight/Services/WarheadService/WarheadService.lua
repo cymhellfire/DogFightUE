@@ -1,9 +1,12 @@
 require "UnLua"
 
----@class WarheadService Service that hold all warhead data.
+---@class WarheadService : GameServiceBase Service that hold all warhead data.
 local WarheadService = Class("DogFight.Services.GameServiceBase")
-local WarheadConfig = require("DogFight.Services.WarheadService.WarheadConfig")
 local WarheadNameDef = require("DogFight.Services.WarheadService.WarheadNameDef")
+
+function WarheadService:GetConfigPath()
+    return "DogFight.Services.WarheadService.WarheadConfig"
+end
 
 ---Setup the warhead information of specified projectile.
 ---@param InProjectile AProjectileBase Projectile instance.
@@ -13,7 +16,7 @@ function WarheadService:SetWarheadInfoForProjectile(InProjectile, WarheadName)
         return
     end
 
-    local Config = WarheadConfig[WarheadName]
+    local Config = self.Config:GetConfigByName(WarheadName)
     if Config then
         InProjectile.WarheadId = Config.Id or -1
         InProjectile.WarheadData.WarheadName = Config.Name or ""

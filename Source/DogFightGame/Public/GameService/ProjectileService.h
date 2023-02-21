@@ -35,14 +35,6 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category="ProjectileService")
 	ANewProjectileBase* SpawnNewProjectileInstance_Implementation(int32 InId);
 
-	/**
-	 * Get projectile name used when defined in config file.
-	 * @param Id				Id of the projectile to get name.
-	 * @return					Define name of corresponding projectile.
-	 */
-	UFUNCTION(BlueprintImplementableEvent, Category="ProjectileService")
-	FString GetDefineNameOfProjectile(int32 Id) const;
-
 	UFUNCTION()
 	void OnProjectileDead(ANewProjectileBase* Projectile);
 
