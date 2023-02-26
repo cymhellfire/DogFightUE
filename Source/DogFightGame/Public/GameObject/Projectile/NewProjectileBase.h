@@ -96,6 +96,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
 	bool bDeadWhenStop;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
+	float Damage;
+
 	UPROPERTY(BlueprintAssignable, Category="Projectile")
 	FProjectileDeadDelegate OnProjectileDead;
 
@@ -110,4 +113,7 @@ protected:
 	UExtendProjectileMovementComponent* MovementComponent;
 
 	uint8 bAlive : 1;
+
+	/** The actor this projectile hit. */
+	TWeakObjectPtr<AActor> HitActor;
 };

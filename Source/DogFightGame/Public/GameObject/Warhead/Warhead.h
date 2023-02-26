@@ -19,6 +19,12 @@ struct DOGFIGHTGAME_API FWarhead
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Warhead|Effect")
 	bool bUseProjectileRotation = false;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Warhead")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Warhead|Damage")
 	FName DamageTypeName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Warhead|Damage")
+	int32 DamageId;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Warhead|Damage")
+	float DamageRadius = 0.f;
 };

@@ -96,8 +96,6 @@ public:
 
 	virtual float CalculateDamage(AActor* DamageTaker, float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
-	virtual void ApplyDamageTo(AActor* DamagedActor, float BaseDamage, FName DamageTypeName, AActor* DamageCauser, AController* DamageInstigator) override;
-
 	FName GetGamePhase() const;
 
 	/** Tell GameMode that the invoker is ready to start game. */
@@ -308,9 +306,6 @@ public:
 	/** Class to calculate the damage to apply during game. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="DogFightGameMode")
 	TSubclassOf<UDogFightDamageCalculatorBase> DamageCalculatorClass;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="DogFightGameMode")
-	FString DamageCalculatorPath;
 
 protected:
 

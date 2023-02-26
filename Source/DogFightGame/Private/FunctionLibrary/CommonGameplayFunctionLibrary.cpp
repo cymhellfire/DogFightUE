@@ -1,6 +1,7 @@
 ﻿#include "FunctionLibrary/CommonGameplayFunctionLibrary.h"
 
 #include "FunctionLibrary/CommonGameFlowFunctionLibrary.h"
+#include "GameMode/TopDownStyleGameMode.h"
 #include "GameMode/TopDownStyleGameState.h"
 #include "Player/TopDownStylePlayerState.h"
 #include "PlayerController/TopDownStylePlayerController.h"
@@ -116,6 +117,14 @@ void UCommonGameplayFunctionLibrary::SpawnGameEffectAtPos(int32 EffectId, FVecto
 	{
 		PlayerController->ClientSpawnGameEffectAtPos(EffectId, Pos, Rot);
 	});
+}
+
+void UCommonGameplayFunctionLibrary::DamageActor(int32 DamageId, AActor* Target, float BaseDamage, AActor* Causer)
+{
+	if (auto GameMode = GetCurrentTopDownStyleGameMode())
+	{
+		GameMode->DamageActor(DamageId, Target, BaseDamage, Causer);
+	}
 }
 
 void UCommonGameplayFunctionLibrary::ForEachPlayerStateDo(TFunction<void(ATopDownStylePlayerState*)> ExecuteFunc,

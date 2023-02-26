@@ -99,6 +99,9 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameplay|Effect")
 	static void SpawnGameEffectAtPos(int32 EffectId, FVector Pos, FRotator Rot);
+
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
+	static void DamageActor(int32 DamageId, AActor* Target, float BaseDamage, AActor* Causer);
 protected:
 	/**
 	 * Do specified function on every player state in current game meet the id mask.

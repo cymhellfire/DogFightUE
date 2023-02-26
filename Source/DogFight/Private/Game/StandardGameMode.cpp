@@ -42,7 +42,6 @@
 #include "Game/GameWorkflow/StandardGameMode/StandardGameModeTimedPhase.h"
 #include "Game/GameWorkflow/StandardGameMode/StandardGameModeWaitForRagdollPhase.h"
 #include "GameFlow/Public/GameFlowStateMachine/GameFlowStateMachine.h"
-#include "GameService/DamageCalculatorService.h"
 #include "GameService/GameFlowStateService.h"
 
 AStandardGameMode::AStandardGameMode(const FObjectInitializer& ObjectInitializer)
@@ -257,15 +256,6 @@ float AStandardGameMode::CalculateDamage(AActor* DamageTaker, float Damage, FDam
 	}
 
 	return FinalDamage;
-}
-
-void AStandardGameMode::ApplyDamageTo(AActor* DamagedActor, float BaseDamage, FName DamageTypeName,
-                                      AActor* DamageCauser, AController* DamageInstigator)
-{
-	if (NewDamageCalculator)
-	{
-		NewDamageCalculator->ApplyDamage(DamagedActor, BaseDamage, DamageTypeName, DamageCauser, DamageInstigator);
-	}
 }
 
 FName AStandardGameMode::GetGamePhase() const
@@ -726,14 +716,6 @@ void AStandardGameMode::BeginPlay()
 	if (IsValid(DamageCalculatorClass))
 	{
 		DamageCalculator = NewObject<UDogFightDamageCalculatorBase>(this, DamageCalculatorClass, FName(TEXT("DamageCalculator")));
-	}
-
-	if (!DamageCalculatorPath.IsEmpty())
-	{
-		if (UDamageCalculatorService* CalculatorService = UGameService::GetGameService<UDamageCalculatorService>())
-		{
-			NewDamageCalculator = CalculatorService->CreateDamageCalculator(DamageCalculatorPath, this);
-		}
 	}
 
 #if WITH_IMGUI

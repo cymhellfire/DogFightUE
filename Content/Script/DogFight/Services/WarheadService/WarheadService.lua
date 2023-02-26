@@ -22,7 +22,14 @@ function WarheadService:SetWarheadInfoForProjectile(InProjectile, WarheadName)
         InProjectile.WarheadData.WarheadName = Config.Name or ""
         InProjectile.WarheadData.GameEffectId = Config.EffectId or -1
         InProjectile.WarheadData.bUseProjectileRotation = Config.EffectUseProjectileRotation or false
-        InProjectile.WarheadData.DamageTypeName = Config.DamageType or ""
+        local DamageType = Config.DamageType or ""
+        InProjectile.WarheadData.DamageTypeName = DamageType
+        ---@type DamageService
+        local DamageService = GetGameService(GameServiceNameDef.DamageService)
+        if DamageService then
+            InProjectile.WarheadData.DamageId = DamageService.Config:NameToId(DamageType) or -1
+        end
+        InProjectile.WarheadData.DamageRadius = Config.DamageRadius or 0
     end
 end
 

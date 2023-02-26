@@ -1,7 +1,9 @@
 #include "GameObject/Projectile/NewProjectileBase.h"
 #include "Components/SphereComponent.h"
+#include "FunctionLibrary/CommonGameplayFunctionLibrary.h"
 #include "GameInstance/DogFightGameInstance.h"
 #include "GameObject/Projectile/ExtendProjectileMovementComponent.h"
+#include "GameService/DamageService.h"
 #include "GameService/GameEffectService.h"
 
 ANewProjectileBase::ANewProjectileBase(const FObjectInitializer& ObjectInitializer)
@@ -33,6 +35,8 @@ void ANewProjectileBase::Reset()
 {
 	Super::Reset();
 
+	// Clear the hit actor
+	HitActor.Reset();
 }
 
 void ANewProjectileBase::LifeSpanExpired()
@@ -82,6 +86,22 @@ void ANewProjectileBase::Dead()
 					WarheadData.bUseProjectileRotation ? GetActorRotation() : FRotator::ZeroRotator);
 			}
 		}
+
+		if (auto DamageService = UGameService::GetGameService<UDamageService>())
+		{
+			if (WarheadData.DamageRadius > 0.f)
+			{
+				
+			}
+			else
+			{
+				// Damage the hit target if no radius
+				if (HitActor.IsValid())
+				{
+					UCommonGameplayFunctionLibrary::DamageActor(WarheadData.DamageId, HitActor.Get(), Damage, this);
+				}
+			}
+		}
 	}
 
 	// Disable collision
@@ -106,6 +126,12 @@ void ANewProjectileBase::LaunchWithVelocity(const FVector& MuzzleVelocity)
 
 void ANewProjectileBase::OnProjectileStopped(const FHitResult& ImpactResult)
 {
+	// Record the hit target
+	if (ImpactResult.bBlockingHit)
+	{
+		HitActor = ImpactResult.GetActor();
+	}
+
 	if (bDeadWhenStop)
 	{
 		Dead();
