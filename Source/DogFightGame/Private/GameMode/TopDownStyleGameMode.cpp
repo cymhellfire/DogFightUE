@@ -29,6 +29,8 @@ void ATopDownStyleGameMode::BeginPlay()
 	if (auto DamageService = UGameService::GetGameService<UDamageService>())
 	{
 		DamageCalculator = DamageService->CreateDamageCalculator(UDamageCalculatorBase::StaticClass(), DamageCalculatorPath, this);
+		// Listen the damage event
+		DamageCalculator->OnDamageEventOccured.AddDynamic(this, &ATopDownStyleGameMode::OnDamageEventOccured);
 	}
 }
 
@@ -87,5 +89,14 @@ void ATopDownStyleGameMode::DamageActor(int32 DamageId, AActor* Target, float Ba
 	if (auto DamageService = UGameService::GetGameService<UDamageService>())
 	{
 		DamageService->ApplyDamageToActor(DamageId, Target, BaseDamage, Causer, DamageCalculator);
+	}
+}
+
+void ATopDownStyleGameMode::OnDamageEventOccured(UExtendedDamageInstance* DamageInstance,
+	const FExtendedDamageEvent& DamageEvent)
+{
+	if (auto DamageService = UGameService::GetGameService<UDamageService>())
+	{
+		DamageService->CreateDamageDisplay(DamageInstance, DamageEvent);
 	}
 }

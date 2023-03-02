@@ -1,5 +1,6 @@
 #pragma once
 
+#include "DamageType/ExtendedDamageEvent.h"
 #include "GameMode/GameFlowBasedGameMode.h"
 #include "TopDownStyleGameMode.generated.h"
 
@@ -50,6 +51,10 @@ public:
 	 * @param Causer			Causer of this damage.
 	 */
 	void DamageActor(int32 DamageId, AActor* Target, float BaseDamage, AActor* Causer);
+
+protected:
+	UFUNCTION()
+	void OnDamageEventOccured(class UExtendedDamageInstance* DamageInstance, const FExtendedDamageEvent& DamageEvent);
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="TopDownStyleGameMode")

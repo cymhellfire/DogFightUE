@@ -106,16 +106,16 @@ end
 ---Show widget with specified name.
 ---@param InWidget string Name of widget to display.
 ---@param bCreate boolean Create widget if no existing instance.
----@return boolean Whether the operation succeed.
+---@return UUserWidget Widget instance that shown.
 function GameWidgetService:ShowWidget(InWidget, bCreate)
     -- Skip if the widget is already shown
     if self:IsWidgetShown(InWidget) then
-        return true
+        return self:GetWidget(InWidget)
     end
 
     if not self:IsWidgetCreated(InWidget) then
         if not bCreate then
-            return false
+            return nil
         end
         -- Create a new instance here
         LoadAndCreateWidget(self, InWidget)
@@ -126,10 +126,10 @@ function GameWidgetService:ShowWidget(InWidget, bCreate)
     local Widget = self.HiddenWidgetMap[InWidget]
     if Widget then
         Widget:SetVisibility(UE.ESlateVisibility.SelfHitTestInvisible)
-        return true
+        return Widget
     end
 
-    return false
+    return nil
 end
 
 ---Hide widget with specified name.
