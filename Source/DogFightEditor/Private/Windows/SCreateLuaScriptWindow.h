@@ -5,6 +5,12 @@
 
 struct FLuaScriptCreateArgument;
 
+enum class ELuaScriptWindowTab
+{
+	Default,
+	MVVM,
+};
+
 class SCreateLuaScriptWindow : public SCompoundWidget
 {
 public:
@@ -16,6 +22,15 @@ public:
 	void Construct(const FArguments& InArgs);
 
 private:
+	TSharedRef<SWidget> ConstructTabHeaderList();
+	TSharedRef<SWidget> ConstructDefaultTab();
+	TSharedRef<SWidget> ConstructMVVMTab();
+
+	TSharedRef<SWidget> CreateModuleChooseSection();
+	TSharedRef<SWidget> CreateSubFolderSection();
+	TSharedRef<SWidget> CreateScriptNameSection();
+	TSharedRef<SWidget> CreatePathPreviewSection();
+
 	TSharedRef<SWidget> OnGeneratedModuleOptionWidget(TSharedPtr<FString> InOption);
 	TSharedRef<SWidget> OnGeneratedTemplateOptionWidget(TSharedPtr<FString> InOption);
 	void OnModuleSelectionChanged(TSharedPtr<FString> InSelectedItem, ESelectInfo::Type SelectInfo);
@@ -25,7 +40,7 @@ private:
 	FReply OnCreateButtonClicked();
 	FReply OnOpenFileButtonClicked();
 
-	FLuaScriptCreateArgument GetCurrentArgument() const;
+	FLuaScriptCreateArgument GetCurrentArgument(int32 Index = 0) const;
 
 	void OnPathTextCommitted(const FText& InText, ETextCommit::Type InCommitType);
 	void OnNameTextCommitted(const FText& InText, ETextCommit::Type InCommitType);
@@ -41,4 +56,9 @@ private:
 	FText NewScriptName;
 	TArray<TSharedPtr<FString>> ModuleNameList;
 	TArray<TSharedPtr<FString>> TemplateNameList;
+
+	TArray<FString> CreateTemplateList;
+
+	ELuaScriptWindowTab SelectedTab;
+	FMargin DefaultRowPadding;
 };

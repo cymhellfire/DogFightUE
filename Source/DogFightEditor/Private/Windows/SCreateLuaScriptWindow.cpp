@@ -3,13 +3,18 @@
 #include "DetailLayoutBuilder.h"
 #include "Utils/DogFightUtilsFunctionLibrary.h"
 #include "Widgets/Input/SEditableText.h"
+#include "Widgets/Layout/SConstraintCanvas.h"
 #include "Widgets/Layout/SSpacer.h"
+#include "Widgets/Layout/SWidgetSwitcher.h"
 
 #define LOCTEXT_NAMESPACE		"CreateScriptWindow"
 
 SCreateLuaScriptWindow::SCreateLuaScriptWindow()
 {
 	bUseScriptPrefix = true;
+	SelectedTab = ELuaScriptWindowTab::Default;
+
+	DefaultRowPadding = FMargin(FVector4(5, 5, 0, 0));
 }
 
 void SCreateLuaScriptWindow::Construct(const FArguments& InArgs)
@@ -21,56 +26,89 @@ void SCreateLuaScriptWindow::Construct(const FArguments& InArgs)
 	TemplateNameList.Add(MakeShareable(new FString("CardModifier")));
 	TemplateNameList.Add(MakeShareable(new FString("GameFlowState")));
 	SelectedTemplate = TemplateNameList[0];
-
-	const FMargin DefaultRowPadding(FVector4(5, 5, 0, 0));
+	CreateTemplateList.Add(*SelectedTemplate);
 
 	ChildSlot
 	[
-		SNew(SOverlay)
+		SNew(SVerticalBox)
+		+ SVerticalBox::Slot()
+		.AutoHeight()
+		[
+			ConstructTabHeaderList()
+		]
+		+ SVerticalBox::Slot()
+		.AutoHeight()
+		[
+			SNew(SWidgetSwitcher)
+			.WidgetIndex_Lambda([this]()
+			{
+				return static_cast<int32>(SelectedTab);
+			})
+			+ SWidgetSwitcher::Slot()
+			[
+				ConstructDefaultTab()
+			]
+			+ SWidgetSwitcher::Slot()
+			[
+				ConstructMVVMTab()
+			]
+		]
+	];
+}
+
+TSharedRef<SWidget> SCreateLuaScriptWindow::ConstructTabHeaderList()
+{
+	return SNew(SHorizontalBox)
+		+ SHorizontalBox::Slot()
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(FText::FromString("Default"))
+			.OnClicked_Lambda([this]()
+			{
+				SelectedTab = ELuaScriptWindowTab::Default;
+				return FReply::Handled();
+			})
+			.ForegroundColor_Lambda([this]()
+			{
+				return SelectedTab == ELuaScriptWindowTab::Default ? FLinearColor::White : FLinearColor::Gray;
+			})
+			.ButtonColorAndOpacity_Lambda([this]()
+			{
+				return SelectedTab == ELuaScriptWindowTab::Default ? FLinearColor::Gray : FLinearColor::Black;
+			})
+		]
+		+ SHorizontalBox::Slot()
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(FText::FromString("MVVM"))
+			.OnClicked_Lambda([this]()
+			{
+				SelectedTab = ELuaScriptWindowTab::MVVM;
+				return FReply::Handled();
+			})
+			.ForegroundColor_Lambda([this]()
+			{
+				return SelectedTab == ELuaScriptWindowTab::MVVM ? FLinearColor::White : FLinearColor::Gray;
+			})
+			.ButtonColorAndOpacity_Lambda([this]()
+			{
+				return SelectedTab == ELuaScriptWindowTab::MVVM ? FLinearColor::Gray : FLinearColor::Black;
+			})
+		];
+}
+
+TSharedRef<SWidget> SCreateLuaScriptWindow::ConstructDefaultTab()
+{
+	return SNew(SOverlay)
 		+ SOverlay::Slot()
 		[
 			SNew(SVerticalBox)
 			+ SVerticalBox::Slot()
-			.Padding(DefaultRowPadding)
 			.AutoHeight()
 			[
-				SNew(STextBlock)
-				.Text(LOCTEXT("ModuleDesc", "Select the parent module new script belongs to."))
-			]
-			+ SVerticalBox::Slot()
-			.Padding(DefaultRowPadding)
-			.AutoHeight()
-			[
-				SNew(SHorizontalBox)
-				+ SHorizontalBox::Slot()
-				.VAlign(VAlign_Center)
-				.AutoWidth()
-				[
-					SNew(STextBlock)
-					.Text(LOCTEXT("Module", "Module: "))
-				]
-				+ SHorizontalBox::Slot()
-				.VAlign(VAlign_Center)
-				.AutoWidth()
-				[
-					SNew(SComboBox<TSharedPtr<FString>>)
-					.OptionsSource(&ModuleNameList)
-					.OnGenerateWidget(this, &SCreateLuaScriptWindow::OnGeneratedModuleOptionWidget)
-					.OnSelectionChanged(this, &SCreateLuaScriptWindow::OnModuleSelectionChanged)
-					.InitiallySelectedItem(ModuleNameList.Num() > 0 ? ModuleNameList[0] : nullptr)
-					[
-						SNew(STextBlock)
-						.Text_Lambda([this]()
-						{
-							if (SelectedModule.IsValid())
-							{
-								return FText::FromString(*SelectedModule);
-							}
-
-							return FText::GetEmpty();
-						})
-					]
-				]
+				CreateModuleChooseSection()
 			]
 			+ SVerticalBox::Slot()
 			.Padding(DefaultRowPadding)
@@ -116,110 +154,18 @@ void SCreateLuaScriptWindow::Construct(const FArguments& InArgs)
 			]
 			+ SVerticalBox::Slot()
 			.AutoHeight()
-			.Padding(DefaultRowPadding)
 			[
-				SNew(SHorizontalBox)
-				+ SHorizontalBox::Slot()
-				.AutoWidth()
-				[
-					SNew(STextBlock)
-					.Text(LOCTEXT("FilePathDesc", "Specified the sub folder of new created script file. (Optional)"))
-				]
+				CreateSubFolderSection()
 			]
 			+ SVerticalBox::Slot()
 			.AutoHeight()
-			.Padding(DefaultRowPadding)
 			[
-				SNew(SHorizontalBox)
-				+ SHorizontalBox::Slot()
-				.VAlign(VAlign_Center)
-				.AutoWidth()
-				[
-					SNew(STextBlock)
-					.Text(LOCTEXT("Path", "Sub Folder: "))
-				]
-				+ SHorizontalBox::Slot()
-				.VAlign(VAlign_Center)
-				.FillWidth(1.f)
-				[
-					SNew(SEditableText)
-					.HintText(LOCTEXT("PathHint", "Enter the sub folder name here..."))
-					.OnTextCommitted(this, &SCreateLuaScriptWindow::OnPathTextCommitted)
-				]
+				CreateScriptNameSection()
 			]
 			+ SVerticalBox::Slot()
 			.AutoHeight()
-			.Padding(DefaultRowPadding)
 			[
-				SNew(SHorizontalBox)
-				+ SHorizontalBox::Slot()
-				.AutoWidth()
-				[
-					SNew(STextBlock)
-					.Text(LOCTEXT("ScriptNameDesc", "Give the new script a unique name."))
-				]
-			]
-			+ SVerticalBox::Slot()
-			.AutoHeight()
-			.Padding(DefaultRowPadding)
-			[
-				SNew(SHorizontalBox)
-				+ SHorizontalBox::Slot()
-				.AutoWidth()
-				.VAlign(VAlign_Center)
-				[
-					SNew(STextBlock)
-					.Text(LOCTEXT("NewName", "Name: "))
-				]
-				+ SHorizontalBox::Slot()
-				.VAlign(VAlign_Center)
-				.FillWidth(1.f)
-				[
-					SNew(SEditableText)
-					.HintText(LOCTEXT("NameHint", "Enter name for new script..."))
-					.OnTextCommitted(this, &SCreateLuaScriptWindow::OnNameTextCommitted)
-				]
-				+ SHorizontalBox::Slot()
-				.VAlign(VAlign_Center)
-				.AutoWidth()
-				[
-					SNew(SCheckBox)
-					.OnCheckStateChanged_Lambda([this](ECheckBoxState InState)
-					{
-						bUseScriptPrefix = InState == ECheckBoxState::Checked;
-						
-					})
-					.IsChecked_Lambda([this]()
-					{
-						return bUseScriptPrefix ? ECheckBoxState::Checked :ECheckBoxState::Unchecked;
-					})
-					[
-						SNew(STextBlock)
-						.Text(LOCTEXT("UsePrefix", "Use Prefix"))
-					]
-				]
-			]
-			+ SVerticalBox::Slot()
-			.AutoHeight()
-			.Padding(DefaultRowPadding)
-			[
-				SNew(SHorizontalBox)
-				+ SHorizontalBox::Slot()
-				.AutoWidth()
-				.VAlign(VAlign_Center)
-				[
-					SNew(STextBlock)
-					.Text(LOCTEXT("PreviewPath", "Preview File Path: "))
-				]
-				+ SHorizontalBox::Slot()
-				.Padding(10.f, 0, 0, 0)
-				.AutoWidth()
-				.VAlign(VAlign_Center)
-				[
-					SNew(SEditableText)
-					.IsReadOnly(true)
-					.Text(this, &SCreateLuaScriptWindow::GetPreviewPathText)
-				]
+				CreatePathPreviewSection()
 			]
 			+ SVerticalBox::Slot().FillHeight(1.f)		// Spacer
 			+ SVerticalBox::Slot()
@@ -298,8 +244,205 @@ void SCreateLuaScriptWindow::Construct(const FArguments& InArgs)
 					]
 				]
 			]
+		];
+}
+
+TSharedRef<SWidget> SCreateLuaScriptWindow::ConstructMVVMTab()
+{
+	return SNew(SOverlay)
+		+ SOverlay::Slot()
+		[
+			SNew(SVerticalBox)
+			+ SVerticalBox::Slot()
+			.AutoHeight()
+			[
+				CreateModuleChooseSection()
+			]
+			+ SVerticalBox::Slot()
+			.AutoHeight()
+			[
+				CreateSubFolderSection()
+			]
+			+ SVerticalBox::Slot()
+			.AutoHeight()
+			[
+				CreateScriptNameSection()
+			]
+			+ SVerticalBox::Slot()
+			.AutoHeight()
+			[
+				CreatePathPreviewSection()
+			]
+		];
+}
+
+TSharedRef<SWidget> SCreateLuaScriptWindow::CreateModuleChooseSection()
+{
+	return SNew(SVerticalBox)
+		+ SVerticalBox::Slot()
+		.Padding(DefaultRowPadding)
+		.AutoHeight()
+		[
+			SNew(STextBlock)
+			.Text(LOCTEXT("ModuleDesc", "Select the parent module new script belongs to."))
 		]
-	];
+		+ SVerticalBox::Slot()
+		.Padding(DefaultRowPadding)
+		.AutoHeight()
+		[
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
+			.VAlign(VAlign_Center)
+			.AutoWidth()
+			[
+				SNew(STextBlock)
+				.Text(LOCTEXT("Module", "Module: "))
+			]
+			+ SHorizontalBox::Slot()
+			.VAlign(VAlign_Center)
+			.AutoWidth()
+			[
+				SNew(SComboBox<TSharedPtr<FString>>)
+				.OptionsSource(&ModuleNameList)
+				.OnGenerateWidget(this, &SCreateLuaScriptWindow::OnGeneratedModuleOptionWidget)
+				.OnSelectionChanged(this, &SCreateLuaScriptWindow::OnModuleSelectionChanged)
+				.InitiallySelectedItem(ModuleNameList.Num() > 0 ? ModuleNameList[0] : nullptr)
+				[
+					SNew(STextBlock)
+					.Text_Lambda([this]()
+					{
+						if (SelectedModule.IsValid())
+						{
+							return FText::FromString(*SelectedModule);
+						}
+
+						return FText::GetEmpty();
+					})
+				]
+			]
+		];
+}
+
+TSharedRef<SWidget> SCreateLuaScriptWindow::CreateSubFolderSection()
+{
+	return SNew(SVerticalBox)
+		+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(DefaultRowPadding)
+		[
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
+			[
+				SNew(STextBlock)
+				.Text(LOCTEXT("FilePathDesc", "Specified the sub folder of new created script file. (Optional)"))
+			]
+		]
+		+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(DefaultRowPadding)
+		[
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
+			.VAlign(VAlign_Center)
+			.AutoWidth()
+			[
+				SNew(STextBlock)
+				.Text(LOCTEXT("Path", "Sub Folder: "))
+			]
+			+ SHorizontalBox::Slot()
+			.VAlign(VAlign_Center)
+			.FillWidth(1.f)
+			[
+				SNew(SEditableText)
+				.HintText(LOCTEXT("PathHint", "Enter the sub folder name here..."))
+				.OnTextCommitted(this, &SCreateLuaScriptWindow::OnPathTextCommitted)
+			]
+		];
+}
+
+TSharedRef<SWidget> SCreateLuaScriptWindow::CreateScriptNameSection()
+{
+	return SNew(SVerticalBox)
+		+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(DefaultRowPadding)
+		[
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
+			[
+				SNew(STextBlock)
+				.Text(LOCTEXT("ScriptNameDesc", "Give the new script a unique name."))
+			]
+		]
+		+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(DefaultRowPadding)
+		[
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
+			.VAlign(VAlign_Center)
+			[
+				SNew(STextBlock)
+				.Text(LOCTEXT("NewName", "Name: "))
+			]
+			+ SHorizontalBox::Slot()
+			.VAlign(VAlign_Center)
+			.FillWidth(1.f)
+			[
+				SNew(SEditableText)
+				.HintText(LOCTEXT("NameHint", "Enter name for new script..."))
+				.OnTextCommitted(this, &SCreateLuaScriptWindow::OnNameTextCommitted)
+			]
+			+ SHorizontalBox::Slot()
+			.VAlign(VAlign_Center)
+			.AutoWidth()
+			[
+				SNew(SCheckBox)
+				.OnCheckStateChanged_Lambda([this](ECheckBoxState InState)
+				{
+					bUseScriptPrefix = InState == ECheckBoxState::Checked;
+					
+				})
+				.IsChecked_Lambda([this]()
+				{
+					return bUseScriptPrefix ? ECheckBoxState::Checked :ECheckBoxState::Unchecked;
+				})
+				[
+					SNew(STextBlock)
+					.Text(LOCTEXT("UsePrefix", "Use Prefix"))
+				]
+			]
+		];
+}
+
+TSharedRef<SWidget> SCreateLuaScriptWindow::CreatePathPreviewSection()
+{
+	return SNew(SVerticalBox)
+		+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(DefaultRowPadding)
+		[
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
+			.VAlign(VAlign_Center)
+			[
+				SNew(STextBlock)
+				.Text(LOCTEXT("PreviewPath", "Preview File Path: "))
+			]
+			+ SHorizontalBox::Slot()
+			.Padding(10.f, 0, 0, 0)
+			.AutoWidth()
+			.VAlign(VAlign_Center)
+			[
+				SNew(SEditableText)
+				.IsReadOnly(true)
+				.Text(this, &SCreateLuaScriptWindow::GetPreviewPathText)
+			]
+		];
 }
 
 TSharedRef<SWidget> SCreateLuaScriptWindow::OnGeneratedModuleOptionWidget(TSharedPtr<FString> InOption)
@@ -330,6 +473,9 @@ void SCreateLuaScriptWindow::OnModuleSelectionChanged(TSharedPtr<FString> InSele
 void SCreateLuaScriptWindow::OnTemplateSelectionChanged(TSharedPtr<FString> InSelectedItem, ESelectInfo::Type SelectInfo)
 {
 	SelectedTemplate = InSelectedItem;
+
+	CreateTemplateList.Empty();
+	CreateTemplateList.Add(*SelectedTemplate);
 }
 
 FReply SCreateLuaScriptWindow::OnCloseButtonClicked()
@@ -357,11 +503,16 @@ FReply SCreateLuaScriptWindow::OnOpenFileButtonClicked()
 	return FReply::Handled();
 }
 
-FLuaScriptCreateArgument SCreateLuaScriptWindow::GetCurrentArgument() const
+FLuaScriptCreateArgument SCreateLuaScriptWindow::GetCurrentArgument(int32 Index) const
 {
+	if (Index >= CreateTemplateList.Num())
+	{
+		return FLuaScriptCreateArgument();
+	}
+
 	FLuaScriptCreateArgument NewArgument;
 	NewArgument.ModuleName = *SelectedModule;
-	NewArgument.TemplateName = *SelectedTemplate;
+	NewArgument.TemplateName = CreateTemplateList[Index];
 	NewArgument.Path = ScriptPath.ToString();
 	NewArgument.ScriptName = NewScriptName.ToString();
 	NewArgument.bUsePrefix = bUseScriptPrefix;
