@@ -39,5 +39,8 @@ void UDamageCalculatorBase::ApplyDamage(AActor* DamagedActor, float BaseDamage, 
 	if (DamageEvent.IsSet())
 	{
 		DamageInstance->PostApplyToComponent(DamageEvent.GetValue());
+
+		// Broadcast damage event
+		OnDamageEventOccured.Broadcast(DamageInstance, DamageEvent.GetValue());
 	}
 }

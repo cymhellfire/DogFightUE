@@ -24,4 +24,6 @@ protected:
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="LuaUserWidget")
 	FString LuaScriptPath;
+
+	uint8 bInitialized:1;
 };

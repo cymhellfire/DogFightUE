@@ -1,13 +1,17 @@
 #pragma once
 
+#include "DamageType/ExtendedDamageEvent.h"
 #include "GameService/LuaGameService.h"
+#include "Interface/ActorPoolInterface/ActorPoolInterface.h"
 #include "DamageService.generated.h"
 
 class UDamageCalculatorBase;
+class UDamageDisplayWidget;
 class UExtendedDamageInstance;
+class ADamageDisplayActor;
 
 UCLASS()
-class DOGFIGHTGAME_API UDamageService : public ULuaGameService
+class DOGFIGHTGAME_API UDamageService : public ULuaGameService, public IActorPoolInterface
 {
 	GENERATED_BODY()
 
@@ -34,6 +38,14 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category="DamageService")
 	void ApplyDamageToActor(int32 DamageId, AActor* Target, float BaseDamage, AActor* Causer, UDamageCalculatorBase* InCalculator);
 
+	/**
+	 * Create a damage display actor with given data.
+	 * @param DamageInstance		Damage instance of this event.
+	 * @param DamageEvent			Damage event data.
+	 */
+	UFUNCTION(BlueprintCallable, Category="DamageService")
+	void CreateDamageDisplay(UExtendedDamageInstance* DamageInstance, const FExtendedDamageEvent& DamageEvent);
+
 	virtual FString GetModuleName_Implementation() const override
 	{
 		return "DogFight.Services.DamageService.DamageService";
@@ -45,6 +57,12 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category="DamageService")
 	UExtendedDamageInstance* GetDamageInstanceById(int32 InId) const;
+
+	UFUNCTION(BlueprintImplementableEvent, Category="DamageService")
+	UDamageDisplayWidget* CreateDamageWidget();
+
+	UFUNCTION()
+	void OnDamageDisplayActorDead(ADamageDisplayActor* Instance);
 
 protected:
 	UPROPERTY(Transient)

@@ -32,6 +32,7 @@ public class DogFightGame : ModuleRules
                 "Niagara",
                 "LevelSequence",
                 "MovieScene",
+                "UMG",
             }
         );
         
