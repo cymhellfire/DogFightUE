@@ -13,10 +13,10 @@ function InitState:OnEnter()
 
     self.VfxCount = 1
     ---@type TimerService
-    local TimerService = GetGameService(GameServiceNameDef.TimerService)
-    if TimerService then
-        self.VfxTimer = TimerService:RegisterTimer(self, self.LoopVfxTimerExpired, 2, true)
-    end
+    -- local TimerService = GetGameService(GameServiceNameDef.TimerService)
+    -- if TimerService then
+    --     self.VfxTimer = TimerService:RegisterTimer(self, self.LoopVfxTimerExpired, 2, true)
+    -- end
 end
 
 function InitState:OnReadyPlayerCountChanged(InCount)

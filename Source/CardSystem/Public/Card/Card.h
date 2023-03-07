@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "AttributeSystem/Attribute/AttributeCommon.h"
+#include "Common/CardSystemType.h"
 #include "Player/CardTargetProviderInterface.h"
 #include "Card.generated.h"
 
@@ -10,6 +11,7 @@ class UCardAsyncCommand;
 class UCardConcurrentCallbackCommand;
 class UCardModifier;
 class UCardDescObject;
+class UCardLogic;
 
 UENUM()
 enum class ECardExecutionResult : uint8
@@ -79,6 +81,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Card")
 	void RemoveModifierObject(UCardModifier* InModifier);
 
+	// ---------------- Card Logic ---------------------
+protected:
+	void CreateCardLogic();
+
 public:
 	/**
 	 * Execute this card logic flow.
@@ -146,6 +152,9 @@ protected:
 
 	bool CheckCardFinished();
 
+	UFUNCTION()
+	void OnCardLogicFinished(ECardLogicFinishType::Type FinishType);
+
 public:
 
 	// ----------------- Card Finished ----------------------
@@ -154,9 +163,16 @@ public:
 	UFUNCTION()
 	void OnCardFinished();
 
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Card")
+	FString LogicScriptPath;
+
 protected:
 	UPROPERTY(Transient)
 	UCardDescObject* DescObject;
+
+	UPROPERTY(Transient)
+	UCardLogic* CardLogic;
 
 	/** Id used to distinguish different cards. */
 	int32 CardInstanceId;
