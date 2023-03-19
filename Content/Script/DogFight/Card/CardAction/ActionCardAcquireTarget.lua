@@ -1,4 +1,5 @@
 local CardActionCommand = require "Card.CardCommand.CardActionCommand"
+local CardTargetHelper = require "Card.CardTarget.CardTargetHelper"
 
 ---@field _DelegateHelper DelegateHelper Helper to receive the target acqurie notify.
 ---@class ActionCardAcquireTarget : CardActionCommand Action to select target for card.
@@ -54,16 +55,15 @@ function ActionCardAcquireTarget:OnTargetAcquired(bSucceed, TargetInfos)
         return
     end
 
+    local ConvertTarget = {}
     if TargetInfos:Num() > 0 then
         local Targets = TargetInfos:ToTable()
         for i, v in ipairs(Targets) do
-            if v.Type == UE.ECardTargetType.CTT_Actor then
-                print("Target acquired: [" .. i .. "] " .. v.ActorPtr:GetName())
-            end
+            ConvertTarget[i] = CardTargetHelper.TargetInfoToTable(v)
         end
     end
 
-    self:SuccessWithParams()
+    self:SuccessWithParams(ConvertTarget)
 end
 
 function ActionCardAcquireTarget:tostring()

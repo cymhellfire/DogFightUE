@@ -38,7 +38,7 @@ function CardLogicCommand:RunCommand(Name, bImmediately)
     
         -- Trigger the post create callback
         if Config.OnCreate then
-            Config.OnCreate.Func(self, NewCommand)
+            Config.OnCreate(self, NewCommand)
         end
         -- Register finish callback
         NewCommand:SetCallback(self, Config.OnFinish)
