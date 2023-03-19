@@ -6,6 +6,8 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCardLogicFinished, ECardLogicFinishType::Type, Result);
 
+class UCard;
+
 /**
  * Card logic class hold the actual card commands that formed the card.
  */
@@ -16,6 +18,8 @@ class CARDSYSTEM_API UCardLogic : public UObject, public FTickableGameObject, pu
 
 public:
 	UCardLogic();
+
+	void InitLogic(UCard* InCard);
 
 	void StartLogic(const FString& ScriptPath);
 
@@ -34,6 +38,9 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable, Category="CardLogic")
+	UCard* GetOwnerCard() const;
+
 protected:
 
 	UFUNCTION(BlueprintImplementableEvent, Category="CardLogic")
@@ -51,4 +58,6 @@ public:
 
 protected:
 	uint8 bFinished:1;
+
+	TWeakObjectPtr<UCard> OwnerCard;
 };

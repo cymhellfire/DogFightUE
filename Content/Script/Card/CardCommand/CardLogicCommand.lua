@@ -33,6 +33,9 @@ function CardLogicCommand:RunCommand(Name, bImmediately)
 
     local NewCommand = CardCommandHelper.CreateCardCommand(Config.Script)
     if NewCommand then
+        -- Set owner
+        NewCommand._CardLogic = self._CardLogic
+    
         -- Trigger the post create callback
         if Config.OnCreate then
             Config.OnCreate.Func(self, NewCommand)

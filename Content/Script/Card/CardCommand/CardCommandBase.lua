@@ -1,5 +1,6 @@
 local CardCommandResultDef = require "Card.CardCommand.CardCommandResultDef"
 
+---@field _CardLogic CardLogic Owner card logic of this command.
 ---@field Listener any Object that hold the callback function.
 ---@field Callback function Callback function that will be triggered when command is finished.
 ---@class CardCommandBase Base class of all card commands.

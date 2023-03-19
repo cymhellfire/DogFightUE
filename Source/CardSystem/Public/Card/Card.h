@@ -55,6 +55,14 @@ public:
 		return OwnerController.IsValid() ? OwnerController.Get() : nullptr;
 	}
 
+	UFUNCTION(BlueprintCallable, Category="Card")
+	void SetOwnerPlayerId(int32 PlayerId);
+
+	UFUNCTION(BlueprintCallable, Category="Card")
+	int32 GetOwnerPlayerId() const
+	{
+		return OwnerPlayerId;
+	}
 
 	// ------------------- Attribute ----------------------
 
@@ -176,6 +184,8 @@ protected:
 
 	/** Id used to distinguish different cards. */
 	int32 CardInstanceId;
+
+	int32 OwnerPlayerId;
 
 	/** The owner controller to handle necessary RPC function call. */
 	TWeakObjectPtr<AController> OwnerController;

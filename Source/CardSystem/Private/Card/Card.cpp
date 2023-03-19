@@ -118,6 +118,7 @@ void UCard::CreateCardLogic()
 	if (IsValid(CardLogic))
 	{
 		CardLogic->OnCardLogicFinished.AddDynamic(this, &UCard::OnCardLogicFinished);
+		CardLogic->InitLogic(this);
 		// Start the logic
 		CardLogic->StartLogic(LogicScriptPath);
 	}
@@ -158,6 +159,11 @@ void UCard::SetOwnerController(AController* InOwner)
 	{
 		UE_LOG(LogCardSystem, Error, TEXT("[Card] Owner controller must implement UCardTargetProviderInterface."));
 	}
+}
+
+void UCard::SetOwnerPlayerId(int32 PlayerId)
+{
+	OwnerPlayerId = PlayerId;
 }
 
 void UCard::StartAcquireTargets()

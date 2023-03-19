@@ -43,6 +43,8 @@ void ATopDownStylePlayerState::AddCardObject(UCard* InCard)
 		}
 
 		CardObjectList.Add(InCard);
+		// Set owner player id
+		InCard->SetOwnerPlayerId(GetPlayerId());
 		// Add desc object as well
 		AddCardDescObject(InCard->GetDescObject());
 	}

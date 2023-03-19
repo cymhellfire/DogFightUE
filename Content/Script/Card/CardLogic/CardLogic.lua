@@ -9,6 +9,7 @@ function CardLogic:OnLogicStarted(ScriptPath)
     -- Create and execute card logic command
     self.LogicCommand = CardCommandHelper.CreateCardCommand(ScriptPath)
     if self.LogicCommand then
+        self.LogicCommand._CardLogic = self
         self.LogicCommand:SetCallback(self, self.OnCardLogicFinished)
         self.LogicCommand:StartCommand()
     end

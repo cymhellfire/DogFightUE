@@ -12,6 +12,8 @@ class UInGameWidgetManipulatorComponent;
 class UCardTargetProviderComponent;
 class UInputAction;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTargetAcquiredSignature, bool, bSucceed, TArray<FAcquiredTargetInfo>, TargetInfos);
+
 UCLASS()
 class DOGFIGHTGAME_API ATopDownStylePlayerController : public ADogFightPlayerController, public ICardTargetProviderInterface
 {
@@ -60,6 +62,9 @@ public:
 	// ICardTargetProviderInterface interface
 	virtual void StartAcquireTargets(FTargetAcquireSettings Settings, TFunction<void(bool bSuccess, TArray<FAcquiredTargetInfo>)> Callback) override;
 
+	UFUNCTION(BlueprintCallable, Category="TopDownStylePlayerController")
+	virtual void StartAcquireTargetsWithoutCallback(FTargetAcquireSettings Settings);
+
 protected:
 	UFUNCTION(Server, Reliable)
 	void ServerMarkPlayerReady();
@@ -91,6 +96,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="PlayerController")
 	TSubclassOf<AFreeForAllPlayerCharacter> CharacterClass;
+
+public:
+	UPROPERTY(BlueprintAssignable, Category="TopDownStylePlayerController")
+	FOnTargetAcquiredSignature OnTargetAcquired;
 
 protected:
 	FTimerHandle RandomTimer;

@@ -15,6 +15,7 @@ public class CardSystem : ModuleRules
 				"Core",
 				"AttributeSystem", 
 				"UnLua",
+				"LuaIntegration",
 			}
 		);
 		
