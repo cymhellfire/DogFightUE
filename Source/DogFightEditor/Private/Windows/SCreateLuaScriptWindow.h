@@ -30,6 +30,7 @@ private:
 	TSharedRef<SWidget> CreateSubFolderSection();
 	TSharedRef<SWidget> CreateScriptNameSection();
 	TSharedRef<SWidget> CreatePathPreviewSection();
+	TSharedRef<SWidget> CreateCreateFileSection();
 
 	TSharedRef<SWidget> OnGeneratedModuleOptionWidget(TSharedPtr<FString> InOption);
 	TSharedRef<SWidget> OnGeneratedTemplateOptionWidget(TSharedPtr<FString> InOption);
@@ -40,14 +41,22 @@ private:
 	FReply OnCreateButtonClicked();
 	FReply OnOpenFileButtonClicked();
 
+	void OnSwitchDefaultTab();
+	void OnSwitchMVVMTab();
+
 	FLuaScriptCreateArgument GetCurrentArgument(int32 Index = 0) const;
 
 	void OnPathTextCommitted(const FText& InText, ETextCommit::Type InCommitType);
 	void OnNameTextCommitted(const FText& InText, ETextCommit::Type InCommitType);
 
-	FText GetPreviewPathText() const;
+	FString GetPreviewPathText(int32 Index) const;
+
+	void SetCreateTemplateList(FString InTemplate);
+	void AddCreateTemplateList(FString InTemplate);
+	void ClearCreateTemplateList();
 
 	bool bUseScriptPrefix;
+	TOptional<FString> OverrideFolder;
 	TOptional<FString> bLastCreateResult;
 
 	TSharedPtr<FString> SelectedModule;

@@ -23,6 +23,12 @@ struct FLuaScriptCreateArgument
 
 	UPROPERTY(BlueprintReadWrite)
 	bool bUsePrefix;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool bOverrideTemplateFolder;
+
+	UPROPERTY(BlueprintReadWrite)
+	FString OverrideFolder;
 };
 
 UCLASS()

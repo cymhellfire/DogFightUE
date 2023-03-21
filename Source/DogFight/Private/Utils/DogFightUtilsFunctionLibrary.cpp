@@ -15,8 +15,19 @@ FString UDogFightUtilsFunctionLibrary::GenerateLuaScriptPath(const FLuaScriptCre
 	{
 		NewFileName = InArgument.Path / NewFileName;
 	}
-	return FString::Printf(TEXT("%s%s%s/%s/%s"), *FPaths::ProjectContentDir(), LUA_SCRIPT_BASE_PATH, *InArgument.ModuleName,
-		*InArgument.TemplateName, *NewFileName);
+
+	FString TemplateFolder = InArgument.TemplateName;
+	if (InArgument.bOverrideTemplateFolder)
+	{
+		TemplateFolder = InArgument.OverrideFolder;
+	}
+	if (!TemplateFolder.IsEmpty())
+	{
+		TemplateFolder = "/" + TemplateFolder;
+	}
+
+	return FString::Printf(TEXT("%s%s%s%s/%s"), *FPaths::ProjectContentDir(), LUA_SCRIPT_BASE_PATH, *InArgument.ModuleName,
+		*TemplateFolder, *NewFileName);
 }
 
 FString UDogFightUtilsFunctionLibrary::CreateLuaScriptByTemplate(const FLuaScriptCreateArgument& InArgument)

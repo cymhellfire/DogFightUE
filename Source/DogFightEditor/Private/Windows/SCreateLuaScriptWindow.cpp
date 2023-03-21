@@ -26,7 +26,7 @@ void SCreateLuaScriptWindow::Construct(const FArguments& InArgs)
 	TemplateNameList.Add(MakeShareable(new FString("CardModifier")));
 	TemplateNameList.Add(MakeShareable(new FString("GameFlowState")));
 	SelectedTemplate = TemplateNameList[0];
-	CreateTemplateList.Add(*SelectedTemplate);
+	SetCreateTemplateList(*SelectedTemplate);
 
 	ChildSlot
 	[
@@ -67,6 +67,7 @@ TSharedRef<SWidget> SCreateLuaScriptWindow::ConstructTabHeaderList()
 			.OnClicked_Lambda([this]()
 			{
 				SelectedTab = ELuaScriptWindowTab::Default;
+				OnSwitchDefaultTab();
 				return FReply::Handled();
 			})
 			.ForegroundColor_Lambda([this]()
@@ -86,6 +87,7 @@ TSharedRef<SWidget> SCreateLuaScriptWindow::ConstructTabHeaderList()
 			.OnClicked_Lambda([this]()
 			{
 				SelectedTab = ELuaScriptWindowTab::MVVM;
+				OnSwitchMVVMTab();
 				return FReply::Handled();
 			})
 			.ForegroundColor_Lambda([this]()
@@ -169,80 +171,9 @@ TSharedRef<SWidget> SCreateLuaScriptWindow::ConstructDefaultTab()
 			]
 			+ SVerticalBox::Slot().FillHeight(1.f)		// Spacer
 			+ SVerticalBox::Slot()
-			.Padding(DefaultRowPadding)
 			.AutoHeight()
 			[
-				SNew(SHorizontalBox)
-				+ SHorizontalBox::Slot()
-				.HAlign(HAlign_Left)
-				.VAlign(VAlign_Center)
-				.AutoWidth()
-				[
-					SNew(STextBlock)
-					.Text_Lambda([this]()
-					{
-						if (bLastCreateResult.IsSet())
-						{
-							bool bSuccess = bLastCreateResult.GetValue() == "Success"; 
-							return bSuccess ? LOCTEXT("Success", "Success") : FText::FromString(bLastCreateResult.GetValue());
-						}
-
-						return FText::GetEmpty();
-					})
-					.ColorAndOpacity_Lambda([this]()
-					{
-						if (bLastCreateResult.IsSet())
-						{
-							bool bSuccess = bLastCreateResult.GetValue() == "Success"; 
-							return bSuccess ? FLinearColor::Green : FLinearColor::Red;
-						}
-
-						return FLinearColor::Red;
-					})
-				]
-				+ SHorizontalBox::Slot()
-				.HAlign(HAlign_Left)
-				.Padding(5, 0, 5, 5)
-				.FillWidth(1.f)
-				[
-					SNew(SButton)
-					.Text(LOCTEXT("OpenFile", "Open"))
-					.Visibility_Lambda([this]()
-					{
-						if (bLastCreateResult.IsSet())
-						{
-							bool bSuccess = bLastCreateResult.GetValue() == "Success";
-							return bSuccess ? EVisibility::Visible : EVisibility::Collapsed;
-						}
-
-						return EVisibility::Collapsed;
-					})
-					.OnClicked(this, &SCreateLuaScriptWindow::OnOpenFileButtonClicked)
-				]
-				+ SHorizontalBox::Slot()
-				.HAlign(HAlign_Right)
-				.Padding(0, 0, 5, 5)
-				[
-					SNew(SHorizontalBox)
-					+ SHorizontalBox::Slot()
-					.AutoWidth()
-					[
-						SNew(SButton)
-						.Text(LOCTEXT("Create", "Create"))
-						.OnClicked(this, &SCreateLuaScriptWindow::OnCreateButtonClicked)
-						.IsEnabled_Lambda([this]()
-						{
-							return !NewScriptName.IsEmpty();
-						})
-					]
-					+ SHorizontalBox::Slot()
-					.AutoWidth()
-					[
-						SNew(SButton)
-						.Text(LOCTEXT("Close", "Close"))
-						.OnClicked(this, &SCreateLuaScriptWindow::OnCloseButtonClicked)
-					]
-				]
+				CreateCreateFileSection()
 			]
 		];
 }
@@ -272,6 +203,12 @@ TSharedRef<SWidget> SCreateLuaScriptWindow::ConstructMVVMTab()
 			.AutoHeight()
 			[
 				CreatePathPreviewSection()
+			]
+			+ SVerticalBox::Slot().FillHeight(1.f)		// Spacer
+			+ SVerticalBox::Slot()
+			.AutoHeight()
+			[
+				CreateCreateFileSection()
 			]
 		];
 }
@@ -440,7 +377,100 @@ TSharedRef<SWidget> SCreateLuaScriptWindow::CreatePathPreviewSection()
 			[
 				SNew(SEditableText)
 				.IsReadOnly(true)
-				.Text(this, &SCreateLuaScriptWindow::GetPreviewPathText)
+				.Text_Lambda([this]()
+				{
+					FString Result;
+					for (int32 i = 0; i < CreateTemplateList.Num(); ++i)
+					{
+						Result += GetPreviewPathText(i);
+						if (i < CreateTemplateList.Num() - 1)
+						{
+							Result += "\n";
+						}
+					}
+
+					return FText::FromString(Result);
+				})
+			]
+		];
+}
+
+TSharedRef<SWidget> SCreateLuaScriptWindow::CreateCreateFileSection()
+{
+	return SNew(SVerticalBox)
+		+ SVerticalBox::Slot()
+		.Padding(DefaultRowPadding)
+		[
+		SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
+			.HAlign(HAlign_Left)
+			.VAlign(VAlign_Center)
+			.AutoWidth()
+			[
+				SNew(STextBlock)
+				.Text_Lambda([this]()
+				{
+					if (bLastCreateResult.IsSet())
+					{
+						bool bSuccess = bLastCreateResult.GetValue() == "Success"; 
+						return bSuccess ? LOCTEXT("Success", "Success") : FText::FromString(bLastCreateResult.GetValue());
+					}
+
+					return FText::GetEmpty();
+				})
+				.ColorAndOpacity_Lambda([this]()
+				{
+					if (bLastCreateResult.IsSet())
+					{
+						bool bSuccess = bLastCreateResult.GetValue() == "Success"; 
+						return bSuccess ? FLinearColor::Green : FLinearColor::Red;
+					}
+
+					return FLinearColor::Red;
+				})
+			]
+			+ SHorizontalBox::Slot()
+			.HAlign(HAlign_Left)
+			.Padding(5, 0, 5, 5)
+			.FillWidth(1.f)
+			[
+				SNew(SButton)
+				.Text(LOCTEXT("OpenFile", "Open"))
+				.Visibility_Lambda([this]()
+				{
+					if (bLastCreateResult.IsSet())
+					{
+						bool bSuccess = bLastCreateResult.GetValue() == "Success";
+						return bSuccess ? EVisibility::Visible : EVisibility::Collapsed;
+					}
+
+					return EVisibility::Collapsed;
+				})
+				.OnClicked(this, &SCreateLuaScriptWindow::OnOpenFileButtonClicked)
+			]
+			+ SHorizontalBox::Slot()
+			.HAlign(HAlign_Right)
+			.Padding(0, 0, 5, 5)
+			[
+				SNew(SHorizontalBox)
+				+ SHorizontalBox::Slot()
+				.AutoWidth()
+				[
+					SNew(SButton)
+					.Text(LOCTEXT("Create", "Create"))
+					.OnClicked(this, &SCreateLuaScriptWindow::OnCreateButtonClicked)
+					.IsEnabled_Lambda([this]()
+					{
+						return !NewScriptName.IsEmpty();
+					})
+				]
+				+ SHorizontalBox::Slot()
+				.AutoWidth()
+				[
+					SNew(SButton)
+					.Text(LOCTEXT("Close", "Close"))
+					.OnClicked(this, &SCreateLuaScriptWindow::OnCloseButtonClicked)
+				]
 			]
 		];
 }
@@ -474,8 +504,7 @@ void SCreateLuaScriptWindow::OnTemplateSelectionChanged(TSharedPtr<FString> InSe
 {
 	SelectedTemplate = InSelectedItem;
 
-	CreateTemplateList.Empty();
-	CreateTemplateList.Add(*SelectedTemplate);
+	SetCreateTemplateList(*SelectedTemplate);
 }
 
 FReply SCreateLuaScriptWindow::OnCloseButtonClicked()
@@ -488,7 +517,10 @@ FReply SCreateLuaScriptWindow::OnCloseButtonClicked()
 
 FReply SCreateLuaScriptWindow::OnCreateButtonClicked()
 {
-	bLastCreateResult = UDogFightUtilsFunctionLibrary::CreateLuaScriptByTemplate(GetCurrentArgument());
+	for (int32 i = 0; i < CreateTemplateList.Num(); ++i)
+	{
+		bLastCreateResult = UDogFightUtilsFunctionLibrary::CreateLuaScriptByTemplate(GetCurrentArgument(i));
+	}
 
 	return FReply::Handled();
 }
@@ -501,6 +533,26 @@ FReply SCreateLuaScriptWindow::OnOpenFileButtonClicked()
 	FPlatformProcess::LaunchFileInDefaultExternalApplication(*AbsolutePath);
 
 	return FReply::Handled();
+}
+
+void SCreateLuaScriptWindow::OnSwitchDefaultTab()
+{
+	OverrideFolder.Reset();
+
+	if (TemplateNameList.Num() > 0)
+	{
+		OnTemplateSelectionChanged(TemplateNameList[0], ESelectInfo::OnMouseClick);
+	}
+}
+
+void SCreateLuaScriptWindow::OnSwitchMVVMTab()
+{
+	ClearCreateTemplateList();
+
+	AddCreateTemplateList(TEXT("View"));
+	AddCreateTemplateList(TEXT("ViewModel"));
+
+	OverrideFolder = TEXT("");
 }
 
 FLuaScriptCreateArgument SCreateLuaScriptWindow::GetCurrentArgument(int32 Index) const
@@ -516,6 +568,11 @@ FLuaScriptCreateArgument SCreateLuaScriptWindow::GetCurrentArgument(int32 Index)
 	NewArgument.Path = ScriptPath.ToString();
 	NewArgument.ScriptName = NewScriptName.ToString();
 	NewArgument.bUsePrefix = bUseScriptPrefix;
+	if (OverrideFolder.IsSet())
+	{
+		NewArgument.bOverrideTemplateFolder = true;
+		NewArgument.OverrideFolder = OverrideFolder.GetValue();
+	}
 
 	return NewArgument;
 }
@@ -530,10 +587,27 @@ void SCreateLuaScriptWindow::OnNameTextCommitted(const FText& InText, ETextCommi
 	NewScriptName = InText;
 }
 
-FText SCreateLuaScriptWindow::GetPreviewPathText() const
+FString SCreateLuaScriptWindow::GetPreviewPathText(int32 Index) const
 {
-	return FText::FromString(FPaths::ConvertRelativePathToFull(UDogFightUtilsFunctionLibrary::GenerateLuaScriptPath(
-		GetCurrentArgument())));
+	return FPaths::ConvertRelativePathToFull(UDogFightUtilsFunctionLibrary::GenerateLuaScriptPath(
+		GetCurrentArgument(Index)));
+}
+
+void SCreateLuaScriptWindow::SetCreateTemplateList(FString InTemplate)
+{
+	ClearCreateTemplateList();
+
+	AddCreateTemplateList(InTemplate);
+}
+
+void SCreateLuaScriptWindow::AddCreateTemplateList(FString InTemplate)
+{
+	CreateTemplateList.Add(InTemplate);
+}
+
+void SCreateLuaScriptWindow::ClearCreateTemplateList()
+{
+	CreateTemplateList.Empty();
 }
 
 #undef LOCTEXT_NAMESPACE
