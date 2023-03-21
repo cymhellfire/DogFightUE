@@ -53,6 +53,8 @@ function ProjectileService:SpawnNewProjectileInstance_Implementation(InId)
                 if WarheadService then
                     WarheadService:SetWarheadInfoForProjectile(NewProjectile, Config.Warhead)
                 end
+
+                NewProjectile.Damage = Config.Damage
             end
 
             -- Setup the projectile logic script

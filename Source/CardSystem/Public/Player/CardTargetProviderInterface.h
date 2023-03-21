@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "CardTargetProviderInterface.generated.h"
 
-UENUM()
+UENUM(BlueprintType)
 enum class ECardTargetType : uint8
 {
 	CTT_None,
@@ -12,7 +12,7 @@ enum class ECardTargetType : uint8
 	CTT_Direction,
 };
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FTargetAcquireSettings
 {
 	GENERATED_BODY()
@@ -30,7 +30,7 @@ struct FTargetAcquireSettings
 	int32 TargetCount;
 };
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FAcquiredTargetInfo
 {
 	GENERATED_BODY()

@@ -133,6 +133,12 @@ void ATopDownStylePlayerController::StartAcquireTargets(FTargetAcquireSettings S
 	ClientStartAcquireTargets(Settings);
 }
 
+void ATopDownStylePlayerController::StartAcquireTargetsWithoutCallback(FTargetAcquireSettings Settings)
+{
+	// Notify the client to start acquire target process
+	ClientStartAcquireTargets(Settings);
+}
+
 void ATopDownStylePlayerController::OnCardTargetAcquired(bool bSuccess)
 {
 	if (bSuccess)
@@ -159,4 +165,6 @@ void ATopDownStylePlayerController::ServerFinishAcquireTargets_Implementation(bo
 		// The callback should be clear once invoked
 		AcquireTargetCallback.Reset();
 	}
+
+	OnTargetAcquired.Broadcast(bSuccess, TargetInfos);
 }

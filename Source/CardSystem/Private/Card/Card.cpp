@@ -5,6 +5,7 @@
 #include "Card/CardAsyncCommand.h"
 #include "Card/CardCommand.h"
 #include "Card/CardDescObject.h"
+#include "Card/CardLogic.h"
 #include "CardModifier/CardModifier.h"
 
 UCard::UCard()
@@ -111,6 +112,18 @@ void UCard::RemoveModifierObject(UCardModifier* InModifier)
 	}
 }
 
+void UCard::CreateCardLogic()
+{
+	CardLogic = NewObject<UCardLogic>(this, TEXT("CardLogic"), RF_Transient);
+	if (IsValid(CardLogic))
+	{
+		CardLogic->OnCardLogicFinished.AddDynamic(this, &UCard::OnCardLogicFinished);
+		CardLogic->InitLogic(this);
+		// Start the logic
+		CardLogic->StartLogic(LogicScriptPath);
+	}
+}
+
 /**
  * Execution progress can be seperated into two parts:
  * ------------------------------------------------
@@ -119,7 +132,14 @@ void UCard::RemoveModifierObject(UCardModifier* InModifier)
  */
 void UCard::Execute()
 {
-	StartAcquireTargets();
+	if (!LogicScriptPath.IsEmpty())
+	{
+		CreateCardLogic();
+	}
+	else
+	{
+		StartAcquireTargets();
+	}
 }
 
 void UCard::SetOwnerController(AController* InOwner)
@@ -139,6 +159,11 @@ void UCard::SetOwnerController(AController* InOwner)
 	{
 		UE_LOG(LogCardSystem, Error, TEXT("[Card] Owner controller must implement UCardTargetProviderInterface."));
 	}
+}
+
+void UCard::SetOwnerPlayerId(int32 PlayerId)
+{
+	OwnerPlayerId = PlayerId;
 }
 
 void UCard::StartAcquireTargets()
@@ -487,6 +512,18 @@ bool UCard::CheckCardFinished()
 	}
 
 	return false;
+}
+
+void UCard::OnCardLogicFinished(ECardLogicFinishType::Type FinishType)
+{
+	if (FinishType == ECardLogicFinishType::Success)
+	{
+		OnCardFinished();
+	}
+	else
+	{
+		OnCardCancel();
+	}
 }
 
 void UCard::OnCardFinished()

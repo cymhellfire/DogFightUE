@@ -8,3 +8,14 @@ enum ECardCommandType
 {
 	CCT_Default,
 };
+
+UENUM(BlueprintType)
+namespace ECardLogicFinishType
+{
+	enum Type
+	{
+		Success,
+		Failed,
+		Cancel,
+	};
+}
