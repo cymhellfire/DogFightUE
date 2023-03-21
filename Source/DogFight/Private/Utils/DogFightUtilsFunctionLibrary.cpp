@@ -3,6 +3,20 @@
 #define LUA_SCRIPT_BASE_PATH		TEXT("Script/")
 #define LUA_TEMPLATE_BASE_PATH		TEXT("EditorResources/ScriptTemplates")
 
+FString UDogFightUtilsFunctionLibrary::GenerateLuaScriptFolder(const FLuaScriptCreateArgument& InArgument)
+{
+	FString SubFolder = InArgument.bOverrideTemplateFolder ? InArgument.OverrideFolder : InArgument.TemplateName;
+	SubFolder = "/" + SubFolder;
+
+	if (!InArgument.Path.IsEmpty())
+	{
+		SubFolder = SubFolder / InArgument.Path;
+	}
+
+	return FString::Printf(TEXT("%s%s%s%s"), *FPaths::ProjectContentDir(), LUA_SCRIPT_BASE_PATH, *InArgument.ModuleName,
+	*SubFolder);
+}
+
 FString UDogFightUtilsFunctionLibrary::GenerateLuaScriptPath(const FLuaScriptCreateArgument& InArgument)
 {
 	FString NewFileName = InArgument.ScriptName + ".lua";
@@ -11,23 +25,9 @@ FString UDogFightUtilsFunctionLibrary::GenerateLuaScriptPath(const FLuaScriptCre
 		NewFileName = InArgument.TemplateName + NewFileName;
 	}
 
-	if (!InArgument.Path.IsEmpty())
-	{
-		NewFileName = InArgument.Path / NewFileName;
-	}
+	FString FinalFolder = GenerateLuaScriptFolder(InArgument);
 
-	FString TemplateFolder = InArgument.TemplateName;
-	if (InArgument.bOverrideTemplateFolder)
-	{
-		TemplateFolder = InArgument.OverrideFolder;
-	}
-	if (!TemplateFolder.IsEmpty())
-	{
-		TemplateFolder = "/" + TemplateFolder;
-	}
-
-	return FString::Printf(TEXT("%s%s%s%s/%s"), *FPaths::ProjectContentDir(), LUA_SCRIPT_BASE_PATH, *InArgument.ModuleName,
-		*TemplateFolder, *NewFileName);
+	return FString::Printf(TEXT("%s/%s"), *FinalFolder, *NewFileName);
 }
 
 FString UDogFightUtilsFunctionLibrary::CreateLuaScriptByTemplate(const FLuaScriptCreateArgument& InArgument)
@@ -53,10 +53,20 @@ FString UDogFightUtilsFunctionLibrary::CreateLuaScriptByTemplate(const FLuaScrip
 		return "Template file doesn't exist!";
 	}
 
+	// Prepare the $Path$ variable
+	FString OutputFolder = GenerateLuaScriptFolder(InArgument);
+	FString ScriptRoot = FString::Printf(TEXT("%s%s"), *FPaths::ProjectContentDir(), LUA_SCRIPT_BASE_PATH);
+	if (!FPaths::MakePathRelativeTo(OutputFolder, *ScriptRoot))
+	{
+		return "Failed to convert script path to relative.";
+	}
+	OutputFolder.ReplaceCharInline('/', '.');
+
 	// Replace template file content
 	FString Content;
 	FFileHelper::LoadFileToString(Content, *TemplatePath);
 	Content = Content.Replace(TEXT("$Class$"), *NewClassName);
+	Content = Content.Replace(TEXT("$Path$"), *OutputFolder);
 	FFileHelper::SaveStringToFile(Content, *NewScriptPath, FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM);
 
 	return "Success";

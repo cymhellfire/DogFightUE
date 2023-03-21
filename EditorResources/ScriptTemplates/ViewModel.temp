@@ -1,0 +1,8 @@
+---@class $Class$
+local $Class$ = {}
+
+$Class$.BindingTable = {
+    --"TitleMessage" = "",
+}
+
+return $Class$

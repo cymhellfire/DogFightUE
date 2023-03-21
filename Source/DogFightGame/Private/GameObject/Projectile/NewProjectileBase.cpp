@@ -11,6 +11,7 @@ ANewProjectileBase::ANewProjectileBase(const FObjectInitializer& ObjectInitializ
 {
 	// Turn on replication
 	bReplicates = true;
+	SetReplicatingMovement(true);
 
 	// Create collision component
 	CollisionComponent = CreateDefaultSubobject<USphereComponent>("Root");

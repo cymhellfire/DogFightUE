@@ -37,6 +37,9 @@ class DOGFIGHT_API UDogFightUtilsFunctionLibrary : public UBlueprintFunctionLibr
 	GENERATED_BODY()
 public:
 	UFUNCTION(BlueprintCallable)
+	static FString GenerateLuaScriptFolder(const FLuaScriptCreateArgument& InArgument);
+
+	UFUNCTION(BlueprintCallable)
 	static FString GenerateLuaScriptPath(const FLuaScriptCreateArgument& InArgument);
 
 	UFUNCTION(BlueprintCallable)

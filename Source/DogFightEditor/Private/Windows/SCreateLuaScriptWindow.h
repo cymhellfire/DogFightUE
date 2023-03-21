@@ -58,6 +58,7 @@ private:
 	bool bUseScriptPrefix;
 	TOptional<FString> OverrideFolder;
 	TOptional<FString> bLastCreateResult;
+	TOptional<FString> HardcodedSubfolder;
 
 	TSharedPtr<FString> SelectedModule;
 	TSharedPtr<FString> SelectedTemplate;

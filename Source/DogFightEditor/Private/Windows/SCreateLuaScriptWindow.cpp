@@ -538,6 +538,7 @@ FReply SCreateLuaScriptWindow::OnOpenFileButtonClicked()
 void SCreateLuaScriptWindow::OnSwitchDefaultTab()
 {
 	OverrideFolder.Reset();
+	HardcodedSubfolder.Reset();
 
 	if (TemplateNameList.Num() > 0)
 	{
@@ -552,6 +553,7 @@ void SCreateLuaScriptWindow::OnSwitchMVVMTab()
 	AddCreateTemplateList(TEXT("View"));
 	AddCreateTemplateList(TEXT("ViewModel"));
 
+	HardcodedSubfolder = TEXT("Widget");
 	OverrideFolder = TEXT("");
 }
 
@@ -565,7 +567,21 @@ FLuaScriptCreateArgument SCreateLuaScriptWindow::GetCurrentArgument(int32 Index)
 	FLuaScriptCreateArgument NewArgument;
 	NewArgument.ModuleName = *SelectedModule;
 	NewArgument.TemplateName = CreateTemplateList[Index];
-	NewArgument.Path = ScriptPath.ToString();
+	if (HardcodedSubfolder.IsSet())
+	{
+		if (ScriptPath.IsEmpty())
+		{
+			NewArgument.Path = HardcodedSubfolder.GetValue();
+		}
+		else
+		{
+			NewArgument.Path = HardcodedSubfolder.GetValue() / *ScriptPath.ToString();
+		}
+	}
+	else
+	{
+		NewArgument.Path = ScriptPath.ToString();
+	}
 	NewArgument.ScriptName = NewScriptName.ToString();
 	NewArgument.bUsePrefix = bUseScriptPrefix;
 	if (OverrideFolder.IsSet())
