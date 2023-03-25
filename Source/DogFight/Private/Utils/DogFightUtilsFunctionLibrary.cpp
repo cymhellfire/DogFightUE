@@ -19,11 +19,19 @@ FString UDogFightUtilsFunctionLibrary::GenerateLuaScriptFolder(const FLuaScriptC
 
 FString UDogFightUtilsFunctionLibrary::GenerateLuaScriptPath(const FLuaScriptCreateArgument& InArgument)
 {
-	FString NewFileName = InArgument.ScriptName + ".lua";
-	if (InArgument.bUsePrefix)
+	FString NewFileName = InArgument.ScriptName;
+	switch (InArgument.TemplateMode)
 	{
-		NewFileName = InArgument.TemplateName + NewFileName;
+		case ELuaScriptNameTemplateMode::TM_Prefix:
+			NewFileName = InArgument.TemplateName + NewFileName;
+			break;
+		case ELuaScriptNameTemplateMode::TM_Suffix:
+			NewFileName = NewFileName + InArgument.TemplateName ;
+			break;
+		case ELuaScriptNameTemplateMode::TM_None:
+		default: ;
 	}
+	NewFileName += ".lua";
 
 	FString FinalFolder = GenerateLuaScriptFolder(InArgument);
 
@@ -33,9 +41,16 @@ FString UDogFightUtilsFunctionLibrary::GenerateLuaScriptPath(const FLuaScriptCre
 FString UDogFightUtilsFunctionLibrary::CreateLuaScriptByTemplate(const FLuaScriptCreateArgument& InArgument)
 {
 	FString NewClassName = InArgument.ScriptName;
-	if (InArgument.bUsePrefix)
+	switch (InArgument.TemplateMode)
 	{
+	case ELuaScriptNameTemplateMode::TM_Prefix:
 		NewClassName = InArgument.TemplateName + NewClassName;
+		break;
+	case ELuaScriptNameTemplateMode::TM_Suffix:
+		NewClassName = NewClassName + InArgument.TemplateName ;
+		break;
+	case ELuaScriptNameTemplateMode::TM_None:
+	default: ;
 	}
 	FString NewScriptPath = GenerateLuaScriptPath(InArgument);
 
@@ -67,6 +82,7 @@ FString UDogFightUtilsFunctionLibrary::CreateLuaScriptByTemplate(const FLuaScrip
 	FFileHelper::LoadFileToString(Content, *TemplatePath);
 	Content = Content.Replace(TEXT("$Class$"), *NewClassName);
 	Content = Content.Replace(TEXT("$Path$"), *OutputFolder);
+	Content = Content.Replace(TEXT("$ClassPure$"), *InArgument.ScriptName);
 	FFileHelper::SaveStringToFile(Content, *NewScriptPath, FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM);
 
 	return "Success";

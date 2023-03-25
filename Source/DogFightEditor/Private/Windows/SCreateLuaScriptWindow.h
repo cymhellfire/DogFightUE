@@ -4,6 +4,7 @@
 #include "Widgets/SCompoundWidget.h"
 
 struct FLuaScriptCreateArgument;
+enum class ELuaScriptNameTemplateMode : uint8;
 
 enum class ELuaScriptWindowTab
 {
@@ -34,8 +35,10 @@ private:
 
 	TSharedRef<SWidget> OnGeneratedModuleOptionWidget(TSharedPtr<FString> InOption);
 	TSharedRef<SWidget> OnGeneratedTemplateOptionWidget(TSharedPtr<FString> InOption);
+	TSharedRef<SWidget> OnGeneratedScriptNameTemplateModeWidget(TSharedPtr<int32> InOption);
 	void OnModuleSelectionChanged(TSharedPtr<FString> InSelectedItem, ESelectInfo::Type SelectInfo);
 	void OnTemplateSelectionChanged(TSharedPtr<FString> InSelectedItem, ESelectInfo::Type SelectInfo);
+	void OnScriptNameTemplateModeSelectionChanged(TSharedPtr<int32> InSelectedItem, ESelectInfo::Type SelectInfo);
 
 	FReply OnCloseButtonClicked();
 	FReply OnCreateButtonClicked();
@@ -66,6 +69,9 @@ private:
 	FText NewScriptName;
 	TArray<TSharedPtr<FString>> ModuleNameList;
 	TArray<TSharedPtr<FString>> TemplateNameList;
+	TArray<TSharedPtr<int32>> ScriptNameTemplateModeOptions;
+	TArray<FString> ScriptNameTemplateModeDesc;
+	ELuaScriptNameTemplateMode SelectedTemplateMode;
 
 	TArray<FString> CreateTemplateList;
 

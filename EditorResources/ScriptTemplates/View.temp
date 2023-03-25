@@ -2,7 +2,7 @@
 local $Class$ = Class("Common.MVVM.ModelBase")
 local ViewModelBase = require("Common.MVVM.ViewModelBase")
 local DataBinding = require("Common.MVVM.DataBinding")
-local $Class$VM = require("$Path$.$Class$VM")
+local $Class$VM = require("$Path$.$ClassPure$VM")
 --local ListWrapper = require("Common.ListView.ListViewWrapper")
 
 function $Class$:Initialize()

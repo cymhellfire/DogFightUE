@@ -4,6 +4,14 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "DogFightUtilsFunctionLibrary.generated.h"
 
+UENUM(BlueprintType)
+enum class ELuaScriptNameTemplateMode : uint8
+{
+	TM_None,
+	TM_Prefix,
+	TM_Suffix,
+};
+
 USTRUCT(BlueprintType)
 struct FLuaScriptCreateArgument
 {
@@ -22,7 +30,7 @@ struct FLuaScriptCreateArgument
 	FString ScriptName;
 
 	UPROPERTY(BlueprintReadWrite)
-	bool bUsePrefix;
+	ELuaScriptNameTemplateMode TemplateMode;
 
 	UPROPERTY(BlueprintReadWrite)
 	bool bOverrideTemplateFolder;

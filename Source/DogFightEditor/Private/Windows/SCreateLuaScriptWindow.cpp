@@ -13,6 +13,7 @@ SCreateLuaScriptWindow::SCreateLuaScriptWindow()
 {
 	bUseScriptPrefix = true;
 	SelectedTab = ELuaScriptWindowTab::Default;
+	SelectedTemplateMode = ELuaScriptNameTemplateMode::TM_None;
 
 	DefaultRowPadding = FMargin(FVector4(5, 5, 0, 0));
 }
@@ -27,6 +28,14 @@ void SCreateLuaScriptWindow::Construct(const FArguments& InArgs)
 	TemplateNameList.Add(MakeShareable(new FString("GameFlowState")));
 	SelectedTemplate = TemplateNameList[0];
 	SetCreateTemplateList(*SelectedTemplate);
+
+	for (int32 i = 0; i < 3; ++i)
+	{
+		ScriptNameTemplateModeOptions.Add(MakeShareable(new int32(i)));
+	}
+	ScriptNameTemplateModeDesc.Add(FString("None"));
+	ScriptNameTemplateModeDesc.Add(FString("Prefix"));
+	ScriptNameTemplateModeDesc.Add(FString("Suffix"));
 
 	ChildSlot
 	[
@@ -337,19 +346,25 @@ TSharedRef<SWidget> SCreateLuaScriptWindow::CreateScriptNameSection()
 			.VAlign(VAlign_Center)
 			.AutoWidth()
 			[
-				SNew(SCheckBox)
-				.OnCheckStateChanged_Lambda([this](ECheckBoxState InState)
-				{
-					bUseScriptPrefix = InState == ECheckBoxState::Checked;
-					
-				})
-				.IsChecked_Lambda([this]()
-				{
-					return bUseScriptPrefix ? ECheckBoxState::Checked :ECheckBoxState::Unchecked;
-				})
+				SNew(STextBlock)
+				.Text(LOCTEXT("TemplateMode", "Use template name as: "))
+			]
+			+ SHorizontalBox::Slot()
+			.VAlign(VAlign_Center)
+			.AutoWidth()
+			[
+				SNew(SComboBox<TSharedPtr<int32>>)
+				.OptionsSource(&ScriptNameTemplateModeOptions)
+				.OnGenerateWidget(this, &SCreateLuaScriptWindow::OnGeneratedScriptNameTemplateModeWidget)
+				.OnSelectionChanged(this, &SCreateLuaScriptWindow::OnScriptNameTemplateModeSelectionChanged)
+				.InitiallySelectedItem(ScriptNameTemplateModeOptions.Num() > 0 ? ScriptNameTemplateModeOptions[0] : nullptr)
 				[
 					SNew(STextBlock)
-					.Text(LOCTEXT("UsePrefix", "Use Prefix"))
+					.Text_Lambda([this]()
+					{
+						int32 SelectIndex = (int32)SelectedTemplateMode;
+						return FText::FromString(ScriptNameTemplateModeDesc[SelectIndex]);
+					})
 				]
 			]
 		];
@@ -495,6 +510,16 @@ TSharedRef<SWidget> SCreateLuaScriptWindow::OnGeneratedTemplateOptionWidget(TSha
 	];
 }
 
+TSharedRef<SWidget> SCreateLuaScriptWindow::OnGeneratedScriptNameTemplateModeWidget(TSharedPtr<int32> InOption)
+{
+	return SNew(SBox)
+	[
+		SNew(STextBlock)
+		.Text(FText::FromString(ScriptNameTemplateModeDesc[*InOption.Get()]))
+		.Font(IDetailLayoutBuilder::GetDetailFont())
+	];
+}
+
 void SCreateLuaScriptWindow::OnModuleSelectionChanged(TSharedPtr<FString> InSelectedItem, ESelectInfo::Type SelectInfo)
 {
 	SelectedModule = InSelectedItem;
@@ -505,6 +530,12 @@ void SCreateLuaScriptWindow::OnTemplateSelectionChanged(TSharedPtr<FString> InSe
 	SelectedTemplate = InSelectedItem;
 
 	SetCreateTemplateList(*SelectedTemplate);
+}
+
+void SCreateLuaScriptWindow::OnScriptNameTemplateModeSelectionChanged(TSharedPtr<int32> InSelectedItem,
+	ESelectInfo::Type SelectInfo)
+{
+	SelectedTemplateMode = (ELuaScriptNameTemplateMode)*InSelectedItem;
 }
 
 FReply SCreateLuaScriptWindow::OnCloseButtonClicked()
@@ -527,10 +558,13 @@ FReply SCreateLuaScriptWindow::OnCreateButtonClicked()
 
 FReply SCreateLuaScriptWindow::OnOpenFileButtonClicked()
 {
-	FString AbsolutePath = FPaths::ConvertRelativePathToFull(UDogFightUtilsFunctionLibrary::GenerateLuaScriptPath(
-		GetCurrentArgument()));
+	for (int32 i = 0; i < CreateTemplateList.Num(); ++i)
+	{
+		FString AbsolutePath = FPaths::ConvertRelativePathToFull(UDogFightUtilsFunctionLibrary::GenerateLuaScriptPath(
+			GetCurrentArgument(i)));
 	
-	FPlatformProcess::LaunchFileInDefaultExternalApplication(*AbsolutePath);
+		FPlatformProcess::LaunchFileInDefaultExternalApplication(*AbsolutePath);
+	}
 
 	return FReply::Handled();
 }
@@ -544,6 +578,11 @@ void SCreateLuaScriptWindow::OnSwitchDefaultTab()
 	{
 		OnTemplateSelectionChanged(TemplateNameList[0], ESelectInfo::OnMouseClick);
 	}
+
+	if (ScriptNameTemplateModeOptions.Num() > 0)
+	{
+		OnScriptNameTemplateModeSelectionChanged(ScriptNameTemplateModeOptions[0], ESelectInfo::OnMouseClick);
+	}
 }
 
 void SCreateLuaScriptWindow::OnSwitchMVVMTab()
@@ -551,10 +590,15 @@ void SCreateLuaScriptWindow::OnSwitchMVVMTab()
 	ClearCreateTemplateList();
 
 	AddCreateTemplateList(TEXT("View"));
-	AddCreateTemplateList(TEXT("ViewModel"));
+	AddCreateTemplateList(TEXT("VM"));
 
 	HardcodedSubfolder = TEXT("Widget");
 	OverrideFolder = TEXT("");
+
+	if (ScriptNameTemplateModeOptions.Num() > 2)
+	{
+		OnScriptNameTemplateModeSelectionChanged(ScriptNameTemplateModeOptions[2], ESelectInfo::OnMouseClick);
+	}
 }
 
 FLuaScriptCreateArgument SCreateLuaScriptWindow::GetCurrentArgument(int32 Index) const
@@ -583,7 +627,7 @@ FLuaScriptCreateArgument SCreateLuaScriptWindow::GetCurrentArgument(int32 Index)
 		NewArgument.Path = ScriptPath.ToString();
 	}
 	NewArgument.ScriptName = NewScriptName.ToString();
-	NewArgument.bUsePrefix = bUseScriptPrefix;
+	NewArgument.TemplateMode = SelectedTemplateMode;
 	if (OverrideFolder.IsSet())
 	{
 		NewArgument.bOverrideTemplateFolder = true;
