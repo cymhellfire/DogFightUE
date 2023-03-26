@@ -22,7 +22,7 @@ public:
 	void SetWidget(UDamageDisplayWidget* InWidget);
 
 	UFUNCTION(BlueprintCallable, Category="DamageDisplayActor")
-	void SetDamageInfo(UExtendedDamageInstance* DamageInstance, const FExtendedDamageEvent& DamageEvent);
+	void SetDamageInfo(const FDamageDisplayParams& DisplayParams);
 
 	void Activate(float Lifetime);
 

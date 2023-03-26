@@ -1,6 +1,7 @@
 #include "GameMode/TopDownStyleGameMode.h"
 #include "Common/LuaEventDef.h"
 #include "DamageCalculator/DamageCalculatorBase.h"
+#include "FunctionLibrary/CommonGameplayFunctionLibrary.h"
 #include "GameMode/TopDownStyleGameState.h"
 #include "GameMode/GameModeComponent/InGameMessageSenderComponent.h"
 #include "GameService/DamageService.h"
@@ -97,6 +98,8 @@ void ATopDownStyleGameMode::OnDamageEventOccured(UExtendedDamageInstance* Damage
 {
 	if (auto DamageService = UGameService::GetGameService<UDamageService>())
 	{
-		DamageService->CreateDamageDisplay(DamageInstance, DamageEvent);
+		auto DisplayParams = DamageService->GetDamageDisplayParameters(DamageInstance, DamageEvent);
+		// Broadcast to all clients
+		UCommonGameplayFunctionLibrary::CreateDamageDisplayByPlayerId(DisplayParams, -1);
 	}
 }

@@ -8,7 +8,10 @@ local Config = {
     [DamageNameDef.Default] = {
         Id = 0,
         DamageType = UE.UExtendedDamageType.StaticClass(),
-        Script = "DogFight.DamageInstance.DefaultDamage"
+        Script = "DogFight.DamageInstance.DefaultDamage",
+        DisplayParams = {
+            Color = {1, 0, 0},
+        },
     },
     [DamageNameDef.Explosion] = {
         Id = 1,

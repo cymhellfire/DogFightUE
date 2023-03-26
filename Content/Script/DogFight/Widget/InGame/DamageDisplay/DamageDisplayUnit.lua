@@ -10,7 +10,8 @@ local DataBinding = require("Common.MVVM.DataBinding")
 function DamageDisplayUnit:Initialize()
     local NewVM = InstantiateViewModel(DamageDisplayUnitVM)
     self:BindViewModel(NewVM, {
-        {BindKey = "DamageValueText",   UIKey = "DamageText",   DataBinding = DataBinding.TextContextBinding(), }
+        {BindKey = "DamageValueText",   UIKey = "DamageText",   DataBinding = DataBinding.TextContextBinding() },
+        {BindKey = "DamageColor",       UIKey = "DamageText",   DataBinding = DataBinding.ColorAndOpacityBinding() },
     })
 end
 
@@ -20,9 +21,26 @@ end
 
 ---Triggered when take damage.
 ---@param DamageInstance UExtendedDamageInstance Damage instance has taken.
----@param Value number Damage value has taken.
-function DamageDisplayUnit:AddDamageItem(DamageInstance, Value)
-    self.ViewModel.DamageValueText = Value
+---@param DisplayParam FDamageDisplayParams Damage display parameter set.
+function DamageDisplayUnit:AddDamageItem(DisplayParam)
+    -- Get display parameter from damage config
+    local DamageStyle
+    ---@type DamageService
+    local DamageService = GetGameService(GameServiceNameDef.DamageService)
+    if DamageService then
+        local DamageConfig = DamageService.Config:GetConfigById(DisplayParam.DamageId)
+        if DamageConfig then
+            DamageStyle = DamageConfig.DisplayParams
+        end
+    end
+
+    self.ViewModel.DamageValueText = DisplayParam.DamageValue
+    if DamageStyle then
+        local Color = DamageStyle.Color
+        if Color then
+            self.ViewModel.DamageColor = UE.UCommonWidgetFunctionLibrary.MakeSlateColor(Color[1], Color[2], Color[3], 1)
+        end
+    end
 end
 
 function DamageDisplayUnit:OnOwnerActivated()

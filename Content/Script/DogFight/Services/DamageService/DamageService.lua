@@ -22,6 +22,7 @@ end
 ---@param Config table Damage instance configuration.
 local function InitializeDamageInstance(DamageInstance, Config)
     if Config.DamageType then
+        DamageInstance.Id = Config.Id
         DamageInstance:SetDamageType(Config.DamageType)
     end
 end

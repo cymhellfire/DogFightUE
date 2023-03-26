@@ -24,8 +24,22 @@ UExtendedDamageInstance* UDamageService::GetDamageInstanceById(int32 InId) const
 	return nullptr;
 }
 
-void UDamageService::CreateDamageDisplay(UExtendedDamageInstance* DamageInstance,
+FDamageDisplayParams UDamageService::GetDamageDisplayParameters(UExtendedDamageInstance* DamageInstance,
 	const FExtendedDamageEvent& DamageEvent)
+{
+	FDamageDisplayParams Result;
+	if (IsValid(DamageInstance))
+	{
+		Result.DamageId = DamageInstance->Id;
+	}
+	Result.DamageValue = DamageEvent.DamageValue;
+	Result.OccuredLocation = IsValid(DamageEvent.ReceiverComponent) ?
+		DamageEvent.ReceiverComponent->GetOwner()->GetActorLocation() : FVector::ZeroVector;
+
+	return Result;
+}
+
+void UDamageService::CreateDamageDisplay(const FDamageDisplayParams& DisplayParams)
 {
 	auto DisplayActor = GetInstanceById<ADamageDisplayActor>(0);
 	if (DisplayActor == nullptr)
@@ -36,10 +50,10 @@ void UDamageService::CreateDamageDisplay(UExtendedDamageInstance* DamageInstance
 	}
 
 	// Move the actor to damage event location
-	auto DamageLoc = IsValid(DamageEvent.ReceiverComponent) ?
-		DamageEvent.ReceiverComponent->GetOwner()->GetActorLocation() : FVector::ZeroVector;
-	DisplayActor->SetActorLocation(DamageLoc);
-	DisplayActor->SetDamageInfo(DamageInstance, DamageEvent);
+	DisplayActor->SetActorLocation(DisplayParams.OccuredLocation);
+
+	// Construct display parameters
+	DisplayActor->SetDamageInfo(DisplayParams);
 	// Active instance
 	DisplayActor->Activate(2.f);
 }

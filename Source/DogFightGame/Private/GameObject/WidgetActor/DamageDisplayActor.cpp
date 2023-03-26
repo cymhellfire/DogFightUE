@@ -23,12 +23,11 @@ void ADamageDisplayActor::SetWidget(UDamageDisplayWidget* InWidget)
 	LocatorComponent->SetDamageWidget(InWidget);
 }
 
-void ADamageDisplayActor::SetDamageInfo(UExtendedDamageInstance* DamageInstance,
-                                        const FExtendedDamageEvent& DamageEvent)
+void ADamageDisplayActor::SetDamageInfo(const FDamageDisplayParams& DisplayParams)
 {
 	if (IsValid(DamageDisplayWidget))
 	{
-		DamageDisplayWidget->AddDamageItem(DamageInstance, DamageEvent.DamageValue);
+		DamageDisplayWidget->AddDamageItem(DisplayParams);
 	}
 }
 

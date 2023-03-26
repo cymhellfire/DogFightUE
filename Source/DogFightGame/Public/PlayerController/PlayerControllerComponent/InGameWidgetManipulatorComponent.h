@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "Common/DamageDisplayParams.h"
 
 #include "InGameWidgetManipulatorComponent.generated.h"
 
@@ -39,4 +40,10 @@ public:
 	 */
 	UFUNCTION(Client, Reliable)
 	void ClientHideInGameWidget(const FString& InWidgetName);
+
+	/**
+	 * Notify client side display a damage widget with given parameters.
+	 */
+	UFUNCTION(Client, Reliable)
+	void ClientShowDamageWidget(const FDamageDisplayParams& DamageDisplayParams);
 };

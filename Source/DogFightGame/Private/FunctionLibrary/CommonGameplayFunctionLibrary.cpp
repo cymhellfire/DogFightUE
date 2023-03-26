@@ -97,6 +97,18 @@ void UCommonGameplayFunctionLibrary::RemoveWidgetPlayerId(FString WidgetName, in
 		}, InPlayerId);
 }
 
+void UCommonGameplayFunctionLibrary::CreateDamageDisplayByPlayerId(const FDamageDisplayParams& DisplayParams,
+	int32 InPlayerId)
+{
+	ForEachPlayerControllerDo([&DisplayParams](ATopDownStylePlayerController* InPC)
+	{
+		if (auto Manipulator = InPC->GetInGameWidgetManipulatorComponent())
+		{
+			Manipulator->ClientShowDamageWidget(DisplayParams);
+		}
+	}, InPlayerId);
+}
+
 int32 UCommonGameplayFunctionLibrary::GetAlivePlayerNum()
 {
 	int32 Result = 0;

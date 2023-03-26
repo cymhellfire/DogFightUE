@@ -8,6 +8,15 @@ local GameServiceBase = Class()
 function GameServiceBase:StartupScript(ServiceName)
     print("ServiceStart: " .. ServiceName)
 
+    -- Load config if exists
+    local ConfigPath = nil
+    if self.GetConfigPath then
+        ConfigPath = self:GetConfigPath()
+        if ConfigPath then
+            self:LoadConfig(ConfigPath)
+        end
+    end
+
     -- Register this service name to global scope
     if _G.GameServiceNameDef == nil then
         ---@type table Contains names of all game services alive.
@@ -21,15 +30,6 @@ function GameServiceBase:StartupScript(ServiceName)
     end
 
     _G.GameServiceNameDef[ServiceName] = ServiceName
-
-    -- Load config if exists
-    local ConfigPath = nil
-    if self.GetConfigPath then
-        ConfigPath = self:GetConfigPath()
-        if ConfigPath then
-            self:LoadConfig(ConfigPath)
-        end
-    end
 end
 
 function GameServiceBase:ShutdownScript(ServiceName)

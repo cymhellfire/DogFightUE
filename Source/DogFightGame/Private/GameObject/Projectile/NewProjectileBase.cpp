@@ -79,14 +79,9 @@ void ANewProjectileBase::Dead()
 	// Use warhead
 	if (WarheadData.GameEffectId >= 0)
 	{
-		if (auto GameInstance = Cast<UDogFightGameInstance>(GetGameInstance()))
-		{
-			if (auto GameEffectService = Cast<UGameEffectService>(GameInstance->GetGameServiceBySuperClass(UGameEffectService::StaticClass())))
-			{
-				GameEffectService->SpawnEffectAtPos(WarheadData.GameEffectId, GetActorLocation(),
-					WarheadData.bUseProjectileRotation ? GetActorRotation() : FRotator::ZeroRotator);
-			}
-		}
+		// Spawn vfx
+		UCommonGameplayFunctionLibrary::SpawnGameEffectAtPos(WarheadData.GameEffectId, GetActorLocation(),
+			WarheadData.bUseProjectileRotation ? GetActorRotation() : FRotator::ZeroRotator);
 
 		if (auto DamageService = UGameService::GetGameService<UDamageService>())
 		{

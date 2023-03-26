@@ -30,4 +30,7 @@ protected:
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="ExtendedDamageInstance")
 	TSubclassOf<UExtendedDamageType> DamageType;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="ExtendedDamageInstance")
+	int32 Id;
 };

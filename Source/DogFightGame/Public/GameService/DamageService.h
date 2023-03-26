@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Common/DamageDisplayParams.h"
 #include "DamageType/ExtendedDamageEvent.h"
 #include "GameService/LuaGameService.h"
 #include "Interface/ActorPoolInterface/ActorPoolInterface.h"
@@ -39,12 +40,20 @@ public:
 	void ApplyDamageToActor(int32 DamageId, AActor* Target, float BaseDamage, AActor* Causer, UDamageCalculatorBase* InCalculator);
 
 	/**
-	 * Create a damage display actor with given data.
-	 * @param DamageInstance		Damage instance of this event.
-	 * @param DamageEvent			Damage event data.
+	 * Create a damage display parameter set based on given damage instance and event.
+	 * @param DamageInstance	Damage instance.
+	 * @param DamageEvent		Damage event.
+	 * @return New damage display parameter set.
 	 */
 	UFUNCTION(BlueprintCallable, Category="DamageService")
-	void CreateDamageDisplay(UExtendedDamageInstance* DamageInstance, const FExtendedDamageEvent& DamageEvent);
+	FDamageDisplayParams GetDamageDisplayParameters(UExtendedDamageInstance* DamageInstance, const FExtendedDamageEvent& DamageEvent);
+
+	/**
+	 * Create a damage display actor with given data.
+	 * @param DisplayParams		Damage display parameter set.
+	 */
+	UFUNCTION(BlueprintCallable, Category="DamageService")
+	void CreateDamageDisplay(const FDamageDisplayParams& DisplayParams);
 
 	virtual FString GetModuleName_Implementation() const override
 	{

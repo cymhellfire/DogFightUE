@@ -12,7 +12,7 @@ class DOGFIGHTGAME_API UDamageDisplayWidget : public ULuaUserWidget
 
 public:
 	UFUNCTION(BlueprintImplementableEvent, Category="DamageDisplay")
-	void AddDamageItem(UExtendedDamageInstance* DamageInstance, float Value);
+	void AddDamageItem(const FDamageDisplayParams& DisplayParams);
 
 	UFUNCTION(BlueprintImplementableEvent, Category="DamageDisplay")
 	void OnOwnerActivated();
