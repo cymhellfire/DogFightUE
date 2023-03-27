@@ -35,6 +35,13 @@ public:
 	void SetProjectileScriptModule(const FString& Path);
 
 	/**
+	 * Set the actor who instigate this launch.
+	 * @param InLauncher	Instigator.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Projectile")
+	void SetLauncher(AActor* InLauncher);
+
+	/**
 	 * Launch this projectile toward target location with given muzzle velocity.
 	 * The muzzle velocity might be not point to target.
 	 * @param Target			Target location.
@@ -116,4 +123,7 @@ protected:
 
 	/** The actor this projectile hit. */
 	TWeakObjectPtr<AActor> HitActor;
+
+	/** The launcher actor this time. */
+	TWeakObjectPtr<AActor> Launcher;
 };

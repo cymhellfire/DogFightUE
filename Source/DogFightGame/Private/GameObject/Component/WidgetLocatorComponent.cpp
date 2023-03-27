@@ -22,7 +22,7 @@ void UWidgetLocatorComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	UpdateWidgetPos();
 }
 
-void UWidgetLocatorComponent::SetDamageWidget(UDamageDisplayWidget* InWidget)
+void UWidgetLocatorComponent::SetWidget(UUserWidget* InWidget)
 {
 	if (IsValid(InWidget))
 	{
@@ -41,6 +41,8 @@ void UWidgetLocatorComponent::UpdateWidgetPos()
 	FVector2D ScreenPos;
 	if (UGameplayStatics::ProjectWorldToScreen(GEngine->GetFirstLocalPlayerController(GetWorld()), WorldPos, ScreenPos))
 	{
+		// Apply offset
+		ScreenPos += WidgetOffset;
 		float Scale = UWidgetLayoutLibrary::GetViewportScale(this);
 		if (auto Slot = UWidgetLayoutLibrary::SlotAsCanvasSlot(DisplayWidget.Get()))
 		{

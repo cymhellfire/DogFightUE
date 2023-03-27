@@ -54,6 +54,7 @@ public:
 		return InGameWidgetManipulatorComponent;
 	}
 
+	UFUNCTION(BlueprintCallable, Category="TopDownStylePlayerController")
 	AFreeForAllPlayerCharacter* GetCharacterPawn() const
 	{
 		return CharacterPawn;

@@ -20,7 +20,7 @@ void ADamageDisplayActor::SetWidget(UDamageDisplayWidget* InWidget)
 	}
 
 	DamageDisplayWidget = InWidget;
-	LocatorComponent->SetDamageWidget(InWidget);
+	LocatorComponent->SetWidget(InWidget);
 }
 
 void ADamageDisplayActor::SetDamageInfo(const FDamageDisplayParams& DisplayParams)

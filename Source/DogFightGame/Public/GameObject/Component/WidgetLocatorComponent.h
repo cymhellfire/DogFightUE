@@ -17,11 +17,15 @@ public:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void SetDamageWidget(UDamageDisplayWidget* InWidget);
+	void SetWidget(UUserWidget* InWidget);
 
 protected:
 	void UpdateWidgetPos();
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="WidgetLocatorComponent")
+	FVector2D WidgetOffset;
+
 protected:
-	TWeakObjectPtr<UDamageDisplayWidget> DisplayWidget;
+	TWeakObjectPtr<UUserWidget> DisplayWidget;
 };

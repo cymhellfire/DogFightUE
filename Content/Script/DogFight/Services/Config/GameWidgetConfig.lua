@@ -11,6 +11,9 @@ local GameWidgetConfig = {
     [WidgetNameDef.WidgetDamageDisplay] = {
         Path = "/Game/DogFightGame/UI/InGame/DamageDisplay/BP_Widget_DamageDisplayCanvas",
     },
+    [WidgetNameDef.WidgetCharacterState] = {
+        Path = "/Game/DogFightGame/UI/InGame/PlayerCharacterState/BP_Widget_PlayerCharacterStateCanvas",
+    },
 }
 
 return GameWidgetConfig

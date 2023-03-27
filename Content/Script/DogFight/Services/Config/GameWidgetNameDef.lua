@@ -3,6 +3,7 @@ local GameWidgetNameDef = {
     WidgetCardList = "WidgetCardList",
     WidgetTimeline = "WidgetTimeline",
     WidgetDamageDisplay = "WidgetDamageDisplay",
+    WidgetCharacterState = "WidgetCharacterState",
 }
 
 return GameWidgetNameDef

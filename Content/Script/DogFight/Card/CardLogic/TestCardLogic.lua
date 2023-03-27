@@ -50,7 +50,7 @@ end
 ---@param InCommand ActionLaunchProjectile
 function TestCardLogic:OnFireProjectileCreated(InCommand)
     local ProjectileInfo = {
-        Name = ProjectileNameDef.DefaultProjectile,
+        Name = ProjectileNameDef.HomingProjectile,
         MuzzleSpeed = 500,
     }
     InCommand:SetCommandInfo(ProjectileInfo, self._TargetInfo)

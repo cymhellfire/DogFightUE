@@ -36,6 +36,7 @@ function DamageDisplayUnit:AddDamageItem(DisplayParam)
 
     self.ViewModel.DamageValueText = DisplayParam.DamageValue
     if DamageStyle then
+        -- Set the damage color
         local Color = DamageStyle.Color
         if Color then
             self.ViewModel.DamageColor = UE.UCommonWidgetFunctionLibrary.MakeSlateColor(Color[1], Color[2], Color[3], 1)

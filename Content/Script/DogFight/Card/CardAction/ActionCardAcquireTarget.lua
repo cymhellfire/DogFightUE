@@ -1,5 +1,6 @@
 local CardActionCommand = require "Card.CardCommand.CardActionCommand"
 local CardTargetHelper = require "Card.CardTarget.CardTargetHelper"
+local CardCommandHelper = require "Card.CardCommand.CardCommandHelper"
 
 ---@field _DelegateHelper DelegateHelper Helper to receive the target acqurie notify.
 ---@class ActionCardAcquireTarget : CardActionCommand Action to select target for card.
@@ -8,16 +9,8 @@ local ActionCardAcquireTarget = Class(CardActionCommand)
 function ActionCardAcquireTarget:StartCommand()
     CardActionCommand.StartCommand(self)
 
-    local PlayerId = -1
-    if self._CardLogic then
-        local OwnerCard = self._CardLogic:GetOwnerCard()
-        if OwnerCard then
-            PlayerId = OwnerCard:GetOwnerPlayerId()
-        end
-    end
-
     ---@type ATopDownStylePlayerController
-    local PlayerController = PlayerId ~= -1 and UE.UCommonGameplayFunctionLibrary.GetPlayerControllerById(PlayerId) or nil
+    local PlayerController = CardCommandHelper.GetOwnerPlayerController(self)
     if PlayerController then  
         ---@type DelegateHelperService
         local DelegateHelperService = GetGameService(GameServiceNameDef.DelegateHelperService)

@@ -1,6 +1,7 @@
 local CardActionCommand = require "Card.CardCommand.CardActionCommand"
 local ProjectileNameDef = require "DogFight.Services.ProjectileService.ProjectileNameDef"
 local CardTargetHelper = require "Card.CardTarget.CardTargetHelper"
+local CardCommandHelper = require "Card.CardCommand.CardCommandHelper"
 
 ---@field _ProjectileName string Name of projectile to launch.
 ---@field _MuzzleSpeed number Initial speed of projectile.
@@ -80,6 +81,18 @@ function ActionLaunchProjectile:StartCommand()
         return
     end
 
+    --- Get projectile spawn location from character
+    local Launcher
+    local SpawnLoc
+    ---@type ATopDownStylePlayerController
+    local PlayerController = CardCommandHelper.GetOwnerPlayerController(self)
+    if PlayerController then
+        Launcher = PlayerController:GetCharacterPawn()
+        if Launcher then
+            SpawnLoc = Launcher:GetProjectileSpawnLocation()
+        end
+    end
+
     ---Iterate through the target list
     for _, v in ipairs(self._TargetList) do
         local TargetPos = CardTargetHelper.TargetInfoToPosition(v)
@@ -88,8 +101,9 @@ function ActionLaunchProjectile:StartCommand()
             ---@type ProjectileService
             local ProjectileService = GetGameService(GameServiceNameDef.ProjectileService)
             if ProjectileService then
-                local NewProjectile = ProjectileService:SpawnProjectileByName(self._ProjectileName)
+                local NewProjectile = ProjectileService:SpawnProjectileByName(self._ProjectileName, SpawnLoc)
                 if NewProjectile then
+                    NewProjectile:SetLauncher(Launcher)
                     self._AliveProjectileCount = self._AliveProjectileCount + 1
                     RegisterCallbackToProjectile(self, NewProjectile)
                     NewProjectile:LaunchToTargetWithSpeed(TargetPos, self._MuzzleSpeed)

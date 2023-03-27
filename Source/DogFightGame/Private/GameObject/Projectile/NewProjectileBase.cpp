@@ -38,6 +38,12 @@ void ANewProjectileBase::Reset()
 
 	// Clear the hit actor
 	HitActor.Reset();
+
+	// Remove the ignore launcher
+	if (Launcher.IsValid())
+	{
+		CollisionComponent->IgnoreActorWhenMoving(Launcher.Get(), false);
+	}
 }
 
 void ANewProjectileBase::LifeSpanExpired()
@@ -132,6 +138,14 @@ void ANewProjectileBase::OnProjectileStopped(const FHitResult& ImpactResult)
 	{
 		Dead();
 	}
+}
+
+void ANewProjectileBase::SetLauncher(AActor* InLauncher)
+{
+	Launcher = InLauncher;
+
+	// Record the launcher as un-hittable
+	CollisionComponent->IgnoreActorWhenMoving(InLauncher, true);
 }
 
 void ANewProjectileBase::LaunchToTargetWithVelocity_Implementation(const FVector& Target, const FVector& MuzzleVelocity)

@@ -2,11 +2,11 @@
 local $Class$ = Class("Common.MVVM.ModelBase")
 local ViewModelBase = require("Common.MVVM.ViewModelBase")
 local DataBinding = require("Common.MVVM.DataBinding")
-local $Class$VM = require("$Path$.$ClassPure$VM")
+local $ClassPure$VM = require("$Path$.$ClassPure$VM")
 --local ListWrapper = require("Common.ListView.ListViewWrapper")
 
 function $Class$:Initialize()
-    local NewVM = InstantiateViewModel($Class$VM)
+    local NewVM = InstantiateViewModel($ClassPure$VM)
     self:BindViewModel(NewVM, {
         --{BindKey = "TitleMessage",   UIKey = "TitleMessage_Text",   DataBinding = DataBinding.TextContextBinding(), }
     })
