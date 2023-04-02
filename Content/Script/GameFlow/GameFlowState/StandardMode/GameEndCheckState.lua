@@ -32,7 +32,7 @@ end
 ---Check if this game should end.
 ---@return boolean Should the game end?
 function GameEndCheckState:CheckShouldGameEnd()
-    return UE.UCommonGameplayFunctionLibrary.GetAlivePlayerNum() == 0
+    return UE.UCommonGameplayFunctionLibrary.GetAlivePlayerNum() >= 1
 end
 
 return GameEndCheckState

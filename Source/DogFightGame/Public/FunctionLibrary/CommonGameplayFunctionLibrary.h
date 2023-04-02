@@ -101,6 +101,13 @@ public:
 	static int32 GetAlivePlayerNum();
 
 	/**
+	 * Get the id list of alive players.
+	 * @return			Id list of alive player.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
+	static TArray<int32> GetAlivePlayerId();
+
+	/**
 	 * Spawn game effect with given id at specified location on every connected client.
 	 * @param EffectId			Id of game effect to spawn.
 	 * @param Pos				Spawn position.

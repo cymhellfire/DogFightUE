@@ -6,7 +6,7 @@
 #include "Player/DogFightPlayerController.h"
 #include "TopDownStylePlayerController.generated.h"
 
-class AFreeForAllPlayerCharacter;
+class ATopDownStylePlayerCharacter;
 class UInGameMessageReceiverComponent;
 class UInGameWidgetManipulatorComponent;
 class UCardTargetProviderComponent;
@@ -55,7 +55,7 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable, Category="TopDownStylePlayerController")
-	AFreeForAllPlayerCharacter* GetCharacterPawn() const
+	ATopDownStylePlayerCharacter* GetCharacterPawn() const
 	{
 		return CharacterPawn;
 	}
@@ -93,10 +93,10 @@ protected:
 	UCardTargetProviderComponent* CardTargetProviderComponent;
 
 	UPROPERTY(Replicated, Transient)
-	AFreeForAllPlayerCharacter* CharacterPawn;
+	ATopDownStylePlayerCharacter* CharacterPawn;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="PlayerController")
-	TSubclassOf<AFreeForAllPlayerCharacter> CharacterClass;
+	TSubclassOf<ATopDownStylePlayerCharacter> CharacterClass;
 
 public:
 	UPROPERTY(BlueprintAssignable, Category="TopDownStylePlayerController")

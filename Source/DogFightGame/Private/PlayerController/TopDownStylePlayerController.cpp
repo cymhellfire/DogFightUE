@@ -6,7 +6,7 @@
 #include "GameService/GameInputService.h"
 #include "GameService/GameService.h"
 #include "Net/UnrealNetwork.h"
-#include "Pawn/PlayerCharacter/FreeForAllPlayerCharacter.h"
+#include "Pawn/PlayerCharacter/TopDownStylePlayerCharacter.h"
 #include "Player/TopDownStylePlayerState.h"
 #include "Player/ControllerComponent/CardTargetProviderComponent.h"
 #include "PlayerController/PlayerControllerComponent/InGameMessageReceiverComponent.h"
@@ -84,8 +84,14 @@ void ATopDownStylePlayerController::SpawnCharacterPawn()
 			FActorSpawnParameters SpawnParameters;
 			SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-			CharacterPawn = GetWorld()->SpawnActor<AFreeForAllPlayerCharacter>(CharacterClass, FVector::ZeroVector,
+			CharacterPawn = GetWorld()->SpawnActor<ATopDownStylePlayerCharacter>(CharacterClass, FVector::ZeroVector,
 				FRotator::ZeroRotator, SpawnParameters);
+
+			// Establish dependency on character
+			if (auto MyPlayerState = GetPlayerState<ATopDownStylePlayerState>())
+			{
+				MyPlayerState->InitWithCharacter(CharacterPawn);
+			}
 		}
 	}
 }

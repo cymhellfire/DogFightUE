@@ -1,9 +1,9 @@
-#include "Pawn/PlayerCharacter/FreeForAllPlayerCharacter.h"
+#include "Pawn/PlayerCharacter/TopDownStylePlayerCharacter.h"
 
 #include "Pawn/PlayerCharacter/RagdollComponent.h"
 #include "UI/InGame/PlayerCharacterStateWidget.h"
 
-AFreeForAllPlayerCharacter::AFreeForAllPlayerCharacter()
+ATopDownStylePlayerCharacter::ATopDownStylePlayerCharacter()
 {
 	// Create components
 	DamageReceiverComponent = CreateDefaultSubobject<UDamageReceiverComponent>("DamageReceiverComponent");
@@ -14,38 +14,38 @@ AFreeForAllPlayerCharacter::AFreeForAllPlayerCharacter()
 	bAlive = true;
 }
 
-void AFreeForAllPlayerCharacter::BeginPlay()
+void ATopDownStylePlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
 	InitializeStateWidget();
 
-	DamageReceiverComponent->OnHealthChanged.AddDynamic(this, &AFreeForAllPlayerCharacter::OnHealthChanged);
-	DamageReceiverComponent->OnNoHealth.AddDynamic(this, &AFreeForAllPlayerCharacter::OnNoHealth);
+	DamageReceiverComponent->OnHealthChanged.AddDynamic(this, &ATopDownStylePlayerCharacter::OnHealthChanged);
+	DamageReceiverComponent->OnNoHealth.AddDynamic(this, &ATopDownStylePlayerCharacter::OnNoHealth);
 }
 
-void AFreeForAllPlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void ATopDownStylePlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
 	DeinitializeStateWidget();
 
-	DamageReceiverComponent->OnHealthChanged.RemoveDynamic(this, &AFreeForAllPlayerCharacter::OnHealthChanged);
-	DamageReceiverComponent->OnNoHealth.RemoveDynamic(this, &AFreeForAllPlayerCharacter::OnNoHealth);
+	DamageReceiverComponent->OnHealthChanged.RemoveDynamic(this, &ATopDownStylePlayerCharacter::OnHealthChanged);
+	DamageReceiverComponent->OnNoHealth.RemoveDynamic(this, &ATopDownStylePlayerCharacter::OnNoHealth);
 }
 
-FVector AFreeForAllPlayerCharacter::GetProjectileSpawnLocation() const
+FVector ATopDownStylePlayerCharacter::GetProjectileSpawnLocation() const
 {
 	auto Offset = GetTransform().TransformVector(ProjectileSpawnOffset);
 	return GetActorLocation() + Offset;
 }
 
-void AFreeForAllPlayerCharacter::SetRagdollEnabled(bool bEnable)
+void ATopDownStylePlayerCharacter::SetRagdollEnabled(bool bEnable)
 {
 	RagdollComponent->ServerSetRagdollActive(bEnable);
 }
 
-void AFreeForAllPlayerCharacter::InitializeStateWidget()
+void ATopDownStylePlayerCharacter::InitializeStateWidget()
 {
 	if (StateWidgetClass.IsNull())
 	{
@@ -66,7 +66,7 @@ void AFreeForAllPlayerCharacter::InitializeStateWidget()
 	}
 }
 
-void AFreeForAllPlayerCharacter::DeinitializeStateWidget()
+void ATopDownStylePlayerCharacter::DeinitializeStateWidget()
 {
 	if (IsValid(StateWidget))
 	{
@@ -75,7 +75,7 @@ void AFreeForAllPlayerCharacter::DeinitializeStateWidget()
 	}
 }
 
-void AFreeForAllPlayerCharacter::Dead()
+void ATopDownStylePlayerCharacter::Dead()
 {
 	if (!bAlive)
 	{
@@ -87,9 +87,12 @@ void AFreeForAllPlayerCharacter::Dead()
 
 	// Enable ragdoll when dead
 	RagdollComponent->ServerSetRagdollActive(true);
+
+	// Trigger delegate
+	OnCharacterDead.Broadcast(this);
 }
 
-void AFreeForAllPlayerCharacter::OnHealthChanged(float CurHealth, float MaxHealth)
+void ATopDownStylePlayerCharacter::OnHealthChanged(float CurHealth, float MaxHealth)
 {
 	if (IsValid(StateWidget))
 	{
@@ -97,7 +100,7 @@ void AFreeForAllPlayerCharacter::OnHealthChanged(float CurHealth, float MaxHealt
 	}
 }
 
-void AFreeForAllPlayerCharacter::OnNoHealth()
+void ATopDownStylePlayerCharacter::OnNoHealth()
 {
 	if (!HasAuthority())
 	{

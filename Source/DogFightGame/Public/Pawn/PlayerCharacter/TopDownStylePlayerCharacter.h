@@ -4,17 +4,20 @@
 #include "GameFramework/Character.h"
 #include "GameObject/Component/WidgetLocatorComponent.h"
 #include "Interface/DamageReceiverActorInterface.h"
-#include "FreeForAllPlayerCharacter.generated.h"
+#include "TopDownStylePlayerCharacter.generated.h"
 
+class ATopDownStylePlayerCharacter;
 class UPlayerCharacterStateWidget;
 class URagdollComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTopDownStylePlayerCharacterDeadEvent, ATopDownStylePlayerCharacter*, Character);
+
 UCLASS()
-class DOGFIGHTGAME_API AFreeForAllPlayerCharacter : public ACharacter, public IDamageReceiverActorInterface
+class DOGFIGHTGAME_API ATopDownStylePlayerCharacter : public ACharacter, public IDamageReceiverActorInterface
 {
 	GENERATED_BODY()
 public:
-	AFreeForAllPlayerCharacter();
+	ATopDownStylePlayerCharacter();
 
 	virtual void BeginPlay() override;
 
@@ -50,6 +53,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSoftClassPtr<UPlayerCharacterStateWidget> StateWidgetClass;
+
+	UPROPERTY(BlueprintAssignable, Category="TopDownStylePlayerCharacter")
+	FTopDownStylePlayerCharacterDeadEvent OnCharacterDead;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)

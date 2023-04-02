@@ -114,9 +114,23 @@ int32 UCommonGameplayFunctionLibrary::GetAlivePlayerNum()
 	int32 Result = 0;
 	ForEachPlayerStateDo([&Result](ATopDownStylePlayerState* PS)
 	{
-		if (PS->CurrentState == ETopDownStylePlayerState::PS_Alive)
+		if (PS->IsAlive())
 		{
 			Result++;
+		}
+	});
+
+	return Result;
+}
+
+TArray<int32> UCommonGameplayFunctionLibrary::GetAlivePlayerId()
+{
+	TArray<int32> Result;
+	ForEachPlayerStateDo([&Result](ATopDownStylePlayerState* PS)
+	{
+		if (PS->IsAlive())
+		{
+			Result.Add(PS->GetPlayerId());
 		}
 	});
 
