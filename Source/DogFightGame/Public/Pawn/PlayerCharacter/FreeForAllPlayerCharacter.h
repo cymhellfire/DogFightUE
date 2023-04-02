@@ -7,6 +7,7 @@
 #include "FreeForAllPlayerCharacter.generated.h"
 
 class UPlayerCharacterStateWidget;
+class URagdollComponent;
 
 UCLASS()
 class DOGFIGHTGAME_API AFreeForAllPlayerCharacter : public ACharacter, public IDamageReceiverActorInterface
@@ -21,6 +22,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	FVector GetProjectileSpawnLocation() const;
+
+	UFUNCTION(BlueprintCallable)
+	void SetRagdollEnabled(bool bEnable);
 
 	// DamageReceiverActorInterface
 	virtual UDamageReceiverComponent* GetDamageReceiverComponent() override
@@ -48,6 +52,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UWidgetLocatorComponent* StateWidgetLocatorComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	URagdollComponent* RagdollComponent;
 
 	UPROPERTY(Transient)
 	UPlayerCharacterStateWidget* StateWidget;

@@ -1,4 +1,6 @@
 #include "Pawn/PlayerCharacter/FreeForAllPlayerCharacter.h"
+
+#include "Pawn/PlayerCharacter/RagdollComponent.h"
 #include "UI/InGame/PlayerCharacterStateWidget.h"
 
 AFreeForAllPlayerCharacter::AFreeForAllPlayerCharacter()
@@ -6,6 +8,7 @@ AFreeForAllPlayerCharacter::AFreeForAllPlayerCharacter()
 	// Create components
 	DamageReceiverComponent = CreateDefaultSubobject<UDamageReceiverComponent>("DamageReceiverComponent");
 	StateWidgetLocatorComponent = CreateDefaultSubobject<UWidgetLocatorComponent>("StateWidgetLocatorComponent");
+	RagdollComponent = CreateDefaultSubobject<URagdollComponent>("RagdollComponent");
 }
 
 void AFreeForAllPlayerCharacter::BeginPlay()
@@ -30,6 +33,11 @@ FVector AFreeForAllPlayerCharacter::GetProjectileSpawnLocation() const
 {
 	auto Offset = GetTransform().TransformVector(ProjectileSpawnOffset);
 	return GetActorLocation() + Offset;
+}
+
+void AFreeForAllPlayerCharacter::SetRagdollEnabled(bool bEnable)
+{
+	RagdollComponent->SetRagdollActive(bEnable);
 }
 
 void AFreeForAllPlayerCharacter::InitializeStateWidget()
