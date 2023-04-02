@@ -1,8 +1,9 @@
 #include "GameObject/Projectile/NewProjectileBase.h"
 #include "Components/SphereComponent.h"
+#include "FunctionLibrary/CommonGameplayFunctionLibrary.h"
 #include "GameInstance/DogFightGameInstance.h"
 #include "GameObject/Projectile/ExtendProjectileMovementComponent.h"
-#include "GameObject/Warhead/WarheadBase.h"
+#include "GameService/DamageService.h"
 #include "GameService/GameEffectService.h"
 
 ANewProjectileBase::ANewProjectileBase(const FObjectInitializer& ObjectInitializer)
@@ -10,6 +11,7 @@ ANewProjectileBase::ANewProjectileBase(const FObjectInitializer& ObjectInitializ
 {
 	// Turn on replication
 	bReplicates = true;
+	SetReplicatingMovement(true);
 
 	// Create collision component
 	CollisionComponent = CreateDefaultSubobject<USphereComponent>("Root");
@@ -34,12 +36,20 @@ void ANewProjectileBase::Reset()
 {
 	Super::Reset();
 
+	// Clear the hit actor
+	HitActor.Reset();
+
+	// Remove the ignore launcher
+	if (Launcher.IsValid())
+	{
+		CollisionComponent->IgnoreActorWhenMoving(Launcher.Get(), false);
+	}
 }
 
 void ANewProjectileBase::LifeSpanExpired()
 {
-	// Invoke dead here and let actor pool handle this projectile
-	Dead();
+	// Invoke StopSimulating here and let actor pool handle this projectile
+	MovementComponent->StopSimulating(FHitResult());
 }
 
 void ANewProjectileBase::OnActivated()
@@ -73,17 +83,24 @@ void ANewProjectileBase::Dead()
 	}
 
 	// Use warhead
-	if (!Warhead.IsNull())
+	if (WarheadData.GameEffectId >= 0)
 	{
-		auto WarheadPtr = Warhead.IsValid() ? Warhead.Get() : Warhead.LoadSynchronous();
-		if (WarheadPtr)
+		// Spawn vfx
+		UCommonGameplayFunctionLibrary::SpawnGameEffectAtPos(WarheadData.GameEffectId, GetActorLocation(),
+			WarheadData.bUseProjectileRotation ? GetActorRotation() : FRotator::ZeroRotator);
+
+		if (auto DamageService = UGameService::GetGameService<UDamageService>())
 		{
-			if (auto GameInstance = Cast<UDogFightGameInstance>(GetGameInstance()))
+			if (WarheadData.DamageRadius > 0.f)
 			{
-				if (auto GameEffectService = Cast<UGameEffectService>(GameInstance->GetGameServiceBySuperClass(UGameEffectService::StaticClass())))
+				
+			}
+			else
+			{
+				// Damage the hit target if no radius
+				if (HitActor.IsValid())
 				{
-					GameEffectService->SpawnEffectAtPos(WarheadPtr->GameEffectId, GetActorLocation(),
-						WarheadPtr->bUseProjectileRotation ? GetActorRotation() : FRotator::ZeroRotator);
+					UCommonGameplayFunctionLibrary::DamageActor(WarheadData.DamageId, HitActor.Get(), Damage, this);
 				}
 			}
 		}
@@ -111,10 +128,24 @@ void ANewProjectileBase::LaunchWithVelocity(const FVector& MuzzleVelocity)
 
 void ANewProjectileBase::OnProjectileStopped(const FHitResult& ImpactResult)
 {
+	// Record the hit target
+	if (ImpactResult.bBlockingHit)
+	{
+		HitActor = ImpactResult.GetActor();
+	}
+
 	if (bDeadWhenStop)
 	{
 		Dead();
 	}
+}
+
+void ANewProjectileBase::SetLauncher(AActor* InLauncher)
+{
+	Launcher = InLauncher;
+
+	// Record the launcher as un-hittable
+	CollisionComponent->IgnoreActorWhenMoving(InLauncher, true);
 }
 
 void ANewProjectileBase::LaunchToTargetWithVelocity_Implementation(const FVector& Target, const FVector& MuzzleVelocity)

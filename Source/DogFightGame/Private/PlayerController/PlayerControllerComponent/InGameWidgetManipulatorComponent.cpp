@@ -1,5 +1,6 @@
 ﻿#include "PlayerController/PlayerControllerComponent/InGameWidgetManipulatorComponent.h"
 
+#include "GameService/DamageService.h"
 #include "GameService/GameService.h"
 #include "GameService/GameWidgetService.h"
 
@@ -38,5 +39,14 @@ void UInGameWidgetManipulatorComponent::ClientHideInGameWidget_Implementation(co
 	if (auto WidgetService = UGameService::GetGameService<UGameWidgetService>())
 	{
 		WidgetService->HideWidget(InWidgetName);
+	}
+}
+
+void UInGameWidgetManipulatorComponent::ClientShowDamageWidget_Implementation(const FDamageDisplayParams& DamageDisplayParams)
+{
+	// Create damage display locally
+	if (auto DamageService = UGameService::GetGameService<UDamageService>())
+	{
+		DamageService->CreateDamageDisplay(DamageDisplayParams);
 	}
 }

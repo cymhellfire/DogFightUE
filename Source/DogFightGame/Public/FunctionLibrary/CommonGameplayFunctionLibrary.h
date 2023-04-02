@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CommonFunctionLibraryBase.h"
+#include "Common/DamageDisplayParams.h"
 #include "CommonGameplayFunctionLibrary.generated.h"
 
 class UCard;
@@ -85,6 +86,14 @@ public:
 	static void RemoveWidgetPlayerId(FString WidgetName, int32 InPlayerId);
 
 	/**
+	 * Create damage display item to player with given id.
+	 * @param DisplayParams		Display parameter set.
+	 * @param InPlayerId		Id of player to show.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay|UI")
+	static void CreateDamageDisplayByPlayerId(const FDamageDisplayParams& DisplayParams, int32 InPlayerId);
+
+	/**
 	 * Get the total count of alive player in current game.
 	 * @return			Number of players are still alive.
 	 */
@@ -99,6 +108,9 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameplay|Effect")
 	static void SpawnGameEffectAtPos(int32 EffectId, FVector Pos, FRotator Rot);
+
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
+	static void DamageActor(int32 DamageId, AActor* Target, float BaseDamage, AActor* Causer);
 protected:
 	/**
 	 * Do specified function on every player state in current game meet the id mask.

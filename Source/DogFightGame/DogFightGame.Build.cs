@@ -15,6 +15,7 @@ public class DogFightGame : ModuleRules
                 "ProjectFramework",
                 "CardSystem",
                 "UnLua",
+                "DamageSystem",
             }
         );
 
@@ -31,6 +32,7 @@ public class DogFightGame : ModuleRules
                 "Niagara",
                 "LevelSequence",
                 "MovieScene",
+                "UMG",
             }
         );
         

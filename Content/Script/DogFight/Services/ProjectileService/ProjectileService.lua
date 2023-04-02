@@ -1,24 +1,24 @@
 require "UnLua"
 
----@class ProjectileService : UProjectileService Service that handle in-game projectiles operations.
+---@class ProjectileService : GameServiceBase, UProjectileService Service that handle in-game projectiles operations.
 local ProjectileService = Class("DogFight.Services.GameServiceBase")
-local ProjectileConfig = require("DogFight.Services.ProjectileService.ProjectileConfig")
 
-function ProjectileService:GatherProjectileConfigData()
-    local Result = UE.TArray(UE.FProjectileConfigData)
-    for k, v in pairs(ProjectileConfig.Data) do
-        local NewConfig = UE.FProjectileConfigData()
-        NewConfig.ProjectileId = v.Id
-        NewConfig.ResourcePath = v.ResPath
-        NewConfig.ScriptPath = v.ScriptPath
-
-        Result:Add(NewConfig)
-    end
-    return Result
+function ProjectileService:GetConfigPath()
+    return "DogFight.Services.ProjectileService.ProjectileConfig"
 end
 
-function ProjectileService:GetDefineNameOfProjectile(Id)
-    return ProjectileConfig:ProjectileIdToName(Id)
+---Get description data of all projectile config.
+---@return table All description data of projectiles.
+function ProjectileService:GetAllProjectileUtilsDesc()
+    local Result = {}
+    for k, v in pairs(self.Config.Data) do
+        local NewDesc = {}
+        NewDesc.Id = v.Id
+        NewDesc.DisplayName = k
+
+        Result[#Result + 1] = NewDesc
+    end
+    return Result
 end
 
 ---Spawn projectile by name.
@@ -27,9 +27,42 @@ end
 ---@param InRot FRotator Initial rotation of new projectile.
 ---@return ProjectileBase New spawned projectile.
 function ProjectileService:SpawnProjectileByName(InName, InPos, InRot)
-    local ProjectileId = ProjectileConfig:ProjectileNameToId(InName)
+    local ProjectileId = self.Config:NameToId(InName)
     if ProjectileId then
         return self:SpawnProjectileAtPos(ProjectileId, InPos, InRot)
+    end
+end
+
+---Spawn new projectile instance of given config.
+---@param InId number Id of projectile config.
+---@return ANewProjectileBase New projectile instance.
+function ProjectileService:SpawnNewProjectileInstance_Implementation(InId)
+    local Config = self.Config:GetConfigById(InId)
+    if Config then
+        local CurWorld = GetCurrentWorld()
+        local ProjectileClass = LoadClass(Config.ResPath)
+        if ProjectileClass and CurWorld then
+            local SpawnTrans = UE.FTransform()
+            ---@type ANewProjectileBase
+            local NewProjectile = CurWorld:SpawnActorEx(ProjectileClass, SpawnTrans)
+
+            -- Setup the warhead information
+            if NewProjectile then
+                ---@type WarheadService
+                local WarheadService = GetGameService(GameServiceNameDef.WarheadService)
+                if WarheadService then
+                    WarheadService:SetWarheadInfoForProjectile(NewProjectile, Config.Warhead)
+                end
+
+                NewProjectile.Damage = Config.Damage
+            end
+
+            -- Setup the projectile logic script
+            if NewProjectile then
+                NewProjectile:SetProjectileScriptModule(Config.ScriptPath)
+            end
+            return NewProjectile
+        end
     end
 end
 

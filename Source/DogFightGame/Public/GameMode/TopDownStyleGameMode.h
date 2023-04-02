@@ -1,11 +1,13 @@
 #pragma once
 
+#include "DamageType/ExtendedDamageEvent.h"
 #include "GameMode/GameFlowBasedGameMode.h"
 #include "TopDownStyleGameMode.generated.h"
 
 class ATopDownStylePlayerController;
 class UInGameMessageSenderComponent;
 class UGameTimelineComponent;
+class UDamageCalculatorBase;
 
 UCLASS()
 class DOGFIGHTGAME_API ATopDownStyleGameMode : public AGameFlowBasedGameMode
@@ -41,9 +43,29 @@ public:
 	 */
 	void SetEnableCharacterMoveForAllPlayers(bool bEnable);
 
+	/**
+	 * Apply damage to target actor.
+	 * @param DamageId			Id of damage config.
+	 * @param Target			Target actor that damage apply to.
+	 * @param BaseDamage		Original damage value.
+	 * @param Causer			Causer of this damage.
+	 */
+	void DamageActor(int32 DamageId, AActor* Target, float BaseDamage, AActor* Causer);
+
+protected:
+	UFUNCTION()
+	void OnDamageEventOccured(class UExtendedDamageInstance* DamageInstance, const FExtendedDamageEvent& DamageEvent);
+
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="TopDownStyleGameMode")
+	FString DamageCalculatorPath;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="GameMode")
 	UInGameMessageSenderComponent* InGameMessageSenderComponent;
+
+	UPROPERTY(Transient)
+	UDamageCalculatorBase* DamageCalculator;
 
 	/* All player controllers in current game. */
 	TArray<TWeakObjectPtr<ATopDownStylePlayerController>> AllPlayerControllers;

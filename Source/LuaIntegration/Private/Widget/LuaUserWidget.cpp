@@ -4,7 +4,11 @@ void ULuaUserWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
-	PostInitialized();
+	if (!bInitialized)
+	{
+		bInitialized = true;
+		PostInitialized();
+	}
 }
 
 

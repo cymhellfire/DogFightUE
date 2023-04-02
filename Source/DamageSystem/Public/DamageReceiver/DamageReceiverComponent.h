@@ -5,11 +5,18 @@
 #include "UnrealIntegration/UObject/AttributeBasedComponent.h"
 #include "DamageReceiverComponent.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FDamageReceiverComponentTakeDamageSignature, UDamageReceiverComponent*,
+	UExtendedDamageInstance*, const FExtendedDamageEvent&);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDamageReceiverComponentHealthChangeSignature, float, CurHealth, float, MaxHealth);
+
 UCLASS()
 class DAMAGESYSTEM_API UDamageReceiverComponent : public UAttributeBasedComponent
 {
 	GENERATED_BODY()
 public:
+	UDamageReceiverComponent(const FObjectInitializer& ObjectInitializer);
+
 	virtual void InitializeAttributes() override;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -27,9 +34,9 @@ protected:
 	void OnRep_Health(int32 OldValue);
 
 public:
-	DECLARE_MULTICAST_DELEGATE_ThreeParams(FDamageReceiverComponentTakeDamageSignature, UDamageReceiverComponent*,
-		UExtendedDamageInstance*, const FExtendedDamageEvent&);
 	FDamageReceiverComponentTakeDamageSignature OnTakeDamage;
+
+	FDamageReceiverComponentHealthChangeSignature OnHealthChanged;
 
 protected:
 	UPROPERTY(Transient, ReplicatedUsing=OnRep_Health)

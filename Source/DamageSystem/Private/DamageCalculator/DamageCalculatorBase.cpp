@@ -6,12 +6,11 @@
 #include "Kismet/GameplayStatics.h"
 #include "DamageType/ExtendedDamageType.h"
 
-void UDamageCalculatorBase::ApplyDamage(AActor* DamagedActor, float BaseDamage, FName DamageTypeName, AActor* DamageCauser, AController* Instigator)
+void UDamageCalculatorBase::ApplyDamage(AActor* DamagedActor, float BaseDamage, UExtendedDamageInstance* DamageInstance,
+	AActor* DamageCauser, AController* Instigator)
 {
-	auto DamageInstance = GetDamageInstanceByName(DamageTypeName);
-	if (!DamageInstance)
+	if (!IsValid(DamageInstance))
 	{
-		UE_LOG(LogDamageSystem, Error, TEXT("[DamageCalculatorBase] Cannot find damage instance with name %s."), *DamageTypeName.ToString());
 		return;
 	}
 
@@ -40,27 +39,8 @@ void UDamageCalculatorBase::ApplyDamage(AActor* DamagedActor, float BaseDamage, 
 	if (DamageEvent.IsSet())
 	{
 		DamageInstance->PostApplyToComponent(DamageEvent.GetValue());
+
+		// Broadcast damage event
+		OnDamageEventOccured.Broadcast(DamageInstance, DamageEvent.GetValue());
 	}
-}
-
-void UDamageCalculatorBase::RegisterNewDamageInstance(FName InName,	UExtendedDamageInstance* NewInstance)
-{
-	if (DamageInstanceTable.Contains(InName))
-	{
-		UE_LOG(LogDamageSystem, Error, TEXT("[DamageCalculatorBase] Duplicated damage instance name detected: %"), *InName.ToString());
-		return;
-	}
-
-	DamageInstanceTable.Add(InName, NewInstance);
-}
-
-UExtendedDamageInstance* UDamageCalculatorBase::GetDamageInstanceByName(FName InName) const
-{
-	auto Result = DamageInstanceTable.Find(InName);
-	return Result ? *Result : nullptr;
-}
-
-TArray<FString> UDamageCalculatorBase::GetDamageInstanceList_Implementation()
-{
-	return TArray<FString>();
 }

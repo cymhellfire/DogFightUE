@@ -83,6 +83,12 @@ function table.dump(inTable)
     end
 
     for k, v in pairs(inTable) do
-        print(k .. ": " .. v)
+        if type(v) ~= "table" then
+            print(k .. ": " .. tostring(v))
+        else
+            print(k .. " ---start---")
+            table.dump(v)
+            print(k .. " ---end---")
+        end
     end
 end

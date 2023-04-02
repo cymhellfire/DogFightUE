@@ -1,27 +1,10 @@
 #pragma once
 
+#include "ExtendedDamageEvent.h"
 #include "ExtendedDamageInstance.generated.h"
 
 class UExtendedDamageType;
 class UDamageReceiverComponent;
-
-USTRUCT(BlueprintType)
-struct FExtendedDamageEvent
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="ExtendedDamageEvent")
-	float DamageValue;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="ExtendedDamageEvent")
-	UDamageReceiverComponent* ReceiverComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="ExtendedDamageEvent")
-	AActor* DamageCauser;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="ExtendedDamageEvent")
-	AController* Instigator;
-};
 
 UCLASS(Blueprintable)
 class DAMAGESYSTEM_API UExtendedDamageInstance : public UObject
@@ -47,4 +30,7 @@ protected:
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="ExtendedDamageInstance")
 	TSubclassOf<UExtendedDamageType> DamageType;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="ExtendedDamageInstance")
+	int32 Id;
 };

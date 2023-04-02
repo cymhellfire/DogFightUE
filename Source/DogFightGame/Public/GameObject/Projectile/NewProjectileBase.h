@@ -2,11 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "UnLuaInterface.h"
+#include "GameObject/Warhead/Warhead.h"
 #include "NewProjectileBase.generated.h"
 
 class USphereComponent;
 class UExtendProjectileMovementComponent;
-class UWarheadBase;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FProjectileDeadDelegate, class ANewProjectileBase*, Projectile);
 
@@ -33,6 +33,13 @@ public:
 	 */
 	UFUNCTION(BlueprintImplementableEvent, Category="Projectile")
 	void SetProjectileScriptModule(const FString& Path);
+
+	/**
+	 * Set the actor who instigate this launch.
+	 * @param InLauncher	Instigator.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Projectile")
+	void SetLauncher(AActor* InLauncher);
 
 	/**
 	 * Launch this projectile toward target location with given muzzle velocity.
@@ -87,11 +94,17 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
 	float Lifetime;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
-	TSoftObjectPtr<UWarheadBase> Warhead;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Projectile")
+	int32 WarheadId;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Projectile")
+	FWarhead WarheadData;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
 	bool bDeadWhenStop;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
+	float Damage;
 
 	UPROPERTY(BlueprintAssignable, Category="Projectile")
 	FProjectileDeadDelegate OnProjectileDead;
@@ -107,4 +120,10 @@ protected:
 	UExtendProjectileMovementComponent* MovementComponent;
 
 	uint8 bAlive : 1;
+
+	/** The actor this projectile hit. */
+	TWeakObjectPtr<AActor> HitActor;
+
+	/** The launcher actor this time. */
+	TWeakObjectPtr<AActor> Launcher;
 };

@@ -3,28 +3,54 @@
 #define LUA_SCRIPT_BASE_PATH		TEXT("Script/")
 #define LUA_TEMPLATE_BASE_PATH		TEXT("EditorResources/ScriptTemplates")
 
-FString UDogFightUtilsFunctionLibrary::GenerateLuaScriptPath(const FLuaScriptCreateArgument& InArgument)
+FString UDogFightUtilsFunctionLibrary::GenerateLuaScriptFolder(const FLuaScriptCreateArgument& InArgument)
 {
-	FString NewFileName = InArgument.ScriptName + ".lua";
-	if (InArgument.bUsePrefix)
-	{
-		NewFileName = InArgument.TemplateName + NewFileName;
-	}
+	FString SubFolder = InArgument.bOverrideTemplateFolder ? InArgument.OverrideFolder : InArgument.TemplateName;
+	SubFolder = "/" + SubFolder;
 
 	if (!InArgument.Path.IsEmpty())
 	{
-		NewFileName = InArgument.Path / NewFileName;
+		SubFolder = SubFolder / InArgument.Path;
 	}
-	return FString::Printf(TEXT("%s%s%s/%s/%s"), *FPaths::ProjectContentDir(), LUA_SCRIPT_BASE_PATH, *InArgument.ModuleName,
-		*InArgument.TemplateName, *NewFileName);
+
+	return FString::Printf(TEXT("%s%s%s%s"), *FPaths::ProjectContentDir(), LUA_SCRIPT_BASE_PATH, *InArgument.ModuleName,
+	*SubFolder);
+}
+
+FString UDogFightUtilsFunctionLibrary::GenerateLuaScriptPath(const FLuaScriptCreateArgument& InArgument)
+{
+	FString NewFileName = InArgument.ScriptName;
+	switch (InArgument.TemplateMode)
+	{
+		case ELuaScriptNameTemplateMode::TM_Prefix:
+			NewFileName = InArgument.TemplateName + NewFileName;
+			break;
+		case ELuaScriptNameTemplateMode::TM_Suffix:
+			NewFileName = NewFileName + InArgument.TemplateName ;
+			break;
+		case ELuaScriptNameTemplateMode::TM_None:
+		default: ;
+	}
+	NewFileName += ".lua";
+
+	FString FinalFolder = GenerateLuaScriptFolder(InArgument);
+
+	return FString::Printf(TEXT("%s/%s"), *FinalFolder, *NewFileName);
 }
 
 FString UDogFightUtilsFunctionLibrary::CreateLuaScriptByTemplate(const FLuaScriptCreateArgument& InArgument)
 {
 	FString NewClassName = InArgument.ScriptName;
-	if (InArgument.bUsePrefix)
+	switch (InArgument.TemplateMode)
 	{
+	case ELuaScriptNameTemplateMode::TM_Prefix:
 		NewClassName = InArgument.TemplateName + NewClassName;
+		break;
+	case ELuaScriptNameTemplateMode::TM_Suffix:
+		NewClassName = NewClassName + InArgument.TemplateName ;
+		break;
+	case ELuaScriptNameTemplateMode::TM_None:
+	default: ;
 	}
 	FString NewScriptPath = GenerateLuaScriptPath(InArgument);
 
@@ -42,10 +68,21 @@ FString UDogFightUtilsFunctionLibrary::CreateLuaScriptByTemplate(const FLuaScrip
 		return "Template file doesn't exist!";
 	}
 
+	// Prepare the $Path$ variable
+	FString OutputFolder = GenerateLuaScriptFolder(InArgument);
+	FString ScriptRoot = FString::Printf(TEXT("%s%s"), *FPaths::ProjectContentDir(), LUA_SCRIPT_BASE_PATH);
+	if (!FPaths::MakePathRelativeTo(OutputFolder, *ScriptRoot))
+	{
+		return "Failed to convert script path to relative.";
+	}
+	OutputFolder.ReplaceCharInline('/', '.');
+
 	// Replace template file content
 	FString Content;
 	FFileHelper::LoadFileToString(Content, *TemplatePath);
 	Content = Content.Replace(TEXT("$Class$"), *NewClassName);
+	Content = Content.Replace(TEXT("$Path$"), *OutputFolder);
+	Content = Content.Replace(TEXT("$ClassPure$"), *InArgument.ScriptName);
 	FFileHelper::SaveStringToFile(Content, *NewScriptPath, FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM);
 
 	return "Success";

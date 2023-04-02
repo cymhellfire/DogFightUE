@@ -20,6 +20,9 @@ function TestCard:OnInitialized()
         self:AddModifierObject(Modifier2)
         self:RemoveModifierObject(Modifier1)
     end
+
+    -- Set card logic path
+    self.LogicScriptPath = "DogFight.Card.CardLogic.TestCardLogic"
 end
 
 function TestCard:SetupCardDesc()

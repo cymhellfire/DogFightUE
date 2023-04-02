@@ -4,6 +4,13 @@
 #include "DamageType/ExtendedDamageInstance.h"
 #include "Net/UnrealNetwork.h"
 
+UDamageReceiverComponent::UDamageReceiverComponent(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	// Enable component replication
+	SetIsReplicatedByDefault(true);
+}
+
 void UDamageReceiverComponent::InitializeAttributes()
 {
 	Super::InitializeAttributes();
@@ -74,4 +81,6 @@ void UDamageReceiverComponent::OnRep_Health(int32 OldValue)
 {
 	const FString NetRoleStr = TO_NET_ROLE_STR(GetOwnerRole());
 	UE_LOG(LogDamageSystem, Log, TEXT("%s: [%s] Health %d -> %d"), *NetRoleStr, *GetName(), OldValue, Health);
+
+	OnHealthChanged.Broadcast(Health, 100);
 }

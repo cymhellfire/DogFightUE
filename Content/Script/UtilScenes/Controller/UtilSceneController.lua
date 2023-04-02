@@ -98,15 +98,12 @@ function UtilSceneController:ReceiveBeginPlay()
     self.DirectionalLight = UE.UGameplayStatics.GetActorOfClass(self, UE.ADirectionalLight.StaticClass())
 
     -- Get the projectile target actor
-    local AllActor = UE.UGameplayStatics.GetAllActorsOfClass(self, UE.AStaticMeshActor.StaticClass())
+    local AllActor = UE.UGameplayStatics.GetAllActorsOfClass(self, UE.ABasicDamageReceiverActor.StaticClass())
     local ActorList = AllActor:ToTable()
     for _, v in ipairs(ActorList) do
-        local ObjectName = v:GetName()
-        if string.find(ObjectName, "ProjectileTarget") then
-            self.ProjectileTarget = v
-            print("Find projectile target.")
-            break
-        end
+        self.ProjectileTarget = v
+        print("Find projectile target.")
+        break
     end
 end
 

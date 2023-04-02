@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "AttributeSystem/Attribute/AttributeCommon.h"
+#include "Common/CardSystemType.h"
 #include "Player/CardTargetProviderInterface.h"
 #include "Card.generated.h"
 
@@ -10,6 +11,7 @@ class UCardAsyncCommand;
 class UCardConcurrentCallbackCommand;
 class UCardModifier;
 class UCardDescObject;
+class UCardLogic;
 
 UENUM()
 enum class ECardExecutionResult : uint8
@@ -53,6 +55,14 @@ public:
 		return OwnerController.IsValid() ? OwnerController.Get() : nullptr;
 	}
 
+	UFUNCTION(BlueprintCallable, Category="Card")
+	void SetOwnerPlayerId(int32 PlayerId);
+
+	UFUNCTION(BlueprintCallable, Category="Card")
+	int32 GetOwnerPlayerId() const
+	{
+		return OwnerPlayerId;
+	}
 
 	// ------------------- Attribute ----------------------
 
@@ -78,6 +88,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Card")
 	void RemoveModifierObject(UCardModifier* InModifier);
+
+	// ---------------- Card Logic ---------------------
+protected:
+	void CreateCardLogic();
 
 public:
 	/**
@@ -146,6 +160,9 @@ protected:
 
 	bool CheckCardFinished();
 
+	UFUNCTION()
+	void OnCardLogicFinished(ECardLogicFinishType::Type FinishType);
+
 public:
 
 	// ----------------- Card Finished ----------------------
@@ -154,12 +171,21 @@ public:
 	UFUNCTION()
 	void OnCardFinished();
 
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Card")
+	FString LogicScriptPath;
+
 protected:
 	UPROPERTY(Transient)
 	UCardDescObject* DescObject;
 
+	UPROPERTY(Transient)
+	UCardLogic* CardLogic;
+
 	/** Id used to distinguish different cards. */
 	int32 CardInstanceId;
+
+	int32 OwnerPlayerId;
 
 	/** The owner controller to handle necessary RPC function call. */
 	TWeakObjectPtr<AController> OwnerController;

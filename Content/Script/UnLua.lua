@@ -47,10 +47,14 @@ local function NewIndex(t, k, v)
 	rawset(t, k, v)
 end
 
-local function Class(super_name)
+local function Class(super_name, className)
 	local super_class = nil
-	if super_name ~= nil then
+	-- Load the super class by path
+	if type(super_name) == "string" then
 		super_class = require(super_name)
+	-- Use the given class directly
+	elseif type(super_name) == "table" then
+		super_class = super_name
 	end
 
 	local new_class = {}

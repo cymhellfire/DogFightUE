@@ -1,7 +1,10 @@
 #include "GameMode/TopDownStyleGameMode.h"
 #include "Common/LuaEventDef.h"
+#include "DamageCalculator/DamageCalculatorBase.h"
+#include "FunctionLibrary/CommonGameplayFunctionLibrary.h"
 #include "GameMode/TopDownStyleGameState.h"
 #include "GameMode/GameModeComponent/InGameMessageSenderComponent.h"
+#include "GameService/DamageService.h"
 #include "GameService/GameService.h"
 #include "GameService/LuaEventService.h"
 #include "Pawn/PlayerPawn/TopDownStylePlayerPawn.h"
@@ -22,6 +25,14 @@ void ATopDownStyleGameMode::PostInitializeComponents()
 void ATopDownStyleGameMode::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// Create damage calculator
+	if (auto DamageService = UGameService::GetGameService<UDamageService>())
+	{
+		DamageCalculator = DamageService->CreateDamageCalculator(UDamageCalculatorBase::StaticClass(), DamageCalculatorPath, this);
+		// Listen the damage event
+		DamageCalculator->OnDamageEventOccured.AddDynamic(this, &ATopDownStyleGameMode::OnDamageEventOccured);
+	}
 }
 
 void ATopDownStyleGameMode::PostLogin(APlayerController* NewPlayer)
@@ -66,5 +77,29 @@ void ATopDownStyleGameMode::SetEnableCharacterMoveForAllPlayers(bool bEnable)
 				PlayerPawn->ServerSetCharacterMovable(bEnable);
 			}
 		}
+	}
+}
+
+void ATopDownStyleGameMode::DamageActor(int32 DamageId, AActor* Target, float BaseDamage, AActor* Causer)
+{
+	if (!IsValid(DamageCalculator))
+	{
+		return;
+	}
+
+	if (auto DamageService = UGameService::GetGameService<UDamageService>())
+	{
+		DamageService->ApplyDamageToActor(DamageId, Target, BaseDamage, Causer, DamageCalculator);
+	}
+}
+
+void ATopDownStyleGameMode::OnDamageEventOccured(UExtendedDamageInstance* DamageInstance,
+	const FExtendedDamageEvent& DamageEvent)
+{
+	if (auto DamageService = UGameService::GetGameService<UDamageService>())
+	{
+		auto DisplayParams = DamageService->GetDamageDisplayParameters(DamageInstance, DamageEvent);
+		// Broadcast to all clients
+		UCommonGameplayFunctionLibrary::CreateDamageDisplayByPlayerId(DisplayParams, -1);
 	}
 }

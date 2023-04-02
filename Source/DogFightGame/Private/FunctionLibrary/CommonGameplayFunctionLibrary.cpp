@@ -1,6 +1,7 @@
 ﻿#include "FunctionLibrary/CommonGameplayFunctionLibrary.h"
 
 #include "FunctionLibrary/CommonGameFlowFunctionLibrary.h"
+#include "GameMode/TopDownStyleGameMode.h"
 #include "GameMode/TopDownStyleGameState.h"
 #include "Player/TopDownStylePlayerState.h"
 #include "PlayerController/TopDownStylePlayerController.h"
@@ -96,6 +97,18 @@ void UCommonGameplayFunctionLibrary::RemoveWidgetPlayerId(FString WidgetName, in
 		}, InPlayerId);
 }
 
+void UCommonGameplayFunctionLibrary::CreateDamageDisplayByPlayerId(const FDamageDisplayParams& DisplayParams,
+	int32 InPlayerId)
+{
+	ForEachPlayerControllerDo([&DisplayParams](ATopDownStylePlayerController* InPC)
+	{
+		if (auto Manipulator = InPC->GetInGameWidgetManipulatorComponent())
+		{
+			Manipulator->ClientShowDamageWidget(DisplayParams);
+		}
+	}, InPlayerId);
+}
+
 int32 UCommonGameplayFunctionLibrary::GetAlivePlayerNum()
 {
 	int32 Result = 0;
@@ -116,6 +129,14 @@ void UCommonGameplayFunctionLibrary::SpawnGameEffectAtPos(int32 EffectId, FVecto
 	{
 		PlayerController->ClientSpawnGameEffectAtPos(EffectId, Pos, Rot);
 	});
+}
+
+void UCommonGameplayFunctionLibrary::DamageActor(int32 DamageId, AActor* Target, float BaseDamage, AActor* Causer)
+{
+	if (auto GameMode = GetCurrentTopDownStyleGameMode())
+	{
+		GameMode->DamageActor(DamageId, Target, BaseDamage, Causer);
+	}
 }
 
 void UCommonGameplayFunctionLibrary::ForEachPlayerStateDo(TFunction<void(ATopDownStylePlayerState*)> ExecuteFunc,
