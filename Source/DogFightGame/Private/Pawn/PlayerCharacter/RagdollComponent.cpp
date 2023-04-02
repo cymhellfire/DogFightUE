@@ -79,7 +79,12 @@ void URagdollComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME_WITH_PARAMS_FAST(URagdollComponent, SyncRagdollRotation, SharedParams);
 }
 
-void URagdollComponent::SetRagdollActive(bool bActive)
+void URagdollComponent::ServerSetRagdollActive_Implementation(bool bActive)
+{
+	SetRagdollActive(bActive);
+}
+
+void URagdollComponent::SetRagdollActive_Implementation(bool bActive)
 {
 	if (!IsValid(OwnerCharacter))
 	{

@@ -17,9 +17,10 @@ public:
 
 	virtual void InitializeComponent() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	void SetRagdollActive(bool bActive);
+	UFUNCTION(Server, Reliable)
+	void ServerSetRagdollActive(bool bActive);
 
 	bool IsRagdollActive() const
 	{
@@ -27,6 +28,9 @@ public:
 	}
 
 private:
+	UFUNCTION(NetMulticast, Reliable)
+	void SetRagdollActive(bool bActive);
+
 	void PreCacheRagdollPose();
 
 	void SynchronizeOrientationWithRagdoll(bool bIsFacingUp);

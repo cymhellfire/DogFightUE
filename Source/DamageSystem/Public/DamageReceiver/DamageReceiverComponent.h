@@ -9,6 +9,7 @@ DECLARE_MULTICAST_DELEGATE_ThreeParams(FDamageReceiverComponentTakeDamageSignatu
 	UExtendedDamageInstance*, const FExtendedDamageEvent&);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDamageReceiverComponentHealthChangeSignature, float, CurHealth, float, MaxHealth);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDamageReceiverComponentNoHealth);
 
 UCLASS()
 class DAMAGESYSTEM_API UDamageReceiverComponent : public UAttributeBasedComponent
@@ -33,12 +34,20 @@ protected:
 	UFUNCTION()
 	void OnRep_Health(int32 OldValue);
 
+	UFUNCTION()
+	void OnRep_MaxHealth(int32 OldValue);
+
 public:
 	FDamageReceiverComponentTakeDamageSignature OnTakeDamage;
 
 	FDamageReceiverComponentHealthChangeSignature OnHealthChanged;
 
+	FDamageReceiverComponentNoHealth OnNoHealth;
+
 protected:
 	UPROPERTY(Transient, ReplicatedUsing=OnRep_Health)
 	int32 Health;
+
+	UPROPERTY(Transient, ReplicatedUsing=OnRep_MaxHealth)
+	int32 MaxHealth;
 };

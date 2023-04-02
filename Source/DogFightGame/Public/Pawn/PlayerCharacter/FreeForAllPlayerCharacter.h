@@ -36,8 +36,13 @@ protected:
 	void InitializeStateWidget();
 	void DeinitializeStateWidget();
 
+	virtual void Dead();
+
 	UFUNCTION()
 	void OnHealthChanged(float CurHealth, float MaxHealth);
+
+	UFUNCTION()
+	void OnNoHealth();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -58,4 +63,8 @@ protected:
 
 	UPROPERTY(Transient)
 	UPlayerCharacterStateWidget* StateWidget;
+
+private:
+
+	uint8 bAlive : 1;
 };

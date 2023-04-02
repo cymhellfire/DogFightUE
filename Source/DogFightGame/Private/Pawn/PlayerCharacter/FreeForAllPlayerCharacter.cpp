@@ -9,6 +9,9 @@ AFreeForAllPlayerCharacter::AFreeForAllPlayerCharacter()
 	DamageReceiverComponent = CreateDefaultSubobject<UDamageReceiverComponent>("DamageReceiverComponent");
 	StateWidgetLocatorComponent = CreateDefaultSubobject<UWidgetLocatorComponent>("StateWidgetLocatorComponent");
 	RagdollComponent = CreateDefaultSubobject<URagdollComponent>("RagdollComponent");
+
+	// Initial value
+	bAlive = true;
 }
 
 void AFreeForAllPlayerCharacter::BeginPlay()
@@ -18,6 +21,7 @@ void AFreeForAllPlayerCharacter::BeginPlay()
 	InitializeStateWidget();
 
 	DamageReceiverComponent->OnHealthChanged.AddDynamic(this, &AFreeForAllPlayerCharacter::OnHealthChanged);
+	DamageReceiverComponent->OnNoHealth.AddDynamic(this, &AFreeForAllPlayerCharacter::OnNoHealth);
 }
 
 void AFreeForAllPlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -27,6 +31,7 @@ void AFreeForAllPlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReaso
 	DeinitializeStateWidget();
 
 	DamageReceiverComponent->OnHealthChanged.RemoveDynamic(this, &AFreeForAllPlayerCharacter::OnHealthChanged);
+	DamageReceiverComponent->OnNoHealth.RemoveDynamic(this, &AFreeForAllPlayerCharacter::OnNoHealth);
 }
 
 FVector AFreeForAllPlayerCharacter::GetProjectileSpawnLocation() const
@@ -37,7 +42,7 @@ FVector AFreeForAllPlayerCharacter::GetProjectileSpawnLocation() const
 
 void AFreeForAllPlayerCharacter::SetRagdollEnabled(bool bEnable)
 {
-	RagdollComponent->SetRagdollActive(bEnable);
+	RagdollComponent->ServerSetRagdollActive(bEnable);
 }
 
 void AFreeForAllPlayerCharacter::InitializeStateWidget()
@@ -70,10 +75,34 @@ void AFreeForAllPlayerCharacter::DeinitializeStateWidget()
 	}
 }
 
+void AFreeForAllPlayerCharacter::Dead()
+{
+	if (!bAlive)
+	{
+		return;
+	}
+
+	// Mark as dead
+	bAlive = false;
+
+	// Enable ragdoll when dead
+	RagdollComponent->ServerSetRagdollActive(true);
+}
+
 void AFreeForAllPlayerCharacter::OnHealthChanged(float CurHealth, float MaxHealth)
 {
 	if (IsValid(StateWidget))
 	{
 		StateWidget->OnHealthChanged(CurHealth, MaxHealth);
 	}
+}
+
+void AFreeForAllPlayerCharacter::OnNoHealth()
+{
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	Dead();
 }
