@@ -2,6 +2,7 @@
 
 #include "Card/Card.h"
 #include "GameMode/TopDownStyleGameMode.h"
+#include "GameMode/GameModeComponent/InGameMessageSenderComponent.h"
 #include "GameService/GameEffectService.h"
 #include "GameService/GameInputService.h"
 #include "GameService/GameService.h"
@@ -128,6 +129,17 @@ void ATopDownStylePlayerController::ClientSpawnGameEffectAtPos_Implementation(in
 	if (auto GameEffectService = Cast<UGameEffectService>(UGameService::GetGameServiceBySuperClass<UGameEffectService>()))
 	{
 		GameEffectService->SpawnEffectAtPos(EffectId, Pos, Rot);
+	}
+}
+
+void ATopDownStylePlayerController::ServerSendInGameChatMessage_Implementation(const FInGameChatMessage& InMessage)
+{
+	if (auto GM = Cast<ATopDownStyleGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		if (auto MessageSender = GM->GetInGameMessageSender())
+		{
+			MessageSender->BroadcastInGameChatMessage(InMessage);
+		}
 	}
 }
 

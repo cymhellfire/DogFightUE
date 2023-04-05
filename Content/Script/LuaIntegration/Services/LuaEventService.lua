@@ -1,6 +1,7 @@
 require "UnLua"
 require "Common.TableUtils"
 
+---@class LuaEventService
 local LuaEventService = Class("DogFight.Services.GameServiceBase")
 
 function LuaEventService:StartupScript(ServiceName)

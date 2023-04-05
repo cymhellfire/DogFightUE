@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Common/InGameChatType.h"
 #include "Common/InputMappingDef.h"
 #include "Player/CardTargetProviderInterface.h"
 #include "Player/DogFightPlayerController.h"
@@ -43,6 +44,10 @@ public:
 	// -----=========== Effect ===========-----
 	UFUNCTION(Client, Reliable)
 	void ClientSpawnGameEffectAtPos(int32 EffectId, FVector Pos, FRotator Rot);
+
+	// -----=========== Chat ===========-----
+	UFUNCTION(Server, Reliable)
+	void ServerSendInGameChatMessage(const FInGameChatMessage& InMessage);
 
 	UInGameMessageReceiverComponent* GetInGameMessageReceiverComponent() const
 	{
