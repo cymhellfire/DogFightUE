@@ -100,6 +100,6 @@ void ATopDownStyleGameMode::OnDamageEventOccured(UExtendedDamageInstance* Damage
 	{
 		auto DisplayParams = DamageService->GetDamageDisplayParameters(DamageInstance, DamageEvent);
 		// Broadcast to all clients
-		UCommonGameplayFunctionLibrary::CreateDamageDisplayByPlayerId(DisplayParams, -1);
+		UCommonGameplayFunctionLibrary::CreateDamageDisplayByPlayerId(this, DisplayParams, -1);
 	}
 }

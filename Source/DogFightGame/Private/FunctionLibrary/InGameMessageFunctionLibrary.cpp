@@ -6,9 +6,9 @@
 #include "GameMode/GameModeComponent/InGameMessageSenderComponent.h"
 #include "PlayerController/TopDownStylePlayerController.h"
 
-void UInGameMessageFunctionLibrary::SetTitleMessage(const FText& InText)
+void UInGameMessageFunctionLibrary::SetTitleMessage(const UObject* WorldContextObject, const FText& InText)
 {
-	auto CurWorld = ULuaIntegrationFunctionLibrary::GetCurrentWorld();
+	auto CurWorld = ULuaIntegrationFunctionLibrary::GetCurrentWorld(WorldContextObject);
 	if (CurWorld == nullptr)
 	{
 		return;
@@ -23,17 +23,17 @@ void UInGameMessageFunctionLibrary::SetTitleMessage(const FText& InText)
 	}
 }
 
-void UInGameMessageFunctionLibrary::SendInGameChatMessage(const FInGameChatMessage& ChatMessage)
+void UInGameMessageFunctionLibrary::SendInGameChatMessage(const UObject* WorldContextObject, const FInGameChatMessage& ChatMessage)
 {
-	if (auto PC = UCommonGameFlowFunctionLibrary::GetLocalPlayerController())
+	if (auto PC = UCommonGameFlowFunctionLibrary::GetLocalPlayerController(WorldContextObject))
 	{
 		PC->ServerSendInGameChatMessage(ChatMessage);
 	}
 }
 
-UInGameMessageReceiverComponent* UInGameMessageFunctionLibrary::GetLocalPlayerMessageReceiver()
+UInGameMessageReceiverComponent* UInGameMessageFunctionLibrary::GetLocalPlayerMessageReceiver(const UObject* WorldContextObject)
 {
-	if (auto PC = UCommonGameFlowFunctionLibrary::GetLocalPlayerController())
+	if (auto PC = UCommonGameFlowFunctionLibrary::GetLocalPlayerController(WorldContextObject))
 	{
 		if (auto InGameMessageReceiver = PC->GetInGameMessageReceiverComponent())
 		{

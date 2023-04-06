@@ -37,7 +37,7 @@ end
 ---@param Projectile ProjectileBase Projectile instance to register with.
 local function RegisterCallbackToProjectile(self, Projectile)
     ---@type DelegateHelperService
-    local DelegateHelperService = GetGameService(GameServiceNameDef.DelegateHelperService)
+    local DelegateHelperService = GetGameService(self._CardLogic, GameServiceNameDef.DelegateHelperService)
     if DelegateHelperService then
         local NewHelper = DelegateHelperService:BindCallback(Projectile.OnProjectileDead, self, self.OnProjectileDead)
         self._DelegateHelperList[Projectile] = NewHelper
@@ -54,7 +54,7 @@ local function UnregisterCallbackFromProjectile(self, Projectile)
     end
 
     ---@type DelegateHelperService
-    local DelegateHelperService = GetGameService(GameServiceNameDef.DelegateHelperService)
+    local DelegateHelperService = GetGameService(self._CardLogic, GameServiceNameDef.DelegateHelperService)
     if DelegateHelperService then
         DelegateHelperService:ReleaseDelegateHelper(Helper)
     end
@@ -99,7 +99,7 @@ function ActionLaunchProjectile:StartCommand()
         if TargetPos then
             ---Spawn projectile instance by name
             ---@type ProjectileService
-            local ProjectileService = GetGameService(GameServiceNameDef.ProjectileService)
+            local ProjectileService = GetGameService(self._CardLogic, GameServiceNameDef.ProjectileService)
             if ProjectileService then
                 local NewProjectile = ProjectileService:SpawnProjectileByName(self._ProjectileName, SpawnLoc)
                 if NewProjectile then

@@ -1,10 +1,10 @@
 require "UnLua"
 
----@class SpawnState State that spawn character for all players.
+---@class SpawnState : GameFlowStateLogicBase State that spawn character for all players.
 local SpawnState = Class("GameFlow.GameFlowState.GameFlowStateLogicBase")
 
 local function SpawnPlayerCharacter(self)
-    local PCList = UE.UCommonGameFlowFunctionLibrary.GetAllPlayerControllers()
+    local PCList = UE.UCommonGameFlowFunctionLibrary.GetAllPlayerControllers(self.OwnerState)
     local Count = PCList:Length()
     if Count > 0 then
         for i = 1, Count do
@@ -18,7 +18,7 @@ local function SpawnPlayerCharacter(self)
 
     -- Setup next state
     local Instigator = self.OwnerState.CreateArgument.Instigator
-    local NewArgument = GetGameService(GameServiceNameDef.GameFlowStateService):GetGameFlowStateCreateArgument(Instigator)
+    local NewArgument = GetGameService(self.OwnerState, GameServiceNameDef.GameFlowStateService):GetGameFlowStateCreateArgument(Instigator)
     if NewArgument then
         NewArgument.Instigator = Instigator
         NewArgument.StateName = "StandardMode.PrepareState"

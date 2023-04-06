@@ -10,7 +10,7 @@
 
 void UGameInputService::MulticastAddInputMapping(EInputMappingType::Type MappingType)
 {
-	if (auto GameMode = UCommonGameFlowFunctionLibrary::GetCurrentTopDownStyleGameMode())
+	if (auto GameMode = UCommonGameFlowFunctionLibrary::GetCurrentTopDownStyleGameMode(this))
 	{
 		auto PCList = GameMode->GetAllPlayerControllers();
 		for (auto PC : PCList)
@@ -25,7 +25,7 @@ void UGameInputService::MulticastAddInputMapping(EInputMappingType::Type Mapping
 
 void UGameInputService::MulticastRemoveInputMapping(EInputMappingType::Type MappingType)
 {
-	if (auto GameMode = UCommonGameFlowFunctionLibrary::GetCurrentTopDownStyleGameMode())
+	if (auto GameMode = UCommonGameFlowFunctionLibrary::GetCurrentTopDownStyleGameMode(this))
 	{
 		auto PCList = GameMode->GetAllPlayerControllers();
 		for (auto PC : PCList)
@@ -40,7 +40,7 @@ void UGameInputService::MulticastRemoveInputMapping(EInputMappingType::Type Mapp
 
 void UGameInputService::AddInputMappingByPlayerId(int32 InPlayerId, EInputMappingType::Type MappingType)
 {
-	if (auto PC = UCommonGameplayFunctionLibrary::GetPlayerControllerById(InPlayerId))
+	if (auto PC = UCommonGameplayFunctionLibrary::GetPlayerControllerById(this, InPlayerId))
 	{
 		PC->ClientAddInputMapping(MappingType);
 	}
@@ -48,7 +48,7 @@ void UGameInputService::AddInputMappingByPlayerId(int32 InPlayerId, EInputMappin
 
 void UGameInputService::RemoveInputMappingByPlayerId(int32 InPlayerId, EInputMappingType::Type MappingType)
 {
-	if (auto PC = UCommonGameplayFunctionLibrary::GetPlayerControllerById(InPlayerId))
+	if (auto PC = UCommonGameplayFunctionLibrary::GetPlayerControllerById(this, InPlayerId))
 	{
 		PC->ClientRemoveInputMapping(MappingType);
 	}
@@ -116,7 +116,7 @@ UInputMappingContext* UGameInputService::GetInputMappingContextByType(EInputMapp
 
 UEnhancedInputLocalPlayerSubsystem* UGameInputService::GetInputSubsystemFromLocalPlayer() const
 {
-	if (auto LocalPlayer = UCommonGameFlowFunctionLibrary::GetLocalPlayer())
+	if (auto LocalPlayer = UCommonGameFlowFunctionLibrary::GetLocalPlayer(this))
 	{
 		return LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
 	}

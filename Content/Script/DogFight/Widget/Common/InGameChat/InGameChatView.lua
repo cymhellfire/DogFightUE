@@ -19,8 +19,10 @@ function InGameChatView:PostInitialized()
     self.ChatInput_TextBox.OnTextCommitted:Add(self, self.OnSendClicked)
     self.Send_Button.OnClicked:Add(self, self.OnSendClicked)
 
+    print("InGameChatView:PostInitialized with " .. UE.UCommonGameFlowFunctionLibrary.GetLocalPlayerId(self))
+
     ---@type LuaEventService
-    local LuaEventService = GetGameService(GameServiceNameDef.LuaEventService)
+    local LuaEventService = GetGameService(self, GameServiceNameDef.LuaEventService)
     if LuaEventService then
         LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_ReceiveInGameChatMessage, self, self.OnReceiveInGameMessage)
     end
@@ -34,19 +36,19 @@ function InGameChatView:OnSendClicked()
 end
 
 function InGameChatView:SendChatMessage(InContent)
-    local MyPlayerId = UE.UCommonGameFlowFunctionLibrary.GetLocalPlayerId()
+    local MyPlayerId = UE.UCommonGameFlowFunctionLibrary.GetLocalPlayerId(self)
     local NewMessage = UE.FInGameChatMessage()
     NewMessage.SourceType = UE.EInGameChatSourceType.Player
     NewMessage.SourcePlayerId = MyPlayerId
     NewMessage.Content = InContent
 
-    UE.UInGameMessageFunctionLibrary.SendInGameChatMessage(NewMessage)
+    UE.UInGameMessageFunctionLibrary.SendInGameChatMessage(self, NewMessage)
 
     -- Clear the input box after send
     self.ChatInput_TextBox:SetText("")
     -- Set a timer for focus
     ---@type TimerService
-    local TimerService = GetGameService(GameServiceNameDef.TimerService)
+    local TimerService = GetGameService(self, GameServiceNameDef.TimerService)
     if TimerService then
         TimerService:RegisterTimer(self, self.DelayRecoverFocus, 0.1)
     end
@@ -59,11 +61,14 @@ end
 
 function InGameChatView:OnReceiveInGameMessage()
     -- Get the chat message from receiver
-    local Receiver = UE.UInGameMessageFunctionLibrary.GetLocalPlayerMessageReceiver()
+    local Receiver = UE.UInGameMessageFunctionLibrary.GetLocalPlayerMessageReceiver(self)
     if Receiver then
         local bHasMessage, NewMessage = Receiver:GetCachedGameChatMessage()
         if bHasMessage then
             self.ChatMsgList:AddDataObject(NewMessage)
+
+            -- Scroll to the bottom
+            self.ChatMsgList_ListView:ScrollToBottom()
         end
     end
 end

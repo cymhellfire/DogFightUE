@@ -22,7 +22,7 @@ local function SpawnProjectileDefault(self, InPos)
     end
 
     ---@type ProjectileService
-    local ProjectileService = GetGameService(GameServiceNameDef.ProjectileService)
+    local ProjectileService = GetGameService(self, GameServiceNameDef.ProjectileService)
     if ProjectileService then
         local MyPos = self:K2_GetActorLocation()
         local NewProjectile = ProjectileService:SpawnProjectileAtPos(self.CurProjectileId, 
@@ -44,7 +44,7 @@ local function SpawnProjectileDrop(self, InPos)
     end
 
     ---@type ProjectileService
-    local ProjectileService = GetGameService(GameServiceNameDef.ProjectileService)
+    local ProjectileService = GetGameService(self, GameServiceNameDef.ProjectileService)
     if ProjectileService then
         local SpawnPos = UE.FVector(InPos.X, InPos.Y, InPos.Z + self.DropModeSpawnHeight)
         local NewProjectile = ProjectileService:SpawnProjectileAtPos(self.CurProjectileId, SpawnPos, UE.FRotator(0, 0, 0))
@@ -64,7 +64,7 @@ local function SpawnProjectileAim(self, InPos)
     end
 
     ---@type ProjectileService
-    local ProjectileService = GetGameService(GameServiceNameDef.ProjectileService)
+    local ProjectileService = GetGameService(self, GameServiceNameDef.ProjectileService)
     if ProjectileService then
         local MyPos = self:K2_GetActorLocation()
         local SpawnPos = UE.FVector(MyPos.X, MyPos.Y, MyPos.Z + self.AimModeSpawnHeight)
@@ -147,7 +147,7 @@ function UtilSceneController:SetAutoSpawnInterval(InValue)
     -- Refresh auto spawn interval
     if self.AutoSpawn then
         ---@type TimerService
-        local TimerService = GetGameService(GameServiceNameDef.TimerService)
+        local TimerService = GetGameService(self, GameServiceNameDef.TimerService)
         if TimerService then
             if self.AutoSpawnTimer then
                 TimerService:UnregisterTimer(self.AutoSpawnTimer)
@@ -163,14 +163,14 @@ function UtilSceneController:SetAutoSpawn(InValue)
     if InValue then
         -- Register new timer for auto spawn
         ---@type TimerService
-        local TimerService = GetGameService(GameServiceNameDef.TimerService)
+        local TimerService = GetGameService(self, GameServiceNameDef.TimerService)
         if TimerService then
             self.AutoSpawnTimer = TimerService:RegisterTimer(self, self.OnAutoSpawnTimerExpired, self.AutoSpawnInterval, true)
         end
     else
         -- Unregister timer for auto spawn
         ---@type TimerService
-        local TimerService = GetGameService(GameServiceNameDef.TimerService)
+        local TimerService = GetGameService(self, GameServiceNameDef.TimerService)
         if TimerService and self.AutoSpawnTimer then
             TimerService:UnregisterTimer(self.AutoSpawnTimer)
             self.AutoSpawnTimer = nil

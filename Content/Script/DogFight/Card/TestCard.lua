@@ -12,7 +12,7 @@ function TestCard:OnInitialized()
     })
 
     -- Create modifier from service
-    local ModifierService = GetGameService(GameServiceNameDef.CardModifierGameService)
+    local ModifierService = GetGameService(self, GameServiceNameDef.CardModifierGameService)
     if ModifierService ~= nil then
         local Modifier1 = ModifierService:CreateCardModifier("CardModifierTest", self)
         self:AddModifierObject(Modifier1)

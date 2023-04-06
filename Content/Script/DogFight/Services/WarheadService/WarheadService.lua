@@ -25,7 +25,7 @@ function WarheadService:SetWarheadInfoForProjectile(InProjectile, WarheadName)
         local DamageType = Config.DamageType or ""
         InProjectile.WarheadData.DamageTypeName = DamageType
         ---@type DamageService
-        local DamageService = GetGameService(GameServiceNameDef.DamageService)
+        local DamageService = GetGameService(self, GameServiceNameDef.DamageService)
         if DamageService then
             InProjectile.WarheadData.DamageId = DamageService.Config:NameToId(DamageType) or -1
         end

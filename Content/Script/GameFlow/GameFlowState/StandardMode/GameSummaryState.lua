@@ -1,6 +1,6 @@
 require "UnLua"
 
----@class GameSummaryState Show the game statistic.
+---@class GameSummaryState : GameFlowStateLogicBase Show the game statistic.
 local GameSummaryState = Class("GameFlow.GameFlowState.GameFlowStateLogicBase")
 
 function GameSummaryState:OnEnter()
@@ -16,7 +16,7 @@ end
 
 ---Generate the game summary
 function GameSummaryState:GenerateGameSummary()
-    local AliveIdList = UE.UCommonGameplayFunctionLibrary.GetAlivePlayerId()
+    local AliveIdList = UE.UCommonGameplayFunctionLibrary.GetAlivePlayerId(self.OwnerState)
     local IdTable = AliveIdList:ToTable()
     if #IdTable > 0 then
         local WinnerId = ""

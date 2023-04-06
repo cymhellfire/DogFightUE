@@ -15,18 +15,18 @@ class DOGFIGHTGAME_API UInGameMessageFunctionLibrary : public UBlueprintFunction
 public:
 	
 	UFUNCTION(BlueprintCallable, Category="InGameMessageFunction")
-	static void SetTitleMessage(const FText& InText);
+	static void SetTitleMessage(const UObject* WorldContextObject, const FText& InText);
 
 	/**
 	 * Send a in-game chat message to all players in current game.
 	 * @param ChatMessage			Message to send.
 	 */
 	UFUNCTION(BlueprintCallable, Category="InGameMessageFunction")
-	static void SendInGameChatMessage(const FInGameChatMessage& ChatMessage);
+	static void SendInGameChatMessage(const UObject* WorldContextObject, const FInGameChatMessage& ChatMessage);
 
 	/**
 	 * Get the in-game message receiver component of local player.
 	 */
 	UFUNCTION(BlueprintCallable, Category="InGameMessageFunction")
-	static UInGameMessageReceiverComponent* GetLocalPlayerMessageReceiver();
+	static UInGameMessageReceiverComponent* GetLocalPlayerMessageReceiver(const UObject* WorldContextObject);
 };

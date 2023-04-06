@@ -13,7 +13,7 @@ function ActionCardAcquireTarget:StartCommand()
     local PlayerController = CardCommandHelper.GetOwnerPlayerController(self)
     if PlayerController then  
         ---@type DelegateHelperService
-        local DelegateHelperService = GetGameService(GameServiceNameDef.DelegateHelperService)
+        local DelegateHelperService = GetGameService(self._CardLogic, GameServiceNameDef.DelegateHelperService)
         if DelegateHelperService then
             self._DelegateHelper = DelegateHelperService:BindCallback(PlayerController.OnTargetAcquired, self, self.OnTargetAcquired)
             if self._DelegateHelper then
@@ -35,7 +35,7 @@ function ActionCardAcquireTarget:OnTargetAcquired(bSucceed, TargetInfos)
     -- Release the helper
     if self._DelegateHelper then
         ---@type DelegateHelperService
-        local DelegateHelperService = GetGameService(GameServiceNameDef.DelegateHelperService)
+        local DelegateHelperService = GetGameService(self._CardLogic, GameServiceNameDef.DelegateHelperService)
         if DelegateHelperService then
             DelegateHelperService:ReleaseDelegateHelper(self._DelegateHelper)
             self._DelegateHelper = nil

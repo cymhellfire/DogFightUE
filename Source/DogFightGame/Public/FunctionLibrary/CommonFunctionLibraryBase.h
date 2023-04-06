@@ -12,7 +12,7 @@ class DOGFIGHTGAME_API UCommonFunctionLibraryBase : public UBlueprintFunctionLib
 	GENERATED_BODY()
 
 public:
-	static ATopDownStyleGameMode* GetCurrentTopDownStyleGameMode();
+	static ATopDownStyleGameMode* GetCurrentTopDownStyleGameMode(const UObject* WorldContextObject);
 
-	static ATopDownStyleGameState* GetCurrentTopDownStyleGameState();
+	static ATopDownStyleGameState* GetCurrentTopDownStyleGameState(const UObject* WorldContextObject);
 };

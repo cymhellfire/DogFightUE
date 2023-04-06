@@ -4,41 +4,43 @@
 #include "GameInstance/DogFightGameInstance.h"
 #include "GameService/LocalizationService.h"
 
-UWorld* ULuaIntegrationFunctionLibrary::GetCurrentWorld()
+UWorld* ULuaIntegrationFunctionLibrary::GetCurrentWorld(const UObject* WorldContextObject)
 {
-#if WITH_EDITOR
-	// Use GWorld here to ensure simulating multiplayer game locally in editor can work
-	UWorld* CurWorld = nullptr;
-
-	// Cache the PIE instance id once it's updated
-	static int32 LastUpdatePIEInstance = -1;
-	if (LastUpdatePIEInstance != GPlayInEditorID && GPlayInEditorID != -1)
-	{
-		LastUpdatePIEInstance = GPlayInEditorID;
-	}
-
-	if (LastUpdatePIEInstance != -1)
-	{
-		if (auto WorldContext = GEngine->GetWorldContextFromPIEInstance(LastUpdatePIEInstance))
-		{
-			return WorldContext->World();
-		}
-	}
-	return CurWorld;
-#else
-	const FWorldContext* Context = GEngine->GetWorldContextFromGameViewport(GEngine->GameViewport);
-	if (Context)
-	{
-		return Context->World();
-	}
-
-	return nullptr;
-#endif
+// #if WITH_EDITOR
+// 	// Use GWorld here to ensure simulating multiplayer game locally in editor can work
+// 	UWorld* CurWorld = nullptr;
+//
+// 	// Cache the PIE instance id once it's updated
+// 	static int32 LastUpdatePIEInstance = -1;
+// 	if (LastUpdatePIEInstance != GPlayInEditorID)
+// 	{
+// 		UE_LOG(LogTemp, Log, TEXT("Update LastUpdatePIEInstance from %d to %d"), LastUpdatePIEInstance, GPlayInEditorID);
+// 		LastUpdatePIEInstance = GPlayInEditorID;
+// 	}
+//
+// 	if (LastUpdatePIEInstance != -1)
+// 	{
+// 		if (auto WorldContext = GEngine->GetWorldContextFromPIEInstance(LastUpdatePIEInstance))
+// 		{
+// 			return WorldContext->World();
+// 		}
+// 	}
+// 	return GWorld;
+// #else
+// 	const FWorldContext* Context = GEngine->GetWorldContextFromGameViewport(GEngine->GameViewport);
+// 	if (Context)
+// 	{
+// 		return Context->World();
+// 	}
+//
+// 	return nullptr;
+// #endif
+	return IsValid(WorldContextObject) ? WorldContextObject->GetWorld() : nullptr;
 }
 
-UGameInstance* ULuaIntegrationFunctionLibrary::GetGameInstance()
+UGameInstance* ULuaIntegrationFunctionLibrary::GetGameInstance(const UObject* WorldContextObject)
 {
-	if (auto CurrentWorld = GetCurrentWorld())
+	if (auto CurrentWorld = GetCurrentWorld(WorldContextObject))
 	{
 		return CurrentWorld->GetGameInstance();
 	}
@@ -46,9 +48,9 @@ UGameInstance* ULuaIntegrationFunctionLibrary::GetGameInstance()
 	return nullptr;
 }
 
-APlayerController* ULuaIntegrationFunctionLibrary::GetFirstLocalPlayerController()
+APlayerController* ULuaIntegrationFunctionLibrary::GetFirstLocalPlayerController(const UObject* WorldContextObject)
 {
-	if (auto GameInstance = GetGameInstance())
+	if (auto GameInstance = GetGameInstance(WorldContextObject))
 	{
 		return GameInstance->GetFirstLocalPlayerController();
 	}
@@ -93,9 +95,9 @@ bool ULuaIntegrationFunctionLibrary::IsDerivedFrom(UObject* InObject, UClass* In
 	return false;
 }
 
-FText ULuaIntegrationFunctionLibrary::GetLocalizedString(const FString& InTable, const FString& InKey)
+FText ULuaIntegrationFunctionLibrary::GetLocalizedString(const UObject* WorldContextObject, const FString& InTable, const FString& InKey)
 {
-	if (auto GameInstance = Cast<UDogFightGameInstance>(GetGameInstance()))
+	if (auto GameInstance = Cast<UDogFightGameInstance>(GetGameInstance(WorldContextObject)))
 	{
 		if (auto LocalizationService = Cast<ULocalizationService>(GameInstance->GetGameServiceBySuperClass(ULocalizationService::StaticClass())))
 		{
@@ -110,10 +112,10 @@ FText ULuaIntegrationFunctionLibrary::GetLocalizedString(const FString& InTable,
 	return FText::FromString(FString::Printf(TEXT("Missing localization string: [%s - %s]"), *InTable, *InKey));
 }
 
-FText ULuaIntegrationFunctionLibrary::GetLocalizedStringWithParam(const FString& InTable, const FString& InKey,
-	const TArray<FString>& ParamList)
+FText ULuaIntegrationFunctionLibrary::GetLocalizedStringWithParam(const UObject* WorldContextObject, const FString& InTable,
+	const FString& InKey, const TArray<FString>& ParamList)
 {
-	if (auto GameInstance = Cast<UDogFightGameInstance>(GetGameInstance()))
+	if (auto GameInstance = Cast<UDogFightGameInstance>(GetGameInstance(WorldContextObject)))
 	{
 		if (auto LocalizationService = Cast<ULocalizationService>(GameInstance->GetGameServiceBySuperClass(ULocalizationService::StaticClass())))
 		{

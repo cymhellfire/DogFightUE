@@ -17,7 +17,7 @@ public:
 	 * @return Array of all player controllers.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameFlow")
-	static TArray<ATopDownStylePlayerController*> GetAllPlayerControllers();
+	static TArray<ATopDownStylePlayerController*> GetAllPlayerControllers(const UObject* WorldContextObject);
 
 	/**
 	 * Get the name of current processing game flow state.
@@ -25,7 +25,7 @@ public:
 	 * @return Name of current state.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommmonGameFlow")
-	static FName GetCurrentGameFlowStateName();
+	static FName GetCurrentGameFlowStateName(const UObject* WorldContextObject);
 
 	/**
 	 * Spawn character pawn for specified player controller.
@@ -41,74 +41,74 @@ public:
 	 * @param bEnable Whether to enable character movement.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameFlow")
-	static void SetCharacterMoveEnableForAllPlayers(bool bEnable);
+	static void SetCharacterMoveEnableForAllPlayers(const UObject* WorldContextObject, bool bEnable);
 
 	/**
 	 * Initialize timeline for current game.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameFlow")
-	static void InitializeGameTimeline();
+	static void InitializeGameTimeline(const UObject* WorldContextObject);
 
 	/**
 	 * Get player id list of current timeline.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameFlow")
-	static TArray<int32> GetCurrentTimeline();
+	static TArray<int32> GetCurrentTimeline(const UObject* WorldContextObject);
 
 	/**
 	 * Move current timeline forward.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameFlow")
-	static void MoveTimelineForward();
+	static void MoveTimelineForward(const UObject* WorldContextObject);
 
 	/**
 	 * Get the ID of owner of current player round.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameFlow")
-	static int32 GetCurrentPlayerId();
+	static int32 GetCurrentPlayerId(const UObject* WorldContextObject);
 
 	/**
 	 * Set the current player by ID.
 	 * @param InId ID of new player.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameFlow")
-	static void SetCurrentPlayerId(int32 InId);
+	static void SetCurrentPlayerId(const UObject* WorldContextObject, int32 InId);
 
 	/**
 	 * Sync the CurrentPlayerId with first one of Timeline.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameFlow")
-	static void SyncCurrentPlayerIdWithTimeline();
+	static void SyncCurrentPlayerIdWithTimeline(const UObject* WorldContextObject);
 
 	/**
 	 * Get the player controller of local player.
 	 * @return			Player controller.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameFlow")
-	static ATopDownStylePlayerController* GetLocalPlayerController();
+	static ATopDownStylePlayerController* GetLocalPlayerController(const UObject* WorldContextObject);
 
 	/**
 	 * Get the local player.
 	 * @return			First local player.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameFlow")
-	static ULocalPlayer* GetLocalPlayer();
+	static ULocalPlayer* GetLocalPlayer(const UObject* WorldContextObject);
 
 	/**
 	 * Get the player ID of local player.
 	 * @return			ID of local player (-1 is illegal).
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameFlow")
-	static int32 GetLocalPlayerId();
+	static int32 GetLocalPlayerId(const UObject* WorldContextObject);
 
 protected:
 	/**
 	 * Get current timeline which only works on server side.
 	 */
-	static UGameTimelineComponent* GetCurrentTimeline_Server();
+	static UGameTimelineComponent* GetCurrentTimeline_Server(const UObject* WorldContextObject);
 
 	/**
 	 * Get current timeline which both works on server and client.
 	 */
-	static UGameTimelineComponent* GetCurrentTimeline_Common();
+	static UGameTimelineComponent* GetCurrentTimeline_Common(const UObject* WorldContextObject);
 };

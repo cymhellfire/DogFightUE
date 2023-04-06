@@ -1,6 +1,6 @@
 require "UnLua"
 
----@class WidgetCardList
+---@class WidgetCardList : BP_Widget_CardList_C
 ---@field public CardList_ListView UListView
 local WidgetCardList = Class("Common.MVVM.ModelBase")
 local ViewModelBase = require("Common.MVVM.ViewModelBase")
@@ -13,29 +13,29 @@ function WidgetCardList:Initialize()
     self:BindViewModel(NewVM, {
         --{BindKey = "TitleMessage",   UIKey = "TitleMessage_Text",   DataBinding = DataBinding.TextContextBinding(), }
     })
-
-    -- Cache local player id
-    self.LocalPlayerId = UE.UCommonGameFlowFunctionLibrary.GetLocalPlayerId()
-    print("Cache local player id: ".. self.LocalPlayerId)
-    GetGameService(GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_CardListChanged, self, self.OnCardListChanged)
 end
 
 function WidgetCardList:PostInitialized()
     self.CardListWrapper = ListWrapper.New(self, self.CardList_ListView)
+
+    -- Cache local player id
+    self.LocalPlayerId = UE.UCommonGameFlowFunctionLibrary.GetLocalPlayerId(self)
+    print("Cache local player id: ".. self.LocalPlayerId)
+    GetGameService(self, GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_CardListChanged, self, self.OnCardListChanged)
 end
 
 function WidgetCardList:Construct()
     -- Register callback for card using events
-    GetGameService(GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_MyCardBeginUsing, self, self.OnCardBeginUsing)
-    GetGameService(GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_MyCardFinished, self, self.OnCardFinished)
-    GetGameService(GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_MyCardCancelled, self, self.OnCardCancelled)
+    GetGameService(self, GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_MyCardBeginUsing, self, self.OnCardBeginUsing)
+    GetGameService(self, GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_MyCardFinished, self, self.OnCardFinished)
+    GetGameService(self, GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_MyCardCancelled, self, self.OnCardCancelled)
 end
 
 function WidgetCardList:Destruct()
     -- Unregister callback
-    GetGameService(GameServiceNameDef.LuaEventService):UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardBeginUsing, self, self.OnCardBeginUsing)
-    GetGameService(GameServiceNameDef.LuaEventService):UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardFinished, self, self.OnCardFinished)
-    GetGameService(GameServiceNameDef.LuaEventService):UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardCancelled, self, self.OnCardCancelled)
+    GetGameService(self, GameServiceNameDef.LuaEventService):UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardBeginUsing, self, self.OnCardBeginUsing)
+    GetGameService(self, GameServiceNameDef.LuaEventService):UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardFinished, self, self.OnCardFinished)
+    GetGameService(self, GameServiceNameDef.LuaEventService):UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardCancelled, self, self.OnCardCancelled)
 end
 
 function WidgetCardList:OnCardListChanged(InPlayerId)
@@ -44,7 +44,7 @@ function WidgetCardList:OnCardListChanged(InPlayerId)
     end
 
     -- Get card list from 
-    local PlayerState = UE.UCommonGameplayFunctionLibrary.GetPlayerStateById(self.LocalPlayerId)
+    local PlayerState = UE.UCommonGameplayFunctionLibrary.GetPlayerStateById(self, self.LocalPlayerId)
     if PlayerState then
         local CardDescArray = PlayerState:GetAllCardDescObject()
         if CardDescArray:Length() > 0 then

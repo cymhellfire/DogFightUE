@@ -1,6 +1,6 @@
 require "UnLua"
 
----@class PostPlayerRoundBuffState Buff accumulation state after player round finished.
+---@class PostPlayerRoundBuffState : GameFlowStateLogicBase Buff accumulation state after player round finished.
 local PostPlayerRoundBuffState = Class("GameFlow.GameFlowState.GameFlowStateLogicBase")
 
 function PostPlayerRoundBuffState:OnEnter()
@@ -8,7 +8,7 @@ function PostPlayerRoundBuffState:OnEnter()
 
     -- Construct next state
     local Instigator = self.OwnerState.CreateArgument.Instigator
-    local NewArgument = GetGameService(GameServiceNameDef.GameFlowStateService):GetGameFlowStateCreateArgument(Instigator)
+    local NewArgument = GetGameService(self.OwnerState, GameServiceNameDef.GameFlowStateService):GetGameFlowStateCreateArgument(Instigator)
     if NewArgument then
         NewArgument.StateName = "StandardMode.GameEndCheckState"
         NewArgument.Instigator = Instigator

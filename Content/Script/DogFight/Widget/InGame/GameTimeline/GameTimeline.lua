@@ -11,18 +11,18 @@ function GameTimeline:Initialize()
     self:BindViewModel(NewVM, {
         --{BindKey = "TitleMessage",   UIKey = "TitleMessage_Text",   DataBinding = DataBinding.TextContextBinding(), }
     })
-
-    GetGameService("LuaEventService"):RegisterListener(UE.ELuaEvent.LuaEvent_GameTimelineChanged, self, self.OnTimelineChanged)
 end
 
 function GameTimeline:PostInitialized()
     ---@type ListViewWrapper List wrapper for timeline player list.
     self.TimelineViewList = ListWrapper.New(self, self.Timeline_ListView)
+
+    GetGameService(self, GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_GameTimelineChanged, self, self.OnTimelineChanged)
 end
 
 function GameTimeline:OnTimelineChanged()
     -- Get current timeline
-    local CurTimeline = UE.UCommonGameFlowFunctionLibrary.GetCurrentTimeline()
+    local CurTimeline = UE.UCommonGameFlowFunctionLibrary.GetCurrentTimeline(self)
 
     if CurTimeline:Length() > 0 then
         print("Show timeline: ")

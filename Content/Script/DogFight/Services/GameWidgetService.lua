@@ -18,7 +18,7 @@ local function LoadAndCreateWidget(self, InWidget, bShow)
         end
 
         ---@type UUserWidget
-        local NewWidget = UE.UWidgetBlueprintLibrary.Create(GetCurrentWorld(), LoadedClass, GetLocalPlayerController())
+        local NewWidget = UE.UWidgetBlueprintLibrary.Create(GetCurrentWorld(self), LoadedClass, GetLocalPlayerController(self))
         if NewWidget then
             NewWidget:AddToViewport()
             -- Use different behavior based on bShow flag

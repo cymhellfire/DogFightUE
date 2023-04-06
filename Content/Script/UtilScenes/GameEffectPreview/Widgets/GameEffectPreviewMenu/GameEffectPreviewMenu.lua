@@ -19,7 +19,7 @@ end
 
 function GameEffectPreviewMenu:InitEffectList()
     ---@type GameEffectService
-    local GameEffectService = GetGameService(GameServiceNameDef.GameEffectService)
+    local GameEffectService = GetGameService(self, GameServiceNameDef.GameEffectService)
     if GameEffectService then
         local AllDesc = GameEffectService:GetAllEffectUtilDesc()
         local DescTable = AllDesc:ToTable()
@@ -40,7 +40,7 @@ end
 ---@param InEffectId number Id of game effect to preview.
 function GameEffectPreviewMenu:PreviewGameEffect(InEffectId)
     ---@type GameEffectService
-    local GameEffectService = GetGameService(GameServiceNameDef.GameEffectService)
+    local GameEffectService = GetGameService(self, GameServiceNameDef.GameEffectService)
     if GameEffectService then
         local NewEffect = GameEffectService:SpawnEffectAtPos(InEffectId, UE.FVector(0, 0, 0), UE.FRotator(0, 0, 0))
         if NewEffect then
@@ -62,7 +62,7 @@ function GameEffectPreviewMenu:OnPreviewEffectFinished(InEffect)
     end
 
     ---@type TimerService
-    local TimerService = GetGameService(GameServiceNameDef.TimerService)
+    local TimerService = GetGameService(self, GameServiceNameDef.TimerService)
     if TimerService then
         TimerService:RegisterTimer(self, self.ReplayEffect, 1)
     end
