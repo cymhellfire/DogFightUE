@@ -6,6 +6,7 @@
 
 class UCard;
 class UCardDescObject;
+class ATopDownStylePlayerCharacter;
 
 UCLASS()
 class DOGFIGHTGAME_API ATopDownStylePlayerState : public APlayerState
@@ -16,6 +17,23 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual bool ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
+
+	/**
+	 * Initialize player state with given player character.
+	 * @param InCharacter		Character instance to initialize with.
+	 */
+	void InitWithCharacter(ATopDownStylePlayerCharacter* InCharacter);
+
+	/**
+	 * Release the dependency on specified character.
+	 * @param InCharacter		Character instance to remove dependency.
+	 */
+	void ReleaseCharacter(ATopDownStylePlayerCharacter* InCharacter);
+
+	/**
+	 * Check if this player is still alive
+	 */
+	bool IsAlive() const;
 
 	/**
 	 * Add a new card to this player state.
@@ -121,14 +139,18 @@ protected:
 	UFUNCTION()
 	void OnCardFinished(ECardExecutionResult Result, UCard* Card);
 
-public:
+	UFUNCTION()
+	void OnCharacterDead(ATopDownStylePlayerCharacter* Character);
+
+protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="PlayerState")
 	TEnumAsByte<ETopDownStylePlayerState::Type> CurrentState = ETopDownStylePlayerState::PS_Alive;
 
-protected:
 	UPROPERTY(Transient)
 	TArray<UCard*> CardObjectList;
 
 	UPROPERTY(Transient, ReplicatedUsing=OnRep_CardDescObjectList)
 	TArray<UCardDescObject*> CardDescObjectList;
+
+	TWeakObjectPtr<ATopDownStylePlayerCharacter> ListeningCharacter;
 };

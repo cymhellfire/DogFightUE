@@ -21,7 +21,7 @@ end
 function PlayerCharacterStateUnitView:OnActive()
     -- Add myself to player character state canvas
     ---@type GameWidgetService
-    local GameWidgetService = GetGameService(GameServiceNameDef.GameWidgetService)
+    local GameWidgetService = GetGameService(self, GameServiceNameDef.GameWidgetService)
     if GameWidgetService then
         ---@type PlayerCharacterStateCanvasView
         local Canvas = GameWidgetService:GetWidget(WidgetNameDef.WidgetCharacterState)

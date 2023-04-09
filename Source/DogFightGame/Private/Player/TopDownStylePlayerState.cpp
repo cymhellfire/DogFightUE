@@ -9,6 +9,7 @@
 #include "GameService/GameService.h"
 #include "GameService/LuaEventService.h"
 #include "Net/UnrealNetwork.h"
+#include "Pawn/PlayerCharacter/TopDownStylePlayerCharacter.h"
 
 void ATopDownStylePlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -31,6 +32,39 @@ bool ATopDownStylePlayerState::ReplicateSubobjects(UActorChannel* Channel, FOutB
 	}
 
 	return bWriteSomething;
+}
+
+void ATopDownStylePlayerState::InitWithCharacter(ATopDownStylePlayerCharacter* InCharacter)
+{
+	if (!IsValid(InCharacter))
+	{
+		return;
+	}
+
+	// Register callback
+	InCharacter->OnCharacterDead.AddDynamic(this, &ATopDownStylePlayerState::OnCharacterDead);
+
+	// Record character
+	ListeningCharacter = InCharacter;
+}
+
+void ATopDownStylePlayerState::ReleaseCharacter(ATopDownStylePlayerCharacter* InCharacter)
+{
+	if (!IsValid(InCharacter) || ListeningCharacter != InCharacter)
+	{
+		return;
+	}
+
+	// Unregister callback
+	InCharacter->OnCharacterDead.RemoveDynamic(this, &ATopDownStylePlayerState::OnCharacterDead);
+
+	// Clear the record
+	ListeningCharacter.Reset();
+}
+
+bool ATopDownStylePlayerState::IsAlive() const
+{
+	return CurrentState == ETopDownStylePlayerState::PS_Alive;
 }
 
 void ATopDownStylePlayerState::AddCardObject(UCard* InCard)
@@ -175,6 +209,18 @@ void ATopDownStylePlayerState::OnCardFinished(ECardExecutionResult Result, UCard
 		// Notify client
 		ClientCancelCard(Card->GetInstanceId());
 	}
+}
+
+void ATopDownStylePlayerState::OnCharacterDead(ATopDownStylePlayerCharacter* Character)
+{
+	// Double check
+	if (Character != ListeningCharacter)
+	{
+		return;
+	}
+
+	// Change state
+	CurrentState = ETopDownStylePlayerState::PS_Dead;
 }
 
 void ATopDownStylePlayerState::ClientBeginUseCard_Implementation(int32 InId)

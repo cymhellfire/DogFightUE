@@ -83,7 +83,7 @@ function DamageService:CreateDamageWidget()
     end
 
     ---Create new widget
-    return UE.UWidgetBlueprintLibrary.Create(GetCurrentWorld(), LoadedClass, GetLocalPlayerController())
+    return UE.UWidgetBlueprintLibrary.Create(GetCurrentWorld(self), LoadedClass, GetLocalPlayerController(self))
 end
 
 return DamageService

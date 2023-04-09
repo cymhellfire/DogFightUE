@@ -2,11 +2,12 @@
 
 #include "Card/Card.h"
 #include "GameMode/TopDownStyleGameMode.h"
+#include "GameMode/GameModeComponent/InGameMessageSenderComponent.h"
 #include "GameService/GameEffectService.h"
 #include "GameService/GameInputService.h"
 #include "GameService/GameService.h"
 #include "Net/UnrealNetwork.h"
-#include "Pawn/PlayerCharacter/FreeForAllPlayerCharacter.h"
+#include "Pawn/PlayerCharacter/TopDownStylePlayerCharacter.h"
 #include "Player/TopDownStylePlayerState.h"
 #include "Player/ControllerComponent/CardTargetProviderComponent.h"
 #include "PlayerController/PlayerControllerComponent/InGameMessageReceiverComponent.h"
@@ -84,8 +85,14 @@ void ATopDownStylePlayerController::SpawnCharacterPawn()
 			FActorSpawnParameters SpawnParameters;
 			SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-			CharacterPawn = GetWorld()->SpawnActor<AFreeForAllPlayerCharacter>(CharacterClass, FVector::ZeroVector,
+			CharacterPawn = GetWorld()->SpawnActor<ATopDownStylePlayerCharacter>(CharacterClass, FVector::ZeroVector,
 				FRotator::ZeroRotator, SpawnParameters);
+
+			// Establish dependency on character
+			if (auto MyPlayerState = GetPlayerState<ATopDownStylePlayerState>())
+			{
+				MyPlayerState->InitWithCharacter(CharacterPawn);
+			}
 		}
 	}
 }
@@ -122,6 +129,17 @@ void ATopDownStylePlayerController::ClientSpawnGameEffectAtPos_Implementation(in
 	if (auto GameEffectService = Cast<UGameEffectService>(UGameService::GetGameServiceBySuperClass<UGameEffectService>()))
 	{
 		GameEffectService->SpawnEffectAtPos(EffectId, Pos, Rot);
+	}
+}
+
+void ATopDownStylePlayerController::ServerSendInGameChatMessage_Implementation(const FInGameChatMessage& InMessage)
+{
+	if (auto GM = Cast<ATopDownStyleGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		if (auto MessageSender = GM->GetInGameMessageSender())
+		{
+			MessageSender->BroadcastInGameChatMessage(InMessage);
+		}
 	}
 }
 

@@ -26,7 +26,7 @@ function DamageDisplayUnit:AddDamageItem(DisplayParam)
     -- Get display parameter from damage config
     local DamageStyle
     ---@type DamageService
-    local DamageService = GetGameService(GameServiceNameDef.DamageService)
+    local DamageService = GetGameService(self, GameServiceNameDef.DamageService)
     if DamageService then
         local DamageConfig = DamageService.Config:GetConfigById(DisplayParam.DamageId)
         if DamageConfig then
@@ -47,7 +47,7 @@ end
 function DamageDisplayUnit:OnOwnerActivated()
     -- Add myself to damage display canvas
     ---@type GameWidgetService
-    local GameWidgetService = GetGameService(GameServiceNameDef.GameWidgetService)
+    local GameWidgetService = GetGameService(self, GameServiceNameDef.GameWidgetService)
     if GameWidgetService then
         ---@type DamageDisplayCanvas
         local Canvas = GameWidgetService:GetWidget(WidgetNameDef.WidgetDamageDisplay)

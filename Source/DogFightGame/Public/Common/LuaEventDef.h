@@ -10,6 +10,7 @@ namespace ELuaEvent
 		LuaEvent_ReadyPlayerCount,
 		LuaEvent_ReceiveTitleMessage,
 		LuaEvent_GameTimelineChanged,
+		LuaEvent_ReceiveInGameChatMessage,
 		// ------------------ Card --------------------
 		LuaEvent_CardListChanged,
 		/** Triggered when local player begin using a card (Client only) */

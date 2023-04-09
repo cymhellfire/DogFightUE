@@ -3,9 +3,9 @@
 #include "GameMode/TopDownStyleGameState.h"
 #include "GameMode/TopDownStyleGameMode.h"
 
-ATopDownStyleGameMode* UCommonFunctionLibraryBase::GetCurrentTopDownStyleGameMode()
+ATopDownStyleGameMode* UCommonFunctionLibraryBase::GetCurrentTopDownStyleGameMode(const UObject* WorldContextObject)
 {
-	if (auto CurWorld = ULuaIntegrationFunctionLibrary::GetCurrentWorld())
+	if (auto CurWorld = ULuaIntegrationFunctionLibrary::GetCurrentWorld(WorldContextObject))
 	{
 		if (auto GameMode = Cast<ATopDownStyleGameMode>(CurWorld->GetAuthGameMode()))
 		{
@@ -16,9 +16,9 @@ ATopDownStyleGameMode* UCommonFunctionLibraryBase::GetCurrentTopDownStyleGameMod
 	return nullptr;
 }
 
-ATopDownStyleGameState* UCommonFunctionLibraryBase::GetCurrentTopDownStyleGameState()
+ATopDownStyleGameState* UCommonFunctionLibraryBase::GetCurrentTopDownStyleGameState(const UObject* WorldContextObject)
 {
-	if (auto CurWorld = ULuaIntegrationFunctionLibrary::GetCurrentWorld())
+	if (auto CurWorld = ULuaIntegrationFunctionLibrary::GetCurrentWorld(WorldContextObject))
 	{
 		return Cast<ATopDownStyleGameState>(CurWorld->GetGameState());
 	}

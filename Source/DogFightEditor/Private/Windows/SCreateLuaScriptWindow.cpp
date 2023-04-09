@@ -26,6 +26,8 @@ void SCreateLuaScriptWindow::Construct(const FArguments& InArgs)
 	TemplateNameList.Add(MakeShareable(new FString("Card")));
 	TemplateNameList.Add(MakeShareable(new FString("CardModifier")));
 	TemplateNameList.Add(MakeShareable(new FString("GameFlowState")));
+	TemplateNameList.Add(MakeShareable(new FString("CardLogic")));
+	TemplateNameList.Add(MakeShareable(new FString("CardAction")));
 	SelectedTemplate = TemplateNameList[0];
 	SetCreateTemplateList(*SelectedTemplate);
 

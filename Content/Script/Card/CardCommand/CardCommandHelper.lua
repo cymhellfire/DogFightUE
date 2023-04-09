@@ -40,7 +40,7 @@ function CardCommandHelper.GetOwnerPlayerController(InCommand)
     end
 
     if PlayerId ~= -1 then
-        return UE.UCommonGameplayFunctionLibrary.GetPlayerControllerById(PlayerId)
+        return UE.UCommonGameplayFunctionLibrary.GetPlayerControllerById(InCommand._CardLogic, PlayerId)
     end
 end
 

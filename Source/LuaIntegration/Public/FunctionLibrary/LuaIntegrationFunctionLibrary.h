@@ -12,21 +12,21 @@ public:
 	 * @return Current playing world.
 	 */
 	UFUNCTION(BlueprintCallable, Category="LuaIntegrationFunction")
-	static UWorld* GetCurrentWorld();
+	static UWorld* GetCurrentWorld(const UObject* WorldContextObject);
 
 	/**
 	 * Get the game instance.
 	 * @return Current game instance.
 	 */
 	UFUNCTION(BlueprintCallable, Category="LuaIntegrationFunction")
-	static UGameInstance* GetGameInstance();
+	static UGameInstance* GetGameInstance(const UObject* WorldContextObject);
 
 	/**
 	 * Get the player controller of first local player.
 	 * @return			Player controller.
 	 */
 	UFUNCTION(BlueprintCallable, Category="LuaIntegrationFunction")
-	static APlayerController* GetFirstLocalPlayerController();
+	static APlayerController* GetFirstLocalPlayerController(const UObject* WorldContextObject);
 
 	/**
 	 * Load the class from given path.
@@ -49,7 +49,7 @@ public:
 	 * @return				Localized string based on current culture.
 	 */
 	UFUNCTION(BlueprintCallable, Category="LuaIntegrationFunction")
-	static FText GetLocalizedString(const FString& InTable, const FString& InKey);
+	static FText GetLocalizedString(const UObject* WorldContextObject, const FString& InTable, const FString& InKey);
 
 	/**
 	 * Get the localized string by specified key and string table, and format with given arguments.
@@ -59,5 +59,5 @@ public:
 	 * @return				Localized string based on current culture.
 	 */
 	UFUNCTION(BlueprintCallable, Category="LuaIntegrationFunction")
-	static FText GetLocalizedStringWithParam(const FString& InTable, const FString& InKey, const TArray<FString>& ParamList);
+	static FText GetLocalizedStringWithParam(const UObject* WorldContextObject, const FString& InTable, const FString& InKey, const TArray<FString>& ParamList);
 };

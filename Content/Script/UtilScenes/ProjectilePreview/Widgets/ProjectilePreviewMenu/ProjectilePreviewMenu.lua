@@ -43,7 +43,7 @@ end
 ---Initialize projectile list.
 function ProjectilePreviewMenu:InitProjectileList()
     ---@type ProjectileService
-    local ProjectileService = GetGameService(GameServiceNameDef.ProjectileService)
+    local ProjectileService = GetGameService(self, GameServiceNameDef.ProjectileService)
     if ProjectileService then
         local AllDesc = ProjectileService:GetAllProjectileUtilsDesc()
         local ItemList = {}

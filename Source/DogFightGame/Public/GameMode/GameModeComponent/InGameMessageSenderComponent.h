@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Common/InGameChatType.h"
 #include "InGameMessageSenderComponent.generated.h"
 
 class ATopDownStyleGameMode;
@@ -18,6 +19,8 @@ public:
 	virtual void InitializeComponent() override;
 
 	void BroadcastTitleMessage(const FText& Message);
+
+	void BroadcastInGameChatMessage(const FInGameChatMessage& ChatMessage);
 
 protected:
 	TWeakObjectPtr<ATopDownStyleGameMode> ParentGameMode;

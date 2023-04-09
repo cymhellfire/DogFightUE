@@ -86,8 +86,8 @@ void ANewProjectileBase::Dead()
 	if (WarheadData.GameEffectId >= 0)
 	{
 		// Spawn vfx
-		UCommonGameplayFunctionLibrary::SpawnGameEffectAtPos(WarheadData.GameEffectId, GetActorLocation(),
-			WarheadData.bUseProjectileRotation ? GetActorRotation() : FRotator::ZeroRotator);
+		UCommonGameplayFunctionLibrary::SpawnGameEffectAtPos(this, WarheadData.GameEffectId,
+			GetActorLocation(), WarheadData.bUseProjectileRotation ? GetActorRotation() : FRotator::ZeroRotator);
 
 		if (auto DamageService = UGameService::GetGameService<UDamageService>())
 		{
@@ -100,7 +100,7 @@ void ANewProjectileBase::Dead()
 				// Damage the hit target if no radius
 				if (HitActor.IsValid())
 				{
-					UCommonGameplayFunctionLibrary::DamageActor(WarheadData.DamageId, HitActor.Get(), Damage, this);
+					UCommonGameplayFunctionLibrary::DamageActor(this, WarheadData.DamageId, HitActor.Get(), Damage, this);
 				}
 			}
 		}

@@ -1,6 +1,6 @@
 require "UnLua"
 
----@class PostPlayerRoundCardState Discard cards that cannot be kept by current player.
+---@class PostPlayerRoundCardState : GameFlowStateLogicBase Discard cards that cannot be kept by current player.
 local PostPlayerRoundCardState = Class("GameFlow.GameFlowState.GameFlowStateLogicBase")
 
 function PostPlayerRoundCardState:OnEnter()
@@ -8,7 +8,7 @@ function PostPlayerRoundCardState:OnEnter()
 
     -- Construct next state
     local Instigator = self.OwnerState.CreateArgument.Instigator
-    local NewArgument = GetGameService(GameServiceNameDef.GameFlowStateService):GetGameFlowStateCreateArgument(Instigator)
+    local NewArgument = GetGameService(self.OwnerState, GameServiceNameDef.GameFlowStateService):GetGameFlowStateCreateArgument(Instigator)
     if NewArgument then
         NewArgument.StateName = "StandardMode.PostPlayerRoundBuffState"
         NewArgument.Instigator = Instigator

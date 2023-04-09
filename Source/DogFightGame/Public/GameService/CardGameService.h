@@ -12,9 +12,6 @@ class DOGFIGHTGAME_API UCardGameService : public ULuaGameService
 {
 	GENERATED_BODY()
 public:
-
-	void UseCard(FString CardName, UObject* Instigator);
-
 	UFUNCTION(BlueprintImplementableEvent)
 	UCard* CreateCard(const FString& ScriptPath, UObject* Instigator);
 
@@ -26,7 +23,7 @@ public:
 
 	virtual FString GetModuleName_Implementation() const override
 	{
-		return TEXT("DogFight.Services.CardGameService");
+		return TEXT("DogFight.Services.CardService.CardGameService");
 	}
 
 protected:

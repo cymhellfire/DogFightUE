@@ -1216,15 +1216,6 @@ void AStandardModePlayerController::ExecFocusTo(float X, float Y)
 	SetCameraFocusPoint(X, Y);
 }
 
-void AStandardModePlayerController::ExecSpawnCard(FString CardName)
-{
-	UCardGameService* CardGameService = UGameService::GetGameService<UCardGameService>();
-	if (CardGameService)
-	{
-		CardGameService->UseCard(CardName, this);
-	}
-}
-
 void AStandardModePlayerController::ExecAddTestAbility(int32 Index)
 {
 	ServerAddTestAbility(Index);

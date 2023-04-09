@@ -33,3 +33,21 @@ void UInGameMessageSenderComponent::BroadcastTitleMessage(const FText& Message)
 		}
 	}
 }
+
+void UInGameMessageSenderComponent::BroadcastInGameChatMessage(const FInGameChatMessage& ChatMessage)
+{
+	if (ParentGameMode.IsValid())
+	{
+		auto AllPC = ParentGameMode->GetAllPlayerControllers();
+		for (auto PCPtr : AllPC)
+		{
+			if (PCPtr.IsValid())
+			{
+				if (auto Receiver = PCPtr->GetInGameMessageReceiverComponent())
+				{
+					Receiver->ReceiveInGameChatMessage(ChatMessage);
+				}
+			}
+		}
+	}
+}

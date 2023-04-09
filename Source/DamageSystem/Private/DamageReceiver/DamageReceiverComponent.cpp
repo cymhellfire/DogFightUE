@@ -36,6 +36,7 @@ void UDamageReceiverComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 	SharedParam.bIsPushBased = true;
 
 	DOREPLIFETIME_WITH_PARAMS_FAST(UDamageReceiverComponent, Health, SharedParam);
+	DOREPLIFETIME_WITH_PARAMS_FAST(UDamageReceiverComponent, MaxHealth, SharedParam);
 }
 
 void UDamageReceiverComponent::TakeDamage(UExtendedDamageInstance* DamageInstance, FExtendedDamageEvent InEvent)
@@ -73,8 +74,11 @@ void UDamageReceiverComponent::Sync_OnIntegerWrapperAdded(UAttributeIntegerWrapp
 
 void UDamageReceiverComponent::OnMaxHealthChanged(UAttributeIntegerWrapperObject* WrapperObject, int32 InValue)
 {
+	MARK_PROPERTY_DIRTY_FROM_NAME(UDamageReceiverComponent, MaxHealth, this);
+	MaxHealth = InValue;
+
 	// Clamp current health
-	SetHealth(FMath::Clamp(Health, Health, InValue));
+	SetHealth(FMath::Clamp(Health, Health, MaxHealth));
 }
 
 void UDamageReceiverComponent::OnRep_Health(int32 OldValue)
@@ -83,4 +87,18 @@ void UDamageReceiverComponent::OnRep_Health(int32 OldValue)
 	UE_LOG(LogDamageSystem, Log, TEXT("%s: [%s] Health %d -> %d"), *NetRoleStr, *GetName(), OldValue, Health);
 
 	OnHealthChanged.Broadcast(Health, 100);
+
+	// No health check
+	if (Health <= 0.f)
+	{
+		OnNoHealth.Broadcast();
+	}
+}
+
+void UDamageReceiverComponent::OnRep_MaxHealth(int32 OldValue)
+{
+	const FString NetRoleStr = TO_NET_ROLE_STR(GetOwnerRole());
+	UE_LOG(LogDamageSystem, Log, TEXT("%s: [%s] MaxHealth %d -> %d"), *NetRoleStr, *GetName(), OldValue, MaxHealth);
+
+	OnHealthChanged.Broadcast(Health, MaxHealth);
 }

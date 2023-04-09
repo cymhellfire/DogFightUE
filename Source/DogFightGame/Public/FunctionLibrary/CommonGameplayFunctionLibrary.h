@@ -20,7 +20,7 @@ public:
 	 * @return					The PlayerState of corresponding player.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
-	static APlayerState* GetPlayerStateById(int32 InPlayerId);
+	static APlayerState* GetPlayerStateById(const UObject* WorldContextObject, int32 InPlayerId);
 
 	/**
 	 * Get PlayerController by player id.
@@ -28,7 +28,7 @@ public:
 	 * @return					The PlayerController of corresponding player.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
-	static ATopDownStylePlayerController* GetPlayerControllerById(int32 InPlayerId);
+	static ATopDownStylePlayerController* GetPlayerControllerById(const UObject* WorldContextObject, int32 InPlayerId);
 
 	/**
 	 * Given player specified card.
@@ -36,14 +36,14 @@ public:
 	 * @param InCard			The card that given to player.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameplay|Card")
-	static void DispatchCardToPlayer(int32 InPlayerId, UCard* InCard);
+	static void DispatchCardToPlayer(const UObject* WorldContextObject, int32 InPlayerId, UCard* InCard);
 
 	/**
 	 * Let local player use card by instance id.
 	 * @param InInstanceId		Instance Id of card that to be used.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameplay|Card")
-	static void UseCardByInstanceId(int32 InInstanceId);
+	static void UseCardByInstanceId(const UObject* WorldContextObject, int32 InInstanceId);
 
 	/**
 	 * Get card count of specified player.
@@ -51,7 +51,7 @@ public:
 	 * @return					Total card count of player.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameplay|Card")
-	static int32 GetPlayerCardNums(int32 InPlayerId);
+	static int32 GetPlayerCardNums(const UObject* WorldContextObject, int32 InPlayerId);
 
 	/**
 	 * Add specified game widget to player with given id.
@@ -59,7 +59,7 @@ public:
 	 * @param InPlayerId		Id of player to add widget.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameplay|UI")
-	static void AddWidgetByPlayerId(FString WidgetName, int32 InPlayerId);
+	static void AddWidgetByPlayerId(const UObject* WorldContextObject, FString WidgetName, int32 InPlayerId);
 
 	/**
 	 * Show specified game widget to player with given id.
@@ -67,7 +67,7 @@ public:
 	 * @param InPlayerId		Id of player to change visibility.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameplay|UI")
-	static void ShowWidgetByPlayerId(FString WidgetName, int32 InPlayerId);
+	static void ShowWidgetByPlayerId(const UObject* WorldContextObject, FString WidgetName, int32 InPlayerId);
 
 	/**
 	 * Hide specified game widget to player with given id.
@@ -75,7 +75,7 @@ public:
 	 * @param InPlayerId		Id of player to hide widget.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameplay|UI")
-	static void HideWidgetByPlayerId(FString WidgetName, int32 InPlayerId);
+	static void HideWidgetByPlayerId(const UObject* WorldContextObject, FString WidgetName, int32 InPlayerId);
 
 	/**
 	 * Remove specified game widget from player with given id.
@@ -83,7 +83,7 @@ public:
 	 * @param InPlayerId		Id of player to remove widget.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameplay|UI")
-	static void RemoveWidgetPlayerId(FString WidgetName, int32 InPlayerId);
+	static void RemoveWidgetPlayerId(const UObject* WorldContextObject, FString WidgetName, int32 InPlayerId);
 
 	/**
 	 * Create damage display item to player with given id.
@@ -91,14 +91,21 @@ public:
 	 * @param InPlayerId		Id of player to show.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameplay|UI")
-	static void CreateDamageDisplayByPlayerId(const FDamageDisplayParams& DisplayParams, int32 InPlayerId);
+	static void CreateDamageDisplayByPlayerId(const UObject* WorldContextObject, const FDamageDisplayParams& DisplayParams, int32 InPlayerId);
 
 	/**
 	 * Get the total count of alive player in current game.
 	 * @return			Number of players are still alive.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
-	static int32 GetAlivePlayerNum();
+	static int32 GetAlivePlayerNum(const UObject* WorldContextObject);
+
+	/**
+	 * Get the id list of alive players.
+	 * @return			Id list of alive player.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
+	static TArray<int32> GetAlivePlayerId(const UObject* WorldContextObject);
 
 	/**
 	 * Spawn game effect with given id at specified location on every connected client.
@@ -107,18 +114,33 @@ public:
 	 * @param Rot				Spawn rotation.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameplay|Effect")
-	static void SpawnGameEffectAtPos(int32 EffectId, FVector Pos, FRotator Rot);
+	static void SpawnGameEffectAtPos(const UObject* WorldContextObject, int32 EffectId, FVector Pos, FRotator Rot);
 
+	/**
+	 * Apply damage to given actor.
+	 * @param DamageId			Id of damage to apply.
+	 * @param Target			Target actor to receive damage.
+	 * @param BaseDamage		Base damage value.
+	 * @param Causer			Damage source.
+	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
-	static void DamageActor(int32 DamageId, AActor* Target, float BaseDamage, AActor* Causer);
+	static void DamageActor(const UObject* WorldContextObject, int32 DamageId, AActor* Target, float BaseDamage, AActor* Causer);
+
+	/**
+	 * Let character of specified player move to given position.
+	 * @param PlayerId			Id of character owner.
+	 * @param TargetPosition	Target position.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
+	static void MovePlayerCharacterToPosition(const UObject* WorldContextObject, int32 PlayerId, FVector TargetPosition);
 protected:
 	/**
 	 * Do specified function on every player state in current game meet the id mask.
 	 */
-	static void ForEachPlayerStateDo(TFunction<void(ATopDownStylePlayerState*)> ExecuteFunc, int32 PlayerIdMask = -1);
+	static void ForEachPlayerStateDo(const UObject* WorldContextObject, TFunction<void(ATopDownStylePlayerState*)> ExecuteFunc, int32 PlayerIdMask = -1);
 
 	/**
 	 * Do specified function on every player controller in current game meet the id mask.
 	 */
-	static void ForEachPlayerControllerDo(TFunction<void(ATopDownStylePlayerController*)> ExecuteFunc, int32 PlayerIdMask = -1);
+	static void ForEachPlayerControllerDo(const UObject* WorldContextObject, TFunction<void(ATopDownStylePlayerController*)> ExecuteFunc, int32 PlayerIdMask = -1);
 };

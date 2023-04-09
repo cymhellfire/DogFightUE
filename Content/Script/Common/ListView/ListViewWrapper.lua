@@ -34,6 +34,22 @@ function ListViewWrapper:Initialize(InListView, InWidget)
     self.DataObjectList = {}
 end
 
+---Create a new UObject that holds the given data.
+---@param self ListViewWrapper
+---@param Data any Data to be hold
+---@return GenericListViewItem New object instance
+local function ConstructWrapperObjectWithData(self, Data)
+    ---@type GenericListViewItem
+    local NewItemObject = NewObject(self.ItemClass, self.ParentWidget)
+    NewItemObject:InitializeWithList(self)
+    NewItemObject:SetData(Data)
+
+    -- Record to data item list and add a reference to it to prevent GC
+    self:AddObjectRef(NewItemObject)
+
+    return NewItemObject
+end
+
 ---Load item data contains in a list.
 ---@param InDataList table Table of all item data
 function ListViewWrapper:LoadDataByList(InDataList)
@@ -50,15 +66,8 @@ function ListViewWrapper:LoadDataByList(InDataList)
         if InDataList then
             -- Create UObject for carrying the data
             for i = 1, #InDataList do
-                ---@type GenericListViewItem
-                local NewItemObject = NewObject(self.ItemClass, self.ParentWidget)
-                NewItemObject:InitializeWithList(self)
-                NewItemObject:SetData(InDataList[i])
                 -- Record new item to array
-                DataItemList:Add(NewItemObject)
-
-                -- Record to data item list and add a reference to it to prevent GC
-                self:AddObjectRef(NewItemObject)
+                DataItemList:Add(ConstructWrapperObjectWithData(self, InDataList[i]))
             end
         end
 
@@ -78,6 +87,24 @@ function ListViewWrapper:Clear()
     if self.ParentWidget then
         -- Clear the list by loading empty list
         self:LoadDataByList(nil)
+    end
+end
+
+---Add a new data object to this list.
+---@param InData any The data add to this list.
+function ListViewWrapper:AddDataObject(InData)
+    if self.ItemClass == nil then
+        ---@type UClass Item class to spawn.
+        self.ItemClass = LoadClass(ClassPath)
+    end
+
+    if self.ItemClass then
+        local NewItem = ConstructWrapperObjectWithData(self, InData)
+
+        -- Add to native list view
+        if self.ParentWidget then
+            self.ParentWidget:AddItem(NewItem)
+        end
     end
 end
 

@@ -39,7 +39,7 @@ end
 function ProjectileService:SpawnNewProjectileInstance_Implementation(InId)
     local Config = self.Config:GetConfigById(InId)
     if Config then
-        local CurWorld = GetCurrentWorld()
+        local CurWorld = GetCurrentWorld(self)
         local ProjectileClass = LoadClass(Config.ResPath)
         if ProjectileClass and CurWorld then
             local SpawnTrans = UE.FTransform()
@@ -49,7 +49,7 @@ function ProjectileService:SpawnNewProjectileInstance_Implementation(InId)
             -- Setup the warhead information
             if NewProjectile then
                 ---@type WarheadService
-                local WarheadService = GetGameService(GameServiceNameDef.WarheadService)
+                local WarheadService = GetGameService(self, GameServiceNameDef.WarheadService)
                 if WarheadService then
                     WarheadService:SetWarheadInfoForProjectile(NewProjectile, Config.Warhead)
                 end

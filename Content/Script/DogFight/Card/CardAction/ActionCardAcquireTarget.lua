@@ -2,9 +2,18 @@ local CardActionCommand = require "Card.CardCommand.CardActionCommand"
 local CardTargetHelper = require "Card.CardTarget.CardTargetHelper"
 local CardCommandHelper = require "Card.CardCommand.CardCommandHelper"
 
+---@field _Count number Amount of target to acquire.
+---@field _Type ECardTargetType Type of target to acquire.
 ---@field _DelegateHelper DelegateHelper Helper to receive the target acqurie notify.
 ---@class ActionCardAcquireTarget : CardActionCommand Action to select target for card.
 local ActionCardAcquireTarget = Class(CardActionCommand)
+
+---@param InCount number Target count.
+---@param InType ECardTargetType Target type.
+function ActionCardAcquireTarget:InitAcquireSettings(InCount, InType)
+    self._Count = InCount
+    self._Type = InType
+end
 
 function ActionCardAcquireTarget:StartCommand()
     CardActionCommand.StartCommand(self)
@@ -13,14 +22,14 @@ function ActionCardAcquireTarget:StartCommand()
     local PlayerController = CardCommandHelper.GetOwnerPlayerController(self)
     if PlayerController then  
         ---@type DelegateHelperService
-        local DelegateHelperService = GetGameService(GameServiceNameDef.DelegateHelperService)
+        local DelegateHelperService = GetGameService(self._CardLogic, GameServiceNameDef.DelegateHelperService)
         if DelegateHelperService then
             self._DelegateHelper = DelegateHelperService:BindCallback(PlayerController.OnTargetAcquired, self, self.OnTargetAcquired)
             if self._DelegateHelper then
                 -- Start acquire target
                 local Setting = UE.FTargetAcquireSettings()
-                Setting.TargetCount = 1
-                Setting.Type = UE.ECardTargetType.CTT_Actor
+                Setting.TargetCount = self._Count or 1
+                Setting.Type = self._Type or UE.ECardTargetType.CTT_Actor
                 PlayerController:StartAcquireTargetsWithoutCallback(Setting)
             end
         end
@@ -35,7 +44,7 @@ function ActionCardAcquireTarget:OnTargetAcquired(bSucceed, TargetInfos)
     -- Release the helper
     if self._DelegateHelper then
         ---@type DelegateHelperService
-        local DelegateHelperService = GetGameService(GameServiceNameDef.DelegateHelperService)
+        local DelegateHelperService = GetGameService(self._CardLogic, GameServiceNameDef.DelegateHelperService)
         if DelegateHelperService then
             DelegateHelperService:ReleaseDelegateHelper(self._DelegateHelper)
             self._DelegateHelper = nil

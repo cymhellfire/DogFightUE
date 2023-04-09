@@ -44,6 +44,21 @@ function ServiceConfigBase:LoadData(InData)
     InitializeIdToNameCache(self)
 end
 
+---Get the total count of config data.
+---@return number Total amount of config item.
+function ServiceConfigBase:GetConfigNum()
+    if not self.Data then
+        return 0
+    end
+
+    local Result = 0
+    for _, v in pairs(self.Data) do
+        Result = Result + 1
+    end
+
+    return Result
+end
+
 ---Get config with specified name.
 ---@param InName string Name of config data.
 ---@return table Config data.

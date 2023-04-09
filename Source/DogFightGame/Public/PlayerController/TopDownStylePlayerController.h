@@ -1,12 +1,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Common/InGameChatType.h"
 #include "Common/InputMappingDef.h"
 #include "Player/CardTargetProviderInterface.h"
 #include "Player/DogFightPlayerController.h"
 #include "TopDownStylePlayerController.generated.h"
 
-class AFreeForAllPlayerCharacter;
+class ATopDownStylePlayerCharacter;
 class UInGameMessageReceiverComponent;
 class UInGameWidgetManipulatorComponent;
 class UCardTargetProviderComponent;
@@ -44,6 +45,10 @@ public:
 	UFUNCTION(Client, Reliable)
 	void ClientSpawnGameEffectAtPos(int32 EffectId, FVector Pos, FRotator Rot);
 
+	// -----=========== Chat ===========-----
+	UFUNCTION(Server, Reliable)
+	void ServerSendInGameChatMessage(const FInGameChatMessage& InMessage);
+
 	UInGameMessageReceiverComponent* GetInGameMessageReceiverComponent() const
 	{
 		return InGameMessageReceiverComponent;
@@ -55,7 +60,7 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable, Category="TopDownStylePlayerController")
-	AFreeForAllPlayerCharacter* GetCharacterPawn() const
+	ATopDownStylePlayerCharacter* GetCharacterPawn() const
 	{
 		return CharacterPawn;
 	}
@@ -93,10 +98,10 @@ protected:
 	UCardTargetProviderComponent* CardTargetProviderComponent;
 
 	UPROPERTY(Replicated, Transient)
-	AFreeForAllPlayerCharacter* CharacterPawn;
+	ATopDownStylePlayerCharacter* CharacterPawn;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="PlayerController")
-	TSubclassOf<AFreeForAllPlayerCharacter> CharacterClass;
+	TSubclassOf<ATopDownStylePlayerCharacter> CharacterClass;
 
 public:
 	UPROPERTY(BlueprintAssignable, Category="TopDownStylePlayerController")

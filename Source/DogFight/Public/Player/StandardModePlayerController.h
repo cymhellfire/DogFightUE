@@ -356,9 +356,6 @@ public:
 	void ExecFocusTo(float X, float Y);
 
 	UFUNCTION(Exec)
-	void ExecSpawnCard(FString CardName);
-
-	UFUNCTION(Exec)
 	void ExecAddTestAbility(int32 Index);
 
 	UFUNCTION(Exec)

@@ -1,0 +1,57 @@
+local CardLogicCommand = require "Card.CardCommand.CardLogicCommand"
+
+---@class $Class$ : CardLogicCommand
+local $Class$ = Class(CardLogicCommand)
+
+local CommandNameDef = {
+    -- AcquireTarget = "AcquireTarget",
+    -- PrintName = "PrintName",
+}
+
+---Initialize the card workflow
+function $Class$:OnInit()
+    CardLogicCommand.OnInit(self)
+
+    -- Register all commands
+    local CommandTable = {
+        -- [CommandNameDef.AcquireTarget] = {
+        --     Script = "DogFight.Card.CardAction.ActionCardAcquireTarget",
+        --     OnFinish = self.OnAcquireTargetFinished,
+        -- },
+        -- [CommandNameDef.FireProjectile] = {
+        --     Script = "DogFight.Card.CardAction.ActionLaunchProjectile",
+        --     OnCreate = self.OnFireProjectileCreated,
+        --     OnFinish = self.OnFireProjectileFinished,
+        -- },
+    }
+    -- self:RegisterCommandTable(CommandTable)
+end
+
+---Start executing
+function $Class$:StartCommand()
+    CardLogicCommand.StartCommand(self)
+
+    --self:RunCommand(CommandNameDef.AcquireTarget)
+end
+
+---Command finish callback
+function $Class$:OnAcquireTargetFinished(Result, TargetInfo)
+    --self._TargetInfo = TargetInfo
+    --self:RunCommand(CommandNameDef.FireProjectile)
+end
+
+---Command create callback
+function $Class$:OnFireProjectileCreated(InCommand)
+    -- local ProjectileInfo = {
+    --     Name = ProjectileNameDef.HomingProjectile,
+    --     MuzzleSpeed = 500,
+    -- }
+    -- InCommand:SetCommandInfo(ProjectileInfo, self._TargetInfo)
+end
+
+---Finish callback
+function $Class$:OnFireProjectileFinished(Result)
+    self:FinishWithParams(Result)
+end
+
+return $Class$
