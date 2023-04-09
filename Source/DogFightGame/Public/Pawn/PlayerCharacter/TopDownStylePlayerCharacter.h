@@ -1,5 +1,6 @@
 #pragma once
 
+#include "AITypes.h"
 #include "DamageReceiver/DamageReceiverComponent.h"
 #include "GameFramework/Character.h"
 #include "GameObject/Component/WidgetLocatorComponent.h"
@@ -9,8 +10,11 @@
 class ATopDownStylePlayerCharacter;
 class UPlayerCharacterStateWidget;
 class URagdollComponent;
+class UPathFollowingComponent;
+struct FPathFollowingResult;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTopDownStylePlayerCharacterDeadEvent, ATopDownStylePlayerCharacter*, Character);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTopDownStylePlayerCharacterMoveFinishedEvent);
 
 UCLASS()
 class DOGFIGHTGAME_API ATopDownStylePlayerCharacter : public ACharacter, public IDamageReceiverActorInterface
@@ -41,6 +45,8 @@ protected:
 
 	virtual void Dead();
 
+	void OnMoveFinished(FAIRequestID RequestID, const FPathFollowingResult& Result);
+
 	UFUNCTION()
 	void OnHealthChanged(float CurHealth, float MaxHealth);
 
@@ -56,6 +62,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="TopDownStylePlayerCharacter")
 	FTopDownStylePlayerCharacterDeadEvent OnCharacterDead;
+
+	UPROPERTY(BlueprintAssignable, Category="TopDownStylePlayerCharacter")
+	FTopDownStylePlayerCharacterMoveFinishedEvent OnCharacterMoveFinished;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -73,4 +82,6 @@ protected:
 private:
 
 	uint8 bAlive : 1;
+
+	TWeakObjectPtr<UPathFollowingComponent> PathFollowingComponent;
 };

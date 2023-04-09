@@ -1,5 +1,6 @@
 #include "Pawn/PlayerCharacter/TopDownStylePlayerCharacter.h"
 
+#include "AIController.h"
 #include "Pawn/PlayerCharacter/RagdollComponent.h"
 #include "UI/InGame/PlayerCharacterStateWidget.h"
 
@@ -22,6 +23,15 @@ void ATopDownStylePlayerCharacter::BeginPlay()
 
 	DamageReceiverComponent->OnHealthChanged.AddDynamic(this, &ATopDownStylePlayerCharacter::OnHealthChanged);
 	DamageReceiverComponent->OnNoHealth.AddDynamic(this, &ATopDownStylePlayerCharacter::OnNoHealth);
+
+	if (auto AIController = Cast<AAIController>(GetController()))
+	{
+		PathFollowingComponent = AIController->GetPathFollowingComponent();
+		if (PathFollowingComponent.IsValid())
+		{
+			PathFollowingComponent->OnRequestFinished.AddUObject(this, &ATopDownStylePlayerCharacter::OnMoveFinished);
+		}
+	}
 }
 
 void ATopDownStylePlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -32,6 +42,11 @@ void ATopDownStylePlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayRea
 
 	DamageReceiverComponent->OnHealthChanged.RemoveDynamic(this, &ATopDownStylePlayerCharacter::OnHealthChanged);
 	DamageReceiverComponent->OnNoHealth.RemoveDynamic(this, &ATopDownStylePlayerCharacter::OnNoHealth);
+
+	if (PathFollowingComponent.IsValid())
+	{
+		PathFollowingComponent->OnRequestFinished.RemoveAll(this);
+	}
 }
 
 FVector ATopDownStylePlayerCharacter::GetProjectileSpawnLocation() const
@@ -90,6 +105,14 @@ void ATopDownStylePlayerCharacter::Dead()
 
 	// Trigger delegate
 	OnCharacterDead.Broadcast(this);
+}
+
+void ATopDownStylePlayerCharacter::OnMoveFinished(FAIRequestID RequestID, const FPathFollowingResult& Result)
+{
+	if (Result.IsSuccess())
+	{
+		OnCharacterMoveFinished.Broadcast();
+	}
 }
 
 void ATopDownStylePlayerCharacter::OnHealthChanged(float CurHealth, float MaxHealth)

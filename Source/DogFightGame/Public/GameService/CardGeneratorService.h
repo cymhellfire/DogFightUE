@@ -12,6 +12,6 @@ public:
 
 	virtual FString GetModuleName_Implementation() const override
 	{
-		return "DogFight.Services.CardGeneratorService";
+		return "DogFight.Services.CardService.CardGeneratorService";
 	}
 };

@@ -40,11 +40,11 @@ function PrePlayerRoundCardState:DispatchCard(InPlayerId, InCount)
     end
 
     for i = 1, InCount do
-        local NewCardName = GetGameService(self.OwnerState, GameServiceNameDef.CardGeneratorService):GetRandomCard()
+        local NewCardLogic = GetGameService(self.OwnerState, GameServiceNameDef.CardGeneratorService):GetRandomCard()
         local NewCard = nil
         -- Create new card by name
-        if NewCardName then
-            NewCard = GetGameService(self.OwnerState, GameServiceNameDef.CardGameService):CreateCard(NewCardName, TargetPlayerCtrl)
+        if NewCardLogic then
+            NewCard = GetGameService(self.OwnerState, GameServiceNameDef.CardGameService):CreateCard(NewCardLogic, TargetPlayerCtrl)
         end
 
         -- Dispatch new card to player

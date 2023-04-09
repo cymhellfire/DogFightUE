@@ -11,11 +11,10 @@ function CardGameService:StartupScript(ServiceName)
     self.CardInstanceId = 0
 end
 
----Create a card with given script.
----基于给定脚本创建卡牌
----@param Path string Path of lua script / 脚本路径
----@param Instigator AController Instigator of creation / 创建发起者
-function CardGameService:CreateCard(Path, Instigator)
+---Create a card with given logic script path.
+---@param LogicPath string Path of card logic script
+---@param Instigator AController Instigator of creation
+function CardGameService:CreateCard(LogicPath, Instigator)
     -- Ensure the type of Instigator
     local OwnerCtrl = IsDerivedFrom(Instigator, UE.AController.StaticClass())
     if not OwnerCtrl then
@@ -28,10 +27,12 @@ function CardGameService:CreateCard(Path, Instigator)
         return nil
     end
 
-    ---@type CardBase Create card and bind script
-    local NewCard = NewObject(DefaultClass, Instigator, nil, self:ValidateScriptPath(Path))
+    ---@type CardBase Create card object
+    local NewCard = NewObject(DefaultClass, Instigator)
+    -- Set card logic 
+    NewCard:SetCardLogicPath(LogicPath)
     -- Set instance id to new card
-    NewCard:SetCardInstanceId(self:GetNewCardInstanceId())
+    NewCard:SetInstanceId(self:GetNewCardInstanceId())
     -- Set owner controller
     NewCard:SetOwnerController(Instigator)
     return NewCard

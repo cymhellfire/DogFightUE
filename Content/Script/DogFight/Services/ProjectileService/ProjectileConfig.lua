@@ -24,7 +24,7 @@ local Config = {
         ResPath = "/Game/DogFightGame/Blueprints/Projectile/BP_Proj_Homing",
         ScriptPath = "",
         Warhead = WarheadNameDef.Default,
-        Damage = 10,
+        Damage = 50,
     },
     [ProjectileNameDef.PeriodHomingProjectile] = {
         Id = 4,

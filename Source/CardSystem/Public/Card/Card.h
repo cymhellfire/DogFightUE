@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "UnLuaInterface.h"
 #include "AttributeSystem/Attribute/AttributeCommon.h"
 #include "Common/CardSystemType.h"
 #include "Player/CardTargetProviderInterface.h"
@@ -21,19 +22,20 @@ enum class ECardExecutionResult : uint8
 };
 
 UCLASS(Blueprintable)
-class CARDSYSTEM_API UCard : public UObject
+class CARDSYSTEM_API UCard : public UObject, public IUnLuaInterface
 {
 	GENERATED_BODY()
 public:
 	UCard();
 
-	virtual void PostInitProperties() override;
+	// IUnLuaInterface
+	virtual FString GetModuleName_Implementation() const override
+	{
+		return "DogFight.Card.CardBase";
+	}
 
 	// ------------------- Initialize ----------------------
-	virtual void Initialize();
-
-	UFUNCTION(BlueprintImplementableEvent, Category="Card")
-	void BP_Initialize();
+	virtual void InitDescObject();
 
 	UFUNCTION(BlueprintImplementableEvent, Category="Card", DisplayName="Get Card Basic Desc")
 	void BP_GetCardBasicDesc(FString& OutName, FString& OutDesc);
@@ -90,8 +92,14 @@ public:
 	void RemoveModifierObject(UCardModifier* InModifier);
 
 	// ---------------- Card Logic ---------------------
+	UFUNCTION(BlueprintCallable, Category="Card")
+	void SetCardLogicPath(const FString&  InPath);
+
 protected:
 	void CreateCardLogic();
+
+	UFUNCTION()
+	void OnCardLogicFinished(ECardLogicFinishType::Type FinishType);
 
 public:
 	/**
@@ -103,67 +111,9 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FCardExecutedSignature, ECardExecutionResult, Result, UCard*, Card);
 	FCardExecutedSignature OnCardExecutionFinished;
 
-	// ---------------- Acquire Targets ---------------------
-	void StartAcquireTargets();
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void AcquireCardTargetsImplementation();
-
-	UFUNCTION()
-	void AcquireTargetBatch(FTargetAcquireSettings Settings, int32 BatchIndex);
-
-	void AcquireTargetBatch_Internal(FTargetAcquireSettings Settings, int32 BatchIndex);
-
-protected:
-
-	void OnTargetBatchFinished(bool bSuccess, int32 BatchIndex);
-
-	void OnAllTargetSet();
-	void RecordPointTargets(int32 BatchIndex, TArray<FVector> PointList);
-	void RecordDirectionTargets(int32 BatchIndex, TArray<FVector> DirectionList);
-	void RecordActorTargets(int32 BatchIndex, TArray<TWeakObjectPtr<AActor>> ActorList);
-
-	void ClearAllTargetInfo();
-
 	// ------------------ Card Cancel -----------------------
 
 	void OnCardCancel();
-
-	// ------------------ Card Logic ------------------------
-public:
-	void StartCardLogic();
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void CardLogicImplementation();
-
-	UFUNCTION()
-	void OnAsyncCommandFinished(UCardAsyncCommand* Command, bool bSuccess);
-
-	UFUNCTION()
-	void OnConcurrentCallbackCommandFinished(UCardConcurrentCallbackCommand* Command, int32 Result);
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnCallbackResult(int32 CommandIndex, int32 Result);
-
-	UFUNCTION()
-	TArray<FVector> GetPointTargetListByBatch(int32 BatchIndex) const;
-	UFUNCTION()
-	TArray<FVector> GetDirectionTargetListByBatch(int32 BatchIndex) const;
-	UFUNCTION()
-	TArray<AActor*> GetActorTargetListByBatch(int32 BatchIndex) const;
-
-	void QueueCommand(UCardCommand* NewCommand);
-
-protected:
-
-	void ConsumeCommand();
-
-	bool CheckCardFinished();
-
-	UFUNCTION()
-	void OnCardLogicFinished(ECardLogicFinishType::Type FinishType);
-
-public:
 
 	// ----------------- Card Finished ----------------------
 
@@ -189,23 +139,4 @@ protected:
 
 	/** The owner controller to handle necessary RPC function call. */
 	TWeakObjectPtr<AController> OwnerController;
-
-	// Target acquiring info list
-	int32 WaitingTargetBatch;
-	TMap<int32, FTargetAcquireSettings> PendingTargetAcquireInfo;
-	// Target info variables
-	TMap<int32, ECardTargetType> TargetTypeMap;
-	TMap<int32, TArray<FVector>> PointTargetMap;
-	TMap<int32, TArray<FVector>> DirectionTargetMap;
-	TMap<int32, TArray<TWeakObjectPtr<AActor>>> ActorTargetMap;
-
-	// Command
-	uint8 bWaitAsyncCommand : 1;
-	uint8 bAutoConsume : 1;
-
-	int32 ExecutingIndex;
-	int32 WaitingConcurrentCommands;
-
-	UPROPERTY()
-	TArray<UCardCommand*> CommandQueue;
 };
