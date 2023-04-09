@@ -23,11 +23,29 @@ void UInGameMessageFunctionLibrary::SetTitleMessage(const UObject* WorldContextO
 	}
 }
 
-void UInGameMessageFunctionLibrary::SendInGameChatMessage(const UObject* WorldContextObject, const FInGameChatMessage& ChatMessage)
+void UInGameMessageFunctionLibrary::SendInGameChatMessageAsPlayer(const UObject* WorldContextObject, const FInGameChatSendOption& SendOption)
 {
 	if (auto PC = UCommonGameFlowFunctionLibrary::GetLocalPlayerController(WorldContextObject))
 	{
-		PC->ServerSendInGameChatMessage(ChatMessage);
+		FInGameChatMessage NewMessage;
+		NewMessage.SourcePlayerId = SendOption.SourcePlayerId;
+		NewMessage.SourceType = EInGameChatSourceType::Player;
+		NewMessage.Content = SendOption.Content;
+		PC->ServerSendInGameChatMessage(NewMessage);
+	}
+}
+
+void UInGameMessageFunctionLibrary::SendInGameChatMessageAsSystem(const UObject* WorldContextObject, const FInGameChatSendOption& SendOption)
+{
+	if (auto GM = UCommonGameFlowFunctionLibrary::GetCurrentTopDownStyleGameMode(WorldContextObject))
+	{
+		if (auto Sender = GM->GetInGameMessageSender())
+		{
+			FInGameChatMessage NewMessage;
+			NewMessage.Content = SendOption.Content;
+			NewMessage.SourcePlayerId = EInGameChatSourceType::System;
+			Sender->BroadcastInGameChatMessage(NewMessage);
+		}
 	}
 }
 

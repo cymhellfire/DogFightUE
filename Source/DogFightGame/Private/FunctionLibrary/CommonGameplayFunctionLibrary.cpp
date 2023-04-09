@@ -3,6 +3,7 @@
 #include "FunctionLibrary/CommonGameFlowFunctionLibrary.h"
 #include "GameMode/TopDownStyleGameMode.h"
 #include "GameMode/TopDownStyleGameState.h"
+#include "Pawn/PlayerPawn/TopDownStylePlayerPawn.h"
 #include "Player/TopDownStylePlayerState.h"
 #include "PlayerController/TopDownStylePlayerController.h"
 #include "PlayerController/PlayerControllerComponent/InGameWidgetManipulatorComponent.h"
@@ -153,6 +154,18 @@ void UCommonGameplayFunctionLibrary::DamageActor(const UObject* WorldContextObje
 	}
 }
 
+void UCommonGameplayFunctionLibrary::MovePlayerCharacterToPosition(const UObject* WorldContextObject, int32 PlayerId,
+	FVector TargetPosition)
+{
+	ForEachPlayerControllerDo(WorldContextObject, [TargetPosition](ATopDownStylePlayerController* InPC)
+	{
+		if (auto PlayerPawn = Cast<ATopDownStylePlayerPawn>(InPC->GetPawn()))
+		{
+			PlayerPawn->ServerMoveCharacter(TargetPosition);
+		}
+	}, PlayerId);
+}
+
 void UCommonGameplayFunctionLibrary::ForEachPlayerStateDo(const UObject* WorldContextObject,
 	TFunction<void(ATopDownStylePlayerState*)> ExecuteFunc, int32 PlayerIdMask)
 {
@@ -178,7 +191,7 @@ void UCommonGameplayFunctionLibrary::ForEachPlayerStateDo(const UObject* WorldCo
 }
 
 void UCommonGameplayFunctionLibrary::ForEachPlayerControllerDo(const UObject* WorldContextObject,
-	TFunction<void(ATopDownStylePlayerController*)> ExecuteFunc, int32 PlayerIdMask)
+                                                               TFunction<void(ATopDownStylePlayerController*)> ExecuteFunc, int32 PlayerIdMask)
 {
 	if (auto GameState = GetCurrentTopDownStyleGameState(WorldContextObject))
 	{

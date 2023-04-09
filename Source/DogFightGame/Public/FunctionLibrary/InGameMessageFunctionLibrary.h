@@ -18,11 +18,18 @@ public:
 	static void SetTitleMessage(const UObject* WorldContextObject, const FText& InText);
 
 	/**
-	 * Send a in-game chat message to all players in current game.
-	 * @param ChatMessage			Message to send.
+	 * Send a in-game chat message to other players in current game as player.
+	 * @param SendOption			Message send option.
 	 */
 	UFUNCTION(BlueprintCallable, Category="InGameMessageFunction")
-	static void SendInGameChatMessage(const UObject* WorldContextObject, const FInGameChatMessage& ChatMessage);
+	static void SendInGameChatMessageAsPlayer(const UObject* WorldContextObject, const FInGameChatSendOption& SendOption);
+
+	/**
+	 * Send a in-game chat message to other players in current game as system. (Only available on server side.)
+	 * @param SendOption			Message send option.
+	 */
+	UFUNCTION(BlueprintCallable, Category="InGameMessageFunction")
+	static void SendInGameChatMessageAsSystem(const UObject* WorldContextObject, const FInGameChatSendOption& SendOption);
 
 	/**
 	 * Get the in-game message receiver component of local player.

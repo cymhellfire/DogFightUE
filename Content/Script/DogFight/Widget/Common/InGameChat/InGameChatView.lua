@@ -37,12 +37,11 @@ end
 
 function InGameChatView:SendChatMessage(InContent)
     local MyPlayerId = UE.UCommonGameFlowFunctionLibrary.GetLocalPlayerId(self)
-    local NewMessage = UE.FInGameChatMessage()
-    NewMessage.SourceType = UE.EInGameChatSourceType.Player
-    NewMessage.SourcePlayerId = MyPlayerId
-    NewMessage.Content = InContent
+    local SendOption = UE.FInGameChatSendOption()
+    SendOption.SourcePlayerId = MyPlayerId
+    SendOption.Content = InContent
 
-    UE.UInGameMessageFunctionLibrary.SendInGameChatMessage(self, NewMessage)
+    UE.UInGameMessageFunctionLibrary.SendInGameChatMessageAsPlayer(self, SendOption)
 
     -- Clear the input box after send
     self.ChatInput_TextBox:SetText("")

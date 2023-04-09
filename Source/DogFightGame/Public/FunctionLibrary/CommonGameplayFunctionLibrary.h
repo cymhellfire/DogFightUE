@@ -116,8 +116,23 @@ public:
 	UFUNCTION(BlueprintCallable, Category="CommonGameplay|Effect")
 	static void SpawnGameEffectAtPos(const UObject* WorldContextObject, int32 EffectId, FVector Pos, FRotator Rot);
 
+	/**
+	 * Apply damage to given actor.
+	 * @param DamageId			Id of damage to apply.
+	 * @param Target			Target actor to receive damage.
+	 * @param BaseDamage		Base damage value.
+	 * @param Causer			Damage source.
+	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
 	static void DamageActor(const UObject* WorldContextObject, int32 DamageId, AActor* Target, float BaseDamage, AActor* Causer);
+
+	/**
+	 * Let character of specified player move to given position.
+	 * @param PlayerId			Id of character owner.
+	 * @param TargetPosition	Target position.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
+	static void MovePlayerCharacterToPosition(const UObject* WorldContextObject, int32 PlayerId, FVector TargetPosition);
 protected:
 	/**
 	 * Do specified function on every player state in current game meet the id mask.

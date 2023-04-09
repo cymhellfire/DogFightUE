@@ -17,6 +17,7 @@ end
 ---Generate the game summary
 function GameSummaryState:GenerateGameSummary()
     local AliveIdList = UE.UCommonGameplayFunctionLibrary.GetAlivePlayerId(self.OwnerState)
+    local Result = ""
     local IdTable = AliveIdList:ToTable()
     if #IdTable > 0 then
         local WinnerId = ""
@@ -24,10 +25,15 @@ function GameSummaryState:GenerateGameSummary()
             WinnerId = WinnerId .. v
         end
 
-        print("Winner is " .. WinnerId)
+        Result = "Winner is " .. WinnerId
     else
-        print("Draw")
+        Result = "Draw"
     end
+
+    -- Send in-game chat message
+    local MsgOption = UE.FInGameChatSendOption()
+    MsgOption.Content = Result
+    UE.UInGameMessageFunctionLibrary.SendInGameChatMessageAsSystem(self.OwnerState, MsgOption)
 end
 
 return GameSummaryState
