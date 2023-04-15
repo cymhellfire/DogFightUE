@@ -39,6 +39,11 @@ local function GetLocalPlayerController(WorldContextObject)
     return UE.ULuaIntegrationFunctionLibrary.GetFirstLocalPlayerController(WorldContextObject)
 end
 
+---Enum of all localization strint table.
+local LocalizationTable = {
+    CardDisplay = "ST_CardDisplay",
+}
+
 ---Get localized version string in current culture.
 ---@param WorldContextObject UObject Object instance to get world with.
 ---@param InTable string Name of string table to search localization.
@@ -58,4 +63,5 @@ _G.GetGameInstance = GetGameInstance
 _G.LoadClass = LoadClass
 _G.IsDerivedFrom = IsDerivedFrom
 _G.GetLocalPlayerController = GetLocalPlayerController
+_G.LocalizationTable = LocalizationTable
 _G.GetLocalizedString = GetLocalizedString

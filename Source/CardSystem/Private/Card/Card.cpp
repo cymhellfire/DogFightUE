@@ -14,13 +14,10 @@ void UCard::InitDescObject()
 	// Create description object
 	DescObject = NewObject<UCardDescObject>(GetOuter(), NAME_None, RF_Transient);
 
-	// Invoke the description gathering
-	FString CardName;
-	FString CardDesc;
-	BP_GetCardBasicDesc(CardName, CardDesc);
-	if (DescObject)
+	// Setup card description object use logic
+	if (IsValid(CardLogic))
 	{
-		DescObject->SetCardName(CardName);
+		CardLogic->SetupCardDescObject(DescObject);
 	}
 }
 
@@ -97,6 +94,9 @@ void UCard::SetCardLogicPath(const FString& InPath)
 {
 	LogicScriptPath = InPath;
 
+	// Create logic
+	CreateCardLogic();
+
 	// Update the desc object after logic set
 	InitDescObject();
 }
@@ -107,9 +107,16 @@ void UCard::CreateCardLogic()
 	if (IsValid(CardLogic))
 	{
 		CardLogic->OnCardLogicFinished.AddDynamic(this, &UCard::OnCardLogicFinished);
-		CardLogic->InitLogic(this);
+		CardLogic->InitLogic(this, LogicScriptPath);
+	}
+}
+
+void UCard::StartCardLogic()
+{
+	if (IsValid(CardLogic))
+	{
 		// Start the logic
-		CardLogic->StartLogic(LogicScriptPath);
+		CardLogic->StartLogic();
 	}
 }
 
@@ -123,7 +130,7 @@ void UCard::Execute()
 {
 	if (!LogicScriptPath.IsEmpty())
 	{
-		CreateCardLogic();
+		StartCardLogic();
 	}
 }
 

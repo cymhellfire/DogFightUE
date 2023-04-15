@@ -9,6 +9,13 @@ local CommandNameDef = {
     MoveToPosition = "MoveToPosition",
 }
 
+---@param DescObject UCardDescObject
+function LogicCharacterMove:SetupDescObject(DescObject)
+    DescObject:SetCardName(GetLocalizedString(self._CardLogic, LocalizationTable.CardDisplay, "Name_CharacterMove"))
+    DescObject:SetCardDesc(GetLocalizedString(self._CardLogic, LocalizationTable.CardDisplay, "Desc_CharacterMove"))
+    DescObject:SetCardPicturePath("/Game/DogFight/Textures/UI/Icons/Icon_TwoSwords.Icon_TwoSwords")
+end
+
 ---Initialize the card workflow
 function LogicCharacterMove:OnInit()
     CardLogicCommand.OnInit(self)

@@ -32,7 +32,7 @@ protected:
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="LocalizationService")
-	UDataTable* LocalizationData;
+	TArray<TSoftObjectPtr<UStringTable>> LocalizationTables; 
 
 	TMap<FString, FString> LocalizationPath;
 };

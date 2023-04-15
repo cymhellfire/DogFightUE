@@ -6,18 +6,6 @@ local AttributeEnum = require "DogFight.DataBridge.AttributeEnum"
 local CardBase = Class()
 
 --========================== Workflow ==========================--
-function CardBase:BP_GetCardBasicDesc(OutName, OutDesc)
-    -- Invoke SetupCardDesc of any subclass
-    if type(self.SetupCardDesc) == "function" then
-        local Desc = self:SetupCardDesc()
-        OutName = Desc["Name"] or OutName
-        OutDesc = Desc["Desc"] or OutDesc
-    else
-        OutName = self.LogicScriptPath
-    end
-
-    return OutName, OutDesc
-end
 
 ---Assign a new instance id to this card.
 ---@param InId number New instance id.

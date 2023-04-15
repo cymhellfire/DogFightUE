@@ -13,7 +13,14 @@ class CARDSYSTEM_API UCardDescObject : public UAttributeBasedObject
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	void SetCardName(FString InName);
+	UFUNCTION(BlueprintCallable, Category="CardDescObject")
+	void SetCardName(FText InName);
+
+	UFUNCTION(BlueprintCallable, Category="CardDescObject")
+	void SetCardDesc(FText InDesc);
+
+	UFUNCTION(BlueprintCallable, Category="CardDescObject")
+	void SetCardPicturePath(FString InPath);
 
 	void SetCardInstanceId(int32 InId);
 
@@ -25,7 +32,13 @@ public:
 
 protected:
 	UPROPERTY(Transient, Replicated)
-	FString CardName;
+	FText CardName;
+
+	UPROPERTY(Transient, Replicated)
+	FText CardDesc;
+
+	UPROPERTY(Transient, Replicated)
+	FString CardPicturePath;
 
 	UPROPERTY(Transient, Replicated)
 	int32 CardInstanceId;

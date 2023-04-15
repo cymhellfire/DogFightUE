@@ -10,6 +10,11 @@ local CommandNameDef = {
     FireProjectile = "FireProjectile",
 }
 
+---@param DescObject UCardDescObject
+function TestCardLogic:SetupDescObject(DescObject)
+    DescObject:SetCardName("TestCardLogic")
+end
+
 function TestCardLogic:OnInit()
     CardLogicCommand.OnInit(self)
 
