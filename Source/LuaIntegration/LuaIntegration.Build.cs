@@ -12,6 +12,7 @@ public class LuaIntegration : ModuleRules
                 "Core",
                 "ProjectFramework",
                 "UnLua",
+                "Lua",
                 "UMG",
             }
         );

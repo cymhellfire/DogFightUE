@@ -58,6 +58,15 @@ local function GetLocalizedString(WorldContextObject, InTable, InKey, ParamList)
     end
 end
 
+---Generic notify receiver function for lua side.
+---@param Service LuaEventService Lua event service instance.
+---@param NotifyIndex number Lua event index.
+local function ReceiveNotifyFromC(Service, NotifyIndex, ...)
+    if Service then
+        Service:OnReceiveNativeNotify(NotifyIndex, ...)
+    end
+end
+
 _G.GetCurrentWorld = GetCurrentWorld
 _G.GetGameInstance = GetGameInstance
 _G.LoadClass = LoadClass
@@ -65,3 +74,4 @@ _G.IsDerivedFrom = IsDerivedFrom
 _G.GetLocalPlayerController = GetLocalPlayerController
 _G.LocalizationTable = LocalizationTable
 _G.GetLocalizedString = GetLocalizedString
+_G.ReceiveNotifyFromC = ReceiveNotifyFromC

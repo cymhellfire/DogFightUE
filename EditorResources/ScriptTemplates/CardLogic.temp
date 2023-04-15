@@ -8,6 +8,11 @@ local CommandNameDef = {
     -- PrintName = "PrintName",
 }
 
+---@param DescObject UCardDescObject
+function $Class$:SetupDescObject(DescObject)
+    DescObject:SetCardName("$Class$")
+end
+
 ---Initialize the card workflow
 function $Class$:OnInit()
     CardLogicCommand.OnInit(self)

@@ -15,7 +15,7 @@ void UInGameMessageReceiverComponent::ReceiveMessage_Implementation(const FText&
 {
 	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>())
 	{
-		LuaEventService->SendEventToLua_OneParam(ELuaEvent::Type::LuaEvent_ReceiveTitleMessage, Message.ToString());
+		LuaEventService->SendEventToLua(ELuaEvent::Type::LuaEvent_ReceiveTitleMessage, Message.ToString());
 	}
 }
 

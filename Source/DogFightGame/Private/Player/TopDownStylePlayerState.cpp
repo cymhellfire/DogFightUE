@@ -141,7 +141,7 @@ void ATopDownStylePlayerState::OnRep_CardDescObjectList()
 {
 	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>())
 	{
-		LuaEventService->SendEventToLua_OneParam_Int(ELuaEvent::Type::LuaEvent_CardListChanged, GetPlayerId());
+		LuaEventService->SendEventToLua(ELuaEvent::Type::LuaEvent_CardListChanged, GetPlayerId());
 	}
 }
 
@@ -227,7 +227,7 @@ void ATopDownStylePlayerState::ClientBeginUseCard_Implementation(int32 InId)
 {
 	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>())
 	{
-		LuaEventService->SendEventToLua_OneParam_Int(ELuaEvent::Type::LuaEvent_MyCardBeginUsing, InId);
+		LuaEventService->SendEventToLua(ELuaEvent::Type::LuaEvent_MyCardBeginUsing, InId);
 	}
 }
 
@@ -235,7 +235,7 @@ void ATopDownStylePlayerState::ServerBeginUseCard_Implementation(int32 InId)
 {
 	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>())
 	{
-		LuaEventService->SendEventToLua_TwoParam_Int(ELuaEvent::Type::LuaEvent_PlayerCardBeginUsing, GetPlayerId(), InId);
+		LuaEventService->SendEventToLua(ELuaEvent::Type::LuaEvent_PlayerCardBeginUsing, GetPlayerId(), InId);
 	}
 }
 
@@ -243,7 +243,7 @@ void ATopDownStylePlayerState::ClientCancelCard_Implementation(int32 InId)
 {
 	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>())
 	{
-		LuaEventService->SendEventToLua_OneParam_Int(ELuaEvent::Type::LuaEvent_MyCardCancelled, InId);
+		LuaEventService->SendEventToLua(ELuaEvent::Type::LuaEvent_MyCardCancelled, InId);
 	}
 }
 
@@ -251,7 +251,7 @@ void ATopDownStylePlayerState::ServerCancelCard(int32 InId)
 {
 	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>())
 	{
-		LuaEventService->SendEventToLua_TwoParam_Int(ELuaEvent::Type::LuaEvent_PlayerCardCancelled, GetPlayerId(), InId);
+		LuaEventService->SendEventToLua(ELuaEvent::Type::LuaEvent_PlayerCardCancelled, GetPlayerId(), InId);
 	}
 }
 
@@ -259,7 +259,7 @@ void ATopDownStylePlayerState::ClientCardFinished_Implementation(int32 InId)
 {
 	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>())
 	{
-		LuaEventService->SendEventToLua_OneParam_Int(ELuaEvent::Type::LuaEvent_MyCardFinished, InId);
+		LuaEventService->SendEventToLua(ELuaEvent::Type::LuaEvent_MyCardFinished, InId);
 	}
 }
 
@@ -267,6 +267,6 @@ void ATopDownStylePlayerState::ServerCardFinished_Implementation(int32 InId)
 {
 	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>())
 	{
-		LuaEventService->SendEventToLua_TwoParam_Int(ELuaEvent::Type::LuaEvent_PlayerCardFinished, GetPlayerId(), InId);
+		LuaEventService->SendEventToLua(ELuaEvent::Type::LuaEvent_PlayerCardFinished, GetPlayerId(), InId);
 	}
 }

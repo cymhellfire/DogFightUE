@@ -53,4 +53,9 @@ function LuaEventService:UnregisterListener(EventIndex, Object, Callback)
     Delegate:Remove(Object, Callback)
 end
 
+function LuaEventService:OnReceiveNativeNotify(EventIndex, ...)
+    print(self, ":OnReceiveNativeNotify ", EventIndex, " Params: ", ...)
+    self:TriggerDelegate(EventIndex, ...)
+end
+
 return LuaEventService
