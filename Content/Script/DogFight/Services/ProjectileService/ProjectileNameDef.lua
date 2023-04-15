@@ -1,6 +1,6 @@
 local ProjectileNameDef = {
     DefaultProjectile = "DefaultProjectile",
-    BouncyProjectile = "BouncyProjectile",
+    Fireball = "Fireball",
     HomingProjectile = "HomingProjectile",
     PeriodHomingProjectile = "PeriodHomingProjectile",
 }

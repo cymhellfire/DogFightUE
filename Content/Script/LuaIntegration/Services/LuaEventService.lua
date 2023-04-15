@@ -10,22 +10,6 @@ function LuaEventService:StartupScript(ServiceName)
     self.EventDelegateMap = {}
 end
 
-function LuaEventService:SendEventToLua(InEvent)
-    self:TriggerDelegate(InEvent)
-end
-
-function LuaEventService:SendEventToLua_OneParam(InEvent, InParam)
-    self:TriggerDelegate(InEvent, InParam)
-end
-
-function LuaEventService:SendEventToLua_OneParam_Int(InEvent, InParam)
-    self:TriggerDelegate(InEvent, InParam)
-end
-
-function LuaEventService:SendEventToLua_TwoParam_Int(InEvent, ParamOne, ParamTwo)
-    self:TriggerDelegate(InEvent, ParamOne, ParamTwo)
-end
-
 function LuaEventService:TriggerDelegate(EventIndex, ...)
     local Delegate = self.EventDelegateMap[EventIndex]
     if Delegate then

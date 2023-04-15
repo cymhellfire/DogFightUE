@@ -10,7 +10,7 @@ local Config = {
     },
     [CardNameDef.Attack] = {
         Id = 1,
-        LogicPath = "DogFight.Card.CardLogic.TestCardLogic",
+        LogicPath = "DogFight.Card.CardLogic.LogicFireball",
     }
 }
 

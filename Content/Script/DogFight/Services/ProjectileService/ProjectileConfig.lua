@@ -13,11 +13,12 @@ local Config = {
         ScriptPath = "DogFight.Projectiles.ProjectileLogic.DefaultLogic",
         Warhead = WarheadNameDef.Default,
     },
-    [ProjectileNameDef.BouncyProjectile] = {
+    [ProjectileNameDef.Fireball] = {
         Id = 2,
-        ResPath = "/Game/DogFightGame/Blueprints/Projectile/BP_Proj_Bouncy",
+        ResPath = "/Game/DogFightGame/Blueprints/Projectile/BP_Proj_Fireball",
         ScriptPath = "",
-        Warhead = WarheadNameDef.Nuke,
+        Warhead = WarheadNameDef.Fireball,
+        Damage = 10,
     },
     [ProjectileNameDef.HomingProjectile] = {
         Id = 3,

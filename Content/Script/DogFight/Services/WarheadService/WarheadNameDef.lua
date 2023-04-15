@@ -2,6 +2,7 @@
 local WarheadNameDef = {
     Default = "Default",
     Nuke = "Nuke",
+    Fireball = "Fireball",
 }
 
 return WarheadNameDef

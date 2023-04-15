@@ -17,6 +17,11 @@ local Config = {
         DamageType = DamageNameDef.Explosion,
         DamageRadius = 1000,
     },
+    [WarheadNameDef.Fireball] = {
+        Id = 2,
+        EffectId = 2,
+        DamageType = DamageNameDef.Default,
+    }
 }
 
 function WarheadConfig:GetData()
