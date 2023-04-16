@@ -1,5 +1,5 @@
 local CardLogicCommand = require "Card.CardCommand.CardLogicCommand"
-local ProjectileNameDef = require "DogFight.Services.ProjectileService.ProjectileNameDef"
+local ProjectileTypeDef = require "DogFight.Services.ProjectileService.ProjectileTypeDef"
 
 ---@class LogicFireball : CardLogicCommand Shoot fireball toward target.
 local LogicFireball = Class(CardLogicCommand)
@@ -49,7 +49,7 @@ end
 ---Command create callback
 function LogicFireball:OnFireProjectileCreated(InCommand)
     local ProjectileInfo = {
-        Name = ProjectileNameDef.Fireball,
+        Id = ProjectileTypeDef.Fireball,
         MuzzleSpeed = 1500,
     }
     InCommand:SetCommandInfo(ProjectileInfo, self._TargetInfo)

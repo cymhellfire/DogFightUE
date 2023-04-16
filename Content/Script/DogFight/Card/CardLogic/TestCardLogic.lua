@@ -1,5 +1,5 @@
 local CardLogicCommand = require "Card.CardCommand.CardLogicCommand"
-local ProjectileNameDef = require "DogFight.Services.ProjectileService.ProjectileNameDef"
+local ProjectileTypeDef = require "DogFight.Services.ProjectileService.ProjectileTypeDef"
 
 ---@class TestCardLogic : CardLogicCommand
 local TestCardLogic = Class(CardLogicCommand)
@@ -55,7 +55,7 @@ end
 ---@param InCommand ActionLaunchProjectile
 function TestCardLogic:OnFireProjectileCreated(InCommand)
     local ProjectileInfo = {
-        Name = ProjectileNameDef.HomingProjectile,
+        Id = ProjectileTypeDef.HomingProjectile,
         MuzzleSpeed = 500,
     }
     InCommand:SetCommandInfo(ProjectileInfo, self._TargetInfo)

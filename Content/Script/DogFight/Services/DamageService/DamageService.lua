@@ -2,7 +2,7 @@ require "UnLua"
 
 ---@class DamageService : GameServiceBase, UDamageService Service that handle damage event and config.
 local DamageService = Class("DogFight.Services.GameServiceBase")
-local DamageNameDef = require("DogFight.Services.DamageService.DamageNameDef")
+local DamageTypeDef = require("DogFight.Services.DamageService.DamageTypeDef")
 
 function DamageService:StartupScript(ServiceName)
     self.Super.StartupScript(self, ServiceName)

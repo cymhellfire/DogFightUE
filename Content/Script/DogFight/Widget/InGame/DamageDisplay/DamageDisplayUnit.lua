@@ -28,7 +28,7 @@ function DamageDisplayUnit:AddDamageItem(DisplayParam)
     ---@type DamageService
     local DamageService = GetGameService(self, GameServiceNameDef.DamageService)
     if DamageService then
-        local DamageConfig = DamageService.Config:GetConfigById(DisplayParam.DamageId)
+        local DamageConfig = DamageService.Config:GetConfig(DisplayParam.DamageId)
         if DamageConfig then
             DamageStyle = DamageConfig.DisplayParams
         end

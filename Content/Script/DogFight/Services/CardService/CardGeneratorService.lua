@@ -22,7 +22,7 @@ function CardGeneratorService:GetRandomCard()
     local TotalNum = self.Config:GetConfigNum()
     if TotalNum > 0 then
         local Index = math.random(0, TotalNum - 1)
-        local Config = self.Config:GetConfigById(Index)
+        local Config = self.Config:GetConfig(Index)
         return Config.LogicPath
     end
     
