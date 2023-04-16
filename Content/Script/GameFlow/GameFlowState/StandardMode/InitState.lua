@@ -33,8 +33,13 @@ function InitState:OnReadyPlayerCountChanged(InCount)
         GetGameService(self.OwnerState, GameServiceNameDef.LuaEventService):UnregisterListener(UE.ELuaEvent.LuaEvent_ReadyPlayerCount,
             self, self.OnReadyPlayerCountChanged)
 
-        -- Add camera movement input to all players
-        GetGameService(self.OwnerState, GameServiceNameDef.GameInputService):MulticastAddInputMapping(UE.EInputMappingType.InputMapping_CameraMove)
+        ---@type GameInputService
+        local InputService = GetGameService(self.OwnerState, GameServiceNameDef.GameInputService)
+        if InputService then
+            InputService:MulticastAddInputMapping(UE.EInputMappingType.InputMapping_InGameCommon, UE.EInputMappingPriority.Lowest)
+            -- Add camera movement input to all players
+            InputService:MulticastAddInputMapping(UE.EInputMappingType.InputMapping_CameraMove)
+        end
 
         -- Setup next state
         local Instigator = self.OwnerState.CreateArgument.Instigator

@@ -14,6 +14,9 @@ public:
 	virtual void Startup() {}
 	virtual void Shutdown() {}
 
+	/* Triggers after all game services are started up. */
+	virtual void PostStartup() {}
+
 	virtual FName GetRegisterName() const
 	{
 		return GetClass()->GetFName();

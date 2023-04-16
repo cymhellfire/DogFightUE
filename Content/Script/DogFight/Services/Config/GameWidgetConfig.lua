@@ -14,6 +14,9 @@ local GameWidgetConfig = {
     [WidgetNameDef.WidgetCharacterState] = {
         Path = "/Game/DogFightGame/UI/InGame/PlayerCharacterState/BP_Widget_PlayerCharacterStateCanvas",
     },
+    [WidgetNameDef.WidgetCharacterMenu] = {
+        Path = "/Game/DogFightGame/UI/InGame/PlayerCharacterState/BP_Widget_PlayerCharacterDetailState"
+    },
 }
 
 return GameWidgetConfig

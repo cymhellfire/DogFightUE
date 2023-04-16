@@ -18,6 +18,14 @@ void ULuaGameService::Shutdown()
 	ShutdownScript(GetRegisterName().ToString());
 }
 
+void ULuaGameService::PostStartup()
+{
+	Super::PostStartup();
+
+	// Invoke lua side function
+	PostStartupScript();
+}
+
 FName ULuaGameService::GetRegisterName() const
 {
 	UClass* MyClass = GetClass();

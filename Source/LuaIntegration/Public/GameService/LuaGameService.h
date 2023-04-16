@@ -15,6 +15,8 @@ public:
 	virtual void Startup() override;
 	virtual void Shutdown() override;
 
+	virtual void PostStartup() override;
+
 	virtual FName GetRegisterName() const override;
 
 	/** Startup function for Lua script overriding. */
@@ -24,6 +26,9 @@ public:
 	/** Shutdown function for Lua script overriding. */
 	UFUNCTION(BlueprintImplementableEvent, Category="LuaGameService")
 	void ShutdownScript(const FString& ServiceName);
+
+	UFUNCTION(BlueprintImplementableEvent, Category="LuaGameService")
+	void PostStartupScript();
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="LuaGameService")
