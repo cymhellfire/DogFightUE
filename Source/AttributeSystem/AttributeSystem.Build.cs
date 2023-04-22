@@ -23,7 +23,8 @@ public class AttributeSystem : ModuleRules
                 "Engine",
                 "Slate",
                 "SlateCore",
-                "NetCore",
+                "NetCore", 
+                "ProjectFramework",
             }
         );
 

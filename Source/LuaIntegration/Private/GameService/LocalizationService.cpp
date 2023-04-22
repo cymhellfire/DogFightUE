@@ -34,7 +34,7 @@ FText ULocalizationService::GetLocalizeString(const FString& InTable, const FStr
 		return FText::FromStringTable(FName(LocalizationPath[InTable]), InKey);
 	}
 
-	return FText();
+	return FText::FromString(FString::Printf(TEXT("[Missing table %s] %s"), *InTable, *InKey));
 }
 
 FText ULocalizationService::GetLocalizeStringWithFormat(const FString& InTable, const FString& InKey,

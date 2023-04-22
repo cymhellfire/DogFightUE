@@ -3,6 +3,7 @@
 #include "AttributeSystem.h"
 #include "AttributeSystem/AttributeFunctionLibrary.h"
 #include "AttributeSystem/Attribute/Attribute.h"
+#include "Math/MathHelper.h"
 #include "UnrealIntegration/Interface/AttributeModifierCarrierInterface.h"
 #include "UnrealIntegration/UObject/AttributeModifierDescObject.h"
 
@@ -223,6 +224,9 @@ bool IAttributeCarrierInterface::AddAttributeModifier(TSharedPtr<FAttributeModif
 		return false;
 	}
 
+	// Clear the pointer before apply
+	OutAttribute.Reset();
+
 	// Filter attributes by modifier data type
 	auto CandidateList = GetAttributesByDataType(InModifier->GetDataType());
 	if (CandidateList.Num() == 0)
@@ -232,11 +236,60 @@ bool IAttributeCarrierInterface::AddAttributeModifier(TSharedPtr<FAttributeModif
 		return false;
 	}
 
-	// Pick random one from list if multiple attributes matched the data type
-	TSharedPtr<FAttributeBase> TargetAttribute = CandidateList[FMath::RandRange(0, CandidateList.Num() - 1)];
-	TargetAttribute->AddModifier(InModifier);
+	// Randomize the candidate
+	FMathHelper::RandomizeArray(CandidateList);
 
-	OutAttribute = TargetAttribute;
+	// Iterate through all candidate and pick the first one fit apply rule
+	for (int32 i = 0; i < CandidateList.Num(); ++i)
+	{
+		// Check the apply rule
+		if (InModifier->CanApply(CandidateList[i]))
+		{
+			CandidateList[i]->AddModifier(InModifier);
+			OutAttribute = CandidateList[i];
+			break;
+		}
+	}
+
+	if (!OutAttribute.IsValid())
+	{
+		bool bAdded = false;
+		// Check if we need add the missing attribute
+		if (bAddMissingAttributeForModifier)
+		{
+			FName NewAttributeName;
+			EAttributeDataType AttributeDataType;
+			if (InModifier->GetDesiredName(NewAttributeName) && InModifier->GetDesiredDataType(AttributeDataType))
+			{
+				// Construct the attribute create argument based on modifier information
+				auto AttributeArgument = FAttributeCreateArgument();
+				AttributeArgument.AttrName = NewAttributeName;
+				AttributeArgument.DataType = AttributeDataType;
+
+				if (AddAttribute(AttributeArgument))
+				{
+					// Get the new added attribute and apply modifier
+					OutAttribute = GetAttribute(NewAttributeName);
+					if (OutAttribute.IsValid())
+					{
+						OutAttribute->AddModifier(InModifier);
+					}
+					bAdded = true;
+				}
+				else
+				{
+					UE_LOG(LogAttributeSystem, Error, TEXT("[AttributeCarrier] Cannot auto add attribute %s[Type:%d] by modifier."),
+						*NewAttributeName.ToString(), AttributeDataType);
+				}
+			}
+		}
+
+		if (!bAdded)
+		{
+			return false;
+		}
+	}
+
 	return true;
 }
 

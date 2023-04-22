@@ -3,26 +3,26 @@ local PlayerCharacterDetailStateView = Class("Common.MVVM.ModelBase")
 local ViewModelBase = require("Common.MVVM.ViewModelBase")
 local DataBinding = require("Common.MVVM.DataBinding")
 local PlayerCharacterDetailStateVM = require("DogFight.Widget.InGame.PlayerCharacterState.PlayerCharacterDetailStateVM")
---local ListWrapper = require("Common.ListView.ListViewWrapper")
+local ListWrapper = require("Common.ListView.ListViewWrapper")
 
 function PlayerCharacterDetailStateView:Initialize()
     local NewVM = InstantiateViewModel(PlayerCharacterDetailStateVM)
     self:BindViewModel(NewVM, {
-        {BindKey = "CharacterName",   UIKey = "CharacterName_Text",   DataBinding = DataBinding.TextContextBinding(), }
+        {BindKey = "CharacterName",     UIKey = "CharacterName_Text",   DataBinding = DataBinding.TextContextBinding(), },
+        {BindKey = "HealthText",        UIKey = "Health_Text",          DataBinding = DataBinding.TextContextBinding(), },
     })
 end
 
 function PlayerCharacterDetailStateView:PostInitialized()
     ---@type ListViewWrapper 
-    --self.MyListWrapper = ListWrapper.New(self, self.ListView)
+    self.DRCAttrList = ListWrapper.New(self, self.DRC_AttributeList)
 end
 
----@param InCharacter ACharacter
+---@param InCharacter ATopDownStylePlayerCharacter
 ---@param MousePos FVector2D
 function PlayerCharacterDetailStateView:OnShow(InCharacter, MousePos)
-    if InCharacter then
-        self.ViewModel.CharacterName = InCharacter:GetName()
-    end
+    -- Display info
+    self:GatherInfo(InCharacter)
 
     -- Sync mouse position
     self:SyncPosition(MousePos)
@@ -33,6 +33,34 @@ function PlayerCharacterDetailStateView:SyncPosition(InPos)
     local ViewportScale = UE.UWidgetLayoutLibrary.GetViewportScale(self)
 
     UE.UWidgetLayoutLibrary.SlotAsCanvasSlot(self.SyncPositionPanel):SetPosition(UE.FVector2D(InPos.X / ViewportScale, InPos.Y / ViewportScale))
+end
+
+---@param InCharacter ATopDownStylePlayerCharacter
+function PlayerCharacterDetailStateView:GatherInfo(InCharacter)
+    if InCharacter then
+        -- Name
+        self.ViewModel.CharacterName = InCharacter:GetName()
+
+        -- Attribute
+        local AttrItemList = {}
+        ---@type UDamageReceiverComponent
+        local DRC = InCharacter.DamageReceiverComponent
+        if DRC then
+            -- Integer attributes
+            local IntAttrList = DRC.IntegerWrapperList:ToTable()
+            if #IntAttrList > 0 then
+                for i = 0, #IntAttrList do
+                    ---@type UAttributeIntegerWrapperObject
+                    local AttrItem = IntAttrList[i]
+                    AttrItemList[#AttrItemList + 1] = AttrItem
+                end
+            end
+        end
+
+        if #AttrItemList > 0 then
+            self.DRCAttrList:LoadDataByList(AttrItemList)
+        end
+    end
 end
 
 return PlayerCharacterDetailStateView

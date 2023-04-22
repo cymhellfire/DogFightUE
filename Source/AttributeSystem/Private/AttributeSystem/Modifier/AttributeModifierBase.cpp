@@ -1,10 +1,7 @@
 #include "AttributeSystem/Modifier/AttributeModifierBase.h"
 
 #include "AttributeSystem.h"
-#include "AttributeSystem/ApplyRule/ApplyRuleBase.h"
 #include "AttributeSystem/Attribute/AttributeBase.h"
-#include "Chaos/AABB.h"
-#include "Chaos/AABB.h"
 
 template <typename T>
 TAttributeModifierBase<T>::TAttributeModifierBase(const FModifierCreateArgument& InArgument, T InValue)
@@ -41,6 +38,8 @@ bool TAttributeModifierBase<T>::Apply(TWeakPtr<FAttributeBase> InAttribute)
 	{
 		if (!ApplyRule->CanApply(PinnedAttribute))
 		{
+			UE_LOG(LogAttributeSystem, Log, TEXT("[TAttributeModifierBase] Cannot apply to attribute %s due to apply rule."),
+				*PinnedAttribute->GetName().ToString());
 			return false;
 		}
 	}

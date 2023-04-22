@@ -12,7 +12,7 @@ class UAttributeModifierDescObject;
 class IAttributeCarrierInterface;
 class FAttributeWrapperObjectHelper;
 
-UCLASS()
+UCLASS(BlueprintType)
 class ATTRIBUTESYSTEM_API UAttributeWrapperObjectBase : public UObject
 {
 	GENERATED_BODY()
@@ -72,11 +72,13 @@ class ATTRIBUTESYSTEM_API UAttributeBooleanWrapperObject : public UAttributeWrap
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	UFUNCTION(BlueprintCallable, Category="AttributeBooleanWrapper")
 	bool GetBaseValue() const
 	{
 		return BaseValue;
 	}
 
+	UFUNCTION(BlueprintCallable, Category="AttributeBooleanWrapper")
 	bool GetValue() const
 	{
 		return Value;
@@ -121,11 +123,13 @@ class ATTRIBUTESYSTEM_API UAttributeIntegerWrapperObject : public UAttributeWrap
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	UFUNCTION(BlueprintCallable, Category="AttributeIntegerWrapper")
 	int32 GetBaseValue() const
 	{
 		return BaseValue;
 	}
 
+	UFUNCTION(BlueprintCallable, Category="AttributeIntegerWrapper")
 	int32 GetValue() const
 	{
 		return Value;
@@ -168,11 +172,13 @@ class ATTRIBUTESYSTEM_API UAttributeFloatWrapperObject : public UAttributeWrappe
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	UFUNCTION(BlueprintCallable, Category="AttributeFloatWrapper")
 	float GetBaseValue() const
 	{
 		return BaseValue;
 	}
 
+	UFUNCTION(BlueprintCallable, Category="AttributeFloatWrapper")
 	float GetValue() const
 	{
 		return Value;

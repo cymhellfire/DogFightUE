@@ -1,5 +1,6 @@
 #pragma once
 #include "ApplyRuleCommon.h"
+#include "AttributeSystem/AttributeSystemCommon.h"
 
 class FAttributeBase;
 class FApplyRuleParser;
@@ -10,6 +11,26 @@ public:
 	virtual ~FApplyRuleBase() {}
 
 	virtual bool CanApply(TSharedPtr<FAttributeBase> InAttribute) = 0;
+
+	virtual void GetDesiredName(TArray<FName>& OutNames) = 0;
+
+	virtual void GetDesiredDataType(TArray<EAttributeDataType>& OutTypes) = 0;
+
+	/**
+	 * @brief Check if there is one specified name can fit the apply rule (return false when there are multiple existing).
+	 * @param ApplyRule Apply rule to check with.
+	 * @param OutName Name that the apply rule needed.
+	 * @return Whether the name exists.
+	 */
+	static bool HasDesiredName(TSharedPtr<FApplyRuleBase> ApplyRule, FName& OutName);
+
+	/**
+	 * @brief Check if there is one specified data type can fit the apply rule (return false when there are multiple existing).
+	 * @param ApplyRule Apply rule to check with.
+	 * @param DataType Data type that the apply rule needed.
+	 * @return Whether the data type exists.
+	 */
+	static bool HasDesiredDataType(TSharedPtr<FApplyRuleBase> ApplyRule, EAttributeDataType& DataType);
 
 protected:
 	FApplyRuleBase() {}
@@ -25,6 +46,10 @@ public:
 	virtual ~FApplyRuleGroup() override {}
 
 	virtual bool CanApply(TSharedPtr<FAttributeBase> InAttribute) override;
+
+	virtual void GetDesiredName(TArray<FName>& OutNames) override;
+
+	virtual void GetDesiredDataType(TArray<EAttributeDataType>& OutTypes) override;
 
 	void SetGroupType(EApplyRuleGroupType InType)
 	{

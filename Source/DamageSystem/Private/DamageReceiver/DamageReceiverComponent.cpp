@@ -9,6 +9,9 @@ UDamageReceiverComponent::UDamageReceiverComponent(const FObjectInitializer& Obj
 {
 	// Enable component replication
 	SetIsReplicatedByDefault(true);
+
+	// Enable auto add attribute
+	bAddMissingAttributeForModifier = true;
 }
 
 void UDamageReceiverComponent::InitializeAttributes()

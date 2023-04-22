@@ -1,4 +1,5 @@
 require "UnLua"
+local CharacterModifierTypeDef = require "DogFight.Services.CharacterModifierService.CharacterModifierTypeDef"
 
 ---@class PlayerRoundState : GameFlowStateLogicBase Player can use cards in this state.
 local PlayerRoundState = Class("GameFlow.GameFlowState.GameFlowStateLogicBase")
@@ -15,6 +16,24 @@ function PlayerRoundState:OnEnter()
     -- Add use card mapping to current player
     local CurPlayerId = UE.UCommonGameFlowFunctionLibrary.GetCurrentPlayerId(self.OwnerState)
     GetGameService(self.OwnerState, GameServiceNameDef.GameInputService):AddInputMappingByPlayerId(CurPlayerId, UE.EInputMappingType.InputMapping_CardUsing)
+
+    -- Add test modifier to current player character
+    ---@type ATopDownStylePlayerController
+    local CurPC = UE.UCommonGameplayFunctionLibrary.GetPlayerControllerById(self.OwnerState, CurPlayerId)
+    if CurPC then
+        ---@type ATopDownStylePlayerCharacter
+        local PlayerCharacter = CurPC:GetCharacterPawn()
+        if PlayerCharacter and PlayerCharacter.DamageReceiverComponent then
+            ---@type CharacterModifierService
+            local CharacterModifierService = GetGameService(self.OwnerState, GameServiceNameDef.CharacterModifierService)
+            if CharacterModifierService then
+                local NewModifier = CharacterModifierService:CreateCharacterStatusModifier(CharacterModifierTypeDef.Add10PhysicalResistance)
+                if NewModifier then
+                    PlayerCharacter.DamageReceiverComponent:AddModifierObject(NewModifier)
+                end
+            end
+        end
+    end
 end
 
 function PlayerRoundState:OnExit()

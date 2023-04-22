@@ -34,6 +34,7 @@ public class DogFightGame : ModuleRules
                 "MovieScene",
                 "UMG",
                 "Lua",
+                "AttributeSystem",
             }
         );
         

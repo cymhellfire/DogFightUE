@@ -22,6 +22,30 @@ public:
 	*/
 	static int32 GetMissingNumber(TArray<int32> InArray, int32 MinNumber);
 
+	/**
+	 * @brief Randomize the array order with Fisher-Yates Shuffle algorithm
+	 * @tparam T Element data type.
+	 * @param InArray Array to randomize order.
+	 */
+	template<typename T>
+	static void RandomizeArray(TArray<T>& InArray)
+	{
+		const int32 Length = InArray.Num();
+		if (Length <= 1)
+		{
+			return;
+		}
+
+		for (int32 i = Length - 1; i > 0; --i)
+		{
+			T Temp = InArray[i];
+			const int32 SwitchTargetIndex = FMath::RandRange(0, i);
+			// Switch value
+			InArray[i] = InArray[SwitchTargetIndex];
+			InArray[SwitchTargetIndex] = Temp;
+		}
+	}
+
 private:
 	/** The minimum number that excluded from finding missing number. */
 	static int32 MinExcludeNumber;
