@@ -19,7 +19,7 @@ void ATopDownStyleGameState::BeginPlay()
 
 	if (GameTimelineComponent)
 	{
-		GameTimelineComponent->OnGameTimelineChanged.AddDynamic(this, &ATopDownStyleGameState::OnTimelineChanged);
+		GameTimelineComponent->OnGameTimelineChanged.AddUObject(this, &ATopDownStyleGameState::OnTimelineChanged);
 	}
 }
 

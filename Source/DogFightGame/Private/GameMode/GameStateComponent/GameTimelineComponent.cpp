@@ -19,6 +19,7 @@ struct FCompareTimelineEntryByPriority
 
 UGameTimelineComponent::UGameTimelineComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
+	, CurrentRound(0)
 {
 	SetIsReplicatedByDefault(true);
 }
@@ -57,6 +58,9 @@ void UGameTimelineComponent::InitializeTimeline()
 
 	// Sort the entries by priority
 	TimelineEntryList.Sort(FCompareTimelineEntryByPriority());
+
+	// Record the first player id of a round
+	RoundStartPlayerId = TimelineEntryList[0]->GetPlayerId();
 
 	UpdateTimeline();
 }
@@ -139,9 +143,81 @@ void UGameTimelineComponent::OnRep_CurrentTimeline()
 {
 	OnGameTimelineChanged.Broadcast();
 
+	// Check and notify new round
+	const auto CurPlayerId = GetFirstPlayerId();
+	if (CurPlayerId >= 0)
+	{
+		if (CurPlayerId == RoundStartPlayerId)
+		{
+			CurrentRound ++;
+			OnNewRoundStarted.Broadcast();
+		}
+	}
+
 	// Notify lua side
 	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>())
 	{
 		LuaEventService->SendEventToLua(ELuaEvent::Type::LuaEvent_GameTimelineChanged);
 	}
+}
+
+TArray<int32> UGameTimelineComponent::GetTimerWaitingQueue(int32 InTime)
+{
+	ensureAlwaysMsgf(InTime > 0, TEXT("Invalid time duration [%s]"), InTime);
+	TArray<int32> Result;
+
+	// Just use current timeline and repeat n times
+	for (int32 i = 0; i < InTime; ++i)
+	{
+		Result.Append(CurrentTimeline);
+	}
+
+	return Result;
+}
+
+void UGameTimelineComponent::RemoveEntryByPlayerId(int32 InId)
+{
+	bool bRemoved = false;
+	// Iterate through the entry list and remove matched one
+	for (int32 i = 0; i < TimelineEntryList.Num(); ++i)
+	{
+		if (TimelineEntryList[i].IsValid() && TimelineEntryList[i]->GetPlayerId() == InId)
+		{
+			TimelineEntryList.RemoveAt(i);
+			bRemoved = true;
+			break;
+		}
+	}
+
+	// Trigger the notify
+	if (bRemoved)
+	{
+		MulticastTimelineEntryRemoved(InId);
+	}
+
+	UpdateTimeline();
+}
+
+void UGameTimelineComponent::MulticastTimelineEntryRemoved_Implementation(int32 InId)
+{
+	OnTimelineEntryRemoved.Broadcast(InId);
+}
+
+void UGameTimelineComponent::AddTimer(int32 InTime, FTimelineRoundTimerFinishDelegate& InCallback)
+{
+	TSharedPtr<FTimelineRoundTimer> NewTimer = MakeShareable(new FTimelineRoundTimer());
+	NewTimer->InitTimer(this, InTime, InCallback);
+	NewTimer->OnTimerExpired.AddUObject(this, &UGameTimelineComponent::OnRoundTimerExpired);
+	TimerList.Add(NewTimer);
+}
+
+void UGameTimelineComponent::OnRoundTimerExpired(TSharedPtr<FTimelineRoundTimer> InTimer)
+{
+	if (!InTimer.IsValid())
+	{
+		return;
+	}
+
+	InTimer->OnTimerExpired.RemoveAll(this);
+	TimerList.Remove(InTimer);
 }

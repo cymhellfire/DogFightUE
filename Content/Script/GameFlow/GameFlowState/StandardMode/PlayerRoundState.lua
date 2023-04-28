@@ -1,5 +1,5 @@
 require "UnLua"
-local CharacterModifierTypeDef = require "DogFight.Services.CharacterModifierService.CharacterModifierTypeDef"
+local BuffTypeDef = require "DogFight.Services.BuffService.BuffTypeDef"
 
 ---@class PlayerRoundState : GameFlowStateLogicBase Player can use cards in this state.
 local PlayerRoundState = Class("GameFlow.GameFlowState.GameFlowStateLogicBase")
@@ -23,14 +23,22 @@ function PlayerRoundState:OnEnter()
     if CurPC then
         ---@type ATopDownStylePlayerCharacter
         local PlayerCharacter = CurPC:GetCharacterPawn()
-        if PlayerCharacter and PlayerCharacter.DamageReceiverComponent then
-            ---@type CharacterModifierService
-            local CharacterModifierService = GetGameService(self.OwnerState, GameServiceNameDef.CharacterModifierService)
-            if CharacterModifierService then
-                local NewModifier = CharacterModifierService:CreateCharacterStatusModifier(CharacterModifierTypeDef.Add10PhysicalResistance)
-                if NewModifier then
-                    PlayerCharacter.DamageReceiverComponent:AddModifierObject(NewModifier)
-                end
+        if PlayerCharacter then
+            -- ---@type BuffService
+            -- local BuffService = GetGameService(self.OwnerState, GameServiceNameDef.BuffService)
+            -- if BuffService then
+            --     ---@type URoundTimerBuff
+            --     local NewBuff = BuffService:CreateBuff(BuffTypeDef.AddPhysResist)
+            --     NewBuff:SetDuration(1)
+            --     NewBuff:Apply(PlayerCharacter)
+            -- end
+
+            ---@type URoundTimerBuff
+            local NewBuff = NewObject(UE.URoundTimerBuff.StaticClass(), self.OwnerState)
+            if NewBuff then
+                NewBuff:InitBuff("DogFight.Buff.BuffLogic.AddPhysResistBuff")
+                NewBuff:SetDuration(1)
+                NewBuff:Apply(PlayerCharacter)
             end
         end
     end
