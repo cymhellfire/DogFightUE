@@ -11,7 +11,7 @@ class UNewBuffBase;
 /**
  * 
  */
-UCLASS(Abstract)
+UCLASS()
 class DOGFIGHTGAME_API UBuffService : public ULuaGameService
 {
 	GENERATED_BODY()

@@ -5,7 +5,8 @@ local BuffConfig = UnrealClass("DogFight.Services.ServiceConfigBase")
 
 local Config = {
     [BuffTypeDef.AddPhysResist] = {
-        Path = "DogFight.Buff.BuffLogic.AddPhysResistBuff",
+        Class = UE.URoundTimerBuff.StaticClass(),
+        Script = "DogFight.Buff.BuffLogic.AddPhysResistBuff",
     },
 }
 

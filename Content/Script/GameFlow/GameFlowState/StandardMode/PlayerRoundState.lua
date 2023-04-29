@@ -23,19 +23,11 @@ function PlayerRoundState:OnEnter()
         ---@type ATopDownStylePlayerCharacter
         local PlayerCharacter = CurPC:GetCharacterPawn()
         if PlayerCharacter then
-            -- ---@type BuffService
-            -- local BuffService = GetGameService(self.OwnerState, GameServiceNameDef.BuffService)
-            -- if BuffService then
-            --     ---@type URoundTimerBuff
-            --     local NewBuff = BuffService:CreateBuff(BuffTypeDef.AddPhysResist)
-            --     NewBuff:SetDuration(1)
-            --     NewBuff:Apply(PlayerCharacter)
-            -- end
-
-            ---@type URoundTimerBuff
-            local NewBuff = NewObject(UE.URoundTimerBuff.StaticClass(), self.OwnerState)
-            if NewBuff then
-                NewBuff:InitBuff("DogFight.Buff.BuffLogic.AddPhysResistBuff")
+            ---@type BuffService
+            local BuffService = GetGameService(self.OwnerState, GameServiceNameDef.BuffService)
+            if BuffService then
+                ---@type URoundTimerBuff
+                local NewBuff = BuffService:CreateBuff(BuffTypeDef.AddPhysResist)
                 NewBuff:SetDuration(1)
                 NewBuff:Apply(PlayerCharacter)
             end
