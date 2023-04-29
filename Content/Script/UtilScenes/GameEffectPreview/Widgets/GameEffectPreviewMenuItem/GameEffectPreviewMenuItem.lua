@@ -1,6 +1,4 @@
-require "UnLua"
-
-local GameEffectPreviewMenuItem = Class("Common.MVVM.ModelBase")
+local GameEffectPreviewMenuItem = UnrealClass("Common.MVVM.ModelBase")
 local ViewModelBase = require("Common.MVVM.ViewModelBase")
 local DataBinding = require("Common.MVVM.DataBinding")
 local GameEffectPreviewMenuItemVM = require("UtilScenes.GameEffectPreview.Widgets.GameEffectPreviewMenuItem.GameEffectPreviewMenuItemVM")

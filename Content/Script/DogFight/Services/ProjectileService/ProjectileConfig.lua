@@ -1,9 +1,8 @@
-require "UnLua"
 local ProjectileTypeDef = require("DogFight.Services.ProjectileService.ProjectileTypeDef")
 local WarheadTypeDef = require("DogFight.Services.WarheadService.WarheadTypeDef")
 
 ---@class ProjectileConfig : ServiceConfigBase Class manage all projectile configurations.
-local ProjectileConfig = Class("DogFight.Services.ServiceConfigBase")
+local ProjectileConfig = UnrealClass("DogFight.Services.ServiceConfigBase")
 
 ---Config data
 local Config = {

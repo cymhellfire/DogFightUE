@@ -1,7 +1,5 @@
-require "UnLua"
-
 ---@class SpawnState : GameFlowStateLogicBase State that spawn character for all players.
-local SpawnState = Class("GameFlow.GameFlowState.GameFlowStateLogicBase")
+local SpawnState = UnrealClass("GameFlow.GameFlowState.GameFlowStateLogicBase")
 
 local function SpawnPlayerCharacter(self)
     local PCList = UE.UCommonGameFlowFunctionLibrary.GetAllPlayerControllers(self.OwnerState)

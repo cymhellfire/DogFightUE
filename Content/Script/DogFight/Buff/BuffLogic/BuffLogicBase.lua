@@ -1,6 +1,6 @@
 ---@class BuffLogicBase
 ---@field _Owner BuffBase Owner buff instance.
-local BuffLogicBase = Class()
+local BuffLogicBase = UnrealClass()
 
 ---@param InBuff BuffBase Owner buff instance.
 function BuffLogicBase:Init(InBuff)

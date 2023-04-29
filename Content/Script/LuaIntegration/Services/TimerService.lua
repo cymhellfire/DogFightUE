@@ -1,7 +1,5 @@
-require "UnLua"
-
 ---@class TimerService Service that manage all timer.
-local TimerService = Class("DogFight.Services.GameServiceBase")
+local TimerService = UnrealClass("DogFight.Services.GameServiceBase")
 
 ---Register a timer which can trigger once or multiple times.
 ---@param InObj table Callback function container.

@@ -2,7 +2,7 @@ local CharacterModifierTypeDef = require "DogFight.Services.CharacterModifierSer
 
 ---@class AddPhysResistBuff : BuffLogicBase Add physics resistance buff.
 ---@field _Modifier UCharacterStatusModifier Character status modifier instance.
-local AddPhysResistBuff = Class("DogFight.Buff.BuffLogic.BuffLogicBase")
+local AddPhysResistBuff = UnrealClass("DogFight.Buff.BuffLogic.BuffLogicBase")
 
 ---@param InCharacter ATopDownStylePlayerCharacter
 function AddPhysResistBuff:OnApply(InCharacter)

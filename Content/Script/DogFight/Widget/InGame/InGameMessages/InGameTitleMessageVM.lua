@@ -1,5 +1,3 @@
-require "UnLua"
-
 local InGameTitleMessageVM = {}
 
 InGameTitleMessageVM.BindingTable = {

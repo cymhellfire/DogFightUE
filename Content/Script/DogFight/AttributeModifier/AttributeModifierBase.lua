@@ -1,6 +1,6 @@
 ---@class AttributeModifierBase : ULuaAttributeModifierObject Base class that hold modifier scripts.
 ---@field _ModifierScirpt AttributeModifierScriptBase Modifier script instance.
-local AttributeModifierBase = Class()
+local AttributeModifierBase = UnrealClass()
 
 ---Load and initialize modifier script.
 ---@param InScript string Path of script to load.

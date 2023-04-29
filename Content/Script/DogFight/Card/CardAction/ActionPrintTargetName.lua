@@ -1,7 +1,7 @@
 local CardActionCommand = require "Card.CardCommand.CardActionCommand"
 
 ---@class ActionPrintTargetName : CardActionCommand
-local ActionPrintTargetName = Class(CardActionCommand)
+local ActionPrintTargetName = UnrealClass(CardActionCommand)
 
 function ActionPrintTargetName:StartCommand()
     CardActionCommand.StartCommand(self)

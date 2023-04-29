@@ -1,7 +1,7 @@
 local BuffTypeDef = require "DogFight.Services.BuffService.BuffTypeDef"
 
 ---@class BuffConfig : ServiceConfigBase Config data of all character buff.
-local BuffConfig = Class("DogFight.Services.ServiceConfigBase")
+local BuffConfig = UnrealClass("DogFight.Services.ServiceConfigBase")
 
 local Config = {
     [BuffTypeDef.AddPhysResist] = {

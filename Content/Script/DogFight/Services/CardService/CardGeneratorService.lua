@@ -1,8 +1,6 @@
-require "UnLua"
-
 ---@class CardGeneratorService : GameServiceBase Service that hold card generating functionality.
 ---卡牌生成服务
-local CardGeneratorService = Class("DogFight.Services.GameServiceBase")
+local CardGeneratorService = UnrealClass("DogFight.Services.GameServiceBase")
 
 function CardGeneratorService:StartupScript(ServiceName)
     self.Super.StartupScript(self, ServiceName)

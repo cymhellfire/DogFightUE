@@ -3,7 +3,7 @@ local CardCommandResultDef = require "Card.CardCommand.CardCommandResultDef"
 
 ---@field LogicCommand CardLogicCommand
 ---@class CardLogic : UCardLogic Card logic is the actual class binding with UCardLogic class and holding all commands.
-local CardLogic = Class()
+local CardLogic = UnrealClass()
 
 ---Load logic script and initialize this logic. (Invoke by UCardLogic::InitLogic)
 ---@param ScriptPath string Logic script path.

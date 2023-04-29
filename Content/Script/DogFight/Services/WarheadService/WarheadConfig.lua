@@ -1,9 +1,8 @@
-require "UnLua"
 local WarheadTypeDef = require("DogFight.Services.WarheadService.WarheadTypeDef")
 local DamageTypeDef = require("DogFight.Services.DamageService.DamageTypeDef")
 
 ---@class WarheadConfig : ServiceConfigBase Warhead config table.
-local WarheadConfig = Class("DogFight.Services.ServiceConfigBase")
+local WarheadConfig = UnrealClass("DogFight.Services.ServiceConfigBase")
 
 local Config = {
     [WarheadTypeDef.Default] = {

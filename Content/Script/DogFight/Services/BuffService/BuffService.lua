@@ -1,5 +1,5 @@
 ---@class BuffService : GameServiceBase, UBuffService
-local BuffService = Class("DogFight.Services.GameServiceBase")
+local BuffService = UnrealClass("DogFight.Services.GameServiceBase")
 
 function BuffService:GetConfigPath()
     return "DogFight.Services.BuffService.BuffConfig"

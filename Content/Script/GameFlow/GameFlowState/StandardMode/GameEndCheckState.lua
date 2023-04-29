@@ -1,7 +1,5 @@
-require "UnLua"
-
 ---@class GameEndCheckState : GameFlowStateLogicBase Check if the game should end.
-local GameEndCheckState = Class("GameFlow.GameFlowState.GameFlowStateLogicBase")
+local GameEndCheckState = UnrealClass("GameFlow.GameFlowState.GameFlowStateLogicBase")
 
 function GameEndCheckState:OnEnter()
     print("GameEndCheckState: OnEnter")

@@ -1,7 +1,5 @@
-require "UnLua"
-
 ---@class DamageDisplayUnit : BP_Widget_DamageDisplayUnit_C
-local DamageDisplayUnit = Class("Common.MVVM.ModelBase")
+local DamageDisplayUnit = UnrealClass("Common.MVVM.ModelBase")
 local DamageDisplayUnitVM = require("DogFight.Widget.InGame.DamageDisplay.DamageDisplayUnitVM")
 local WidgetNameDef = require("DogFight.Services.Config.GameWidgetNameDef")
 local ViewModelBase = require("Common.MVVM.ViewModelBase")

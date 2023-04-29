@@ -9,7 +9,7 @@ local CardCommandHelper = require "Card.CardCommand.CardCommandHelper"
 ---@field _AliveProjectileCount number Total count of alive projectiles.
 ---@field _DelegateHelperList table List of all delegate helper for projectile death.
 ---@class ActionLaunchProjectile : CardActionCommand Action that launch a projectile toward target.
-local ActionLaunchProjectile = Class(CardActionCommand)
+local ActionLaunchProjectile = UnrealClass(CardActionCommand)
 
 function ActionLaunchProjectile:OnInit()
     CardActionCommand.OnInit(self)

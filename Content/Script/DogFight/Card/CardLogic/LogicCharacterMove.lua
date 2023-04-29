@@ -2,7 +2,7 @@ local CardLogicCommand = require "Card.CardCommand.CardLogicCommand"
 local CardCommandResultDef = require "Card.CardCommand.CardCommandResultDef"
 
 ---@class LogicCharacterMove : CardLogicCommand
-local LogicCharacterMove = Class(CardLogicCommand)
+local LogicCharacterMove = UnrealClass(CardLogicCommand)
 
 local CommandNameDef = {
     AcquireTarget = "AcquireTarget",

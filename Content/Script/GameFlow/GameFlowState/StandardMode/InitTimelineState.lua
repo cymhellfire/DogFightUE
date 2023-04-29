@@ -1,7 +1,5 @@
-require "UnLua"
-
 ---@class InitTimelineState : GameFlowStateLogicBase State that initialize timeline for current game.
-local InitTimelineState = Class("GameFlow.GameFlowState.GameFlowStateLogicBase")
+local InitTimelineState = UnrealClass("GameFlow.GameFlowState.GameFlowStateLogicBase")
 
 function InitTimelineState:OnEnter()
     print("InitTimelineState: OnEnter")

@@ -1,7 +1,6 @@
-require "UnLua"
 require "Common.TableUtils"
 
-local EventDelegate = Class()
+local EventDelegate = UnrealClass()
 
 function EventDelegate:ctor()
     self.ListenerMap = {}

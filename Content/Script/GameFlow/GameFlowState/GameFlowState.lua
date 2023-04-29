@@ -1,8 +1,6 @@
-require "UnLua"
-
 ---@field Logic GameFlowStateLogicBase Logic class of this game flow state.
 ---@class GameFlowState : UGameFlowStateBase Base class of all game flow state.
-local GameFlowState = Class()
+local GameFlowState = UnrealClass()
 
 function GameFlowState:Initialize()
     self.LogicBasePath = "GameFlow.GameFlowState."

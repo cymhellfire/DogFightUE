@@ -1,7 +1,5 @@
-require "UnLua"
-
 ---@class GameInputService : UGameInputService Service that handle game input mapping change operations.
-local GameInputService = Class("DogFight.Services.GameServiceBase")
+local GameInputService = UnrealClass("DogFight.Services.GameServiceBase")
 
 function GameInputService:StartupScript(ServiceName)
     self.Super.StartupScript(self, ServiceName)

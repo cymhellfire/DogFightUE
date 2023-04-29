@@ -1,6 +1,4 @@
-require "UnLua"
-
-local DefaultDamage = Class()
+local DefaultDamage = UnrealClass()
 
 function DefaultDamage:K2_PreApplyToComponent(DamageEvent)
     self:SetDamageType(UE.UExtendedDamageType.StaticClass())

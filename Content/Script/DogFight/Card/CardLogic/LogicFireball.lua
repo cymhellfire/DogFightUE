@@ -2,7 +2,7 @@ local CardLogicCommand = require "Card.CardCommand.CardLogicCommand"
 local ProjectileTypeDef = require "DogFight.Services.ProjectileService.ProjectileTypeDef"
 
 ---@class LogicFireball : CardLogicCommand Shoot fireball toward target.
-local LogicFireball = Class(CardLogicCommand)
+local LogicFireball = UnrealClass(CardLogicCommand)
 
 local CommandNameDef = {
     AcquireTarget = "AcquireTarget",

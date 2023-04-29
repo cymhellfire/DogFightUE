@@ -1,5 +1,5 @@
 ---@class InGameChatView : BP_Widget_InGameChat_C, ModelBase
-local InGameChatView = Class("Common.MVVM.ModelBase")
+local InGameChatView = UnrealClass("Common.MVVM.ModelBase")
 local ViewModelBase = require("Common.MVVM.ViewModelBase")
 local DataBinding = require("Common.MVVM.DataBinding")
 local InGameChatVM = require("DogFight.Widget.Common.InGameChat.InGameChatVM")

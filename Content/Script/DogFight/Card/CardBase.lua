@@ -1,9 +1,7 @@
-require("UnLua")
-
 local AttributeEnum = require "DogFight.DataBridge.AttributeEnum"
 
 ---@class CardBase : UCard Base class for all cards.
-local CardBase = Class()
+local CardBase = UnrealClass()
 
 --========================== Workflow ==========================--
 

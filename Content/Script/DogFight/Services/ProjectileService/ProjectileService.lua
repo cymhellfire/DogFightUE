@@ -1,7 +1,5 @@
-require "UnLua"
-
 ---@class ProjectileService : GameServiceBase, UProjectileService Service that handle in-game projectiles operations.
-local ProjectileService = Class("DogFight.Services.GameServiceBase")
+local ProjectileService = UnrealClass("DogFight.Services.GameServiceBase")
 
 function ProjectileService:GetConfigPath()
     return "DogFight.Services.ProjectileService.ProjectileConfig"

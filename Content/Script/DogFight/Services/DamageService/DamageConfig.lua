@@ -1,8 +1,7 @@
-require "UnLua"
 local DamageTypeDef = require("DogFight.Services.DamageService.DamageTypeDef")
 
 ---@class DamageConfig : ServiceConfigBase
-local DamageConfig = Class("DogFight.Services.ServiceConfigBase")
+local DamageConfig = UnrealClass("DogFight.Services.ServiceConfigBase")
 
 local Config = {
     [DamageTypeDef.Default] = {

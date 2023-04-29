@@ -1,7 +1,5 @@
-require "UnLua"
-
 ---@class GameEffectService : UGameEffectService
-local GameEffectService = Class("DogFight.Services.GameServiceBase")
+local GameEffectService = UnrealClass("DogFight.Services.GameServiceBase")
 
 
 

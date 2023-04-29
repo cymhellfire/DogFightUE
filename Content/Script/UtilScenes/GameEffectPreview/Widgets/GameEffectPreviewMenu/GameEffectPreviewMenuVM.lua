@@ -1,5 +1,3 @@
-require "UnLua"
-
 local GameEffectPreviewMenuVM = {}
 
 GameEffectPreviewMenuVM.BindingTable = {

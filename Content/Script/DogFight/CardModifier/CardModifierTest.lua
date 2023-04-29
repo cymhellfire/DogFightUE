@@ -1,6 +1,4 @@
-require "UnLua"
-
-local CardModifierTest = Class("DogFight.CardModifier.CardModifierBase")
+local CardModifierTest = UnrealClass("DogFight.CardModifier.CardModifierBase")
 
 function CardModifierTest:GetModifierArgumentTable()
     return {

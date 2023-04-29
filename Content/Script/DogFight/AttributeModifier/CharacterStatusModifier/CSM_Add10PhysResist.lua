@@ -1,5 +1,5 @@
 ---@class CSM_Add10PhysResist : AttributeModifierScriptBase Add 10 physcial resistance to character.
-local CSM_Add10PhysResist = Class("DogFight.AttributeModifier.AttributeModifierScriptBase")
+local CSM_Add10PhysResist = UnrealClass("DogFight.AttributeModifier.AttributeModifierScriptBase")
 
 function CSM_Add10PhysResist:InitModifier()
     local ModifierArugment = UE.FModifierCreateArgument()

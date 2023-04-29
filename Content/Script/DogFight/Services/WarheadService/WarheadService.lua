@@ -1,7 +1,5 @@
-require "UnLua"
-
 ---@class WarheadService : GameServiceBase Service that hold all warhead data.
-local WarheadService = Class("DogFight.Services.GameServiceBase")
+local WarheadService = UnrealClass("DogFight.Services.GameServiceBase")
 local WarheadTypeDef = require("DogFight.Services.WarheadService.WarheadTypeDef")
 
 function WarheadService:GetConfigPath()

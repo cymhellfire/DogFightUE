@@ -1,9 +1,7 @@
-require "UnLua"
-
 ---@field Data table Raw config data table.
 ---@field _DataNum number Total number of config.
 ---@class ServiceConfigBase Base class of all service config.
-local ServiceConfigBase = Class()
+local ServiceConfigBase = UnrealClass()
 
 function ServiceConfigBase:ctor()
     self._DataNum = 0

@@ -2,7 +2,7 @@
 ---@field _Listener any Listener instance holds the callback function.
 ---@field _Callback function Callback function.
 ---@class DelegateHelper : UDelegateHelper Helper class for non-bound lua script to listen native delegate.
-local DelegateHelper = Class()
+local DelegateHelper = UnrealClass()
 
 function DelegateHelper:OnReset()
     -- Unbind the delegate when reset

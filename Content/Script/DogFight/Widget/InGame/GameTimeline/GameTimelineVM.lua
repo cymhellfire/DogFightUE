@@ -1,5 +1,3 @@
-require "UnLua"
-
 local GameTimelineVM = {}
 
 GameTimelineVM.BindingTable = {

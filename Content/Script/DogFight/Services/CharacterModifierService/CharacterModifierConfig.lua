@@ -1,7 +1,7 @@
 local CharacterModifierTypeDef = require "DogFight.Services.CharacterModifierService.CharacterModifierTypeDef"
 
 ---@class CharacterModifierConfig : ServiceConfigBase Config data of all character status modifiers.
-local CharacterModifierConfig = Class("DogFight.Services.ServiceConfigBase")
+local CharacterModifierConfig = UnrealClass("DogFight.Services.ServiceConfigBase")
 
 local Config = {
     [CharacterModifierTypeDef.Add10PhysicalResistance] = {

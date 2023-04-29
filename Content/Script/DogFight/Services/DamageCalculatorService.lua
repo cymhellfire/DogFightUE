@@ -1,6 +1,4 @@
-require "UnLua"
-
-local DamageCalculatorService = Class("DogFight.Services.GameServiceBase")
+local DamageCalculatorService = UnrealClass("DogFight.Services.GameServiceBase")
 
 function DamageCalculatorService:LoadDamageCalculator(InPath, Instigator)
     local DefaultClass = self:GetDamageCalculatorClass()

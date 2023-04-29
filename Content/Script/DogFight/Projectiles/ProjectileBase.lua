@@ -1,7 +1,5 @@
-require "UnLua"
-
 ---@class ProjectileBase : ANewProjectileBase
-local ProjectileBase = Class()
+local ProjectileBase = UnrealClass()
 
 ---Setup logic script for this projectile.
 ---@param InPath string Path of script file.

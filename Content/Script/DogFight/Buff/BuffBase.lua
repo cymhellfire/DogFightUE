@@ -1,6 +1,6 @@
 ---@class BuffBase
 ---@field _Logic BuffLogicBase Buff logic script class.
-local BuffBase = Class()
+local BuffBase = UnrealClass()
 
 function BuffBase:LoadBuffScript(InPath)
     local LogicTemp = require(InPath)

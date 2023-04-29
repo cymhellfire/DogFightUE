@@ -1,7 +1,5 @@
-require "UnLua"
-
 ---@class GameEffectPreviewMenu Main menu of game effect preview utility scene.
-local GameEffectPreviewMenu = Class("Common.MVVM.ModelBase")
+local GameEffectPreviewMenu = UnrealClass("Common.MVVM.ModelBase")
 local ViewModelBase = require("Common.MVVM.ViewModelBase")
 local DataBinding = require("Common.MVVM.DataBinding")
 local GameEffectPreviewMenuVM = require("UtilScenes.GameEffectPreview.Widgets.GameEffectPreviewMenu.GameEffectPreviewMenuVM")

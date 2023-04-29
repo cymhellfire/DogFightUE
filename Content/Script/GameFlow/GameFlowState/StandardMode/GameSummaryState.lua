@@ -1,7 +1,5 @@
-require "UnLua"
-
 ---@class GameSummaryState : GameFlowStateLogicBase Show the game statistic.
-local GameSummaryState = Class("GameFlow.GameFlowState.GameFlowStateLogicBase")
+local GameSummaryState = UnrealClass("GameFlow.GameFlowState.GameFlowStateLogicBase")
 
 function GameSummaryState:OnEnter()
     print("GameSummaryState: OnEnter")

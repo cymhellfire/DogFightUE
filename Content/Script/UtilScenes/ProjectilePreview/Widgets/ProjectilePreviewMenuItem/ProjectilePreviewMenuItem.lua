@@ -1,7 +1,5 @@
-require "UnLua"
-
 ---@class ProjectilePreviewMenuItem : BP_Widget_ProjectilePreviewMenuItem_C
-local ProjectilePreviewMenuItem = Class("Common.MVVM.ModelBase")
+local ProjectilePreviewMenuItem = UnrealClass("Common.MVVM.ModelBase")
 local ViewModelBase = require("Common.MVVM.ViewModelBase")
 local DataBinding = require("Common.MVVM.DataBinding")
 local ProjectilePreviewMenuItemVM = require("UtilScenes.ProjectilePreview.Widgets.ProjectilePreviewMenuItem.ProjectilePreviewMenuItemVM")

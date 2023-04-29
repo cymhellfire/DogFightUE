@@ -1,6 +1,4 @@
-require "UnLua"
-
-local GameTimelineItem = Class("Common.MVVM.ModelBase")
+local GameTimelineItem = UnrealClass("Common.MVVM.ModelBase")
 local ViewModelBase = require("Common.MVVM.ViewModelBase")
 local DataBinding = require("Common.MVVM.DataBinding")
 local GameTimelineItemVM = require("DogFight.Widget.InGame.GameTimeline.GameTimelineItemVM")

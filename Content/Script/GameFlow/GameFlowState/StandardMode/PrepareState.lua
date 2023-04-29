@@ -1,7 +1,5 @@
-require "UnLua"
-
 ---@class PrepareState : GameFlowStateLogicBase State that allow players move around to take the position for game process.
-local PrepareState = Class("GameFlow.GameFlowState.GameFlowStateLogicBase")
+local PrepareState = UnrealClass("GameFlow.GameFlowState.GameFlowStateLogicBase")
 
 local function CharacterMoveCountDown(self, Duration)
     -- Add character movement input to all players

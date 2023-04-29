@@ -1,8 +1,6 @@
-require "UnLua"
-
 ---@class WidgetCardList : BP_Widget_CardList_C
 ---@field public CardList_ListView UListView
-local WidgetCardList = Class("Common.MVVM.ModelBase")
+local WidgetCardList = UnrealClass("Common.MVVM.ModelBase")
 local ViewModelBase = require("Common.MVVM.ViewModelBase")
 local DataBinding = require("Common.MVVM.DataBinding")
 local WidgetCardListVM = require("DogFight.Widget.InGame.CardList.WidgetCardListVM")

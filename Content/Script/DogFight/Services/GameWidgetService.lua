@@ -1,11 +1,10 @@
-require "UnLua"
 require "LuaIntegration.Common.UnrealUtils"
 
 local WidgetNameDef = require("DogFight.Services.Config.GameWidgetNameDef")
 local WidgetConfig = require("DogFight.Services.Config.GameWidgetConfig")
 
 ---@class GameWidgetService : UGameWidgetService Service that handle all widget relative operations.
-local GameWidgetService = Class("DogFight.Services.GameServiceBase")
+local GameWidgetService = UnrealClass("DogFight.Services.GameServiceBase")
 
 local function LoadAndCreateWidget(self, InWidget, bShow)
     local WidgetCfg = WidgetConfig[InWidget]

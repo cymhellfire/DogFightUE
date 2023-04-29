@@ -1,6 +1,6 @@
 ---@class AttributeModifierScriptBase Base class of all modifier scripts.
 ---@field _Owner AttributeModifierBase Owner modifier instance.
-local AttributeModifierScriptBase = Class()
+local AttributeModifierScriptBase = UnrealClass()
 
 ---Initialize modifier script.
 ---@param InModifierBase AttributeModifierBase Owner modifier base instance.

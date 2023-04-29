@@ -1,5 +1,5 @@
 ---@class CharacterModifierService : GameServiceBase, UCharacterModifierService Service provide character modifier spawning and management.
-local CharacterModifierService = Class("DogFight.Services.GameServiceBase")
+local CharacterModifierService = UnrealClass("DogFight.Services.GameServiceBase")
 
 function CharacterModifierService:GetConfigPath()
     return "DogFight.Services.CharacterModifierService.CharacterModifierConfig"

@@ -1,4 +1,3 @@
-require "UnLua"
 local ArrayHelper = require("Common.ArrayHelper")
 
 --- Wrapper functions for common Unreal Engine interfaces

@@ -1,6 +1,4 @@
-require "UnLua"
-
-local WidgetCardListItem = Class("Common.MVVM.ModelBase")
+local WidgetCardListItem = UnrealClass("Common.MVVM.ModelBase")
 local ViewModelBase = require("Common.MVVM.ViewModelBase")
 local DataBinding = require("Common.MVVM.DataBinding")
 local WidgetCardListItemVM = require("DogFight.Widget.InGame.CardList.WidgetCardListItemVM")

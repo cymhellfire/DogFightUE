@@ -1,8 +1,7 @@
-require "UnLua"
 require "LuaIntegration.Common.UnrealUtils"
 
 ---@class InitState : GameFlowStateLogicBase Initial state after player enter the game level until all players are loaded.
-local InitState = Class("GameFlow.GameFlowState.GameFlowStateLogicBase")
+local InitState = UnrealClass("GameFlow.GameFlowState.GameFlowStateLogicBase")
 
 function InitState:OnEnter()
     print("InitState: OnEnter")

@@ -4,7 +4,7 @@ local CardCommandResultDef = require "Card.CardCommand.CardCommandResultDef"
 ---@field Listener any Object that hold the callback function.
 ---@field Callback function Callback function that will be triggered when command is finished.
 ---@class CardCommandBase Base class of all card commands.
-local CardCommandBase = Class()
+local CardCommandBase = UnrealClass()
 
 ---Let the command finish and trigger the callback.
 ---@param self CardCommandBase Command instance.

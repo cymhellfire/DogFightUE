@@ -1,7 +1,5 @@
-require "UnLua"
-
 ---@class DataBinding Constructor class for all data binding.
-local DataBinding = Class()
+local DataBinding = UnrealClass()
 
 ---Create data binding to directly modify the text.
 function DataBinding.TextContextBinding()

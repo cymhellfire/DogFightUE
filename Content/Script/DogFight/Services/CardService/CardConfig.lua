@@ -1,7 +1,7 @@
 local CardTypeDef = require("DogFight.Services.CardService.CardTypeDef")
 
 ---@class CardConfig : ServiceConfigBase
-local CardConfig = Class("DogFight.Services.ServiceConfigBase")
+local CardConfig = UnrealClass("DogFight.Services.ServiceConfigBase")
 
 local Config = {
     [CardTypeDef.CharacterMove] = {
