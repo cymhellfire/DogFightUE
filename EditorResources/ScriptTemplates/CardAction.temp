@@ -1,7 +1,7 @@
 local CardActionCommand = require "Card.CardCommand.CardActionCommand"
 
 ---@class $Class$ : CardActionCommand
-local $Class$ = Class(CardActionCommand)
+local $Class$ = UnrealClass(CardActionCommand)
 
 ---Command executing function
 function $Class$:StartCommand()

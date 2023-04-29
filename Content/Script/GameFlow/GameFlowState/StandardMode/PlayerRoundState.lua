@@ -15,24 +15,6 @@ function PlayerRoundState:OnEnter()
     -- Add use card mapping to current player
     local CurPlayerId = UE.UCommonGameFlowFunctionLibrary.GetCurrentPlayerId(self.OwnerState)
     GetGameService(self.OwnerState, GameServiceNameDef.GameInputService):AddInputMappingByPlayerId(CurPlayerId, UE.EInputMappingType.InputMapping_CardUsing)
-
-    -- Add test modifier to current player character
-    ---@type ATopDownStylePlayerController
-    local CurPC = UE.UCommonGameplayFunctionLibrary.GetPlayerControllerById(self.OwnerState, CurPlayerId)
-    if CurPC then
-        ---@type ATopDownStylePlayerCharacter
-        local PlayerCharacter = CurPC:GetCharacterPawn()
-        if PlayerCharacter then
-            ---@type BuffService
-            local BuffService = GetGameService(self.OwnerState, GameServiceNameDef.BuffService)
-            if BuffService then
-                ---@type URoundTimerBuff
-                local NewBuff = BuffService:CreateBuff(BuffTypeDef.AddPhysResist)
-                NewBuff:SetDuration(1)
-                NewBuff:Apply(PlayerCharacter)
-            end
-        end
-    end
 end
 
 function PlayerRoundState:OnExit()

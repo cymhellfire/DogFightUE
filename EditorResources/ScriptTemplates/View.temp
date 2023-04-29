@@ -1,5 +1,5 @@
 ---@class $Class$ : ModelBase 
-local $Class$ = Class("Common.MVVM.ModelBase")
+local $Class$ = UnrealClass("Common.MVVM.ModelBase")
 local ViewModelBase = require("Common.MVVM.ViewModelBase")
 local DataBinding = require("Common.MVVM.DataBinding")
 local $ClassPure$VM = require("$Path$.$ClassPure$VM")

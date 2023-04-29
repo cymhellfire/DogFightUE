@@ -12,6 +12,10 @@ local Config = {
         Name = "Attack",
         LogicPath = "DogFight.Card.CardLogic.LogicFireball",
     },
+    [CardTypeDef.AddPhysResist] = {
+        Name = "AddPhysResist",
+        LogicPath = "DogFight.Card.CardLogic.LogicAddPhysResist",
+    },
 }
 
 function CardConfig:GetData()

@@ -31,8 +31,8 @@ void FTimelineRoundTimer::InitTimer(UGameTimelineComponent* InTimelineComponent,
 
 	// Register callback functions
 	ListeningTimeline = InTimelineComponent;
-	OnTimelineChangeHandle = InTimelineComponent->OnGameTimelineChanged.AddSP(this, &FTimelineRoundTimer::OnTimelineChanged);
-	OnTimelineEntryRemovedHandle = InTimelineComponent->OnTimelineEntryRemoved.AddSP(this, &FTimelineRoundTimer::OnTimelineEntryRemoved);
+	OnTimelineChangeHandle = InTimelineComponent->OnGameTimelineChanged.AddRaw(this, &FTimelineRoundTimer::OnTimelineChanged);
+	OnTimelineEntryRemovedHandle = InTimelineComponent->OnTimelineEntryRemoved.AddRaw(this, &FTimelineRoundTimer::OnTimelineEntryRemoved);
 
 	// Get the waiting queue
 	WaitingRoundQueue = ListeningTimeline->GetTimerWaitingQueue(InTime);

@@ -2,16 +2,6 @@
 ---卡牌生成服务
 local CardGeneratorService = UnrealClass("DogFight.Services.GameServiceBase")
 
-function CardGeneratorService:StartupScript(ServiceName)
-    self.Super.StartupScript(self, ServiceName)
-
-    -- Temp card list
-    self.CardList = {
-        "DogFight.Card.CardLogic.LogicCharacterMove",
-        "DogFight.Card.CardLogic.TestCardLogic"
-    }
-end
-
 function CardGeneratorService:GetConfigPath()
     return "DogFight.Services.CardService.CardConfig"
 end
