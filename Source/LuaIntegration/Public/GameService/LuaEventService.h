@@ -1,6 +1,9 @@
 #pragma once
 
+#include "LuaEnv.h"
 #include "LuaGameService.h"
+#include "UnLuaLegacy.h"
+#include "UnLuaModule.h"
 #include "LuaEventService.generated.h"
 
 /**
@@ -11,17 +14,13 @@ class LUAINTEGRATION_API ULuaEventService : public ULuaGameService
 {
 	GENERATED_BODY()
 public:
-	UFUNCTION(BlueprintImplementableEvent, Category="LuaEventService")
-	void SendEventToLua(int32 EventIndex);
-
-	UFUNCTION(BlueprintImplementableEvent, Category="LuaEventService")
-	void SendEventToLua_OneParam(int32 EventIndex, const FString& Param);
-
-	UFUNCTION(BlueprintImplementableEvent, Category="LuaEventService")
-	void SendEventToLua_OneParam_Int(int32 EventIndex, int32 Param);
-
-	UFUNCTION(BlueprintImplementableEvent, Category="LuaEventService")
-	void SendEventToLua_TwoParam_Int(int32 EventIndex, int32 ParamOne, int32 ParamTwo);
+	/** Generic notify send interface. */
+	template <typename... T>
+	void SendEventToLua(int32 EventIndex, T&&... Args)
+	{
+		lua_State* l = IUnLuaModule::Get().GetEnv(this)->GetMainState();
+		UnLua::FLuaRetValues RetValue = UnLua::Call(l, "ReceiveNotifyFromC", this, EventIndex, Forward<T>(Args)...);
+	}
 
 	// IUnLuaInterface
 	virtual FString GetModuleName_Implementation() const override

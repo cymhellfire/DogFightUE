@@ -1,5 +1,5 @@
 ---@class PlayerCharacterStateUnitView : ModelBase 
-local PlayerCharacterStateUnitView = Class("Common.MVVM.ModelBase")
+local PlayerCharacterStateUnitView = UnrealClass("Common.MVVM.ModelBase")
 local ViewModelBase = require("Common.MVVM.ViewModelBase")
 local DataBinding = require("Common.MVVM.DataBinding")
 local PlayerCharacterStateUnitVM = require("DogFight.Widget.InGame.PlayerCharacterState.PlayerCharacterStateUnitVM")

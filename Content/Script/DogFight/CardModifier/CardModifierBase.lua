@@ -1,8 +1,6 @@
-require "UnLua"
-
 local AttributeEnum = require "DogFight.DataBridge.AttributeEnum"
 
-local CardModifierBase = Class()
+local CardModifierBase = UnrealClass()
 
 ---Construct a FModifierCreateArgument instance based on passed in table.
 ---基于Lua表构建FModifierCreateArgument实例。

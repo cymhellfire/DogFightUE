@@ -1,13 +1,10 @@
-require "UnLua"
-
 ---@field Data table Raw config data table.
----@field IdToNameCache table Table that map config id to config name.
+---@field _DataNum number Total number of config.
 ---@class ServiceConfigBase Base class of all service config.
-local ServiceConfigBase = Class()
+local ServiceConfigBase = UnrealClass()
 
 function ServiceConfigBase:ctor()
-    self.IdToNameCache = {}
-
+    self._DataNum = 0
     -- Get data and load
     if type(self.GetData) == "function" then
         local Data = self:GetData()
@@ -15,20 +12,22 @@ function ServiceConfigBase:ctor()
     end
 end
 
----Initialize the map between config id and name.
+---Initialize the loaded data
 ---@param self ServiceConfigBase ServiceConfig instance.
-local function InitializeIdToNameCache(self)
+local function InitializeLoadedData(self)
     -- Look up in config data
     for k, v in pairs(self.Data) do
-        if not self.IdToNameCache[v.Id] then
-            self.IdToNameCache[v.Id] = k
-            -- Set default name
-            if type(v.Name) ~= "string" then
-                v.Name = k
-            end
-        else
-            print("[ServiceConfig] Duplicate config Id detected: " .. v.Id)
+        -- Sync id
+        if type(v.Id) ~= "number" then
+            v.Id = k
         end
+        -- Set default name
+        if type(v.Name) ~= "string" then
+            v.Name = "Unnamed"
+        end
+
+        -- Add to config count
+        self._DataNum = self._DataNum + 1
     end
 end
 
@@ -40,8 +39,8 @@ function ServiceConfigBase:LoadData(InData)
     end
 
     self.Data = InData
-    -- Init map
-    InitializeIdToNameCache(self)
+    -- Init data
+    InitializeLoadedData(self)
 end
 
 ---Get the total count of config data.
@@ -51,50 +50,20 @@ function ServiceConfigBase:GetConfigNum()
         return 0
     end
 
-    local Result = 0
-    for _, v in pairs(self.Data) do
-        Result = Result + 1
-    end
-
-    return Result
-end
-
----Get config with specified name.
----@param InName string Name of config data.
----@return table Config data.
-function ServiceConfigBase:GetConfigByName(InName)
-    if not self.Data then
-        return
-    end
-
-    return self.Data[InName]
+    return self._DataNum
 end
 
 ---Get config with specified id.
 ---@param InId number Id of config data.
 ---@return table Config data.
-function ServiceConfigBase:GetConfigById(InId)
-    local Name = self.IdToNameCache[InId]
-    if Name then
-        return self.Data[Name]
+function ServiceConfigBase:GetConfig(InId)
+    if not self.Data then
+        return
     end
-end
 
----Get the id of config with given name.
----@param InName string Config name.
----@return number Config Id.
-function ServiceConfigBase:NameToId(InName)
-    local Config = self.Data[InName]
-    if Config then
-        return Config.Id
+    if InId then
+        return self.Data[InId]
     end
-end
-
----Get the name of config with given id.
----@param InId number Config Id.
----@return string Config name.
-function ServiceConfigBase:IdToName(InId)
-    return self.IdToNameCache[InId]
 end
 
 return ServiceConfigBase

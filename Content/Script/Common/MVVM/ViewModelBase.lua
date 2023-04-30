@@ -78,7 +78,7 @@ function ViewModelBase:__TriggerDelegate(key, value)
             local Widget = v["UIKey"]
             local DataPipe = v["DataBinding"]
             if DataPipe and Widget then
-                DataPipe.SetValue(ViewWidget[Widget], value)
+                DataPipe:SetValue(ViewWidget[Widget], value)
             end
         end
     end

@@ -1,7 +1,7 @@
-require "UnLua"
+local BuffTypeDef = require "DogFight.Services.BuffService.BuffTypeDef"
 
 ---@class PlayerRoundState : GameFlowStateLogicBase Player can use cards in this state.
-local PlayerRoundState = Class("GameFlow.GameFlowState.GameFlowStateLogicBase")
+local PlayerRoundState = UnrealClass("GameFlow.GameFlowState.GameFlowStateLogicBase")
 
 function PlayerRoundState:OnEnter()
     print("PlayerRoundState: OnEnter")

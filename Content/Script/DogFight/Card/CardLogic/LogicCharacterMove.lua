@@ -2,12 +2,19 @@ local CardLogicCommand = require "Card.CardCommand.CardLogicCommand"
 local CardCommandResultDef = require "Card.CardCommand.CardCommandResultDef"
 
 ---@class LogicCharacterMove : CardLogicCommand
-local LogicCharacterMove = Class(CardLogicCommand)
+local LogicCharacterMove = UnrealClass(CardLogicCommand)
 
 local CommandNameDef = {
     AcquireTarget = "AcquireTarget",
     MoveToPosition = "MoveToPosition",
 }
+
+---@param DescObject UCardDescObject
+function LogicCharacterMove:SetupDescObject(DescObject)
+    DescObject:SetCardName(GetLocalizedString(self._CardLogic, LocalizationTable.CardDisplay, "Name_CharacterMove"))
+    DescObject:SetCardDesc(GetLocalizedString(self._CardLogic, LocalizationTable.CardDisplay, "Desc_CharacterMove"))
+    DescObject:SetCardPicturePath("/Game/DogFight/Textures/UI/Icons/Icon_TwoSwords.Icon_TwoSwords")
+end
 
 ---Initialize the card workflow
 function LogicCharacterMove:OnInit()

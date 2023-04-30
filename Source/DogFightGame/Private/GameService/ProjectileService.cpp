@@ -35,7 +35,7 @@ ANewProjectileBase* UProjectileService::SpawnNewProjectileInstance(int32 InId)
 	if (auto NewInstance = SpawnNewProjectileInstance_Implementation(InId))
 	{
 		NewInstance->Id = InId;
-		NewInstance->OnProjectileDead.AddDynamic(this, &UProjectileService::OnProjectileDead);
+		NewInstance->OnProjectileReadyToRecycle.AddDynamic(this, &UProjectileService::OnProjectileDead);
 		return NewInstance;
 	}
 

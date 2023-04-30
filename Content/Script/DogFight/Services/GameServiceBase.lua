@@ -1,9 +1,8 @@
-require "UnLua"
 require "Common.StringHelper"
 
 ---@field Config ServiceConfigBase Table that contains all config data.
 ---@class GameServiceBase Base class of all game services.
-local GameServiceBase = Class()
+local GameServiceBase = UnrealClass()
 
 function GameServiceBase:StartupScript(ServiceName)
     print("ServiceStart: " .. ServiceName)

@@ -1,35 +1,35 @@
-require "UnLua"
-local ProjectileNameDef = require("DogFight.Services.ProjectileService.ProjectileNameDef")
-local WarheadNameDef = require("DogFight.Services.WarheadService.WarheadNameDef")
+local ProjectileTypeDef = require("DogFight.Services.ProjectileService.ProjectileTypeDef")
+local WarheadTypeDef = require("DogFight.Services.WarheadService.WarheadTypeDef")
 
 ---@class ProjectileConfig : ServiceConfigBase Class manage all projectile configurations.
-local ProjectileConfig = Class("DogFight.Services.ServiceConfigBase")
+local ProjectileConfig = UnrealClass("DogFight.Services.ServiceConfigBase")
 
 ---Config data
 local Config = {
-    [ProjectileNameDef.DefaultProjectile] = {
-        Id = 1,
+    [ProjectileTypeDef.DefaultProjectile] = {
+        Name = "DefaultProjectile",
         ResPath = "/Game/DogFightGame/Blueprints/Projectile/BP_Proj_Default",
         ScriptPath = "DogFight.Projectiles.ProjectileLogic.DefaultLogic",
-        Warhead = WarheadNameDef.Default,
+        Warhead = WarheadTypeDef.Default,
     },
-    [ProjectileNameDef.BouncyProjectile] = {
-        Id = 2,
-        ResPath = "/Game/DogFightGame/Blueprints/Projectile/BP_Proj_Bouncy",
+    [ProjectileTypeDef.Fireball] = {
+        Name = "Fireball",
+        ResPath = "/Game/DogFightGame/Blueprints/Projectile/BP_Proj_Fireball",
         ScriptPath = "",
-        Warhead = WarheadNameDef.Nuke,
+        Warhead = WarheadTypeDef.Fireball,
+        Damage = 10,
     },
-    [ProjectileNameDef.HomingProjectile] = {
-        Id = 3,
+    [ProjectileTypeDef.HomingProjectile] = {
+        Name = "HomingProjectile",
         ResPath = "/Game/DogFightGame/Blueprints/Projectile/BP_Proj_Homing",
         ScriptPath = "",
-        Warhead = WarheadNameDef.Default,
+        Warhead = WarheadTypeDef.Default,
         Damage = 50,
     },
-    [ProjectileNameDef.PeriodHomingProjectile] = {
-        Id = 4,
+    [ProjectileTypeDef.PeriodHomingProjectile] = {
+        Name = "PeriodHomingProjectile",
         ResPath = "/Game/DogFightGame/Blueprints/Projectile/BP_Proj_PeriodHoming",
-        Warhead = WarheadNameDef.Default,
+        Warhead = WarheadTypeDef.Default,
     }
 }
 

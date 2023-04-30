@@ -1,9 +1,8 @@
-require "UnLua"
 require "Common.TableUtils"
 
 ---@field ParentWrapper ListViewWrapper Parent wrapper of this item.
 ---@class GenericListViewItem Generic list item for storing data.
-local GenericListViewItem = Class()
+local GenericListViewItem = UnrealClass()
 
 ---Initialize item data with parent list wrapper.
 ---@param InWrapper ListViewWrapper Parent list wrapper of this item.

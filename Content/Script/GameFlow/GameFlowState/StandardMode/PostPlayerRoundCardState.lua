@@ -1,7 +1,5 @@
-require "UnLua"
-
 ---@class PostPlayerRoundCardState : GameFlowStateLogicBase Discard cards that cannot be kept by current player.
-local PostPlayerRoundCardState = Class("GameFlow.GameFlowState.GameFlowStateLogicBase")
+local PostPlayerRoundCardState = UnrealClass("GameFlow.GameFlowState.GameFlowStateLogicBase")
 
 function PostPlayerRoundCardState:OnEnter()
     print("PostPlayerRoundCardState: OnEnter")

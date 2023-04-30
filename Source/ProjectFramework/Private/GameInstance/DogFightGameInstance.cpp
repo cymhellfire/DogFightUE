@@ -150,6 +150,15 @@ void UDogFightGameInstance::StartupGameService()
 		UE_LOG(LogProjectFramework, Log, TEXT("[GameService] %s startup."), *Blueprint->GetName());
 		InstantiatedClasses.Add(Blueprint);
 	}
+
+	// Trigger post startup for all services
+	for (auto Record : GameServiceMap)
+	{
+		if (auto Service = Record.Value)
+		{
+			Service->PostStartup();
+		}
+	}
 }
 
 void UDogFightGameInstance::ShowLoadingScreen()

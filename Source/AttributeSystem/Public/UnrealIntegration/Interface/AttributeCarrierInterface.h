@@ -337,6 +337,11 @@ protected:
 	 */
 	virtual void Sync_OnFloatWrapperAdded(UAttributeFloatWrapperObject* InWrapper) {}
 
+	/**
+	 * @brief Whether add missing attributes needed by new added modifier automatically.
+	 */
+	bool bAddMissingAttributeForModifier = false;
+
 	// Map container that do NOT replicated. These maps are maintained by OnRep functions on client side.
 	TMap<FName, TWeakObjectPtr<UAttributeBooleanWrapperObject>> BooleanWrapperMap;
 	TMap<FName, TWeakObjectPtr<UAttributeIntegerWrapperObject>> IntegerWrapperMap;

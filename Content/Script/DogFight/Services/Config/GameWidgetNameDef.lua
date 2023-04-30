@@ -4,6 +4,7 @@ local GameWidgetNameDef = {
     WidgetTimeline = "WidgetTimeline",
     WidgetDamageDisplay = "WidgetDamageDisplay",
     WidgetCharacterState = "WidgetCharacterState",
+    WidgetCharacterMenu = "CharacterMenu",
 }
 
 return GameWidgetNameDef

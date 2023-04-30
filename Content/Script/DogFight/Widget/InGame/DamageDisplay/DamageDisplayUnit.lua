@@ -1,7 +1,5 @@
-require "UnLua"
-
 ---@class DamageDisplayUnit : BP_Widget_DamageDisplayUnit_C
-local DamageDisplayUnit = Class("Common.MVVM.ModelBase")
+local DamageDisplayUnit = UnrealClass("Common.MVVM.ModelBase")
 local DamageDisplayUnitVM = require("DogFight.Widget.InGame.DamageDisplay.DamageDisplayUnitVM")
 local WidgetNameDef = require("DogFight.Services.Config.GameWidgetNameDef")
 local ViewModelBase = require("Common.MVVM.ViewModelBase")
@@ -28,7 +26,7 @@ function DamageDisplayUnit:AddDamageItem(DisplayParam)
     ---@type DamageService
     local DamageService = GetGameService(self, GameServiceNameDef.DamageService)
     if DamageService then
-        local DamageConfig = DamageService.Config:GetConfigById(DisplayParam.DamageId)
+        local DamageConfig = DamageService.Config:GetConfig(DisplayParam.DamageId)
         if DamageConfig then
             DamageStyle = DamageConfig.DisplayParams
         end

@@ -1,8 +1,7 @@
-require "Unlua"
 require "LuaIntegration.Common.UnrealUtils"
 
 ---@class CardGameService Service to handle card relative functionality.
-local CardGameService = Class("DogFight.Services.GameServiceBase")
+local CardGameService = UnrealClass("DogFight.Services.GameServiceBase")
 
 function CardGameService:StartupScript(ServiceName)
     self.Super.StartupScript(self, ServiceName)

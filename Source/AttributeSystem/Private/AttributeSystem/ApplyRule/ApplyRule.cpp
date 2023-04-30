@@ -7,6 +7,11 @@ bool FNameMatchApplyRule::CanApply(TSharedPtr<FAttributeBase> InAttribute)
 	return InAttribute->GetName() == MatchName;
 }
 
+void FNameMatchApplyRule::GetDesiredName(TArray<FName>& OutNames)
+{
+	OutNames.AddUnique(MatchName);
+}
+
 bool FTagMatchApplyRule::CanApply(TSharedPtr<FAttributeBase> InAttribute)
 {
 	switch(MatchMethod)
@@ -39,4 +44,9 @@ bool FTagMatchApplyRule::CanApply(TSharedPtr<FAttributeBase> InAttribute)
 bool FDataTypeMatchApplyRule::CanApply(TSharedPtr<FAttributeBase> InAttribute)
 {
 	return InAttribute->GetDataType() == MatchType;
+}
+
+void FDataTypeMatchApplyRule::GetDesiredDataType(TArray<EAttributeDataType>& OutTypes)
+{
+	OutTypes.AddUnique(MatchType);
 }

@@ -8,7 +8,7 @@
 #include "GameMode/TopDownStyleGameMode.h"
 #include "PlayerController/TopDownStylePlayerController.h"
 
-void UGameInputService::MulticastAddInputMapping(EInputMappingType::Type MappingType)
+void UGameInputService::MulticastAddInputMapping(EInputMappingType::Type MappingType, EInputMappingPriority::Type Priority)
 {
 	if (auto GameMode = UCommonGameFlowFunctionLibrary::GetCurrentTopDownStyleGameMode(this))
 	{
@@ -17,7 +17,7 @@ void UGameInputService::MulticastAddInputMapping(EInputMappingType::Type Mapping
 		{
 			if (PC.IsValid())
 			{
-				PC->ClientAddInputMapping(MappingType);
+				PC->ClientAddInputMapping(MappingType, Priority);
 			}
 		}
 	}
@@ -38,11 +38,11 @@ void UGameInputService::MulticastRemoveInputMapping(EInputMappingType::Type Mapp
 	}
 }
 
-void UGameInputService::AddInputMappingByPlayerId(int32 InPlayerId, EInputMappingType::Type MappingType)
+void UGameInputService::AddInputMappingByPlayerId(int32 InPlayerId, EInputMappingType::Type MappingType, EInputMappingPriority::Type Priority)
 {
 	if (auto PC = UCommonGameplayFunctionLibrary::GetPlayerControllerById(this, InPlayerId))
 	{
-		PC->ClientAddInputMapping(MappingType);
+		PC->ClientAddInputMapping(MappingType, Priority);
 	}
 }
 
@@ -54,7 +54,7 @@ void UGameInputService::RemoveInputMappingByPlayerId(int32 InPlayerId, EInputMap
 	}
 }
 
-void UGameInputService::AddInputMapping(EInputMappingType::Type MappingType)
+void UGameInputService::AddInputMapping(EInputMappingType::Type MappingType, EInputMappingPriority::Type Priority)
 {
 	auto MappingContext = GetInputMappingContextByType(MappingType);
 	if (!MappingContext)
@@ -65,7 +65,7 @@ void UGameInputService::AddInputMapping(EInputMappingType::Type MappingType)
 	// Add new IMC to local player
 	if (auto InputSystem = GetInputSubsystemFromLocalPlayer())
 	{
-		InputSystem->AddMappingContext(MappingContext, 0);
+		InputSystem->AddMappingContext(MappingContext, Priority);
 	}
 }
 

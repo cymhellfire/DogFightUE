@@ -1,9 +1,8 @@
 #pragma once
 
 #include "AttributeSystem/AttributeSystemCommon.h"
+#include "AttributeSystem/ApplyRule/ApplyRuleBase.h"
 #include "AttributeSystem/Modifier/AttributeModifierCommon.h"
-#include "Chaos/AABB.h"
-#include "Chaos/AABB.h"
 
 class FAttributeBase;
 template<typename T>
@@ -30,6 +29,53 @@ public:
 	}
 
 	virtual FString GetEffectString() const = 0;
+
+	virtual bool CanApply(TSharedPtr<FAttributeBase> InAttribute) const
+	{
+		if (ApplyRule.IsValid())
+		{
+			return ApplyRule->CanApply(InAttribute);
+		}
+
+		// Return true as default if there is no rule
+		return true;
+	}
+
+	/**
+	 * @brief Get the desired attribute name specified by the apply rules.
+	 * @param OutName Desired attribute name of this modifier.
+	 * @return Whether the desired name exists.
+	 */
+	virtual bool GetDesiredName(FName& OutName) const
+	{
+		if (ApplyRule.IsValid())
+		{
+			return FApplyRuleBase::HasDesiredName(ApplyRule, OutName);
+		}
+
+		return false;
+	}
+
+	/**
+	 * @brief Get the desired attribute data type specified by the apply rules.
+	 * @param OutType Desired data type of this modifier.
+	 * @return Whether the desired data type exists.
+	 */
+	virtual bool GetDesiredDataType(EAttributeDataType& OutType) const
+	{
+		bool Result = false;
+		if (ApplyRule.IsValid())
+		{
+			Result = FApplyRuleBase::HasDesiredDataType(ApplyRule, OutType);
+		}
+
+		// Use the modifier data type as default
+		if (!Result)
+		{
+			OutType = DataType;
+		}
+		return true;
+	}
 
 protected:
 	FAttributeModifierBase()

@@ -1,5 +1,3 @@
-require "UnLua"
-
 ---@field CurProjectileId number Current previewing projectile id.
 ---@field ProjectileSpawnMethod function Function for spawning preview projectiles.
 ---@field DefaultModeSpawnHeight number Projectile spawn height offset for default mode.
@@ -11,7 +9,7 @@ require "UnLua"
 ---@field ProjectileTarget AActor Projectile target for aim mode.
 ---@field DirectionalLight ADirectionalLight Directional light of current scene.
 ---@class UtilSceneController : BP_Ctrl_UtilsScene_C
-local UtilSceneController = Class()
+local UtilSceneController = UnrealClass()
 
 ---Default mode that spawn projectile at origin and launch toward target.
 ---@param self UtilSceneController Player controller instance.

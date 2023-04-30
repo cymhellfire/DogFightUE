@@ -1,11 +1,10 @@
-require "UnLua"
 require "LuaIntegration.Common.UnrealUtils"
 
 local WidgetNameDef = require("DogFight.Services.Config.GameWidgetNameDef")
 local WidgetConfig = require("DogFight.Services.Config.GameWidgetConfig")
 
----@class GameWidgetService Service that handle all widget relative operations.
-local GameWidgetService = Class("DogFight.Services.GameServiceBase")
+---@class GameWidgetService : UGameWidgetService Service that handle all widget relative operations.
+local GameWidgetService = UnrealClass("DogFight.Services.GameServiceBase")
 
 local function LoadAndCreateWidget(self, InWidget, bShow)
     local WidgetCfg = WidgetConfig[InWidget]
@@ -63,6 +62,19 @@ function GameWidgetService:StartupScript(ServiceName)
     self.HiddenWidgetMap = {}
 end
 
+function GameWidgetService:PostStartupScript()
+    -- Listen to ShowWidget event
+    ---@type LuaEventService
+    local LuaEventService = GetGameService(self, GameServiceNameDef.LuaEventService)
+    if LuaEventService then
+        LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_ShowWidget, self, self.OnShowWidgetEvent)
+    end
+end
+
+function GameWidgetService:OnShowWidgetEvent(InWidget, ...)
+    self:ShowWidget(InWidget, true, table.pack(...))
+end
+
 ---Create and add a new widget to viewport.
 ---@param InWidget string Name of widget to create.
 ---@param bSilent boolean Not display new created widget after creation.
@@ -106,8 +118,9 @@ end
 ---Show widget with specified name.
 ---@param InWidget string Name of widget to display.
 ---@param bCreate boolean Create widget if no existing instance.
+---@param Params any Packed params that pass into shown widget.
 ---@return UUserWidget Widget instance that shown.
-function GameWidgetService:ShowWidget(InWidget, bCreate)
+function GameWidgetService:ShowWidget(InWidget, bCreate, Params)
     -- Skip if the widget is already shown
     if self:IsWidgetShown(InWidget) then
         return self:GetWidget(InWidget)
@@ -126,6 +139,14 @@ function GameWidgetService:ShowWidget(InWidget, bCreate)
     local Widget = self.HiddenWidgetMap[InWidget]
     if Widget then
         Widget:SetVisibility(UE.ESlateVisibility.SelfHitTestInvisible)
+        -- Trigger OnShow function
+        if type(Widget.OnShow) == "function" then
+            if type(Params) == "table" then
+                Widget:OnShow(table.unpack(Params))
+            else
+                Widget:OnShow(Params)
+            end
+        end
         return Widget
     end
 

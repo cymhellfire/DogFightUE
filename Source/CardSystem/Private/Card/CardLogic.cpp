@@ -11,14 +11,15 @@ void UCardLogic::Tick(float DeltaTime)
 	TickLogic(DeltaTime);
 }
 
-void UCardLogic::InitLogic(UCard* InCard)
+void UCardLogic::InitLogic(UCard* InCard, const FString& LogicPath)
 {
 	OwnerCard = InCard;
+	LoadAndInitLogicScript(LogicPath);
 }
 
-void UCardLogic::StartLogic(const FString& ScriptPath)
+void UCardLogic::StartLogic()
 {
-	OnLogicStarted(ScriptPath);
+	OnLogicStarted();
 }
 
 void UCardLogic::TickLogic(float DeltaTime)

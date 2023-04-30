@@ -1,5 +1,6 @@
 #include "PlayerController/TopDownStylePlayerController.h"
 
+#include "EnhancedInputComponent.h"
 #include "Card/Card.h"
 #include "GameMode/TopDownStyleGameMode.h"
 #include "GameMode/GameModeComponent/InGameMessageSenderComponent.h"
@@ -11,6 +12,7 @@
 #include "Player/TopDownStylePlayerState.h"
 #include "Player/ControllerComponent/CardTargetProviderComponent.h"
 #include "PlayerController/PlayerControllerComponent/InGameMessageReceiverComponent.h"
+#include "PlayerController/PlayerControllerComponent/InGameUIInteractComponent.h"
 #include "PlayerController/PlayerControllerComponent/InGameWidgetManipulatorComponent.h"
 
 ATopDownStylePlayerController::ATopDownStylePlayerController(const FObjectInitializer& ObjectInitializer)
@@ -23,6 +25,8 @@ ATopDownStylePlayerController::ATopDownStylePlayerController(const FObjectInitia
 	CardTargetProviderComponent->OnCardTargetAcquired.AddDynamic(this, &ATopDownStylePlayerController::OnCardTargetAcquired);
 	// Create in-game widget manipulator
 	InGameWidgetManipulatorComponent = CreateDefaultSubobject<UInGameWidgetManipulatorComponent>("InGameWidgetManipulator");
+	// Create in-game UI interact component
+	InGameUIInteractComponent = CreateDefaultSubobject<UInGameUIInteractComponent>("InGameUIInteract");
 
 	bShowMouseCursor = true;
 }
@@ -54,14 +58,15 @@ void ATopDownStylePlayerController::SetupInputComponent()
 	Super::SetupInputComponent();
 
 	CardTargetProviderComponent->InitializeInput();
+	InGameUIInteractComponent->InitializeInput(Cast<UEnhancedInputComponent>(InputComponent));
 }
 
-void ATopDownStylePlayerController::ClientAddInputMapping_Implementation(EInputMappingType::Type InputType)
+void ATopDownStylePlayerController::ClientAddInputMapping_Implementation(EInputMappingType::Type InputType, EInputMappingPriority::Type Priority)
 {
 	// Add the input mapping on client side
 	if (auto GameInputService = UGameService::GetGameService<UGameInputService>())
 	{
-		GameInputService->AddInputMapping(InputType);
+		GameInputService->AddInputMapping(InputType, Priority);
 	}
 }
 

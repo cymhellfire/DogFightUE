@@ -3,7 +3,7 @@ local CardCommandHelper = require "Card.CardCommand.CardCommandHelper"
 
 ---@field _PendingQueue table List of commands will be executed next frame.
 ---@class CardLogicCommand : CardCommandBase Base class of all card logic command.
-local CardLogicCommand = Class(CardCommandBase)
+local CardLogicCommand = UnrealClass(CardCommandBase)
 
 function CardLogicCommand:OnInit()
     CardCommandBase.OnInit(self)

@@ -1,8 +1,6 @@
-require "UnLua"
-
 ---@field ViewModel table ViewModel table of this model.
 ---@class ModelBase Base class of all widget want to use MVVM partten.
-local ModelBase = Class()
+local ModelBase = UnrealClass()
 
 ---Bind a new ViewModel to this model.
 ---@param InVM table ViewModel to bind.

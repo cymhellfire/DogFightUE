@@ -1,4 +1,3 @@
-require "UnLua"
 local ArrayHelper = require("Common.ArrayHelper")
 
 --- Wrapper functions for common Unreal Engine interfaces
@@ -39,6 +38,11 @@ local function GetLocalPlayerController(WorldContextObject)
     return UE.ULuaIntegrationFunctionLibrary.GetFirstLocalPlayerController(WorldContextObject)
 end
 
+---Enum of all localization strint table.
+local LocalizationTable = {
+    CardDisplay = "ST_CardDisplay",
+}
+
 ---Get localized version string in current culture.
 ---@param WorldContextObject UObject Object instance to get world with.
 ---@param InTable string Name of string table to search localization.
@@ -53,9 +57,20 @@ local function GetLocalizedString(WorldContextObject, InTable, InKey, ParamList)
     end
 end
 
+---Generic notify receiver function for lua side.
+---@param Service LuaEventService Lua event service instance.
+---@param NotifyIndex number Lua event index.
+local function ReceiveNotifyFromC(Service, NotifyIndex, ...)
+    if Service then
+        Service:OnReceiveNativeNotify(NotifyIndex, ...)
+    end
+end
+
 _G.GetCurrentWorld = GetCurrentWorld
 _G.GetGameInstance = GetGameInstance
 _G.LoadClass = LoadClass
 _G.IsDerivedFrom = IsDerivedFrom
 _G.GetLocalPlayerController = GetLocalPlayerController
+_G.LocalizationTable = LocalizationTable
 _G.GetLocalizedString = GetLocalizedString
+_G.ReceiveNotifyFromC = ReceiveNotifyFromC

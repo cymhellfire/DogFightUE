@@ -1,7 +1,5 @@
-require "UnLua"
-
 ---@class $Class$
-local $Class$ = Class("DogFight.CardModifiers.CardModifierBase")
+local $Class$ = UnrealClass("DogFight.CardModifiers.CardModifierBase")
 
 ---卡牌修改器构造参数集
 function $Class$:GetArgumentTable()

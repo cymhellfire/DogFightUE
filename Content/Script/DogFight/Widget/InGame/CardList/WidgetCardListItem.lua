@@ -1,6 +1,4 @@
-require "UnLua"
-
-local WidgetCardListItem = Class("Common.MVVM.ModelBase")
+local WidgetCardListItem = UnrealClass("Common.MVVM.ModelBase")
 local ViewModelBase = require("Common.MVVM.ViewModelBase")
 local DataBinding = require("Common.MVVM.DataBinding")
 local WidgetCardListItemVM = require("DogFight.Widget.InGame.CardList.WidgetCardListItemVM")
@@ -9,8 +7,10 @@ local ListWrapper = require("Common.ListView.ListViewWrapper")
 function WidgetCardListItem:Initialize()
     local NewVM = InstantiateViewModel(WidgetCardListItemVM)
     self:BindViewModel(NewVM, {
-        {BindKey = "CardName",          UIKey = "CardName_Text",    DataBinding = DataBinding.TextContextBinding(), },
-        {BindKey = "BackgroundColor",   UIKey = "BG_Image",         DataBinding = DataBinding.ColorAndOpacityBinding(), },
+        {BindKey = "CardName",          UIKey = "CardName_Text",    DataBinding = DataBinding.TextContextBinding() },
+        {BindKey = "CardDesc",          UIKey = "CardDesc_Text",    DataBinding = DataBinding.TextContextBinding() },
+        {BindKey = "BackgroundColor",   UIKey = "BG_Image",         DataBinding = DataBinding.ColorAndOpacityBinding() },
+        {BindKey = "CardPicture",       UIKey = "CardPicture_Image",    DataBinding = DataBinding.TexturePathBinding(false) },
     })
 
     ---@type FLinearColor
@@ -37,9 +37,12 @@ function WidgetCardListItem:Destruct()
 end
 
 function WidgetCardListItem:OnListItemObjectSet(InObject)
+    ---@type UCardDescObject
     self.Data = InObject:GetData()
     if self.Data then
         self.ViewModel.CardName = self.Data.CardName
+        self.ViewModel.CardDesc = self.Data.CardDesc
+        self.ViewModel.CardPicture = self.Data.CardPicturePath
     end
     self.ViewModel.BackgroundColor = self.NormalColor
 end

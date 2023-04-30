@@ -25,5 +25,8 @@ namespace ELuaEvent
 		LuaEvent_PlayerCardFinished,
 		/** Triggered when any player cancelled using card (Server only) */
 		LuaEvent_PlayerCardCancelled,
+		// ------------------ UI --------------------
+		LuaEvent_ShowWidget,
+		LuaEvent_CloseWidget,
 	};
 }

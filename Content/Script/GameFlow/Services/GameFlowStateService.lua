@@ -1,6 +1,4 @@
-require "UnLua"
-
-local GameFlowStateService = Class("DogFight.Services.GameServiceBase")
+local GameFlowStateService = UnrealClass("DogFight.Services.GameServiceBase")
 
 function GameFlowStateService:StartupScript(ServiceName)
     self.Super.StartupScript(self, ServiceName)

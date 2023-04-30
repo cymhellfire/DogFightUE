@@ -1,5 +1,5 @@
 ---@class InGameChatItemView : ModelBase 
-local InGameChatItemView = Class("Common.MVVM.ModelBase")
+local InGameChatItemView = UnrealClass("Common.MVVM.ModelBase")
 local ViewModelBase = require("Common.MVVM.ViewModelBase")
 local DataBinding = require("Common.MVVM.DataBinding")
 local InGameChatItemVM = require("DogFight.Widget.Common.InGameChat.InGameChatItemVM")

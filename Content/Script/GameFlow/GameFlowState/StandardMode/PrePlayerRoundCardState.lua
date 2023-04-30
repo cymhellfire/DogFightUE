@@ -1,7 +1,5 @@
-require "UnLua"
-
 ---@class PrePlayerRoundCardState : GameFlowStateLogicBase Dispatch cards to current player in this state.
-local PrePlayerRoundCardState = Class("GameFlow.GameFlowState.GameFlowStateLogicBase")
+local PrePlayerRoundCardState = UnrealClass("GameFlow.GameFlowState.GameFlowStateLogicBase")
 
 function PrePlayerRoundCardState:OnEnter()
     print("PrePlayerRoundCardState: OnEnter")

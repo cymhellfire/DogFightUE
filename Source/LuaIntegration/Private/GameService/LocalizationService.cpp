@@ -13,32 +13,16 @@ void ULocalizationService::Startup()
 
 void ULocalizationService::LoadData()
 {
-	if (!IsValid(LocalizationData))
+	// Load all string tables
+	for (auto SoftPtr : LocalizationTables)
 	{
-		return;
-	}
-
-	// Get all rows in the table
-	TArray<FLocalizationServiceDataRow*> AllRows;
-	LocalizationData->GetAllRows("", AllRows);
-
-	// Iterate through the array and load all data
-	for (auto Row : AllRows)
-	{
-		if (Row->DataTable.IsNull())
-		{
+		if (SoftPtr.IsNull())
 			continue;
-		}
 
-		auto LoadedTable = Row->DataTable.LoadSynchronous();
-		if (IsValid(LoadedTable))
+		auto LocTable = SoftPtr.IsValid() ? SoftPtr.Get() : SoftPtr.LoadSynchronous();
+		if (IsValid(LocTable))
 		{
-			LocalizationPath.Add(Row->DataTable.GetAssetName(), Row->DataTable.ToString());
-		}
-		else
-		{
-			UE_LOG(LogLuaIntegration, Error, TEXT("[LocalizationService] Failed to load string table with path: %s"),
-				*Row->DataTable->GetPathName());
+			LocalizationPath.Add(SoftPtr.GetAssetName(), SoftPtr.ToString());
 		}
 	}
 }
@@ -50,7 +34,7 @@ FText ULocalizationService::GetLocalizeString(const FString& InTable, const FStr
 		return FText::FromStringTable(FName(LocalizationPath[InTable]), InKey);
 	}
 
-	return FText();
+	return FText::FromString(FString::Printf(TEXT("[Missing table %s] %s"), *InTable, *InKey));
 }
 
 FText ULocalizationService::GetLocalizeStringWithFormat(const FString& InTable, const FString& InKey,

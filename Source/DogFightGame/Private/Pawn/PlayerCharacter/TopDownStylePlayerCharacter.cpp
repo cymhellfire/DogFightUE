@@ -1,6 +1,7 @@
 #include "Pawn/PlayerCharacter/TopDownStylePlayerCharacter.h"
 
 #include "AIController.h"
+#include "GameObject/Buff/NewBuffBase.h"
 #include "Pawn/PlayerCharacter/RagdollComponent.h"
 #include "UI/InGame/PlayerCharacterStateWidget.h"
 
@@ -131,4 +132,39 @@ void ATopDownStylePlayerCharacter::OnNoHealth()
 	}
 
 	Dead();
+}
+
+void ATopDownStylePlayerCharacter::AddBuff(UNewBuffBase* InBuff)
+{
+	if (!IsValid(InBuff))
+	{
+		return;
+	}
+
+	// Do NOT add one buff multiple times
+	if (AppliedBuffs.Contains(InBuff))
+	{
+		return;
+	}
+
+	// Apply new buff
+	InBuff->Apply(this);
+	AppliedBuffs.Add(InBuff);
+}
+
+void ATopDownStylePlayerCharacter::RemoveBuff(UNewBuffBase* InBuff)
+{
+	if (!IsValid(InBuff))
+	{
+		return;
+	}
+
+	if (!AppliedBuffs.Contains(InBuff))
+	{
+		return;
+	}
+
+	// Remove buff from list
+	InBuff->Remove();
+	AppliedBuffs.Remove(InBuff);
 }

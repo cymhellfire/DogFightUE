@@ -6,7 +6,7 @@ local CardCommandHelper = require "Card.CardCommand.CardCommandHelper"
 ---@field _Type ECardTargetType Type of target to acquire.
 ---@field _DelegateHelper DelegateHelper Helper to receive the target acqurie notify.
 ---@class ActionCardAcquireTarget : CardActionCommand Action to select target for card.
-local ActionCardAcquireTarget = Class(CardActionCommand)
+local ActionCardAcquireTarget = UnrealClass(CardActionCommand)
 
 ---@param InCount number Target count.
 ---@param InType ECardTargetType Target type.

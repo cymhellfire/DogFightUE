@@ -1,12 +1,17 @@
 local CardLogicCommand = require "Card.CardCommand.CardLogicCommand"
 
 ---@class $Class$ : CardLogicCommand
-local $Class$ = Class(CardLogicCommand)
+local $Class$ = UnrealClass(CardLogicCommand)
 
 local CommandNameDef = {
     -- AcquireTarget = "AcquireTarget",
     -- PrintName = "PrintName",
 }
+
+---@param DescObject UCardDescObject
+function $Class$:SetupDescObject(DescObject)
+    DescObject:SetCardName("$Class$")
+end
 
 ---Initialize the card workflow
 function $Class$:OnInit()

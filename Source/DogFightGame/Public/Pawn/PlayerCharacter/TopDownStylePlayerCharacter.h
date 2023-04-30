@@ -11,6 +11,7 @@ class ATopDownStylePlayerCharacter;
 class UPlayerCharacterStateWidget;
 class URagdollComponent;
 class UPathFollowingComponent;
+class UNewBuffBase;
 struct FPathFollowingResult;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTopDownStylePlayerCharacterDeadEvent, ATopDownStylePlayerCharacter*, Character);
@@ -32,6 +33,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetRagdollEnabled(bool bEnable);
+
+	UFUNCTION(BlueprintCallable, Category="TopDownStylePlayerCharacter")
+	void AddBuff(UNewBuffBase* InBuff);
+
+	UFUNCTION(BlueprintCallable, Category="TopDownStylePlayerCharacter")
+	void RemoveBuff(UNewBuffBase* InBuff);
 
 	// DamageReceiverActorInterface
 	virtual UDamageReceiverComponent* GetDamageReceiverComponent() override
@@ -78,6 +85,9 @@ protected:
 
 	UPROPERTY(Transient)
 	UPlayerCharacterStateWidget* StateWidget;
+
+	UPROPERTY(Transient)
+	TArray<UNewBuffBase*> AppliedBuffs;
 
 private:
 

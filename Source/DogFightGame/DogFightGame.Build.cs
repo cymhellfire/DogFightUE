@@ -33,6 +33,8 @@ public class DogFightGame : ModuleRules
                 "LevelSequence",
                 "MovieScene",
                 "UMG",
+                "Lua",
+                "AttributeSystem",
             }
         );
         

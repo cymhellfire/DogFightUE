@@ -1,20 +1,19 @@
-require "UnLua"
-local DamageNameDef = require("DogFight.Services.DamageService.DamageNameDef")
+local DamageTypeDef = require("DogFight.Services.DamageService.DamageTypeDef")
 
 ---@class DamageConfig : ServiceConfigBase
-local DamageConfig = Class("DogFight.Services.ServiceConfigBase")
+local DamageConfig = UnrealClass("DogFight.Services.ServiceConfigBase")
 
 local Config = {
-    [DamageNameDef.Default] = {
-        Id = 0,
+    [DamageTypeDef.Default] = {
+        Name = "Default",
         DamageType = UE.UExtendedDamageType.StaticClass(),
         Script = "DogFight.DamageInstance.DefaultDamage",
         DisplayParams = {
             Color = {1, 0, 0},
         },
     },
-    [DamageNameDef.Explosion] = {
-        Id = 1,
+    [DamageTypeDef.Explosion] = {
+        Name = "Explosion"
     }
 }
 

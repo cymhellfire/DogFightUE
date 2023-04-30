@@ -1,7 +1,5 @@
-require "UnLua"
-
 local ArrayHelper = require "Common.ArrayHelper"
-local DefaultCalculator = Class()
+local DefaultCalculator = UnrealClass()
 
 function DefaultCalculator:GetDamageInstanceList()
     local List = {

@@ -30,6 +30,7 @@ ANewProjectileBase::ANewProjectileBase(const FObjectInitializer& ObjectInitializ
 	// Initial values
 	Lifetime = 0.f;
 	bDeadWhenStop = true;
+	DecayTime = 0.f;
 }
 
 void ANewProjectileBase::Reset()
@@ -106,15 +107,43 @@ void ANewProjectileBase::Dead()
 		}
 	}
 
-	// Disable collision
-	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	MovementComponent->OnDeactivated();
+	// Notify the client
+	MulticastDead();
 
 	// Trigger delegate
 	OnProjectileDead.Broadcast(this);
 
 	bAlive = false;
+
+	// Check the decay time
+	if (DecayTime > 0.f)
+	{
+		GetWorldTimerManager().SetTimer(DecayTimerHandle, this, &ANewProjectileBase::OnProjectileDecayTimerExpired, DecayTime);
+	}
+	else
+	{
+		OnProjectileReadyToRecycle.Broadcast(this);
+	}
+}
+
+void ANewProjectileBase::MulticastDead_Implementation()
+{
+	// Disable collision
+	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	// Disable movement
+	MovementComponent->StopMovementImmediately();
+	MovementComponent->OnDeactivated();
+}
+
+void ANewProjectileBase::OnProjectileDecayTimerExpired()
+{
+	if (DecayTimerHandle.IsValid())
+	{
+		GetWorldTimerManager().ClearTimer(DecayTimerHandle);
+	}
+
+	OnProjectileReadyToRecycle.Broadcast(this);
 }
 
 void ANewProjectileBase::LaunchWithVelocity(const FVector& MuzzleVelocity)

@@ -37,4 +37,23 @@ function CardTargetHelper.TargetInfoToPosition(InTable)
     end
 end
 
+---Get the total count of targets that match given type.
+---@param InTable table Target information table list (native info need be converted before use).
+---@param InType ECardTargetType Type to filter targets.
+---@return number Total count of targets.
+function CardTargetHelper.GetTargetCountByType(InTable, InType)
+    if type(InTable) ~= "table" or #InTable == 0 then
+        return 0
+    end
+
+    local Count = 0
+    for _, v in ipairs(InTable) do
+        if v.Type and v.Type == InType then
+            Count = Count + 1
+        end
+    end
+
+    return Count
+end
+
 return CardTargetHelper

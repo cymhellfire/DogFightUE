@@ -137,7 +137,6 @@ namespace UnLua
                 EnvLocator = nullptr;
                 FClassRegistry::Cleanup();
                 FEnumRegistry::Cleanup();
-                GPropertyCreator.Cleanup();
 
                 for (const auto Class : TObjectRange<UClass>())
                 {
@@ -203,6 +202,24 @@ namespace UnLua
 
         void OnSystemError() const
         {
+            if (!bPrintLuaStackOnSystemError)
+                return;
+
+            if (!IsInGameThread())
+                return;
+
+            for (auto& Pair : FLuaEnv::GetAll())
+            {
+                if (!Pair.Key || !Pair.Value)
+                    continue;
+
+                UE_LOG(LogUnLua, Log, TEXT("%s:"), *Pair.Value->GetName())
+                PrintCallStack(Pair.Key);
+                UE_LOG(LogUnLua, Log, TEXT(""))
+            }
+
+            if (GLog)
+                GLog->Flush();
         }
 
 #if WITH_EDITOR
@@ -251,6 +268,9 @@ namespace UnLua
             GConfig->LoadGlobalIniFile(UnLuaIni, *UnLuaIni, nullptr, true);
             UUnLuaSettings::StaticClass()->GetDefaultObject()->ReloadConfig();
 #endif
+
+            auto& Settings = *GetDefault<UUnLuaSettings>();
+            bPrintLuaStackOnSystemError = Settings.bPrintLuaStackOnSystemError;
         }
 
         void UnregisterSettings()
@@ -264,6 +284,8 @@ namespace UnLua
 
         bool OnSettingsModified()
         {
+            auto& Settings = *GetDefault<UUnLuaSettings>();
+            bPrintLuaStackOnSystemError = Settings.bPrintLuaStackOnSystemError;
             return true;
         }
 
@@ -284,11 +306,12 @@ namespace UnLua
         }
 
         bool bIsActive = false;
+        bool bPrintLuaStackOnSystemError = false;
         ULuaEnvLocator* EnvLocator = nullptr;
         FDelegateHandle OnHandleSystemErrorHandle;
         FDelegateHandle OnHandleSystemEnsureHandle;
 #if ALLOW_CONSOLE
-        TUniquePtr<UnLua::FUnLuaConsoleCommands> ConsoleCommands;
+        TUniquePtr<FUnLuaConsoleCommands> ConsoleCommands;
 #endif
     };
 }

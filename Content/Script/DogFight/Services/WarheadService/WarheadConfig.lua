@@ -1,22 +1,26 @@
-require "UnLua"
-local WarheadNameDef = require("DogFight.Services.WarheadService.WarheadNameDef")
-local DamageNameDef = require("DogFight.Services.DamageService.DamageNameDef")
+local WarheadTypeDef = require("DogFight.Services.WarheadService.WarheadTypeDef")
+local DamageTypeDef = require("DogFight.Services.DamageService.DamageTypeDef")
 
 ---@class WarheadConfig : ServiceConfigBase Warhead config table.
-local WarheadConfig = Class("DogFight.Services.ServiceConfigBase")
+local WarheadConfig = UnrealClass("DogFight.Services.ServiceConfigBase")
 
 local Config = {
-    [WarheadNameDef.Default] = {
-        Id = 0,
+    [WarheadTypeDef.Default] = {
+        Name = "Default",
         EffectId = 0,
-        DamageType = DamageNameDef.Default,
+        DamageType = DamageTypeDef.Default,
     },
-    [WarheadNameDef.Nuke] = {
-        Id = 1,
+    [WarheadTypeDef.Nuke] = {
+        Name = "Nuke",
         EffectId = 1,
-        DamageType = DamageNameDef.Explosion,
+        DamageType = DamageTypeDef.Explosion,
         DamageRadius = 1000,
     },
+    [WarheadTypeDef.Fireball] = {
+        Name = "Fireball",
+        EffectId = 2,
+        DamageType = DamageTypeDef.Default,
+    }
 }
 
 function WarheadConfig:GetData()

@@ -1,6 +1,4 @@
-require "UnLua"
-
-local GameFlowStateCreateArgument = Class()
+local GameFlowStateCreateArgument = UnrealClass()
 
 
 

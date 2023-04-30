@@ -1,6 +1,4 @@
-require("UnLua")
-
-local TestCard = Class("DogFight.Card.CardBase")
+local TestCard = UnrealClass("DogFight.Card.CardBase")
 
 function TestCard:OnInitialized()
     -- Create attributes

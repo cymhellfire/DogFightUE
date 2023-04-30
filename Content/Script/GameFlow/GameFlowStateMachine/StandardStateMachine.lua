@@ -1,6 +1,4 @@
-require "UnLua"
-
-local StandardStateMachine = Class()
+local StandardStateMachine = UnrealClass()
 
 function StandardStateMachine:K2_InitStateMachine()
     local InitStateArgument = GetGameService(self, GameServiceNameDef.GameFlowStateService):GetGameFlowStateCreateArgument(self)

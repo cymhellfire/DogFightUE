@@ -1,7 +1,6 @@
-require "UnLua"
 require "Common.StringHelper"
 
-local CardModifierGameService = Class("DogFight.Services.GameServiceBase")
+local CardModifierGameService = UnrealClass("DogFight.Services.GameServiceBase")
 
 ---Create a card modifier with given script.
 ---基于给定脚本创建卡牌修改器

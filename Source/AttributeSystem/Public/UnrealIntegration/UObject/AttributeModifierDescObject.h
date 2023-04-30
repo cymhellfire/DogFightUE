@@ -17,9 +17,12 @@ public:
 	virtual void SetSourceString(FString InStr);
 	virtual void SetEffectString(FString InStr);
 
+	UFUNCTION(BlueprintCallable, Category="AttributeModifierDescObject")
 	FString GetSourceString() const { return Source; }
+	UFUNCTION(BlueprintCallable, Category="AttributeModifierDescObject")
 	FString GetEffectString() const { return Effect; }
 
+	UFUNCTION(BlueprintCallable, Category="AttributeModifierDescObject")
 	FString ToString() const;
 
 protected:

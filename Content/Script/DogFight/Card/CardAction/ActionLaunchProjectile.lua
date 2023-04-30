@@ -1,15 +1,15 @@
 local CardActionCommand = require "Card.CardCommand.CardActionCommand"
-local ProjectileNameDef = require "DogFight.Services.ProjectileService.ProjectileNameDef"
+local ProjectileTypeDef = require "DogFight.Services.ProjectileService.ProjectileTypeDef"
 local CardTargetHelper = require "Card.CardTarget.CardTargetHelper"
 local CardCommandHelper = require "Card.CardCommand.CardCommandHelper"
 
----@field _ProjectileName string Name of projectile to launch.
+---@field _ProjectileId string Name of projectile to launch.
 ---@field _MuzzleSpeed number Initial speed of projectile.
 ---@field _TargetList table Target list this command executing with.
 ---@field _AliveProjectileCount number Total count of alive projectiles.
 ---@field _DelegateHelperList table List of all delegate helper for projectile death.
 ---@class ActionLaunchProjectile : CardActionCommand Action that launch a projectile toward target.
-local ActionLaunchProjectile = Class(CardActionCommand)
+local ActionLaunchProjectile = UnrealClass(CardActionCommand)
 
 function ActionLaunchProjectile:OnInit()
     CardActionCommand.OnInit(self)
@@ -24,7 +24,7 @@ end
 function ActionLaunchProjectile:SetCommandInfo(ProjectileInfo, TargetInfo)
     -- Read in all settings for projectile
     if ProjectileInfo then
-        self._ProjectileName = ProjectileInfo.Name or ProjectileNameDef.DefaultProjectile
+        self._ProjectileId = ProjectileInfo.Id or ProjectileTypeDef.DefaultProjectile
         self._MuzzleSpeed = ProjectileInfo.MuzzleSpeed or 100
     end
 
@@ -72,7 +72,7 @@ function ActionLaunchProjectile:StartCommand()
     end
 
     -- Check projectile settings
-    if not self._ProjectileName then
+    if not self._ProjectileId then
         bFailed = true
     end
 
@@ -101,7 +101,7 @@ function ActionLaunchProjectile:StartCommand()
             ---@type ProjectileService
             local ProjectileService = GetGameService(self._CardLogic, GameServiceNameDef.ProjectileService)
             if ProjectileService then
-                local NewProjectile = ProjectileService:SpawnProjectileByName(self._ProjectileName, SpawnLoc)
+                local NewProjectile = ProjectileService:SpawnProjectileAtPos(self._ProjectileId, SpawnLoc, UE.FRotator(0,0,0))
                 if NewProjectile then
                     NewProjectile:SetLauncher(Launcher)
                     self._AliveProjectileCount = self._AliveProjectileCount + 1

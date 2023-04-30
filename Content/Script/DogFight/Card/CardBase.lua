@@ -1,23 +1,9 @@
-require("UnLua")
-
 local AttributeEnum = require "DogFight.DataBridge.AttributeEnum"
 
 ---@class CardBase : UCard Base class for all cards.
-local CardBase = Class()
+local CardBase = UnrealClass()
 
 --========================== Workflow ==========================--
-function CardBase:BP_GetCardBasicDesc(OutName, OutDesc)
-    -- Invoke SetupCardDesc of any subclass
-    if type(self.SetupCardDesc) == "function" then
-        local Desc = self:SetupCardDesc()
-        OutName = Desc["Name"] or OutName
-        OutDesc = Desc["Desc"] or OutDesc
-    else
-        OutName = self.LogicScriptPath
-    end
-
-    return OutName, OutDesc
-end
 
 ---Assign a new instance id to this card.
 ---@param InId number New instance id.

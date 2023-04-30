@@ -37,9 +37,6 @@ public:
 	// ------------------- Initialize ----------------------
 	virtual void InitDescObject();
 
-	UFUNCTION(BlueprintImplementableEvent, Category="Card", DisplayName="Get Card Basic Desc")
-	void BP_GetCardBasicDesc(FString& OutName, FString& OutDesc);
-
 	UFUNCTION(BlueprintCallable, Category="Card")
 	void SetInstanceId(int32 InId);
 
@@ -97,6 +94,8 @@ public:
 
 protected:
 	void CreateCardLogic();
+
+	void StartCardLogic();
 
 	UFUNCTION()
 	void OnCardLogicFinished(ECardLogicFinishType::Type FinishType);

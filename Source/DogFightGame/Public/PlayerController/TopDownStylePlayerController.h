@@ -10,6 +10,7 @@
 class ATopDownStylePlayerCharacter;
 class UInGameMessageReceiverComponent;
 class UInGameWidgetManipulatorComponent;
+class UInGameUIInteractComponent;
 class UCardTargetProviderComponent;
 class UInputAction;
 
@@ -29,7 +30,7 @@ public:
 
 	// -----=========== Input ===========-----
 	UFUNCTION(Client, Reliable)
-	void ClientAddInputMapping(EInputMappingType::Type InputType);
+	void ClientAddInputMapping(EInputMappingType::Type InputType, EInputMappingPriority::Type Priority);
 
 	UFUNCTION(Client, Reliable)
 	void ClientRemoveInputMapping(EInputMappingType::Type InputType);
@@ -93,6 +94,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="PlayerController")
 	UInGameWidgetManipulatorComponent* InGameWidgetManipulatorComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="PlayerController")
+	UInGameUIInteractComponent* InGameUIInteractComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="PlayerController")
 	UCardTargetProviderComponent* CardTargetProviderComponent;

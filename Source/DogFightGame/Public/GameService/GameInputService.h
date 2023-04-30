@@ -16,9 +16,10 @@ public:
 	/**
 	 * Broadcast add input mapping across the network.
 	 * @param MappingType			Input mapping type.
+	 * @param Priority				Priority of new add input map.
 	 */
 	UFUNCTION(BlueprintCallable, Category="GameInput")
-	void MulticastAddInputMapping(EInputMappingType::Type MappingType);
+	void MulticastAddInputMapping(EInputMappingType::Type MappingType, EInputMappingPriority::Type Priority = EInputMappingPriority::Normal);
 
 	/**
 	 * Broadcast remove input mapping across the network.
@@ -31,9 +32,10 @@ public:
 	 * Add input mapping to specified player.
 	 * @param InPlayerId			Id of player to add mapping.
 	 * @param MappingType			Input mapping type.
+	 * @param Priority				Priority of new add input map.
 	 */
 	UFUNCTION(BlueprintCallable, Category="GameInput")
-	void AddInputMappingByPlayerId(int32 InPlayerId, EInputMappingType::Type MappingType);
+	void AddInputMappingByPlayerId(int32 InPlayerId, EInputMappingType::Type MappingType, EInputMappingPriority::Type Priority = EInputMappingPriority::Normal);
 
 	/**
 	 * Remove input mapping from specified player.
@@ -43,7 +45,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category="GameInput")
 	void RemoveInputMappingByPlayerId(int32 InPlayerId, EInputMappingType::Type MappingType);
 
-	void AddInputMapping(EInputMappingType::Type MappingType);
+	void AddInputMapping(EInputMappingType::Type MappingType, EInputMappingPriority::Type Priority);
 
 	void RemoveInputMapping(EInputMappingType::Type MappingType);
 

@@ -1,7 +1,5 @@
-require "UnLua"
-
 ---@class PrePlayerRoundBuffState : GameFlowStateLogicBase Buff accumulation state before player round begin.
-local PrePlayerRoundBuffState = Class("GameFlow.GameFlowState.GameFlowStateLogicBase")
+local PrePlayerRoundBuffState = UnrealClass("GameFlow.GameFlowState.GameFlowStateLogicBase")
 
 function PrePlayerRoundBuffState:OnEnter()
     local PlayerId = UE.UCommonGameFlowFunctionLibrary.GetCurrentPlayerId(self.OwnerState)

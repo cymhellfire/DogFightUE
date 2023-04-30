@@ -1,29 +1,12 @@
-require "UnLua"
 require "Common.TableUtils"
 
 ---@class LuaEventService
-local LuaEventService = Class("DogFight.Services.GameServiceBase")
+local LuaEventService = UnrealClass("DogFight.Services.GameServiceBase")
 
 function LuaEventService:StartupScript(ServiceName)
     self.Super.StartupScript(self, ServiceName)
 
     self.EventDelegateMap = {}
-end
-
-function LuaEventService:SendEventToLua(InEvent)
-    self:TriggerDelegate(InEvent)
-end
-
-function LuaEventService:SendEventToLua_OneParam(InEvent, InParam)
-    self:TriggerDelegate(InEvent, InParam)
-end
-
-function LuaEventService:SendEventToLua_OneParam_Int(InEvent, InParam)
-    self:TriggerDelegate(InEvent, InParam)
-end
-
-function LuaEventService:SendEventToLua_TwoParam_Int(InEvent, ParamOne, ParamTwo)
-    self:TriggerDelegate(InEvent, ParamOne, ParamTwo)
 end
 
 function LuaEventService:TriggerDelegate(EventIndex, ...)
@@ -51,6 +34,11 @@ function LuaEventService:UnregisterListener(EventIndex, Object, Callback)
 
     local Delegate = self.EventDelegateMap[EventIndex]
     Delegate:Remove(Object, Callback)
+end
+
+function LuaEventService:OnReceiveNativeNotify(EventIndex, ...)
+    print(self, ":OnReceiveNativeNotify ", EventIndex, " Params: ", ...)
+    self:TriggerDelegate(EventIndex, ...)
 end
 
 return LuaEventService

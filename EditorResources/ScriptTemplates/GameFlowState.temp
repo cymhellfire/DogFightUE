@@ -1,7 +1,5 @@
-require "UnLua"
-
 ---@class $Class$
-local $Class$ = Class("GameFlow.GameFlowState.GameFlowStateLogicBase")
+local $Class$ = UnrealClass("GameFlow.GameFlowState.GameFlowStateLogicBase")
 
 function $Class$:OnEnter()
     print("$Class$: OnEnter")

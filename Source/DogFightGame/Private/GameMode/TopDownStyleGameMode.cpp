@@ -52,7 +52,7 @@ void ATopDownStyleGameMode::PlayerReadyForGame(ATopDownStylePlayerController* In
 
 	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>())
 	{
-		LuaEventService->SendEventToLua_OneParam(ELuaEvent::Type::LuaEvent_ReadyPlayerCount, FString::Printf(TEXT("%d"), ReadyPlayerCount));
+		LuaEventService->SendEventToLua(ELuaEvent::Type::LuaEvent_ReadyPlayerCount, FString::Printf(TEXT("%d"), ReadyPlayerCount));
 	}
 }
 

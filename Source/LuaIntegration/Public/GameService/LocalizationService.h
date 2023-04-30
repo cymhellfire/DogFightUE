@@ -6,15 +6,6 @@
 
 class UStringTable;
 
-USTRUCT(BlueprintType)
-struct FLocalizationServiceDataRow : public FTableRowBase
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="LocalizationServiceData")
-	TSoftObjectPtr<UStringTable> DataTable;
-};
-
 UCLASS(Abstract, Blueprintable)
 class LUAINTEGRATION_API ULocalizationService : public UGameService
 {
@@ -32,7 +23,7 @@ protected:
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="LocalizationService")
-	UDataTable* LocalizationData;
+	TArray<TSoftObjectPtr<UStringTable>> LocalizationTables; 
 
 	TMap<FString, FString> LocalizationPath;
 };

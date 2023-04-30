@@ -1,7 +1,5 @@
-require "UnLua"
-
 ---@class PostPlayerRoundBuffState : GameFlowStateLogicBase Buff accumulation state after player round finished.
-local PostPlayerRoundBuffState = Class("GameFlow.GameFlowState.GameFlowStateLogicBase")
+local PostPlayerRoundBuffState = UnrealClass("GameFlow.GameFlowState.GameFlowStateLogicBase")
 
 function PostPlayerRoundBuffState:OnEnter()
     print("PostPlayerRoundBuffState: OnEnter")

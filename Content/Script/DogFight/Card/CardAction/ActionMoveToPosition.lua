@@ -5,7 +5,7 @@ local CardTargetHelper = require "Card.CardTarget.CardTargetHelper"
 ---@field _PlayerController ATopDownStylePlayerController Player controller of the moving character.
 ---@field _DelegateHelper DelegateHelper
 ---@class ActionMoveToPosition : CardActionCommand
-local ActionMoveToPosition = Class(CardActionCommand)
+local ActionMoveToPosition = UnrealClass(CardActionCommand)
 
 function ActionMoveToPosition:InitMoveCommand(InTarget)
     self._TargetList = InTarget

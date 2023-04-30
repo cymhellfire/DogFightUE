@@ -1,7 +1,5 @@
-require "UnLua"
-
 ---@class UtilsSceneMain : BP_Widget_UtilsSceneMain_C
-local UtilsSceneMain = Class("Common.MVVM.ModelBase")
+local UtilsSceneMain = UnrealClass("Common.MVVM.ModelBase")
 local UtilsSceneMainVM = require("UtilScenes.UtilsSceneMain.UtilsSceneMainVM")
 local DataBinding = require("Common.MVVM.DataBinding")
 local NumberHelper = require("Common.NumberHelper")

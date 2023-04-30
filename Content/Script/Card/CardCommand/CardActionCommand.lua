@@ -1,7 +1,7 @@
 local CardCommandBase = require "Card.CardCommand.CardCommandBase"
 
 ---@class CardActionCommand : CardCommandBase Base class of all card action command.
-local CardActionCommand = Class(CardCommandBase)
+local CardActionCommand = UnrealClass(CardCommandBase)
 
 function CardActionCommand:OnInit()
     CardCommandBase.OnInit(self)

@@ -12,6 +12,10 @@ class ATTRIBUTESYSTEM_API FNameMatchApplyRule : public FApplyRuleBase
 public:
 	virtual bool CanApply(TSharedPtr<FAttributeBase> InAttribute) override;
 
+	virtual void GetDesiredName(TArray<FName>& OutNames) override;
+
+	virtual void GetDesiredDataType(TArray<EAttributeDataType>& OutTypes) override {}
+
 	void SetMatchName(FName InName)
 	{
 		MatchName = InName;
@@ -44,6 +48,10 @@ class ATTRIBUTESYSTEM_API FTagMatchApplyRule : public FApplyRuleBase
 public:
 	virtual bool CanApply(TSharedPtr<FAttributeBase> InAttribute) override;
 
+	virtual void GetDesiredName(TArray<FName>& OutNames) override {}
+
+	virtual void GetDesiredDataType(TArray<EAttributeDataType>& OutTypes) override {}
+
 	void SetMatchMethod(ETagMatchMethod InMethod)
 	{
 		MatchMethod = InMethod;
@@ -73,6 +81,10 @@ class ATTRIBUTESYSTEM_API FDataTypeMatchApplyRule : public FApplyRuleBase
 	friend FApplyRuleParser;
 public:
 	virtual bool CanApply(TSharedPtr<FAttributeBase> InAttribute) override;
+
+	virtual void GetDesiredName(TArray<FName>& OutNames) override {}
+
+	virtual void GetDesiredDataType(TArray<EAttributeDataType>& OutTypes) override;
 
 	void SetMatchDataType(EAttributeDataType InType)
 	{

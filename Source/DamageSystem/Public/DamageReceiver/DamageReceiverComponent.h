@@ -22,7 +22,7 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	virtual void TakeDamage(UExtendedDamageInstance* DamageInstance, FExtendedDamageEvent InEvent);
+	virtual void TakeDamage(UExtendedDamageInstance* DamageInstance, const FExtendedDamageEvent& InEvent);
 
 	virtual void SetHealth(int32 InValue);
 
