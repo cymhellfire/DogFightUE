@@ -33,7 +33,7 @@ local function CreateBuffAndApply(self, InTarget)
             if type(self._BuffDuration) == "number" and type(NewBuff.SetDuration) == "function" then
                 NewBuff:SetDuration(self._BuffDuration)
             end
-            NewBuff:Apply(InTarget)
+            InTarget:AddBuff(NewBuff)
         end
     end
 end

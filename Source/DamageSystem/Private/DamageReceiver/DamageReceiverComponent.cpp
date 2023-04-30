@@ -42,7 +42,7 @@ void UDamageReceiverComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 	DOREPLIFETIME_WITH_PARAMS_FAST(UDamageReceiverComponent, MaxHealth, SharedParam);
 }
 
-void UDamageReceiverComponent::TakeDamage(UExtendedDamageInstance* DamageInstance, FExtendedDamageEvent InEvent)
+void UDamageReceiverComponent::TakeDamage(UExtendedDamageInstance* DamageInstance, const FExtendedDamageEvent& InEvent)
 {
 	// Update health
 	SetHealth(Health - InEvent.DamageValue);
