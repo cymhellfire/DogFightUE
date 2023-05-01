@@ -90,7 +90,7 @@ public:
 
 	// ---------------- Card Logic ---------------------
 	UFUNCTION(BlueprintCallable, Category="Card")
-	void SetCardLogicPath(const FString&  InPath);
+	void SetCardLogicId(int32 InId);
 
 protected:
 	void CreateCardLogic();
@@ -122,7 +122,7 @@ public:
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Card")
-	FString LogicScriptPath;
+	int32 CardLogicId;
 
 protected:
 	UPROPERTY(Transient)

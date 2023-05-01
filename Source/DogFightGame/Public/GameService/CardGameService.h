@@ -13,7 +13,7 @@ class DOGFIGHTGAME_API UCardGameService : public ULuaGameService
 	GENERATED_BODY()
 public:
 	UFUNCTION(BlueprintImplementableEvent)
-	UCard* CreateCard(const FString& ScriptPath, UObject* Instigator);
+	UCard* CreateCard(int32 CardConfigId, UObject* Instigator);
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void DestroyCard(UCard* InCard);

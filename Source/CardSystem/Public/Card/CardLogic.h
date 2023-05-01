@@ -20,7 +20,7 @@ class CARDSYSTEM_API UCardLogic : public UObject, public FTickableGameObject, pu
 public:
 	UCardLogic();
 
-	void InitLogic(UCard* InCard, const FString& LogicPath);
+	void InitLogic(UCard* InCard, int32 LogicId);
 
 	void StartLogic();
 
@@ -51,7 +51,7 @@ public:
 
 protected:
 	UFUNCTION(BlueprintImplementableEvent, Category="CardLogic")
-	void LoadAndInitLogicScript(const FString& ScriptPath);
+	void LoadAndInitLogicScript(int32 CardLogicId);
 
 	UFUNCTION(BlueprintImplementableEvent, Category="CardLogic")
 	void OnLogicStarted();

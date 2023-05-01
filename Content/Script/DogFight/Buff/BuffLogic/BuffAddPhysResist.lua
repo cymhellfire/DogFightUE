@@ -1,11 +1,11 @@
 local CharacterModifierTypeDef = require "DogFight.Services.CharacterModifierService.CharacterModifierTypeDef"
 
----@class AddPhysResistBuff : BuffLogicBase Add physics resistance buff.
+---@class BuffAddPhysResist : BuffLogicBase Add physics resistance buff.
 ---@field _Modifier UCharacterStatusModifier Character status modifier instance.
-local AddPhysResistBuff = UnrealClass("DogFight.Buff.BuffLogic.BuffLogicBase")
+local BuffAddPhysResist = UnrealClass("DogFight.Buff.BuffLogic.BuffLogicBase")
 
 ---@param InCharacter ATopDownStylePlayerCharacter
-function AddPhysResistBuff:OnApply(InCharacter)
+function BuffAddPhysResist:OnApply(InCharacter)
     self.Super.OnApply(self, InCharacter)
 
     -- Create modifier
@@ -22,7 +22,7 @@ function AddPhysResistBuff:OnApply(InCharacter)
 end
 
 ---@param InCharacter ATopDownStylePlayerCharacter
-function AddPhysResistBuff:OnRemove(InCharacter)
+function BuffAddPhysResist:OnRemove(InCharacter)
     self.Super.OnRemove(self, InCharacter)
 
     -- Remove modifier from character
@@ -33,8 +33,8 @@ function AddPhysResistBuff:OnRemove(InCharacter)
     end
 end
 
-function AddPhysResistBuff:tostring()
-    return "AddPhysResistBuff"
+function BuffAddPhysResist:tostring()
+    return "BuffAddPhysResist"
 end
 
-return AddPhysResistBuff
+return BuffAddPhysResist

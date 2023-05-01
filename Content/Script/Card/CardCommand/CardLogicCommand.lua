@@ -5,7 +5,7 @@ local CardCommandHelper = require "Card.CardCommand.CardCommandHelper"
 ---@class CardLogicCommand : CardCommandBase Base class of all card logic command.
 local CardLogicCommand = UnrealClass(CardCommandBase)
 
-function CardLogicCommand:OnInit()
+function CardLogicCommand:OnInit(InParam)
     CardCommandBase.OnInit(self)
 
     self._PendingQueue = {}

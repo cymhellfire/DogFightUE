@@ -6,10 +6,22 @@ local CardCommandResultDef = require "Card.CardCommand.CardCommandResultDef"
 local CardLogic = UnrealClass()
 
 ---Load logic script and initialize this logic. (Invoke by UCardLogic::InitLogic)
----@param ScriptPath string Logic script path.
-function CardLogic:LoadAndInitLogicScript(ScriptPath)
+---@param CardId number Card config Id.
+function CardLogic:LoadAndInitLogicScript(CardId)
+    -- Get the card config
+    ---@type CardGeneratorService
+    local CardGeneratorService = GetGameService(self, GameServiceNameDef.CardGeneratorService)
+    if not CardGeneratorService then
+        print("[CardLogic] Failed to get card generator service.")
+        return
+    end
+    local CardConfig = CardGeneratorService.Config:GetConfig(CardId)
+    if not CardConfig then
+        print("[CardLogic] Failed to get card config with id: " .. CardId)
+        return
+    end
     -- Instantiate logic script
-    self.LogicCommand = CardCommandHelper.CreateCardCommand(ScriptPath)
+    self.LogicCommand = CardCommandHelper.CreateCardCommand(CardConfig.LogicPath, CardConfig.LogicParam)
     if self.LogicCommand then
         self.LogicCommand._CardLogic = self
         self.LogicCommand:SetCallback(self, self.OnCardLogicFinished)

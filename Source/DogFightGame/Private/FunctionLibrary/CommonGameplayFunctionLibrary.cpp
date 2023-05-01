@@ -27,6 +27,16 @@ ATopDownStylePlayerController* UCommonGameplayFunctionLibrary::GetPlayerControll
 	return nullptr;
 }
 
+ATopDownStylePlayerCharacter* UCommonGameplayFunctionLibrary::GetPlayerCharacterById(const UObject* WorldContextObject,	int32 InPlayerId)
+{
+	if (auto PC = GetPlayerControllerById(WorldContextObject, InPlayerId))
+	{
+		return PC->GetCharacterPawn();
+	}
+
+	return nullptr;
+}
+
 void UCommonGameplayFunctionLibrary::DispatchCardToPlayer(const UObject* WorldContextObject, int32 InPlayerId, UCard* InCard)
 {
 	if (auto PlayerState = Cast<ATopDownStylePlayerState>(GetPlayerStateById(WorldContextObject, InPlayerId)))

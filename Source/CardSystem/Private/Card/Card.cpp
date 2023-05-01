@@ -6,6 +6,7 @@
 #include "CardModifier/CardModifier.h"
 
 UCard::UCard()
+	: CardLogicId(-1)
 {
 }
 
@@ -90,9 +91,9 @@ void UCard::RemoveModifierObject(UCardModifier* InModifier)
 	}
 }
 
-void UCard::SetCardLogicPath(const FString& InPath)
+void UCard::SetCardLogicId(int32 InId)
 {
-	LogicScriptPath = InPath;
+	CardLogicId = InId;
 
 	// Create logic
 	CreateCardLogic();
@@ -107,7 +108,7 @@ void UCard::CreateCardLogic()
 	if (IsValid(CardLogic))
 	{
 		CardLogic->OnCardLogicFinished.AddDynamic(this, &UCard::OnCardLogicFinished);
-		CardLogic->InitLogic(this, LogicScriptPath);
+		CardLogic->InitLogic(this, CardLogicId);
 	}
 }
 
@@ -128,7 +129,7 @@ void UCard::StartCardLogic()
  */
 void UCard::Execute()
 {
-	if (!LogicScriptPath.IsEmpty())
+	if (CardLogicId != -1)
 	{
 		StartCardLogic();
 	}

@@ -6,6 +6,7 @@
 
 class UCard;
 class ATopDownStylePlayerController;
+class ATopDownStylePlayerCharacter;
 class ATopDownStylePlayerState;
 class AGameEffectBase;
 
@@ -24,11 +25,19 @@ public:
 
 	/**
 	 * Get PlayerController by player id.
-	 * @param InPlayerId		Id of player that acquire state for.
+	 * @param InPlayerId		Id of player that acquire controller for.
 	 * @return					The PlayerController of corresponding player.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
 	static ATopDownStylePlayerController* GetPlayerControllerById(const UObject* WorldContextObject, int32 InPlayerId);
+
+	/**
+	 * Get character pawn of specified player.
+	 * @param InPlayerId		Id of player that acquire character for.
+	 * @return					The player character of corresponding player.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
+	static ATopDownStylePlayerCharacter* GetPlayerCharacterById(const UObject* WorldContextObject, int32 InPlayerId);
 
 	/**
 	 * Given player specified card.

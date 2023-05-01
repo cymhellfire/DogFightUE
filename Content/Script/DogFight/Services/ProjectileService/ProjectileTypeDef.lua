@@ -4,6 +4,7 @@ local ProjectileTypeDef = {
     Fireball = 2,
     HomingProjectile = 3,
     PeriodHomingProjectile = 4,
+    LuckyBomb = 5,
 }
 
 return ProjectileTypeDef

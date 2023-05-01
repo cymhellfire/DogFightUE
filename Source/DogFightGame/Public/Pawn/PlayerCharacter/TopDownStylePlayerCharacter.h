@@ -12,6 +12,7 @@ class UPlayerCharacterStateWidget;
 class URagdollComponent;
 class UPathFollowingComponent;
 class UNewBuffBase;
+class UBuffManagerComponent;
 struct FPathFollowingResult;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTopDownStylePlayerCharacterDeadEvent, ATopDownStylePlayerCharacter*, Character);
@@ -83,11 +84,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	URagdollComponent* RagdollComponent;
 
-	UPROPERTY(Transient)
-	UPlayerCharacterStateWidget* StateWidget;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UBuffManagerComponent* BuffManagerComponent;
 
 	UPROPERTY(Transient)
-	TArray<UNewBuffBase*> AppliedBuffs;
+	UPlayerCharacterStateWidget* StateWidget;
 
 private:
 

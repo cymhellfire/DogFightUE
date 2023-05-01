@@ -30,7 +30,12 @@ local Config = {
         Name = "PeriodHomingProjectile",
         ResPath = "/Game/DogFightGame/Blueprints/Projectile/BP_Proj_PeriodHoming",
         Warhead = WarheadTypeDef.Default,
-    }
+    },
+    [ProjectileTypeDef.LuckyBomb] = {
+        Name = "LuckyBomb",
+        ResPath = "/Game/DogFightGame/Blueprints/Projectile/BP_Proj_LuckyBomb",
+        Warhead = WarheadTypeDef.Default,
+    },
 }
 
 function ProjectileConfig:GetData()
