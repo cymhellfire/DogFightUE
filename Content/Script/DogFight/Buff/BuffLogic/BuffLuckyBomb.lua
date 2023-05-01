@@ -2,6 +2,7 @@ local ProjectileTypeDef = require "DogFight.Services.ProjectileService.Projectil
 
 ---@class BuffLuckyBomb : BuffLogicBase A lucky tester bomb bind to target character.
 ---@field _bFinishing boolean Indicate if this buff is in finish progress.
+---@field _Character ATopDownStylePlayerCharacter Character that carrying this buff.
 ---@field _Bomb ANewProjectileBase Bomb projectile instance.
 ---@field _DetonateRate number Chance of the bomb detonate every time applied.
 ---@field _DelegateHelper DelegateHelper Helper for listening bomb dead event.
@@ -84,16 +85,35 @@ end
 function BuffLuckyBomb:OnApply(InCharacter)
     self.Super.OnApply(self, InCharacter)
 
-    -- Move bomb instance above new character
-    if InCharacter and self._Bomb then
-        local SpawnLoc = InCharacter:K2_GetActorLocation()
-        SpawnLoc.Z = SpawnLoc.Z + SpawnOffset
+    -- Record character
+    self._Character = InCharacter
+end
 
-        self._Bomb:K2_SetActorLocation(SpawnLoc, false, nil, true)
+---@param InCharacter ATopDownStylePlayerCharacter
+function BuffLuckyBomb:OnRemove(InCharacter)
+    self.Super.OnRemove(self, InCharacter)
 
-        -- Check if trigger the bomb this time
-        ChanceToDetonate(self)
+    -- Clear character
+    self._Character = nil
+end
+
+---@type EBuffCheckType
+function BuffLuckyBomb:DoCheck(InType)
+    if InType == UE.EBuffCheckType.PrePlayerRound then
+        -- Move bomb instance above new character
+        if self._Character and self._Bomb then
+            local SpawnLoc = self._Character:K2_GetActorLocation()
+            SpawnLoc.Z = SpawnLoc.Z + SpawnOffset
+
+            self._Bomb:K2_SetActorLocation(SpawnLoc, false, nil, true)
+            self._Bomb:LaunchToTargetWithSpeed(SpawnLoc, 1)
+
+            -- Check if trigger the bomb this time
+            ChanceToDetonate(self)
+        end
     end
+
+    self._Owner:FinishDoCheck()
 end
 
 function BuffLuckyBomb:OnFinish()

@@ -29,6 +29,11 @@ public:
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
+	void SetPlayerId(int32 InId)
+	{
+		PlayerId = InId;
+	}
+
 	UFUNCTION(BlueprintCallable)
 	FVector GetProjectileSpawnLocation() const;
 
@@ -93,6 +98,8 @@ protected:
 private:
 
 	uint8 bAlive : 1;
+
+	int32 PlayerId;
 
 	TWeakObjectPtr<UPathFollowingComponent> PathFollowingComponent;
 };

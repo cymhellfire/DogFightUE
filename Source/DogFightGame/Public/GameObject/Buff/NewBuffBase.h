@@ -3,11 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BuffCommonDef.h"
 #include "UnLuaInterface.h"
 #include "UObject/Object.h"
 #include "NewBuffBase.generated.h"
 
 class ATopDownStylePlayerCharacter;
+
+DECLARE_MULTICAST_DELEGATE(FBuffDoCheckFinishedSignature);
 
 /**
  * 
@@ -56,6 +59,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Buff")
 	void TransferTo(ATopDownStylePlayerCharacter* NewCharacter);
 
+	UFUNCTION(BlueprintCallable, Category="Buff")
+	void DoBuffCheck(TEnumAsByte<EBuffCheckType::Type> InCheckType);
+
 protected:
 	UFUNCTION(BlueprintImplementableEvent, Category="Buff")
 	void LoadBuffScript(const FString& InScriptPath);
@@ -76,6 +82,18 @@ protected:
 	void OnBuffFinishScript();
 
 	void DelayFinishExpired();
+
+	UFUNCTION(BlueprintImplementableEvent, Category="Buff")
+	void OnDoBuffCheckScript(EBuffCheckType::Type InCheckType);
+
+	/**
+	 * Finish the do check progress.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Buff")
+	void FinishDoCheck();
+
+public:
+	FBuffDoCheckFinishedSignature OnDoCheckFinished;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Buff")

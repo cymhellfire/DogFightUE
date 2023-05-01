@@ -80,3 +80,15 @@ void UNewBuffBase::DelayFinishExpired()
 {
 	Finish();
 }
+
+void UNewBuffBase::DoBuffCheck(TEnumAsByte<EBuffCheckType::Type> InCheckType)
+{
+	// Invoke script function
+	OnDoBuffCheckScript(InCheckType);
+}
+
+void UNewBuffBase::FinishDoCheck()
+{
+	// Invoke delegate
+	OnDoCheckFinished.Broadcast();
+}

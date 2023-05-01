@@ -62,6 +62,12 @@ public:
 	static void MoveTimelineForward(const UObject* WorldContextObject);
 
 	/**
+	 * Get the id of first player in timeline current order.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameFlow")
+	static int32 GetTimelineFirstPlayerId(const UObject* WorldContextObject);
+
+	/**
 	 * Get the ID of owner of current player round.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameFlow")

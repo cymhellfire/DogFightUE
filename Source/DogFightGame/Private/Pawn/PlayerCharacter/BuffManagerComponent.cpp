@@ -46,3 +46,44 @@ void UBuffManagerComponent::RemoveBuff(UNewBuffBase* InBuff)
 	AppliedBuffs.Remove(InBuff);
 }
 
+void UBuffManagerComponent::DoBuffCheck(TEnumAsByte<EBuffCheckType::Type> InCheckType)
+{
+	DoCheckIndex = 0;
+	CurCheckType = InCheckType;
+
+	// Iterate through buff list and do check one by one
+	StartDoBuffCheck();
+}
+
+void UBuffManagerComponent::StartDoBuffCheck()
+{
+	if (DoCheckIndex >= AppliedBuffs.Num())
+	{
+		OnAllBuffCheckFinished();
+		return;
+	}
+
+	auto CheckBuff = AppliedBuffs[DoCheckIndex];
+	DoCheckHandle = CheckBuff->OnDoCheckFinished.AddUObject(this, &UBuffManagerComponent::OnBuffCheckFinished);
+	// Start check
+	CheckBuff->DoBuffCheck(CurCheckType);
+}
+
+void UBuffManagerComponent::OnBuffCheckFinished()
+{
+	auto CheckBuff = AppliedBuffs[DoCheckIndex];
+	if (DoCheckHandle.IsValid())
+	{
+		CheckBuff->OnDoCheckFinished.Remove(DoCheckHandle);
+	}
+
+	// Increase the index and do next check
+	DoCheckIndex++;
+	StartDoBuffCheck();
+}
+
+void UBuffManagerComponent::OnAllBuffCheckFinished()
+{
+	// Broadcast finish event
+	OnDoCheckFinished.Broadcast();
+}

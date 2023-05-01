@@ -23,7 +23,7 @@ function BuffModFollowActivePlayer:OnUninit()
 end
 
 function BuffModFollowActivePlayer:OnTimelineChanged()
-    local PlayerId = UE.UCommonGameFlowFunctionLibrary.GetCurrentPlayerId(self._Buff)
+    local PlayerId = UE.UCommonGameFlowFunctionLibrary.GetTimelineFirstPlayerId(self._Buff)
     if PlayerId < 0 then
         return
     end

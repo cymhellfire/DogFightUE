@@ -43,4 +43,11 @@ function BuffBase:OnBuffFinishScript()
     end
 end
 
+---@param InType EBuffCheckType
+function BuffBase:OnDoBuffCheckScript(InType)
+    if self._Logic then
+        self._Logic:DoCheck(InType)
+    end
+end
+
 return BuffBase

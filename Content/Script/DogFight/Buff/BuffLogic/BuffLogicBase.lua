@@ -41,6 +41,12 @@ function BuffLogicBase:OnFinish()
     end
 end
 
+---@param InType EBuffCheckType
+function BuffLogicBase:DoCheck(InType)
+    -- Directly mark this check passed as default
+    self._Owner:FinishDoCheck()
+end
+
 local BuffModPath = "DogFight.Buff.BuffMod."
 
 ---@param InPath string Path of mod script.

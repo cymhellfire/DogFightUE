@@ -41,6 +41,8 @@ void ATopDownStylePlayerState::InitWithCharacter(ATopDownStylePlayerCharacter* I
 		return;
 	}
 
+	InCharacter->SetPlayerId(GetPlayerId());
+
 	// Register callback
 	InCharacter->OnCharacterDead.AddDynamic(this, &ATopDownStylePlayerState::OnCharacterDead);
 
