@@ -46,6 +46,10 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerSendInGameChatMessage(const FInGameChatMessage& InMessage);
 
+	// -----=========== Debug ===========-----
+	UFUNCTION(Exec)
+	void ToggleDebugPanel();
+
 	UInGameMessageReceiverComponent* GetInGameMessageReceiverComponent() const
 	{
 		return InGameMessageReceiverComponent;

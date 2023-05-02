@@ -4,6 +4,7 @@
 #include "Card/Card.h"
 #include "GameMode/TopDownStyleGameMode.h"
 #include "GameMode/GameModeComponent/InGameMessageSenderComponent.h"
+#include "GameService/DebugPanelService.h"
 #include "GameService/GameEffectService.h"
 #include "GameService/GameInputService.h"
 #include "GameService/GameService.h"
@@ -182,4 +183,15 @@ void ATopDownStylePlayerController::ServerFinishAcquireTargets_Implementation(bo
 	}
 
 	OnTargetAcquired.Broadcast(bSuccess, TargetInfos);
+}
+
+void ATopDownStylePlayerController::ToggleDebugPanel()
+{
+	if (auto GameInstance = Cast<UDogFightGameInstance>(GetGameInstance()))
+	{
+		if (auto DebugPanelService = Cast<UDebugPanelService>(GameInstance->GetGameService(UDebugPanelService::StaticClass()->GetFName())))
+		{
+			DebugPanelService->ToggleDebugPanel();
+		}
+	}
 }
