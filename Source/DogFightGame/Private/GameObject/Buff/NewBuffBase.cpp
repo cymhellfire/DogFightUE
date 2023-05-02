@@ -69,6 +69,12 @@ void UNewBuffBase::TransferTo(ATopDownStylePlayerCharacter* NewCharacter)
 		return;
 	}
 
+	// Skip if target character is the same
+	if (AppliedCharacter == NewCharacter)
+	{
+		return;
+	}
+
 	TransferToScript(NewCharacter);
 	// Remove from current character and apply to new one
 	AppliedCharacter->RemoveBuff(this);

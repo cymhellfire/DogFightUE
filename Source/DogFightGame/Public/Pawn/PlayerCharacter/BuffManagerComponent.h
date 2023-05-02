@@ -36,7 +36,16 @@ protected:
 
 	void OnAllBuffCheckFinished();
 
+	UFUNCTION()
+	void OnDoCheckIntervalTimerExpired();
+
 public:
+	/**
+	 * Interval between do check on two different buffs.
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="BuffManagerComponent")
+	float BuffCheckInterval;
+
 	UPROPERTY(BlueprintAssignable, Category="BuffManagerComponent")
 	FBuffManagerComponentDoCheckFinishEvent OnDoCheckFinished;
 
@@ -45,6 +54,7 @@ protected:
 	TArray<UNewBuffBase*> AppliedBuffs;
 
 	int32 DoCheckIndex;
-	EBuffCheckType::Type CurCheckType;
+	TOptional<EBuffCheckType::Type> CurCheckType;
 	FDelegateHandle DoCheckHandle;
+	FTimerHandle DoCheckIntervalHandle;
 };

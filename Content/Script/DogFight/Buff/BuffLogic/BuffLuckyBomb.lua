@@ -2,6 +2,7 @@ local ProjectileTypeDef = require "DogFight.Services.ProjectileService.Projectil
 
 ---@class BuffLuckyBomb : BuffLogicBase A lucky tester bomb bind to target character.
 ---@field _bFinishing boolean Indicate if this buff is in finish progress.
+---@field _bChecking boolean Indicate if this buff is in buff check progress.
 ---@field _Character ATopDownStylePlayerCharacter Character that carrying this buff.
 ---@field _Bomb ANewProjectileBase Bomb projectile instance.
 ---@field _DetonateRate number Chance of the bomb detonate every time applied.
@@ -53,17 +54,35 @@ local function MarkBombTriggered(InBomb)
 end
 
 ---@param self BuffLuckyBomb
+---@return boolean Whether the bomb is triggered.
 local function ChanceToDetonate(self)
     local Num = math.random(0, 1)
     -- Detonate bomb
     if Num <= self._DetonateRate and self._Bomb then
         MarkBombTriggered(self._Bomb)
+        return true
+    end
+
+    return false
+end
+
+---@param self BuffLuckyBomb
+---@param Target ATopDownStylePlayerCharacter
+local function MoveBombToTarget(self, Target)
+    if Target and self._Bomb then
+        local SpawnLoc = Target:K2_GetActorLocation()
+        SpawnLoc.Z = SpawnLoc.Z + SpawnOffset
+
+        self._Bomb:K2_SetActorLocation(SpawnLoc, false, nil, true)
+        self._Bomb:LaunchToTargetWithSpeed(SpawnLoc, 1)
     end
 end
 
 function BuffLuckyBomb:OnInit()
     self.Super.OnInit(self)
     self._bFinishing = false
+    self._bChecking = false
+    self._bOnInit = true
     self._DetonateRate = 0.35
 
     -- Add follow mod
@@ -87,6 +106,12 @@ function BuffLuckyBomb:OnApply(InCharacter)
 
     -- Record character
     self._Character = InCharacter
+
+    -- Move to target for first time
+    if self._bOnInit then
+        self._bOnInit = nil
+        MoveBombToTarget(self, self._Character)
+    end
 end
 
 ---@param InCharacter ATopDownStylePlayerCharacter
@@ -100,16 +125,14 @@ end
 ---@type EBuffCheckType
 function BuffLuckyBomb:DoCheck(InType)
     if InType == UE.EBuffCheckType.PrePlayerRound then
-        -- Move bomb instance above new character
-        if self._Character and self._Bomb then
-            local SpawnLoc = self._Character:K2_GetActorLocation()
-            SpawnLoc.Z = SpawnLoc.Z + SpawnOffset
+        -- Move bomb instance above current character
+        MoveBombToTarget(self, self._Character)
 
-            self._Bomb:K2_SetActorLocation(SpawnLoc, false, nil, true)
-            self._Bomb:LaunchToTargetWithSpeed(SpawnLoc, 1)
-
-            -- Check if trigger the bomb this time
-            ChanceToDetonate(self)
+        -- Check if trigger the bomb this time
+        if ChanceToDetonate(self) then
+            -- Finish checking after bomb is detonated
+            self._bChecking = true
+            return
         end
     end
 
@@ -139,6 +162,11 @@ function BuffLuckyBomb:OnBombDead(InProjectile)
 
     -- Clear the reference
     self._Bomb = nil
+
+    -- Finish check
+    if self._bChecking then
+        self._Owner:FinishDoCheck()
+    end
 
     -- Remove this buff
     if not self._bFinishing then
