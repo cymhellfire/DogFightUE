@@ -42,10 +42,6 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerUseCardByInstanceId(int32 InId);
 
-	// -----=========== Effect ===========-----
-	UFUNCTION(Client, Reliable)
-	void ClientSpawnGameEffectAtPos(int32 EffectId, FVector Pos, FRotator Rot);
-
 	// -----=========== Chat ===========-----
 	UFUNCTION(Server, Reliable)
 	void ServerSendInGameChatMessage(const FInGameChatMessage& InMessage);

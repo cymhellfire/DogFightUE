@@ -123,7 +123,8 @@ public:
 	 * @param Rot				Spawn rotation.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameplay|Effect")
-	static void SpawnGameEffectAtPos(const UObject* WorldContextObject, int32 EffectId, FVector Pos, FRotator Rot);
+	static AGameEffectBase* SpawnGameEffectAtPos(const UObject* WorldContextObject, int32 EffectId, FVector Pos,
+	                                             FRotator Rot);
 
 	/**
 	 * Apply damage to given actor.

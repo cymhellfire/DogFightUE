@@ -17,6 +17,9 @@ local Config = {
         Name = "AddPhysResist",
         LogicPath = "DogFight.Card.CardLogic.LogicAddBuff",
         LogicParam = {
+            CardInfo = {
+                Name = "PhysShield",
+            },
             BuffInfo = {
                 BuffId = BuffTypeDef.AddPhysResist,
                 Duration = 1,
@@ -27,6 +30,9 @@ local Config = {
         Name = "LuckyBomb",
         LogicPath = "DogFight.Card.CardLogic.LogicAddBuff",
         LogicParam = {
+            CardInfo = {
+                Name = "LuckyBomb",
+            },
             BuffInfo = {
                 BuffId = BuffTypeDef.LuckyBomb,
             },

@@ -10,8 +10,8 @@ function InitState:OnEnter()
     GetGameService(self.OwnerState, GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_ReadyPlayerCount,
         self, self.OnReadyPlayerCountChanged)
 
-    self.VfxCount = 1
-    ---@type TimerService
+    -- self.VfxCount = 1
+    -- ---@type TimerService
     -- local TimerService = GetGameService(self.OwnerState, GameServiceNameDef.TimerService)
     -- if TimerService then
     --     self.VfxTimer = TimerService:RegisterTimer(self, self.LoopVfxTimerExpired, 2, true)

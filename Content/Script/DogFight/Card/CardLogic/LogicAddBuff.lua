@@ -12,13 +12,18 @@ local CommandNameDef = {
 
 ---@param DescObject UCardDescObject
 function LogicAddBuff:SetupDescObject(DescObject)
-    DescObject:SetCardName("LogicAddBuff")
+    if self._CardInfo then
+        DescObject:SetCardName(self._CardInfo.Name or "LogicAddBuff")
+    else
+        DescObject:SetCardName("LogicAddBuff")
+    end
 end
 
 ---Initialize the card workflow
 function LogicAddBuff:OnInit(InParams)
     CardLogicCommand.OnInit(self, InParams)
 
+    self._CardInfo = InParams.CardInfo
     -- Record buff information
     self._BuffInfo = InParams.BuffInfo
 

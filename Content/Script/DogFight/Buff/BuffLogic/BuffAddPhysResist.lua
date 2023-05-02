@@ -2,6 +2,7 @@ local CharacterModifierTypeDef = require "DogFight.Services.CharacterModifierSer
 
 ---@class BuffAddPhysResist : BuffLogicBase Add physics resistance buff.
 ---@field _Modifier UCharacterStatusModifier Character status modifier instance.
+---@field _Effect AGameEffectBase Effect instance.
 local BuffAddPhysResist = UnrealClass("DogFight.Buff.BuffLogic.BuffLogicBase")
 
 ---@param InCharacter ATopDownStylePlayerCharacter
@@ -18,6 +19,15 @@ function BuffAddPhysResist:OnApply(InCharacter)
                 InCharacter.DamageReceiverComponent:AddModifierObject(self._Modifier)
             end
         end
+
+        ---@type GameEffectService
+        local GameEffectService = GetGameService(self._Owner, GameServiceNameDef.GameEffectService)
+        if GameEffectService then
+            self._Effect = GameEffectService:SpawnEffectAtPos(3, UE.FVector(), UE.FRotator())
+            if self._Effect then
+                self._Effect:SetTarget(InCharacter)
+            end
+        end
     end
 end
 
@@ -30,6 +40,12 @@ function BuffAddPhysResist:OnRemove(InCharacter)
         if self._Modifier then
             InCharacter.DamageReceiverComponent:RemoveModifierObject(self._Modifier)
         end
+    end
+
+    -- Remove game effect
+    if self._Effect then
+        self._Effect:K2_DestroyActor()
+        self._Effect = nil
     end
 end
 

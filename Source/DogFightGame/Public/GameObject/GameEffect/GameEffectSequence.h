@@ -17,7 +17,7 @@ class DOGFIGHTGAME_API AGameEffectSequence : public AGameEffectBase
 public:
 	AGameEffectSequence(const FObjectInitializer& ObjectInitializer);
 
-	virtual void PlayEffect() override;
+	virtual void PlayEffect_Implementation() override;
 
 protected:
 	ALevelSequenceActor* GetOrCreateSequenceActor();

@@ -16,9 +16,9 @@ AGameEffectNiagara::AGameEffectNiagara(const FObjectInitializer& ObjectInitializ
 	AudioComponent->SetAutoActivate(false);
 }
 
-void AGameEffectNiagara::PlayEffect()
+void AGameEffectNiagara::PlayEffect_Implementation()
 {
-	Super::PlayEffect();
+	Super::PlayEffect_Implementation();
 
 #if WITH_EDITOR
 	const bool bIsRuntime = GetWorld()->WorldType == EWorldType::Game || GetWorld()->WorldType == EWorldType::PIE;

@@ -16,8 +16,15 @@ class DOGFIGHTGAME_API AGameEffectBase : public AActor
 public:
 	AGameEffectBase(const FObjectInitializer& ObjectInitializer);
 
-	UFUNCTION(CallInEditor, Category="GameEffect")
-	virtual void PlayEffect() {}
+	UFUNCTION(CallInEditor, Category="GameEffect", NetMulticast, Reliable)
+	virtual void PlayEffect();
+
+	/**
+	 * Attach this effect to given actor.
+	 * @param InTarget		Target actor this effect attach to.
+	 */
+	UFUNCTION(BlueprintCallable, Category="GameEffect")
+	virtual void SetTarget(AActor* InTarget) {}
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="GameEffect")
@@ -25,6 +32,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="GameEffect")
 	FString EffectName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="GameEffect")
+	FName AttachSocketName;
 
 	UPROPERTY(BlueprintAssignable, Category="GameEffect")
 	FGameEffectFinishDelegate OnEffectFinished;
