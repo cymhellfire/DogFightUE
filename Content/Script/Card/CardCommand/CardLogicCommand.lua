@@ -2,13 +2,51 @@ local CardCommandBase = require "Card.CardCommand.CardCommandBase"
 local CardCommandHelper = require "Card.CardCommand.CardCommandHelper"
 
 ---@field _PendingQueue table List of commands will be executed next frame.
+---@field _CardInfo table Table of card display infomration.
+---@field _AttrInfo table Table of all attributes.
 ---@class CardLogicCommand : CardCommandBase Base class of all card logic command.
 local CardLogicCommand = UnrealClass(CardCommandBase)
 
 function CardLogicCommand:OnInit(InParam)
     CardCommandBase.OnInit(self)
 
+    self._AttrInfo = InParam.AttrInfo
+    self._CardInfo = InParam.CardInfo
+
     self._PendingQueue = {}
+end
+
+function CardLogicCommand:SetupDescObject(DescObject)
+    local CardInfo = self._CardInfo
+    -- Construct card description string
+    if CardInfo and CardInfo.Desc then
+        local Params = UE.TArray("")
+        if type(CardInfo.Desc.Param) == "table" then
+            for i = 1, #CardInfo.Desc.Param do
+                Params:Add(CardInfo.Desc.Param[i])
+            end
+        end
+
+        local Desc = UE.FCardDescString()
+        Desc.DescKey = CardInfo.Desc.Key
+        Desc.DescParams = Params
+        DescObject:SetCardDesc(Desc)
+    end
+
+
+    -- Add Attributes
+    local AttrInfo = self._AttrInfo
+    if type(AttrInfo) == "table" and #AttrInfo > 0 then
+        ---@type Cardbase
+        local Card = self._CardLogic:GetOwnerCard()
+        for _, v in ipairs(AttrInfo) do
+            Card:CreateAttribute({
+                Name = v.Name,
+                DataType = v.Type,
+                Value = v.Value,
+            })
+        end
+    end
 end
 
 function CardLogicCommand:StartCommand()

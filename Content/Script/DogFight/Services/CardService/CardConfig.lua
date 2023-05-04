@@ -12,6 +12,19 @@ local Config = {
     [CardTypeDef.Attack] = {
         Name = "Attack",
         LogicPath = "DogFight.Card.CardLogic.LogicFireball",
+        LogicParam = {
+            CardInfo = {
+                Desc = {
+                    Key = "Desc_Fireball",
+                    Param = {
+                        "[Int]Damage",
+                    },
+                }
+            },
+            AttrInfo = {
+                {Name = "Damage", Type = "Integer", Value = 10},
+            },
+        },
     },
     [CardTypeDef.AddPhysResist] = {
         Name = "AddPhysResist",
