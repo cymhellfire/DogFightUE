@@ -1,3 +1,4 @@
+---@class WidgetCardListItem : BP_Widget_CardListItem_C
 local WidgetCardListItem = UnrealClass("Common.MVVM.ModelBase")
 local ViewModelBase = require("Common.MVVM.ViewModelBase")
 local DataBinding = require("Common.MVVM.DataBinding")
@@ -36,13 +37,51 @@ function WidgetCardListItem:Destruct()
     GetGameService(self, GameServiceNameDef.LuaEventService):UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardCancelled, self, self.OnCardCancelled)
 end
 
+---@param DescObject UCardDescObject
+---@param InString string
+---@return string
+local function ConvertDescArgument(DescObject, InString)
+    -- Get integer attribute value
+    if string.startWith(InString, "[Int]") then
+        local AttrName = string.sub(InString, 6, #InString)
+        ---@type UAttributeIntegerWrapperObject
+        local AttrWrapper = DescObject:GetIntegerAttributeWrapperByName(AttrName)
+        if AttrWrapper then
+            return tostring(AttrWrapper:GetValue())
+        end
+    end
+
+    -- Use original string
+    return InString
+end
+
+---@param self WidgetCardListItem
+---@param InDesc FCardDescString
+local function InitializeDesc(self, InDesc)
+    local ArgumentStrs = {}
+    for i = 1, InDesc.DescParams:Num() do
+        ---@type string
+        local Param = InDesc.DescParams:Get(i)
+        ArgumentStrs[#ArgumentStrs + 1] = ConvertDescArgument(self.Data, Param)
+    end
+
+    local Desc = nil
+    if #ArgumentStrs > 0 then
+        Desc = GetLocalizedString(self, "ST_CardDisplay", InDesc.DescKey, ArgumentStrs)
+    else
+        Desc = GetLocalizedString(self, "ST_CardDisplay", InDesc.DescKey)
+    end
+    self.ViewModel.CardDesc = Desc
+end
+
 function WidgetCardListItem:OnListItemObjectSet(InObject)
     ---@type UCardDescObject
     self.Data = InObject:GetData()
     if self.Data then
         self.ViewModel.CardName = self.Data.CardName
-        self.ViewModel.CardDesc = self.Data.CardDesc
         self.ViewModel.CardPicture = self.Data.CardPicturePath
+
+        InitializeDesc(self, self.Data.CardDesc)
     end
     self.ViewModel.BackgroundColor = self.NormalColor
 end

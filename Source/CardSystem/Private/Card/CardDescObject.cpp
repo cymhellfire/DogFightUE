@@ -21,7 +21,7 @@ void UCardDescObject::SetCardName(FText InName)
 	CardName = InName;
 }
 
-void UCardDescObject::SetCardDesc(FText InDesc)
+void UCardDescObject::SetCardDesc(const FCardDescString& InDesc)
 {
 	MARK_PROPERTY_DIRTY_FROM_NAME(UCardDescObject, CardDesc, this);
 	CardDesc = InDesc;

@@ -12,6 +12,21 @@ local CommandNameDef = {
 ---@param DescObject UCardDescObject
 function LogicFireball:SetupDescObject(DescObject)
     DescObject:SetCardName("LogicFireball")
+
+    local Params = UE.TArray("")
+    Params:Add("[Int]Damage")
+    local Desc = UE.FCardDescString()
+    Desc.DescKey = "Desc_Fireball"
+    Desc.DescParams = Params
+    DescObject:SetCardDesc(Desc)
+
+    -- Add Attribute
+    local Card = self._CardLogic:GetOwnerCard()
+    Card:CreateAttribute({
+        Name = "Damage",
+        DataType = "Integer",
+        Value = 10,
+    })
 end
 
 ---Initialize the card workflow
