@@ -10,14 +10,21 @@ local CardLogicCommand = UnrealClass(CardCommandBase)
 function CardLogicCommand:OnInit(InParam)
     CardCommandBase.OnInit(self)
 
-    self._AttrInfo = InParam.AttrInfo
-    self._CardInfo = InParam.CardInfo
+    if InParam then
+        self._AttrInfo = InParam.AttrInfo
+        self._CardInfo = InParam.CardInfo
+    end
 
     self._PendingQueue = {}
 end
 
 function CardLogicCommand:SetupDescObject(DescObject)
     local CardInfo = self._CardInfo
+    -- Set card name
+    if CardInfo and CardInfo.Name then
+        local LocalizedName = GetLocalizedString(self._CardLogic, LocalizationTable.CardDisplay, CardInfo.Name)
+        DescObject:SetCardName(LocalizedName)
+    end
     -- Construct card description string
     if CardInfo and CardInfo.Desc then
         local Params = UE.TArray("")

@@ -8,6 +8,14 @@ local Config = {
     [CardTypeDef.CharacterMove] = {
         Name = "CharacterMove",
         LogicPath = "DogFight.Card.CardLogic.LogicCharacterMove",
+        LogicParam = {
+            CardInfo = {
+                Name = "Name_CharacterMove",
+                Desc = {
+                    Key = "Desc_CharacterMove",
+                }
+            }
+        }
     },
     [CardTypeDef.Attack] = {
         Name = "Attack",
