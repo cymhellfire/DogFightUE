@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "UnrealIntegration/Marco/AttributeDataTypeMacro.h"
+#include "AttributeSystem/Attribute/AttributeCommon.h"
 #include "AttributeWrapperObject.generated.h"
 
 class FAttributeBase;
@@ -40,6 +41,23 @@ public:
 		return FString::Printf(TEXT("Attribute Name: %s"), *AttributeName.ToString());
 	}
 
+	void SetAttributeFlag(int32 InFlag)
+	{
+		AttributeFlag = InFlag;
+	}
+
+	UFUNCTION(BlueprintCallable, Category="AttributeWrapper")
+	bool HasFlag(EAttributeFlag InFlag) const
+	{
+		return (AttributeFlag | (int32)InFlag) != 0;
+	}
+
+	UFUNCTION(BlueprintCallable, Category="AttributeWrapper")
+	virtual bool IsBaseValue() const
+	{
+		return false;
+	}
+
 protected:
 	UFUNCTION()
 	void OnRep_AppliedModifierDesc(const TArray<UAttributeModifierDescObject*>& OldList);
@@ -61,6 +79,9 @@ public:
 protected:
 	UPROPERTY(Replicated, Transient)
 	FName AttributeName;
+
+	UPROPERTY(Replicated, Transient)
+	int32 AttributeFlag;
 };
 
 UCLASS()
@@ -88,6 +109,11 @@ public:
 	{
 		return FString::Printf(TEXT("%s, Value: %s/%s"), *Super::ToString(),
 			BOOL_TO_STR(Value), BOOL_TO_STR(BaseValue));
+	}
+
+	virtual bool IsBaseValue() const override
+	{
+		return Value == BaseValue;
 	}
 
 protected:
@@ -140,6 +166,11 @@ public:
 		return FString::Printf(TEXT("%s, Value: %d/%d"), *Super::ToString(), Value, BaseValue);
 	}
 
+	virtual bool IsBaseValue() const override
+	{
+		return Value == BaseValue;
+	}
+
 protected:
 	void SetBaseValue(int32 InValue);
 	void SetValue(int32 InValue);
@@ -187,6 +218,11 @@ public:
 	virtual FString ToString() const override
 	{
 		return FString::Printf(TEXT("%s, Value: %.3f/%.3f"), *Super::ToString(), Value, BaseValue);
+	}
+
+	virtual bool IsBaseValue() const override
+	{
+		return Value == BaseValue;
 	}
 
 protected:

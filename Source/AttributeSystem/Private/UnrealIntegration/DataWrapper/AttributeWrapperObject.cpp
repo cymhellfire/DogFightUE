@@ -16,6 +16,7 @@ void UAttributeWrapperObjectBase::GetLifetimeReplicatedProps(TArray<FLifetimePro
 	MAKE_SHARED_PARAMS(SharedParams)
 	DOREPLIFETIME_WITH_PARAMS_FAST(UAttributeWrapperObjectBase, AttributeName, SharedParams);
 	DOREPLIFETIME_WITH_PARAMS_FAST(UAttributeWrapperObjectBase, AppliedModifierDesc, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(UAttributeWrapperObjectBase, AttributeFlag, SharedParams);
 }
 
 void UAttributeWrapperObjectBase::AddDescObject(UAttributeModifierDescObject* InDescObject)
@@ -236,6 +237,7 @@ UAttributeBooleanWrapperObject* FAttributeWrapperObjectHelper::CreateWrapperObje
 	NewWrapper->SetAttributeName(AttributeName);
 	NewWrapper->SetBaseValue(InAttribute->GetRawValue());
 	NewWrapper->SetValue(InAttribute->GetValue());
+	NewWrapper->SetAttributeFlag(InAttribute->AttributeFlag);
 	InAttribute->OnValueChanged.AddLambda(InCallback);
 
 	return NewWrapper;
@@ -249,6 +251,7 @@ UAttributeIntegerWrapperObject* FAttributeWrapperObjectHelper::CreateWrapperObje
 	NewWrapper->SetAttributeName(AttributeName);
 	NewWrapper->SetBaseValue(InAttribute->GetRawValue());
 	NewWrapper->SetValue(InAttribute->GetValue());
+	NewWrapper->SetAttributeFlag(InAttribute->AttributeFlag);
 	InAttribute->OnValueChanged.AddLambda(InCallback);
 
 	return NewWrapper;
@@ -262,6 +265,7 @@ UAttributeFloatWrapperObject* FAttributeWrapperObjectHelper::CreateWrapperObject
 	NewWrapper->SetAttributeName(AttributeName);
 	NewWrapper->SetBaseValue(InAttribute->GetRawValue());
 	NewWrapper->SetValue(InAttribute->GetValue());
+	NewWrapper->SetAttributeFlag(InAttribute->AttributeFlag);
 	InAttribute->OnValueChanged.AddLambda(InCallback);
 
 	return NewWrapper;

@@ -265,6 +265,7 @@ bool IAttributeCarrierInterface::AddAttributeModifier(TSharedPtr<FAttributeModif
 				auto AttributeArgument = FAttributeCreateArgument();
 				AttributeArgument.AttrName = NewAttributeName;
 				AttributeArgument.DataType = AttributeDataType;
+				AttributeArgument.AttributeFlag |= EAttributeFlag::AF_AutoAdd;
 
 				if (AddAttribute(AttributeArgument))
 				{

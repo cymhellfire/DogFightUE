@@ -89,7 +89,8 @@ public:
 	}
 protected:
 	FAttributeBase(const FAttributeCreateArgument& InArgument)
-		: AttributeName(InArgument.AttrName)
+		: AttributeFlag(InArgument.AttributeFlag)
+		,AttributeName(InArgument.AttrName)
 		,DataType(ADT_None)
 	{
 		// Import tags
@@ -102,6 +103,8 @@ protected:
 protected:
 	DECLARE_MULTICAST_DELEGATE_OneParam(FAttributeValueChangeSignature, TSharedPtr<FAttributeBase>)
 	FAttributeValueChangeSignature OnValueChanged;
+
+	int32 AttributeFlag;
 
 	FName AttributeName;
 
