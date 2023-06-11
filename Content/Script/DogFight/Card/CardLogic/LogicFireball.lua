@@ -14,6 +14,14 @@ function LogicFireball:SetupDescObject(DescObject)
     CardLogicCommand.SetupDescObject(self, DescObject)
 
     DescObject:SetCardName("LogicFireball")
+
+    -- Add Test modifier
+    ---@type CardModifierGameService
+    local ModifierService = GetGameService(self._CardLogic, GameServiceNameDef.CardModifierGameService)
+    if ModifierService then
+        local Modifier = ModifierService:CreateCardModifier("CardModifierTest", self._CardLogic)
+        self._CardLogic:GetOwnerCard():AddModifierObject(Modifier)
+    end
 end
 
 ---Initialize the card workflow
@@ -49,11 +57,17 @@ function LogicFireball:OnAcquireTargetFinished(Result, TargetInfo)
 end
 
 ---Command create callback
+---@param InCommand ActionLaunchProjectile
 function LogicFireball:OnFireProjectileCreated(InCommand)
+    local bOverrideDamage, ProjectileDamage = self._CardLogic:GetOwnerCard():GetAttributeIntegerValue("Damage")
+
     local ProjectileInfo = {
         Id = ProjectileTypeDef.Fireball,
         MuzzleSpeed = 1500,
     }
+    if bOverrideDamage then
+        ProjectileInfo.Damage = ProjectileDamage
+    end
     InCommand:SetCommandInfo(ProjectileInfo, self._TargetInfo)
 end
 

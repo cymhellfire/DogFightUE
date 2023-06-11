@@ -1,5 +1,6 @@
 require "Common.StringHelper"
 
+---@class CardModifierGameService : UCardModifierGameService
 local CardModifierGameService = UnrealClass("DogFight.Services.GameServiceBase")
 
 ---Create a card modifier with given script.
