@@ -14,7 +14,9 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	UFUNCTION(BlueprintCallable, Category="AttributeModifierDescObject")
 	virtual void SetSourceString(FString InStr);
+	UFUNCTION(BlueprintCallable, Category="AttributeModifierDescObject")
 	virtual void SetEffectString(FString InStr);
 
 	UFUNCTION(BlueprintCallable, Category="AttributeModifierDescObject")

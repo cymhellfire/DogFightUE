@@ -1,5 +1,6 @@
 local CardLogicCommand = require "Card.CardCommand.CardLogicCommand"
 local ProjectileTypeDef = require "DogFight.Services.ProjectileService.ProjectileTypeDef"
+local CardModifierTypeDef = require "DogFight.Services.CardModifierService.CardModifierTypeDef"
 
 ---@class LogicFireball : CardLogicCommand Shoot fireball toward target.
 local LogicFireball = UnrealClass(CardLogicCommand)
@@ -16,10 +17,10 @@ function LogicFireball:SetupDescObject(DescObject)
     DescObject:SetCardName("LogicFireball")
 
     -- Add Test modifier
-    ---@type CardModifierGameService
-    local ModifierService = GetGameService(self._CardLogic, GameServiceNameDef.CardModifierGameService)
+    ---@type CardModifierService
+    local ModifierService = GetGameService(self._CardLogic, GameServiceNameDef.CardModifierService)
     if ModifierService then
-        local Modifier = ModifierService:CreateCardModifier("CardModifierTest", self._CardLogic)
+        local Modifier = ModifierService:CreateCardModifier(CardModifierTypeDef.DoubleRandomInt)
         self._CardLogic:GetOwnerCard():AddModifierObject(Modifier)
     end
 end

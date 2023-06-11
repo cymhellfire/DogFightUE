@@ -3,7 +3,7 @@
 #include "CardSystem.h"
 #include "Card/CardDescObject.h"
 #include "Card/CardLogic.h"
-#include "CardModifier/CardModifier.h"
+#include "UnrealIntegration/UObject/AttributeModifierBasedObject.h"
 
 UCard::UCard()
 	: CardLogicId(-1)
@@ -75,7 +75,7 @@ bool UCard::GetAttributeFloatValue(FName InName, float& OutValue)
 	return false;
 }
 
-void UCard::AddModifierObject(UCardModifier* InModifier)
+void UCard::AddModifierObject(UAttributeModifierBasedObject* InModifier)
 {
 	if (DescObject)
 	{
@@ -83,7 +83,7 @@ void UCard::AddModifierObject(UCardModifier* InModifier)
 	}
 }
 
-void UCard::RemoveModifierObject(UCardModifier* InModifier)
+void UCard::RemoveModifierObject(UAttributeModifierBasedObject* InModifier)
 {
 	if (DescObject)
 	{

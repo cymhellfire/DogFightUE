@@ -10,9 +10,9 @@
 class UCardCommand;
 class UCardAsyncCommand;
 class UCardConcurrentCallbackCommand;
-class UCardModifier;
 class UCardDescObject;
 class UCardLogic;
+class UAttributeModifierBasedObject;
 
 UENUM()
 enum class ECardExecutionResult : uint8
@@ -83,10 +83,10 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable, Category="Card")
-	void AddModifierObject(UCardModifier* InModifier);
+	void AddModifierObject(UAttributeModifierBasedObject* InModifier);
 
 	UFUNCTION(BlueprintCallable, Category="Card")
-	void RemoveModifierObject(UCardModifier* InModifier);
+	void RemoveModifierObject(UAttributeModifierBasedObject* InModifier);
 
 	// ---------------- Card Logic ---------------------
 	UFUNCTION(BlueprintCallable, Category="Card")
