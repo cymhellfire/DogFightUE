@@ -14,6 +14,11 @@ end
 function CAM_DoubleRandInt:InitDescObject(InDescObject)
     InDescObject:SetSourceString(self._Owner:GetName())
     InDescObject:SetEffectString("x2")
+
+    local AttributeWrapper = self._Owner:GetModifiedAttributeObject()
+    if AttributeWrapper then
+        InDescObject:SetDescString(AttributeWrapper:GetAttributeName() .. " X2")
+    end
 end
 
 return CAM_DoubleRandInt

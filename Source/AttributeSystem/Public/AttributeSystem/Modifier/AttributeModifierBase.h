@@ -77,6 +77,15 @@ public:
 		return true;
 	}
 
+	/**
+	 * @brief Get the modified attribute instance this modifier applied to.
+	 * @return The attribute instance that modified.
+	 */
+	virtual TSharedPtr<FAttributeBase> GetModifiedAttribute()
+	{
+		return RawModifierTarget.IsValid() ? RawModifierTarget.Pin() : nullptr;
+	}
+
 protected:
 	FAttributeModifierBase()
 		: DataType(EAttributeDataType::ADT_None)
@@ -85,6 +94,8 @@ protected:
 	EAttributeDataType DataType;
 
 	TSharedPtr<FApplyRuleBase> ApplyRule;
+
+	TWeakPtr<FAttributeBase> RawModifierTarget;
 };
 
 template<typename T>

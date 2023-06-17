@@ -234,11 +234,13 @@ UAttributeBooleanWrapperObject* FAttributeWrapperObjectHelper::CreateWrapperObje
 {
 	const FName AttributeName = InAttribute->GetName();
 	UAttributeBooleanWrapperObject* NewWrapper = NewObject<UAttributeBooleanWrapperObject>(Instigator, NAME_None, RF_Transient);
+	NewWrapper->SetRawAttribute(InAttribute);
 	NewWrapper->SetAttributeName(AttributeName);
 	NewWrapper->SetBaseValue(InAttribute->GetRawValue());
 	NewWrapper->SetValue(InAttribute->GetValue());
 	NewWrapper->SetAttributeFlag(InAttribute->AttributeFlag);
 	InAttribute->OnValueChanged.AddLambda(InCallback);
+	InAttribute->SetWrapperObject(NewWrapper);
 
 	return NewWrapper;
 }
@@ -248,11 +250,13 @@ UAttributeIntegerWrapperObject* FAttributeWrapperObjectHelper::CreateWrapperObje
 {
 	const FName AttributeName = InAttribute->GetName();
 	UAttributeIntegerWrapperObject* NewWrapper = NewObject<UAttributeIntegerWrapperObject>(Instigator, NAME_None, RF_Transient);
+	NewWrapper->SetRawAttribute(InAttribute);
 	NewWrapper->SetAttributeName(AttributeName);
 	NewWrapper->SetBaseValue(InAttribute->GetRawValue());
 	NewWrapper->SetValue(InAttribute->GetValue());
 	NewWrapper->SetAttributeFlag(InAttribute->AttributeFlag);
 	InAttribute->OnValueChanged.AddLambda(InCallback);
+	InAttribute->SetWrapperObject(NewWrapper);
 
 	return NewWrapper;
 }
@@ -262,11 +266,13 @@ UAttributeFloatWrapperObject* FAttributeWrapperObjectHelper::CreateWrapperObject
 {
 	const FName AttributeName = InAttribute->GetName();
 	UAttributeFloatWrapperObject* NewWrapper = NewObject<UAttributeFloatWrapperObject>(Instigator, NAME_None, RF_Transient);
+	NewWrapper->SetRawAttribute(InAttribute);
 	NewWrapper->SetAttributeName(AttributeName);
 	NewWrapper->SetBaseValue(InAttribute->GetRawValue());
 	NewWrapper->SetValue(InAttribute->GetValue());
 	NewWrapper->SetAttributeFlag(InAttribute->AttributeFlag);
 	InAttribute->OnValueChanged.AddLambda(InCallback);
+	InAttribute->SetWrapperObject(NewWrapper);
 
 	return NewWrapper;
 }

@@ -4,6 +4,7 @@
 #include "AttributeModifierBasedObject.generated.h"
 
 class FAttributeModifierBase;
+class UAttributeWrapperObjectBase;
 
 UCLASS()
 class ATTRIBUTESYSTEM_API UAttributeModifierBasedObject : public UObject, public IAttributeModifierCarrierInterface
@@ -16,6 +17,13 @@ public:
 	}
 
 	virtual UAttributeModifierDescObject* GetDescObject(UObject* Instigator) override;
+
+	/**
+	 * Get the wrapper object of attribute this modifier applied to.
+	 * @return The wrapper object of modified attribute.
+	 */
+	UFUNCTION(BlueprintCallable, Category="AttributeModifierBasedObject")
+	virtual UAttributeWrapperObjectBase* GetModifiedAttributeObject() const;
 
 protected:
 	virtual void OnModifierCreated(TSharedPtr<FAttributeModifierBase> InModifier) override;

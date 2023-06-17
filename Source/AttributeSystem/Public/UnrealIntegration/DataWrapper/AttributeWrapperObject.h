@@ -31,11 +31,13 @@ public:
 
 	void SetAttributeName(FName InName);
 
+	UFUNCTION(BlueprintCallable, Category="AttributeWrapper")
 	FName GetAttributeName() const
 	{
 		return AttributeName;
 	}
 
+	UFUNCTION(BlueprintCallable, Category="AttributeWrapper")
 	virtual FString ToString() const
 	{
 		return FString::Printf(TEXT("Attribute Name: %s"), *AttributeName.ToString());
@@ -56,6 +58,16 @@ public:
 	virtual bool IsBaseValue() const
 	{
 		return false;
+	}
+
+	virtual void SetRawAttribute(TSharedPtr<FAttributeBase> InAttribute)
+	{
+		UnderneathAttribute = InAttribute; 
+	}
+
+	virtual TSharedPtr<FAttributeBase> GetRawAttribute() const
+	{
+		return UnderneathAttribute.IsValid() ? UnderneathAttribute.Pin() : nullptr;
 	}
 
 protected:
@@ -82,6 +94,9 @@ protected:
 
 	UPROPERTY(Replicated, Transient)
 	int32 AttributeFlag;
+
+	/** Raw attribute underneath the wrapper. Only available on server. */
+	TWeakPtr<FAttributeBase> UnderneathAttribute = nullptr;
 };
 
 UCLASS()

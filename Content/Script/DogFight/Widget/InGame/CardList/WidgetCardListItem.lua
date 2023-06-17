@@ -47,26 +47,26 @@ local function ConvertDescArgument(DescObject, InString)
         ---@type UAttributeIntegerWrapperObject
         local AttrWrapper = DescObject:GetIntegerAttributeWrapperByName(AttrName)
         if AttrWrapper then
-            local ModifierList = AttrWrapper.AppliedModifierDesc
-            local ModifierString = ""
-            local ModifierCount = ModifierList:Length()
-            if ModifierCount > 0 then
-                for i = 1, ModifierCount do
-                    ---@type UAttributeModifierDescObject
-                    local Desc = ModifierList:Get(i)
-                    if Desc then
-                        if #ModifierString > 0 then
-                            ModifierString = ModifierString .. ","
-                        end
-                        ModifierString = string.format("%s%s[%s]", ModifierString, Desc:GetEffectString(), Desc:GetSourceString())
-                    end
-                end
-            end
-            if #ModifierString > 0 then
-                return string.format("%d(%s)", AttrWrapper:GetValue(), ModifierString)
-            else
+            -- local ModifierList = AttrWrapper.AppliedModifierDesc
+            -- local ModifierString = ""
+            -- local ModifierCount = ModifierList:Length()
+            -- if ModifierCount > 0 then
+            --     for i = 1, ModifierCount do
+            --         ---@type UAttributeModifierDescObject
+            --         local Desc = ModifierList:Get(i)
+            --         if Desc then
+            --             if #ModifierString > 0 then
+            --                 ModifierString = ModifierString .. ","
+            --             end
+            --             ModifierString = string.format("%s%s[%s]", ModifierString, Desc:GetEffectString(), Desc:GetSourceString())
+            --         end
+            --     end
+            -- end
+            -- if #ModifierString > 0 then
+            --     return string.format("%d(%s)", AttrWrapper:GetValue(), ModifierString)
+            -- else
                 return tostring(AttrWrapper:GetValue())
-            end
+            -- end
         end
     end
 
@@ -101,6 +101,11 @@ function WidgetCardListItem:OnListItemObjectSet(InObject)
         self.ViewModel.CardPicture = self.Data.CardPicturePath
 
         InitializeDesc(self, self.Data.CardDesc)
+
+        -- Init modifier list
+        if self.CardModifierList then
+            self.CardModifierList:InitModifierList(self.Data)
+        end
     end
     self.ViewModel.BackgroundColor = self.NormalColor
 end

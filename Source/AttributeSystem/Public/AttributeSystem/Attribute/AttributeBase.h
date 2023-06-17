@@ -2,6 +2,7 @@
 
 #include "AttributeCommon.h"
 #include "AttributeSystem/AttributeSystemCommon.h"
+#include "UnrealIntegration/DataWrapper/AttributeWrapperObject.h"
 
 class FAttributeModifierBase;
 template<typename T>
@@ -87,6 +88,16 @@ public:
 	{
 		return DataType;
 	}
+
+	void SetWrapperObject(UAttributeWrapperObjectBase* InWrapper)
+	{
+		WrapperObject = InWrapper;
+	}
+
+	UAttributeWrapperObjectBase* GetWrapperObject() const
+	{
+		return WrapperObject.Get();
+	}
 protected:
 	FAttributeBase(const FAttributeCreateArgument& InArgument)
 		: AttributeFlag(InArgument.AttributeFlag)
@@ -111,6 +122,8 @@ protected:
 	TSet<FName> AttributeTags;
 
 	EAttributeDataType DataType;
+
+	TWeakObjectPtr<UAttributeWrapperObjectBase> WrapperObject;
 };
 
 template<typename T>
