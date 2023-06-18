@@ -19,6 +19,11 @@ public:
 		return AttributeName;
 	}
 
+	virtual FText GetDisplayName() const
+	{
+		return DisplayName;
+	}
+
 	void AddTag(FName InTag)
 	{
 		AttributeTags.Add(InTag);
@@ -102,6 +107,7 @@ protected:
 	FAttributeBase(const FAttributeCreateArgument& InArgument)
 		: AttributeFlag(InArgument.AttributeFlag)
 		,AttributeName(InArgument.AttrName)
+		,DisplayName(InArgument.DisplayName)
 		,DataType(ADT_None)
 	{
 		// Import tags
@@ -118,6 +124,8 @@ protected:
 	int32 AttributeFlag;
 
 	FName AttributeName;
+
+	FText DisplayName;
 
 	TSet<FName> AttributeTags;
 

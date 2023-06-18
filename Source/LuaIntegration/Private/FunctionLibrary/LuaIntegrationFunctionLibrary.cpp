@@ -94,38 +94,3 @@ bool ULuaIntegrationFunctionLibrary::IsDerivedFrom(UObject* InObject, UClass* In
 	}
 	return false;
 }
-
-FText ULuaIntegrationFunctionLibrary::GetLocalizedString(const UObject* WorldContextObject, const FString& InTable, const FString& InKey)
-{
-	if (auto GameInstance = Cast<UDogFightGameInstance>(GetGameInstance(WorldContextObject)))
-	{
-		if (auto LocalizationService = Cast<ULocalizationService>(GameInstance->GetGameServiceBySuperClass(ULocalizationService::StaticClass())))
-		{
-			auto Result = LocalizationService->GetLocalizeString(InTable, InKey);
-			if (!Result.IsEmpty())
-			{
-				return Result;
-			}
-		}
-	}
-
-	return FText::FromString(FString::Printf(TEXT("Missing localization string: [%s - %s]"), *InTable, *InKey));
-}
-
-FText ULuaIntegrationFunctionLibrary::GetLocalizedStringWithParam(const UObject* WorldContextObject, const FString& InTable,
-	const FString& InKey, const TArray<FString>& ParamList)
-{
-	if (auto GameInstance = Cast<UDogFightGameInstance>(GetGameInstance(WorldContextObject)))
-	{
-		if (auto LocalizationService = Cast<ULocalizationService>(GameInstance->GetGameServiceBySuperClass(ULocalizationService::StaticClass())))
-		{
-			auto Result = LocalizationService->GetLocalizeStringWithFormat(InTable, InKey, ParamList);
-			if (!Result.IsEmpty())
-			{
-				return Result;
-			}
-		}
-	}
-
-	return FText::FromString(FString::Printf(TEXT("Missing localization string: [%s - %s]"), *InTable, *InKey));
-}

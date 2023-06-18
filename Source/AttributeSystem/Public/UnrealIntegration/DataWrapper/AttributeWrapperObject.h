@@ -37,6 +37,14 @@ public:
 		return AttributeName;
 	}
 
+	void SetDisplayName(const FText& InName);
+
+	UFUNCTION(BlueprintCallable, Category="AttributeWrapper")
+	FText GetDisplayName() const
+	{
+		return DisplayName;
+	}
+
 	UFUNCTION(BlueprintCallable, Category="AttributeWrapper")
 	virtual FString ToString() const
 	{
@@ -91,6 +99,9 @@ public:
 protected:
 	UPROPERTY(Replicated, Transient)
 	FName AttributeName;
+
+	UPROPERTY(Replicated, Transient)
+	FText DisplayName;
 
 	UPROPERTY(Replicated, Transient)
 	int32 AttributeFlag;
@@ -295,4 +306,7 @@ public:
 	 */
 	static UAttributeFloatWrapperObject* CreateWrapperObjectForFloatAttribute(UObject* Instigator, TSharedPtr<FAttributeFloat> InAttribute,
 		const TFunction<void(TSharedPtr<FAttributeBase>)>& InCallback);
+
+protected:
+	static void InitializeCommonVariables(UAttributeWrapperObjectBase* InWrapper, TSharedPtr<FAttributeBase> InAttribute);
 };

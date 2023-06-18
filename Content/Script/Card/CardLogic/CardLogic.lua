@@ -42,6 +42,19 @@ function CardLogic:SetupCardDescObject(DescObject)
     end
 end
 
+---@param DescObject UCardDescObject
+function CardLogic:UpdateCardDescObject(DescObject)
+    if self.LogicCommand then
+        -- Check update function from logic script
+        if type(self.LogicCommand.UpdateDescObject) == "function" then
+            self.LogicCommand:UpdateDescObject(DescObject)
+        else
+            -- Set error name to notify the missing function
+            DescObject:SetCardName("Update Func Missing")
+        end
+    end
+end
+
 function CardLogic:OnLogicStarted()
     -- Execute card logic command if exists
     if self.LogicCommand then

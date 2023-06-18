@@ -30,7 +30,7 @@ local Config = {
                 }
             },
             AttrInfo = {
-                {Name = "Damage", Type = "Integer", Value = 10},
+                {Name = "Damage", DisplayName = "Attr_Damage", Type = "Integer", Value = 10},
             },
         },
     },

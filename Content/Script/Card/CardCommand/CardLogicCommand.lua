@@ -18,28 +18,32 @@ function CardLogicCommand:OnInit(InParam)
     self._PendingQueue = {}
 end
 
+---@param DescObject UCardDescObject
+---@param InString string
+---@return string
+local function ConvertDescArgument(DescObject, InString)
+    -- Get integer attribute value
+    if string.startWith(InString, "[Int]") then
+        local AttrName = string.sub(InString, 6, #InString)
+        ---@type UAttributeIntegerWrapperObject
+        local AttrWrapper = DescObject:GetIntegerAttributeWrapperByName(AttrName)
+        if AttrWrapper then
+            return AttrWrapper:GetValue()
+        end
+    end
+
+    -- Use original string
+    return InString
+end
+
+---@param DescObject UCardDescObject
 function CardLogicCommand:SetupDescObject(DescObject)
     local CardInfo = self._CardInfo
     -- Set card name
     if CardInfo and CardInfo.Name then
-        local LocalizedName = GetLocalizedString(self._CardLogic, LocalizationTable.CardDisplay, CardInfo.Name)
+        local LocalizedName = GetLocalizedString(LocalizationTable.CardDisplay, CardInfo.Name)
         DescObject:SetCardName(LocalizedName)
     end
-    -- Construct card description string
-    if CardInfo and CardInfo.Desc then
-        local Params = UE.TArray("")
-        if type(CardInfo.Desc.Param) == "table" then
-            for i = 1, #CardInfo.Desc.Param do
-                Params:Add(CardInfo.Desc.Param[i])
-            end
-        end
-
-        local Desc = UE.FCardDescString()
-        Desc.DescKey = CardInfo.Desc.Key
-        Desc.DescParams = Params
-        DescObject:SetCardDesc(Desc)
-    end
-
 
     -- Add Attributes
     local AttrInfo = self._AttrInfo
@@ -47,12 +51,48 @@ function CardLogicCommand:SetupDescObject(DescObject)
         ---@type Cardbase
         local Card = self._CardLogic:GetOwnerCard()
         for _, v in ipairs(AttrInfo) do
+            local LocalizedAttrName = GetLocalizedString(LocalizationTable.Attribute, v.DisplayName or v.Name)
             Card:CreateAttribute({
                 Name = v.Name,
+                DisplayName = LocalizedAttrName,
                 DataType = v.Type,
                 Value = v.Value,
             })
         end
+    end
+    
+    -- Construct card description string
+    if CardInfo and CardInfo.Desc then
+        local Params = {}
+        if type(CardInfo.Desc.Param) == "table" then
+            for i = 1, #CardInfo.Desc.Param do
+                Params[#Params + 1] = ConvertDescArgument(DescObject, CardInfo.Desc.Param[i])
+            end
+        end
+
+        DescObject:SetCardDesc(GetLocalizedString(LocalizationTable.CardDisplay, CardInfo.Desc.Key, table.unpack(Params)))
+    end
+end
+
+---@param DescObject UCardDescObject
+function CardLogicCommand:UpdateDescObject(DescObject)
+    local CardInfo = self._CardInfo
+    -- Set card name
+    if CardInfo and CardInfo.Name then
+        local LocalizedName = GetLocalizedString(LocalizationTable.CardDisplay, CardInfo.Name)
+        DescObject:SetCardName(LocalizedName)
+    end
+
+    -- Construct card description string
+    if CardInfo and CardInfo.Desc then
+        local Params = {}
+        if type(CardInfo.Desc.Param) == "table" then
+            for i = 1, #CardInfo.Desc.Param do
+                Params[#Params + 1] = ConvertDescArgument(DescObject, CardInfo.Desc.Param[i])
+            end
+        end
+
+        DescObject:SetCardDesc(GetLocalizedString(LocalizationTable.CardDisplay, CardInfo.Desc.Key, table.unpack(Params)))
     end
 end
 

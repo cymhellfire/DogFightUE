@@ -1,5 +1,6 @@
 #pragma once
 
+#include "lua.hpp"
 #include "Engine/DataTable.h"
 #include "GameService/GameService.h"
 #include "LocalizationService.generated.h"
@@ -20,6 +21,10 @@ public:
 
 protected:
 	void LoadData();
+
+	void RegisterLuaFunction();
+
+	static int Lua_LocalizeString(lua_State* L);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="LocalizationService")

@@ -19,6 +19,9 @@ struct ATTRIBUTESYSTEM_API FAttributeCreateArgument
 	FName AttrName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AttributeArgument")
+	FText DisplayName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AttributeArgument")
 	TEnumAsByte<EAttributeDataType> DataType = ADT_None;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AttributeArgument")

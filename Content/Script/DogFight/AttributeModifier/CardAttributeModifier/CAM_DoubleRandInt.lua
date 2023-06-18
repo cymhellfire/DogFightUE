@@ -17,7 +17,10 @@ function CAM_DoubleRandInt:InitDescObject(InDescObject)
 
     local AttributeWrapper = self._Owner:GetModifiedAttributeObject()
     if AttributeWrapper then
-        InDescObject:SetDescString(AttributeWrapper:GetAttributeName() .. " X2")
+        local AttrName = AttributeWrapper:GetDisplayName()
+        local EffectString = "x2"
+        local LocalizedDesc = GetLocalizedString(LocalizationTable.CardDisplay, "Mod_SimpleDesc", AttrName, EffectString)
+        InDescObject:SetDescString(LocalizedDesc)
     end
 end
 

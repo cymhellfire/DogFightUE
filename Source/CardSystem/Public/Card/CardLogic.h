@@ -49,6 +49,13 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category="CardLogic")
 	void SetupCardDescObject(UCardDescObject* InDescObject);
 
+	/**
+	 * Update card description from card logic script.
+	 * @param InDescObject			Card description object.
+	 */
+	UFUNCTION(BlueprintImplementableEvent, Category="CardLogic")
+	void UpdateCardDescObject(UCardDescObject* InDescObject);
+
 protected:
 	UFUNCTION(BlueprintImplementableEvent, Category="CardLogic")
 	void LoadAndInitLogicScript(int32 CardLogicId);

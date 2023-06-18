@@ -1,4 +1,5 @@
 ---@class WidgetCardListItem : BP_Widget_CardListItem_C
+---@field Data UCardDescObject
 local WidgetCardListItem = UnrealClass("Common.MVVM.ModelBase")
 local ViewModelBase = require("Common.MVVM.ViewModelBase")
 local DataBinding = require("Common.MVVM.DataBinding")
@@ -94,20 +95,35 @@ local function InitializeDesc(self, InDesc)
 end
 
 function WidgetCardListItem:OnListItemObjectSet(InObject)
-    ---@type UCardDescObject
+    --- Remove the callback of description change
+    if self.Data ~= nil then
+        self.Data.OnDescUpdated:Remove(self, self.OnDescUpdated)
+    end
+
     self.Data = InObject:GetData()
+    if self.Data then
+        --- Listen to description change
+        self.Data.OnDescUpdated:Add(self, self.OnDescUpdated)
+
+        self:OnDescUpdated()
+    end
+
+    self.ViewModel.BackgroundColor = self.NormalColor
+end
+
+function WidgetCardListItem:OnDescUpdated()
     if self.Data then
         self.ViewModel.CardName = self.Data.CardName
         self.ViewModel.CardPicture = self.Data.CardPicturePath
 
-        InitializeDesc(self, self.Data.CardDesc)
+        --InitializeDesc(self, self.Data.CardDesc)
+        self.ViewModel.CardDesc = self.Data.CardDesc
 
         -- Init modifier list
         if self.CardModifierList then
             self.CardModifierList:InitModifierList(self.Data)
         end
     end
-    self.ViewModel.BackgroundColor = self.NormalColor
 end
 
 ---Update the background image color based on select state

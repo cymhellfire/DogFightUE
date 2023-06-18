@@ -37,6 +37,8 @@ public:
 	// ------------------- Initialize ----------------------
 	virtual void InitDescObject();
 
+	virtual void UpdateDescObject();
+
 	UFUNCTION(BlueprintCallable, Category="Card")
 	void SetInstanceId(int32 InId);
 

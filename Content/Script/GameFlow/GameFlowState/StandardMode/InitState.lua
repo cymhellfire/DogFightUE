@@ -25,7 +25,7 @@ function InitState:OnReadyPlayerCountChanged(InCount)
 
     print("Ready Player: " .. InCount .. "/" .. AllPlayerCount)
 
-    local NewTitle = GetLocalizedString(self.OwnerState, "ST_InGameUI", "UI_WaitingPlayersTitle", {tostring(InCount), tostring(AllPlayerCount)})
+    local NewTitle = GetLocalizedString("ST_InGameUI", "UI_WaitingPlayersTitle", InCount, AllPlayerCount)
     UE.UInGameMessageFunctionLibrary.SetTitleMessage(self.OwnerState, NewTitle)
 
     if tonumber(InCount) >= AllPlayerCount then

@@ -3,17 +3,7 @@
 #include "UnrealIntegration/UObject/AttributeBasedObject.h"
 #include "CardDescObject.generated.h"
 
-USTRUCT(BlueprintType)
-struct FCardDescString
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString DescKey;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FString> DescParams;
-};
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCardDescUpdateSignature);
 
 /**
  * Card description object that is replicated through network.
@@ -29,7 +19,7 @@ public:
 	void SetCardName(FText InName);
 
 	UFUNCTION(BlueprintCallable, Category="CardDescObject")
-	void SetCardDesc(const FCardDescString& InDesc);
+	void SetCardDesc(const FText& InDesc);
 
 	UFUNCTION(BlueprintCallable, Category="CardDescObject")
 	void SetCardPicturePath(FString InPath);
@@ -43,11 +33,19 @@ public:
 	}
 
 protected:
+	UFUNCTION()
+	void OnRep_CardDesc();
+
+public:
+	UPROPERTY(BlueprintAssignable, Category="CardDescObject")
+	FCardDescUpdateSignature OnDescUpdated;
+
+protected:
 	UPROPERTY(Transient, Replicated)
 	FText CardName;
 
-	UPROPERTY(Transient, Replicated)
-	FCardDescString CardDesc;
+	UPROPERTY(Transient, ReplicatedUsing=OnRep_CardDesc)
+	FText CardDesc;
 
 	UPROPERTY(Transient, Replicated)
 	FString CardPicturePath;

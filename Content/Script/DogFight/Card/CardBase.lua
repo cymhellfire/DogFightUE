@@ -23,6 +23,7 @@ function CardBase:CreateAttribute(InTable)
         return
     end
 
+    local DisplayName = InTable["DisplayName"] or NameStr
     local DataTypeStr = InTable["DataType"]
     local BaseValue = InTable["Value"] and InTable["Value"] or AttributeEnum.DefaultValue[DataTypeStr]
 
@@ -38,6 +39,7 @@ function CardBase:CreateAttribute(InTable)
     -- Construct attribute argument
     local NewArgument = UE.FAttributeCreateArgument()
     NewArgument.AttrName = NameStr
+    NewArgument.DisplayName = DisplayName
     NewArgument.DataType = AttributeEnum.DataType[DataTypeStr]
     NewArgument.Tags = TagArray
     NewArgument["Init" .. DataTypeStr .. "Value"] = BaseValue

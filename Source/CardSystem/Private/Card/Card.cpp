@@ -22,6 +22,18 @@ void UCard::InitDescObject()
 	}
 }
 
+void UCard::UpdateDescObject()
+{
+	// Only update when description available
+	if (IsValid(DescObject))
+	{
+		if (IsValid(CardLogic))
+		{
+			CardLogic->UpdateCardDescObject(DescObject);
+		}
+	}
+}
+
 void UCard::SetInstanceId(int32 InId)
 {
 	if (InId == CardInstanceId)
@@ -80,6 +92,8 @@ void UCard::AddModifierObject(UAttributeModifierBasedObject* InModifier)
 	if (DescObject)
 	{
 		DescObject->AddModifierObject(InModifier);
+
+		UpdateDescObject();
 	}
 }
 
@@ -88,6 +102,8 @@ void UCard::RemoveModifierObject(UAttributeModifierBasedObject* InModifier)
 	if (DescObject)
 	{
 		DescObject->RemoveModifierObject(InModifier);
+
+		UpdateDescObject();
 	}
 }
 
