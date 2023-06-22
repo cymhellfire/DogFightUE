@@ -7,6 +7,13 @@
 #include "UnrealIntegration/UObject/AttributeModifierBasedObject.h"
 #include "LuaAttributeModifierObject.generated.h"
 
+UENUM(BlueprintType)
+enum class ELuaAttributeModifierType : uint8
+{
+	AMT_CharacterStatus,
+	AMT_CardAttribute,
+};
+
 /**
  * Base class of all modifiers bound with lua script.
  */
@@ -16,8 +23,8 @@ class DOGFIGHTGAME_API ULuaAttributeModifierObject : public UAttributeModifierBa
 	GENERATED_BODY()
 
 public:
-
-	void InitModifier(const FString& InScript);
+	UFUNCTION(BlueprintCallable, Category="LuaAttributeModifierObject")
+	virtual FText GetEffectString() const;
 
 	virtual FString GetModuleName_Implementation() const override
 	{
@@ -29,11 +36,14 @@ protected:
 	virtual void InitializeDescObject(UAttributeModifierDescObject* InDesc) override;
 
 	UFUNCTION(BlueprintImplementableEvent, Category="LuaAttributeModifierObject")
-	void LoadAndInitModifierScript(const FString& InScript);
+	void LoadAndInitModifierScript(int32 ConfigId);
 
 	UFUNCTION(BlueprintImplementableEvent, Category="LuaAttributeModifierObject")
 	void InitDescObjectScript(UAttributeModifierDescObject* InDesc);
 
 protected:
+	UPROPERTY(BlueprintReadOnly, Category="AttributeModifierBaseObject")
+	ELuaAttributeModifierType ModifierType;
+
 	FString ModifierScript;
 };

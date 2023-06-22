@@ -18,7 +18,8 @@ function CardModifierService:CreateCardModifierInternal(InId)
 
     -- Load and initialize with modifier script
     if NewModifier then
-        NewModifier:LoadAndInitModifierScript(Config.Script)
+        NewModifier.ModifierType = UE.ELuaAttributeModifierType.AMT_CardAttribute
+        NewModifier:LoadAndInitModifierScript(InId)
     end
 
     return NewModifier

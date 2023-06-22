@@ -10,6 +10,8 @@ class ATTRIBUTESYSTEM_API FAttributeModifierBoolean : public TAttributeModifierB
 	friend FAttributeFunctionLibrary;
 public:
 	virtual FString GetEffectString() const override;
+
+	virtual FText GetLocalizedEffectString() override;
 protected:
 	FAttributeModifierBoolean(const FModifierCreateArgument& InArgument)
 		: TAttributeModifierBase<bool>(InArgument, InArgument.InitBooleanValue)
@@ -25,6 +27,8 @@ class FAttributeModifierInteger : public TAttributeModifierNumeric<int32>
 	friend FAttributeFunctionLibrary;
 public:
 	virtual FString GetEffectString() const override;
+
+	virtual FText GetLocalizedEffectString() override;
 protected:
 	FAttributeModifierInteger(const FModifierCreateArgument& InArgument)
 		: TAttributeModifierNumeric<int32>(InArgument, InArgument.InitIntegerValue)
@@ -38,6 +42,8 @@ class FAttributeModifierFloat : public TAttributeModifierNumeric<float>
 	friend FAttributeFunctionLibrary;
 public:
 	virtual FString GetEffectString() const override;
+
+	virtual FText GetLocalizedEffectString() override;
 protected:
 	FAttributeModifierFloat(const FModifierCreateArgument& InArgument)
 		: TAttributeModifierNumeric<float>(InArgument, InArgument.InitFloatValue)

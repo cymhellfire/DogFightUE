@@ -31,6 +31,7 @@ local Config = {
             },
             AttrInfo = {
                 {Name = "Damage", DisplayName = "Attr_Damage", Type = "Integer", Value = 10},
+                {Name = "ProjectileSpeed", DisplayName = "Attr_ProjSpeed", Type = "Integer", Value = 500},
             },
         },
     },

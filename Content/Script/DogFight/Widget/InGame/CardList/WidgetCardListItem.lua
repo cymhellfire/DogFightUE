@@ -75,25 +75,6 @@ local function ConvertDescArgument(DescObject, InString)
     return InString
 end
 
----@param self WidgetCardListItem
----@param InDesc FCardDescString
-local function InitializeDesc(self, InDesc)
-    local ArgumentStrs = {}
-    for i = 1, InDesc.DescParams:Num() do
-        ---@type string
-        local Param = InDesc.DescParams:Get(i)
-        ArgumentStrs[#ArgumentStrs + 1] = ConvertDescArgument(self.Data, Param)
-    end
-
-    local Desc = nil
-    if #ArgumentStrs > 0 then
-        Desc = GetLocalizedString(self, "ST_CardDisplay", InDesc.DescKey, ArgumentStrs)
-    else
-        Desc = GetLocalizedString(self, "ST_CardDisplay", InDesc.DescKey)
-    end
-    self.ViewModel.CardDesc = Desc
-end
-
 function WidgetCardListItem:OnListItemObjectSet(InObject)
     --- Remove the callback of description change
     if self.Data ~= nil then
@@ -116,7 +97,6 @@ function WidgetCardListItem:OnDescUpdated()
         self.ViewModel.CardName = self.Data.CardName
         self.ViewModel.CardPicture = self.Data.CardPicturePath
 
-        --InitializeDesc(self, self.Data.CardDesc)
         self.ViewModel.CardDesc = self.Data.CardDesc
 
         -- Init modifier list

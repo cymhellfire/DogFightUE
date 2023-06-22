@@ -20,8 +20,10 @@ function LogicFireball:SetupDescObject(DescObject)
     ---@type CardModifierService
     local ModifierService = GetGameService(self._CardLogic, GameServiceNameDef.CardModifierService)
     if ModifierService then
-        local Modifier = ModifierService:CreateCardModifier(CardModifierTypeDef.DoubleRandomInt)
-        self._CardLogic:GetOwnerCard():AddModifierObject(Modifier)
+        for i = 1, 2 do
+            local Modifier = ModifierService:CreateCardModifier(CardModifierTypeDef.DoubleRandomInt)
+            self._CardLogic:GetOwnerCard():AddModifierObject(Modifier)
+        end
     end
 end
 
@@ -61,10 +63,11 @@ end
 ---@param InCommand ActionLaunchProjectile
 function LogicFireball:OnFireProjectileCreated(InCommand)
     local bOverrideDamage, ProjectileDamage = self._CardLogic:GetOwnerCard():GetAttributeIntegerValue("Damage")
+    local bOverrideProjectileSpeed, ProjectileSpeed = self._CardLogic:GetOwnerCard():GetAttributeIntegerValue("ProjectileSpeed")
 
     local ProjectileInfo = {
         Id = ProjectileTypeDef.Fireball,
-        MuzzleSpeed = 1500,
+        MuzzleSpeed = bOverrideProjectileSpeed and ProjectileSpeed or 1500,
     }
     if bOverrideDamage then
         ProjectileInfo.Damage = ProjectileDamage

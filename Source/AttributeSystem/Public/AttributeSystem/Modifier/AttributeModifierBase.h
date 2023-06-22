@@ -30,6 +30,8 @@ public:
 
 	virtual FString GetEffectString() const = 0;
 
+	virtual FText GetLocalizedEffectString() = 0;
+
 	virtual bool CanApply(TSharedPtr<FAttributeBase> InAttribute) const
 	{
 		if (ApplyRule.IsValid())
