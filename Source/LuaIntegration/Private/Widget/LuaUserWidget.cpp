@@ -11,4 +11,9 @@ void ULuaUserWidget::NativeOnInitialized()
 	}
 }
 
+void ULuaUserWidget::NativeDestruct()
+{
+	Super::NativeDestruct();
 
+	UnInitialize();
+}

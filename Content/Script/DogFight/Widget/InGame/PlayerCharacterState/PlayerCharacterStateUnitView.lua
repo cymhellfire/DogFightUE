@@ -6,14 +6,12 @@ local PlayerCharacterStateUnitVM = require("DogFight.Widget.InGame.PlayerCharact
 --local ListWrapper = require("Common.ListView.ListViewWrapper")
 local WidgetNameDef = require("DogFight.Services.Config.GameWidgetNameDef")
 
-function PlayerCharacterStateUnitView:Initialize()
+function PlayerCharacterStateUnitView:PostInitialized()
     local NewVM = InstantiateViewModel(PlayerCharacterStateUnitVM)
     self:BindViewModel(NewVM, {
         {BindKey = "HealthText",   UIKey = "Health_Text",   DataBinding = DataBinding.TextContextBinding(), }
     })
-end
 
-function PlayerCharacterStateUnitView:PostInitialized()
     ---@type ListViewWrapper 
     --self.MyListWrapper = ListWrapper.New(self, self.ListView)
 end

@@ -5,14 +5,12 @@ local DataBinding = require("Common.MVVM.DataBinding")
 local InGameChatVM = require("DogFight.Widget.Common.InGameChat.InGameChatVM")
 local ListWrapper = require("Common.ListView.ListViewWrapper")
 
-function InGameChatView:Initialize()
+function InGameChatView:PostInitialized()
     local NewVM = InstantiateViewModel(InGameChatVM)
     self:BindViewModel(NewVM, {
         --{BindKey = "TitleMessage",   UIKey = "TitleMessage_Text",   DataBinding = DataBinding.TextContextBinding(), }
     })
-end
 
-function InGameChatView:PostInitialized()
     ---@type ListViewWrapper 
     self.ChatMsgList = ListWrapper.New(self, self.ChatMsgList_ListView)
 

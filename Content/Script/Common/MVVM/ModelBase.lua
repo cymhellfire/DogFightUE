@@ -1,4 +1,4 @@
----@field ViewModel table ViewModel table of this model.
+---@field ViewModel ViewModelBase ViewModel table of this model.
 ---@class ModelBase Base class of all widget want to use MVVM partten.
 local ModelBase = UnrealClass()
 

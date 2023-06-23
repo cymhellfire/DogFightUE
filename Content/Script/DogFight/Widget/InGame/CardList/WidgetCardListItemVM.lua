@@ -3,7 +3,7 @@ local WidgetCardListItemVM = {}
 WidgetCardListItemVM.BindingTable = {
     CardName = "",
     CardDesc = "",
-    BackgroundColor = "",
+    BackgroundColor = NoInitValue,
     CardPicture = "",
 }
 

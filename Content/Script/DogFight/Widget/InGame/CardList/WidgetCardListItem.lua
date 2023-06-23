@@ -6,7 +6,7 @@ local DataBinding = require("Common.MVVM.DataBinding")
 local WidgetCardListItemVM = require("DogFight.Widget.InGame.CardList.WidgetCardListItemVM")
 local ListWrapper = require("Common.ListView.ListViewWrapper")
 
-function WidgetCardListItem:Initialize()
+function WidgetCardListItem:PostInitialized()
     local NewVM = InstantiateViewModel(WidgetCardListItemVM)
     self:BindViewModel(NewVM, {
         {BindKey = "CardName",          UIKey = "CardName_Text",    DataBinding = DataBinding.TextContextBinding() },

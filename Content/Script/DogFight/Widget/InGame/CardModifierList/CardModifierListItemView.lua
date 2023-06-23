@@ -4,13 +4,11 @@ local ViewModelBase = require("Common.MVVM.ViewModelBase")
 local DataBinding = require("Common.MVVM.DataBinding")
 local CardModifierListItemVM = require("DogFight.Widget.InGame.CardModifierList.CardModifierListItemVM")
 
-function CardModifierListItemView:Initialize()
+function CardModifierListItemView:PostInitialized()
     local NewVM = InstantiateViewModel(CardModifierListItemVM)
     self:BindViewModel(NewVM, {
         {BindKey = "Description",   UIKey = "CardModifierDesc_Text",   DataBinding = DataBinding.TextContextBinding(), }
     })
-    
-
 end
 
 function CardModifierListItemView:OnListItemObjectSet(InObject)

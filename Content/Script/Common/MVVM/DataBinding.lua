@@ -5,7 +5,11 @@ local DataBinding = UnrealClass()
 function DataBinding.TextContextBinding()
     local NewBinding = {}
     NewBinding.SetValue = function(self, widget, value)
-        widget:SetText(value)
+        if type(widget.SetText) == "function" then
+            widget:SetText(value)
+        else
+            error(widget:GetName() .. " does NOT have function named SetText()")
+        end
     end
     return NewBinding
 end
@@ -14,7 +18,11 @@ end
 function DataBinding.ColorAndOpacityBinding()
     local NewBinding = {}
     NewBinding.SetValue = function(self, widget, value)
-        widget:SetColorAndOpacity(value)
+        if type(widget.SetColorAndOpacity) == "function" then
+            widget:SetColorAndOpacity(value)
+        else
+            error(widget:GetName() .. " does NOT have function named SetColorAndOpacity()")
+        end
     end
     return NewBinding
 end
@@ -28,7 +36,11 @@ function DataBinding.SwitcherIndexBinding()
         if type(value) ~= "number" then
             return
         end
-        widget:SetActiveWidgetIndex(value)
+        if type(widget.SetActiveWidgetIndex) == "function" then
+            widget:SetActiveWidgetIndex(value)
+        else
+            error(widget:GetName() .. " does NOT have function named SetActiveWidgetIndex()")
+        end
     end
     return NewBinding
 end

@@ -3,13 +3,11 @@ local ViewModelBase = require("Common.MVVM.ViewModelBase")
 local DataBinding = require("Common.MVVM.DataBinding")
 local GameTimelineItemVM = require("DogFight.Widget.InGame.GameTimeline.GameTimelineItemVM")
 
-function GameTimelineItem:Initialize()
+function GameTimelineItem:PostInitialized()
     local NewVM = InstantiateViewModel(GameTimelineItemVM)
     self:BindViewModel(NewVM, {
         {BindKey = "PlayerName",   UIKey = "PlayerName_Text",   DataBinding = DataBinding.TextContextBinding(), }
     })
-
-
 end
 
 function GameTimelineItem:OnListItemObjectSet(InObject)
