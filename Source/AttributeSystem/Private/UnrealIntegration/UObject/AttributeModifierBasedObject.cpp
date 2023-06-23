@@ -1,6 +1,9 @@
 #include "UnrealIntegration/UObject/AttributeModifierBasedObject.h"
 
 #include "AttributeSystem.h"
+#include "AttributeSystem/Attribute/AttributeBase.h"
+#include "AttributeSystem/Modifier/AttributeModifierBase.h"
+#include "UnrealIntegration/Interface/AttributeCarrierInterface.h"
 #include "UnrealIntegration/UObject/AttributeModifierDescObject.h"
 
 UAttributeModifierDescObject* UAttributeModifierBasedObject::GetDescObject(UObject* Instigator)
@@ -12,6 +15,19 @@ UAttributeModifierDescObject* UAttributeModifierBasedObject::GetDescObject(UObje
 	}
 
 	return DescObject;
+}
+
+UAttributeWrapperObjectBase* UAttributeModifierBasedObject::GetModifiedAttributeObject() const
+{
+	if (Modifier.IsValid())
+	{
+		if (auto ModifiedAttr = Modifier->GetModifiedAttribute())
+		{
+			return ModifiedAttr->GetWrapperObject();
+		}
+	}
+
+	return nullptr;
 }
 
 UAttributeModifierDescObject* UAttributeModifierBasedObject::GenerateDescObject(UObject* Instigator)

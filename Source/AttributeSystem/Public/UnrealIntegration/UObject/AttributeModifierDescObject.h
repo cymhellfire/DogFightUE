@@ -14,13 +14,19 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	UFUNCTION(BlueprintCallable, Category="AttributeModifierDescObject")
 	virtual void SetSourceString(FString InStr);
+	UFUNCTION(BlueprintCallable, Category="AttributeModifierDescObject")
 	virtual void SetEffectString(FString InStr);
+	UFUNCTION(BlueprintCallable, Category="AttributeModifierDescObject")
+	virtual void SetDescString(FText InDesc);
 
 	UFUNCTION(BlueprintCallable, Category="AttributeModifierDescObject")
 	FString GetSourceString() const { return Source; }
 	UFUNCTION(BlueprintCallable, Category="AttributeModifierDescObject")
 	FString GetEffectString() const { return Effect; }
+	UFUNCTION(BlueprintCallable, Category="AttributeModifierDescObject")
+	FText GetDescString() const { return Desc; }
 
 	UFUNCTION(BlueprintCallable, Category="AttributeModifierDescObject")
 	FString ToString() const;
@@ -31,4 +37,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AttributeModifierDesc", Replicated)
 	FString Effect;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AttributeModifierDesc", Replicated)
+	FText Desc;
 };

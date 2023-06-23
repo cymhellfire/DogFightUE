@@ -3,15 +3,16 @@
 
 #include "GameObject/AttributeModifier/LuaAttributeModifierObject.h"
 
-void ULuaAttributeModifierObject::InitModifier(const FString& InScript)
+#include "AttributeSystem/Modifier/AttributeModifierBase.h"
+
+FText ULuaAttributeModifierObject::GetEffectString() const
 {
-	if (InScript.IsEmpty())
+	if (Modifier.IsValid())
 	{
-		return;
+		return Modifier->GetLocalizedEffectString();
 	}
 
-	LoadAndInitModifierScript(InScript);
-	ModifierScript = InScript;
+	return FText();
 }
 
 void ULuaAttributeModifierObject::InitializeDescObject(UAttributeModifierDescObject* InDesc)

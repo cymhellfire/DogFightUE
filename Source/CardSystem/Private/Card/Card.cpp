@@ -3,9 +3,10 @@
 #include "CardSystem.h"
 #include "Card/CardDescObject.h"
 #include "Card/CardLogic.h"
-#include "CardModifier/CardModifier.h"
+#include "UnrealIntegration/UObject/AttributeModifierBasedObject.h"
 
 UCard::UCard()
+	: CardLogicId(-1)
 {
 }
 
@@ -18,6 +19,18 @@ void UCard::InitDescObject()
 	if (IsValid(CardLogic))
 	{
 		CardLogic->SetupCardDescObject(DescObject);
+	}
+}
+
+void UCard::UpdateDescObject()
+{
+	// Only update when description available
+	if (IsValid(DescObject))
+	{
+		if (IsValid(CardLogic))
+		{
+			CardLogic->UpdateCardDescObject(DescObject);
+		}
 	}
 }
 
@@ -74,25 +87,29 @@ bool UCard::GetAttributeFloatValue(FName InName, float& OutValue)
 	return false;
 }
 
-void UCard::AddModifierObject(UCardModifier* InModifier)
+void UCard::AddModifierObject(UAttributeModifierBasedObject* InModifier)
 {
 	if (DescObject)
 	{
 		DescObject->AddModifierObject(InModifier);
+
+		UpdateDescObject();
 	}
 }
 
-void UCard::RemoveModifierObject(UCardModifier* InModifier)
+void UCard::RemoveModifierObject(UAttributeModifierBasedObject* InModifier)
 {
 	if (DescObject)
 	{
 		DescObject->RemoveModifierObject(InModifier);
+
+		UpdateDescObject();
 	}
 }
 
-void UCard::SetCardLogicPath(const FString& InPath)
+void UCard::SetCardLogicId(int32 InId)
 {
-	LogicScriptPath = InPath;
+	CardLogicId = InId;
 
 	// Create logic
 	CreateCardLogic();
@@ -107,7 +124,7 @@ void UCard::CreateCardLogic()
 	if (IsValid(CardLogic))
 	{
 		CardLogic->OnCardLogicFinished.AddDynamic(this, &UCard::OnCardLogicFinished);
-		CardLogic->InitLogic(this, LogicScriptPath);
+		CardLogic->InitLogic(this, CardLogicId);
 	}
 }
 
@@ -128,7 +145,7 @@ void UCard::StartCardLogic()
  */
 void UCard::Execute()
 {
-	if (!LogicScriptPath.IsEmpty())
+	if (CardLogicId != -1)
 	{
 		StartCardLogic();
 	}

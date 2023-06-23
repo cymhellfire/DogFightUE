@@ -2,6 +2,7 @@
 
 #include "AttributeCommon.h"
 #include "AttributeSystem/AttributeSystemCommon.h"
+#include "UnrealIntegration/DataWrapper/AttributeWrapperObject.h"
 
 class FAttributeModifierBase;
 template<typename T>
@@ -16,6 +17,11 @@ public:
 	virtual FName GetName() const
 	{
 		return AttributeName;
+	}
+
+	virtual FText GetDisplayName() const
+	{
+		return DisplayName;
 	}
 
 	void AddTag(FName InTag)
@@ -87,9 +93,21 @@ public:
 	{
 		return DataType;
 	}
+
+	void SetWrapperObject(UAttributeWrapperObjectBase* InWrapper)
+	{
+		WrapperObject = InWrapper;
+	}
+
+	UAttributeWrapperObjectBase* GetWrapperObject() const
+	{
+		return WrapperObject.Get();
+	}
 protected:
 	FAttributeBase(const FAttributeCreateArgument& InArgument)
-		: AttributeName(InArgument.AttrName)
+		: AttributeFlag(InArgument.AttributeFlag)
+		,AttributeName(InArgument.AttrName)
+		,DisplayName(InArgument.DisplayName)
 		,DataType(ADT_None)
 	{
 		// Import tags
@@ -103,11 +121,17 @@ protected:
 	DECLARE_MULTICAST_DELEGATE_OneParam(FAttributeValueChangeSignature, TSharedPtr<FAttributeBase>)
 	FAttributeValueChangeSignature OnValueChanged;
 
+	int32 AttributeFlag;
+
 	FName AttributeName;
+
+	FText DisplayName;
 
 	TSet<FName> AttributeTags;
 
 	EAttributeDataType DataType;
+
+	TWeakObjectPtr<UAttributeWrapperObjectBase> WrapperObject;
 };
 
 template<typename T>

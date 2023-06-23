@@ -29,6 +29,8 @@ bool ATopDownStylePlayerState::ReplicateSubobjects(UActorChannel* Channel, FOutB
 	for (auto DescObject : CardDescObjectList)
 	{
 		bWriteSomething |= Channel->ReplicateSubobject(DescObject, *Bunch, *RepFlags);
+
+		bWriteSomething |= DescObject->ReplicateModifierDescObjects(Channel, Bunch, RepFlags);
 	}
 
 	return bWriteSomething;
@@ -40,6 +42,8 @@ void ATopDownStylePlayerState::InitWithCharacter(ATopDownStylePlayerCharacter* I
 	{
 		return;
 	}
+
+	InCharacter->SetPlayerId(GetPlayerId());
 
 	// Register callback
 	InCharacter->OnCharacterDead.AddDynamic(this, &ATopDownStylePlayerState::OnCharacterDead);
@@ -115,6 +119,9 @@ void ATopDownStylePlayerState::AddCardDescObject(UCardDescObject* InDescObject)
 	{
 		MARK_PROPERTY_DIRTY_FROM_NAME(ATopDownStylePlayerState, CardDescObjectList, this);
 		CardDescObjectList.AddUnique(InDescObject);
+
+		// Use this actor to replicate
+		InDescObject->SetReplicator(this);
 
 		if (HasAuthority())
 		{

@@ -1,8 +1,11 @@
 ﻿#include "FunctionLibrary/CommonGameplayFunctionLibrary.h"
 
 #include "FunctionLibrary/CommonGameFlowFunctionLibrary.h"
+#include "FunctionLibrary/LuaIntegrationFunctionLibrary.h"
+#include "GameInstance/DogFightGameInstance.h"
 #include "GameMode/TopDownStyleGameMode.h"
 #include "GameMode/TopDownStyleGameState.h"
+#include "GameService/GameEffectService.h"
 #include "Pawn/PlayerPawn/TopDownStylePlayerPawn.h"
 #include "Player/TopDownStylePlayerState.h"
 #include "PlayerController/TopDownStylePlayerController.h"
@@ -22,6 +25,16 @@ ATopDownStylePlayerController* UCommonGameplayFunctionLibrary::GetPlayerControll
 	if (auto PS = GetPlayerStateById(WorldContextObject, InPlayerId))
 	{
 		return Cast<ATopDownStylePlayerController>(PS->GetPlayerController());
+	}
+
+	return nullptr;
+}
+
+ATopDownStylePlayerCharacter* UCommonGameplayFunctionLibrary::GetPlayerCharacterById(const UObject* WorldContextObject,	int32 InPlayerId)
+{
+	if (auto PC = GetPlayerControllerById(WorldContextObject, InPlayerId))
+	{
+		return PC->GetCharacterPawn();
 	}
 
 	return nullptr;
@@ -138,12 +151,18 @@ TArray<int32> UCommonGameplayFunctionLibrary::GetAlivePlayerId(const UObject* Wo
 	return Result;
 }
 
-void UCommonGameplayFunctionLibrary::SpawnGameEffectAtPos(const UObject* WorldContextObject, int32 EffectId, FVector Pos, FRotator Rot)
+AGameEffectBase* UCommonGameplayFunctionLibrary::SpawnGameEffectAtPos(const UObject* WorldContextObject, int32 EffectId,
+	FVector Pos, FRotator Rot)
 {
-	ForEachPlayerControllerDo(WorldContextObject, [EffectId, Pos, Rot](ATopDownStylePlayerController* PlayerController)
+	if (auto GameInstance = Cast<UDogFightGameInstance>(ULuaIntegrationFunctionLibrary::GetGameInstance(WorldContextObject)))
 	{
-		PlayerController->ClientSpawnGameEffectAtPos(EffectId, Pos, Rot);
-	});
+		if (auto GameEffectService = Cast<UGameEffectService>(GameInstance->GetGameServiceBySuperClass(UGameEffectService::StaticClass())))
+		{
+			return GameEffectService->SpawnEffectAtPos(EffectId, Pos, Rot);
+		}
+	}
+
+	return nullptr;
 }
 
 void UCommonGameplayFunctionLibrary::DamageActor(const UObject* WorldContextObject, int32 DamageId, AActor* Target, float BaseDamage, AActor* Causer)

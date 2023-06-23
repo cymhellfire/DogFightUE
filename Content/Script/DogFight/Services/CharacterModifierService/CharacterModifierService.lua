@@ -19,7 +19,8 @@ function CharacterModifierService:SpawnCharacterModifierInternal(InId)
 
     ---Load the logic script
     if NewModifierObject then
-        NewModifierObject:LoadAndInitModifierScript(Config.Path)
+        NewModifierObject.ModifierType = UE.ELuaAttributeModifierType.AMT_CharacterStatus
+        NewModifierObject:LoadAndInitModifierScript(InId)
     end
 
     return NewModifierObject

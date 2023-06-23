@@ -4,12 +4,13 @@ local AttributeModifierScriptBase = UnrealClass()
 
 ---Initialize modifier script.
 ---@param InModifierBase AttributeModifierBase Owner modifier base instance.
-function AttributeModifierScriptBase:Init(InModifierBase)
+---@param Config table Modifier config to initialize with.
+function AttributeModifierScriptBase:Init(InModifierBase, Config)
     self._Owner = InModifierBase
 
     --- Initialize the modifier here
     if type(self.InitModifier) == "function" then
-        self:InitModifier()
+        self:InitModifier(Config)
     end
 end
 

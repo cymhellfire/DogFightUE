@@ -1,8 +1,9 @@
 local CardLogicCommand = require "Card.CardCommand.CardLogicCommand"
 local BuffTypeDef = require "DogFight.Services.BuffService.BuffTypeDef"
 
----@class LogicAddPhysResist : CardLogicCommand Add Physics Resistance Buff to target.
-local LogicAddPhysResist = UnrealClass(CardLogicCommand)
+---@class LogicAddBuff : CardLogicCommand Add Physics Resistance Buff to target.
+---@field _BuffInfo table Settings of buff to apply.
+local LogicAddBuff = UnrealClass(CardLogicCommand)
 
 local CommandNameDef = {
     AcquireTarget = "AcquireTarget",
@@ -10,13 +11,21 @@ local CommandNameDef = {
 }
 
 ---@param DescObject UCardDescObject
-function LogicAddPhysResist:SetupDescObject(DescObject)
-    DescObject:SetCardName("LogicAddPhysResist")
+function LogicAddBuff:SetupDescObject(DescObject)
+    if self._CardInfo then
+        DescObject:SetCardName(self._CardInfo.Name or "LogicAddBuff")
+    else
+        DescObject:SetCardName("LogicAddBuff")
+    end
 end
 
 ---Initialize the card workflow
-function LogicAddPhysResist:OnInit()
-    CardLogicCommand.OnInit(self)
+function LogicAddBuff:OnInit(InParams)
+    CardLogicCommand.OnInit(self, InParams)
+
+    self._CardInfo = InParams.CardInfo
+    -- Record buff information
+    self._BuffInfo = InParams.BuffInfo
 
     -- Register all commands
     local CommandTable = {
@@ -35,37 +44,38 @@ function LogicAddPhysResist:OnInit()
 end
 
 ---Start executing
-function LogicAddPhysResist:StartCommand()
+function LogicAddBuff:StartCommand()
     CardLogicCommand.StartCommand(self)
 
     self:RunCommand(CommandNameDef.AcquireTarget)
 end
 
 ---@param InCommand ActionCardAcquireTarget
-function LogicAddPhysResist:OnAcquireTargetCreated(InCommand)
+function LogicAddBuff:OnAcquireTargetCreated(InCommand)
     InCommand:InitAcquireSettings(1, UE.ECardTargetType.CTT_Actor)
 end
 
 ---Command finish callback
-function LogicAddPhysResist:OnAcquireTargetFinished(Result, TargetInfo)
+function LogicAddBuff:OnAcquireTargetFinished(Result, TargetInfo)
     self._TargetInfo = TargetInfo
     self:RunCommand(CommandNameDef.ApplyBuff)
 end
 
 ---Command create callback
 ---@param InCommand ActionAddBuff
-function LogicAddPhysResist:OnApplyBuffCreated(InCommand)
-    local BuffInfo = {
-        BuffId = BuffTypeDef.AddPhysResist,
-        Duration = 1,
-        TargetList = self._TargetInfo,
-    }
-    InCommand:InitBuffSettings(BuffInfo)
+function LogicAddBuff:OnApplyBuffCreated(InCommand)
+    if self._BuffInfo then
+        -- Insert target info
+        self._BuffInfo.TargetList = self._TargetInfo
+        InCommand:InitBuffSettings(self._BuffInfo)
+    else
+        self:FailedWithParams()
+    end
 end
 
 ---Finish callback
-function LogicAddPhysResist:OnApplyBuffFinished(Result)
+function LogicAddBuff:OnApplyBuffFinished(Result)
     self:FinishWithParams(Result)
 end
 
-return LogicAddPhysResist
+return LogicAddBuff

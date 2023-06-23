@@ -77,6 +77,12 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="Projectile", NetMulticast, Reliable)
 	void HomingToTargetWithSpeed(AActor* Target, float MuzzleSpeed, float Spread);
+
+	/**
+	 * Detonate this projectile immediately.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Projectile")
+	void Detonate();
 protected:
 	void OnActivated();
 	void Dead();

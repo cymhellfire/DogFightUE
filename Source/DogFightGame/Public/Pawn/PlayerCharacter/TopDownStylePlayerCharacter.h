@@ -12,6 +12,7 @@ class UPlayerCharacterStateWidget;
 class URagdollComponent;
 class UPathFollowingComponent;
 class UNewBuffBase;
+class UBuffManagerComponent;
 struct FPathFollowingResult;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTopDownStylePlayerCharacterDeadEvent, ATopDownStylePlayerCharacter*, Character);
@@ -27,6 +28,11 @@ public:
 	virtual void BeginPlay() override;
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	void SetPlayerId(int32 InId)
+	{
+		PlayerId = InId;
+	}
 
 	UFUNCTION(BlueprintCallable)
 	FVector GetProjectileSpawnLocation() const;
@@ -83,15 +89,17 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	URagdollComponent* RagdollComponent;
 
-	UPROPERTY(Transient)
-	UPlayerCharacterStateWidget* StateWidget;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UBuffManagerComponent* BuffManagerComponent;
 
 	UPROPERTY(Transient)
-	TArray<UNewBuffBase*> AppliedBuffs;
+	UPlayerCharacterStateWidget* StateWidget;
 
 private:
 
 	uint8 bAlive : 1;
+
+	int32 PlayerId;
 
 	TWeakObjectPtr<UPathFollowingComponent> PathFollowingComponent;
 };

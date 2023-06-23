@@ -5,6 +5,7 @@ local CardCommandHelper = require "Card.CardCommand.CardCommandHelper"
 
 ---@field _ProjectileId string Name of projectile to launch.
 ---@field _MuzzleSpeed number Initial speed of projectile.
+---@field _ProjectileDamage number Projectile damage.
 ---@field _TargetList table Target list this command executing with.
 ---@field _AliveProjectileCount number Total count of alive projectiles.
 ---@field _DelegateHelperList table List of all delegate helper for projectile death.
@@ -26,6 +27,7 @@ function ActionLaunchProjectile:SetCommandInfo(ProjectileInfo, TargetInfo)
     if ProjectileInfo then
         self._ProjectileId = ProjectileInfo.Id or ProjectileTypeDef.DefaultProjectile
         self._MuzzleSpeed = ProjectileInfo.MuzzleSpeed or 100
+        self._ProjectileDamage = ProjectileInfo.Damage or nil
     end
 
     -- Record all target information
@@ -104,6 +106,9 @@ function ActionLaunchProjectile:StartCommand()
                 local NewProjectile = ProjectileService:SpawnProjectileAtPos(self._ProjectileId, SpawnLoc, UE.FRotator(0,0,0))
                 if NewProjectile then
                     NewProjectile:SetLauncher(Launcher)
+                    if type(self._ProjectileDamage) == "number" then
+                        NewProjectile.Damage = self._ProjectileDamage
+                    end
                     self._AliveProjectileCount = self._AliveProjectileCount + 1
                     RegisterCallbackToProjectile(self, NewProjectile)
                     NewProjectile:LaunchToTargetWithSpeed(TargetPos, self._MuzzleSpeed)

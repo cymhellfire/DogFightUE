@@ -50,6 +50,7 @@ bool TAttributeModifierBase<T>::Apply(TWeakPtr<FAttributeBase> InAttribute)
 	if (ConvertedAttribute.IsValid())
 	{
 		ModifiedTarget = ConvertedAttribute;
+		RawModifierTarget = InAttribute;
 	}
 	else
 	{

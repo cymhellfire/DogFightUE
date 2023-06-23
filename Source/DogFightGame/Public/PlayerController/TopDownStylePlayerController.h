@@ -35,6 +35,10 @@ public:
 	UFUNCTION(Client, Reliable)
 	void ClientRemoveInputMapping(EInputMappingType::Type InputType);
 
+	// -----=========== Gameflow ===========-----
+	UFUNCTION(Server, Reliable)
+	void ServerRequestFinishRound();
+
 	// -----=========== Character ===========-----
 	void SpawnCharacterPawn();
 
@@ -42,13 +46,13 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerUseCardByInstanceId(int32 InId);
 
-	// -----=========== Effect ===========-----
-	UFUNCTION(Client, Reliable)
-	void ClientSpawnGameEffectAtPos(int32 EffectId, FVector Pos, FRotator Rot);
-
 	// -----=========== Chat ===========-----
 	UFUNCTION(Server, Reliable)
 	void ServerSendInGameChatMessage(const FInGameChatMessage& InMessage);
+
+	// -----=========== Debug ===========-----
+	UFUNCTION(Exec)
+	void ToggleDebugPanel();
 
 	UInGameMessageReceiverComponent* GetInGameMessageReceiverComponent() const
 	{

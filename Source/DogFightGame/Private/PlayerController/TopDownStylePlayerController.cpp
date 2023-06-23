@@ -4,6 +4,7 @@
 #include "Card/Card.h"
 #include "GameMode/TopDownStyleGameMode.h"
 #include "GameMode/GameModeComponent/InGameMessageSenderComponent.h"
+#include "GameService/DebugPanelService.h"
 #include "GameService/GameEffectService.h"
 #include "GameService/GameInputService.h"
 #include "GameService/GameService.h"
@@ -79,6 +80,14 @@ void ATopDownStylePlayerController::ClientRemoveInputMapping_Implementation(EInp
 	}
 }
 
+void ATopDownStylePlayerController::ServerRequestFinishRound_Implementation()
+{
+	if (ATopDownStyleGameMode* GameMode = Cast<ATopDownStyleGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		GameMode->PlayerRequestFinishRound(this);
+	}
+}
+
 void ATopDownStylePlayerController::SpawnCharacterPawn()
 {
 	if (HasAuthority())
@@ -126,14 +135,6 @@ void ATopDownStylePlayerController::ServerUseCardByInstanceId_Implementation(int
 	{
 		// Let player state start the using process
 		PS->ServerTryToUseCardByInstanceId(InId);
-	}
-}
-
-void ATopDownStylePlayerController::ClientSpawnGameEffectAtPos_Implementation(int32 EffectId, FVector Pos, FRotator Rot)
-{
-	if (auto GameEffectService = Cast<UGameEffectService>(UGameService::GetGameServiceBySuperClass<UGameEffectService>()))
-	{
-		GameEffectService->SpawnEffectAtPos(EffectId, Pos, Rot);
 	}
 }
 
@@ -190,4 +191,15 @@ void ATopDownStylePlayerController::ServerFinishAcquireTargets_Implementation(bo
 	}
 
 	OnTargetAcquired.Broadcast(bSuccess, TargetInfos);
+}
+
+void ATopDownStylePlayerController::ToggleDebugPanel()
+{
+	if (auto GameInstance = Cast<UDogFightGameInstance>(GetGameInstance()))
+	{
+		if (auto DebugPanelService = Cast<UDebugPanelService>(GameInstance->GetGameService(UDebugPanelService::StaticClass()->GetFName())))
+		{
+			DebugPanelService->ToggleDebugPanel();
+		}
+	}
 }

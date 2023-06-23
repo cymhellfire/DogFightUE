@@ -15,7 +15,9 @@ void UAttributeWrapperObjectBase::GetLifetimeReplicatedProps(TArray<FLifetimePro
 
 	MAKE_SHARED_PARAMS(SharedParams)
 	DOREPLIFETIME_WITH_PARAMS_FAST(UAttributeWrapperObjectBase, AttributeName, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(UAttributeWrapperObjectBase, DisplayName, SharedParams);
 	DOREPLIFETIME_WITH_PARAMS_FAST(UAttributeWrapperObjectBase, AppliedModifierDesc, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(UAttributeWrapperObjectBase, AttributeFlag, SharedParams);
 }
 
 void UAttributeWrapperObjectBase::AddDescObject(UAttributeModifierDescObject* InDescObject)
@@ -46,6 +48,12 @@ void UAttributeWrapperObjectBase::SetAttributeName(FName InName)
 {
 	MARK_PROPERTY_DIRTY_FROM_NAME(UAttributeWrapperObjectBase, AttributeName, this);
 	AttributeName = InName;
+}
+
+void UAttributeWrapperObjectBase::SetDisplayName(const FText& InName)
+{
+	MARK_PROPERTY_DIRTY_FROM_NAME(UAttributeWrapperObjectBase, DisplayName, this);
+	DisplayName = InName;
 }
 
 void UAttributeWrapperObjectBase::OnRep_AppliedModifierDesc(const TArray<UAttributeModifierDescObject*>& OldList)
@@ -228,12 +236,28 @@ void UAttributeFloatWrapperObject::OnRep_Value(float OldValue)
 	OnValueChanged.Broadcast(this, Value);
 }
 
+void FAttributeWrapperObjectHelper::InitializeCommonVariables(UAttributeWrapperObjectBase* InWrapper,
+	TSharedPtr<FAttributeBase> InAttribute)
+{
+	if (!IsValid(InWrapper) || !InAttribute.IsValid())
+	{
+		return;
+	}
+
+	InWrapper->SetRawAttribute(InAttribute);
+	InWrapper->SetAttributeName(InAttribute->GetName());
+	InWrapper->SetDisplayName(InAttribute->GetDisplayName());
+	InWrapper->SetAttributeFlag(InAttribute->AttributeFlag);
+
+	InAttribute->SetWrapperObject(InWrapper);
+}
+
 UAttributeBooleanWrapperObject* FAttributeWrapperObjectHelper::CreateWrapperObjectForBooleanAttribute(UObject* Instigator,
 	TSharedPtr<FAttributeBoolean> InAttribute, const TFunction<void(TSharedPtr<FAttributeBase>)>& InCallback)
 {
 	const FName AttributeName = InAttribute->GetName();
 	UAttributeBooleanWrapperObject* NewWrapper = NewObject<UAttributeBooleanWrapperObject>(Instigator, NAME_None, RF_Transient);
-	NewWrapper->SetAttributeName(AttributeName);
+	InitializeCommonVariables(NewWrapper, InAttribute);
 	NewWrapper->SetBaseValue(InAttribute->GetRawValue());
 	NewWrapper->SetValue(InAttribute->GetValue());
 	InAttribute->OnValueChanged.AddLambda(InCallback);
@@ -246,7 +270,7 @@ UAttributeIntegerWrapperObject* FAttributeWrapperObjectHelper::CreateWrapperObje
 {
 	const FName AttributeName = InAttribute->GetName();
 	UAttributeIntegerWrapperObject* NewWrapper = NewObject<UAttributeIntegerWrapperObject>(Instigator, NAME_None, RF_Transient);
-	NewWrapper->SetAttributeName(AttributeName);
+	InitializeCommonVariables(NewWrapper, InAttribute);
 	NewWrapper->SetBaseValue(InAttribute->GetRawValue());
 	NewWrapper->SetValue(InAttribute->GetValue());
 	InAttribute->OnValueChanged.AddLambda(InCallback);
@@ -259,7 +283,7 @@ UAttributeFloatWrapperObject* FAttributeWrapperObjectHelper::CreateWrapperObject
 {
 	const FName AttributeName = InAttribute->GetName();
 	UAttributeFloatWrapperObject* NewWrapper = NewObject<UAttributeFloatWrapperObject>(Instigator, NAME_None, RF_Transient);
-	NewWrapper->SetAttributeName(AttributeName);
+	InitializeCommonVariables(NewWrapper, InAttribute);
 	NewWrapper->SetBaseValue(InAttribute->GetRawValue());
 	NewWrapper->SetValue(InAttribute->GetValue());
 	InAttribute->OnValueChanged.AddLambda(InCallback);

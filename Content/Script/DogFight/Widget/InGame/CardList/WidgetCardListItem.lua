@@ -1,3 +1,5 @@
+---@class WidgetCardListItem : BP_Widget_CardListItem_C
+---@field Data UCardDescObject
 local WidgetCardListItem = UnrealClass("Common.MVVM.ModelBase")
 local ViewModelBase = require("Common.MVVM.ViewModelBase")
 local DataBinding = require("Common.MVVM.DataBinding")
@@ -36,15 +38,72 @@ function WidgetCardListItem:Destruct()
     GetGameService(self, GameServiceNameDef.LuaEventService):UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardCancelled, self, self.OnCardCancelled)
 end
 
+---@param DescObject UCardDescObject
+---@param InString string
+---@return string
+local function ConvertDescArgument(DescObject, InString)
+    -- Get integer attribute value
+    if string.startWith(InString, "[Int]") then
+        local AttrName = string.sub(InString, 6, #InString)
+        ---@type UAttributeIntegerWrapperObject
+        local AttrWrapper = DescObject:GetIntegerAttributeWrapperByName(AttrName)
+        if AttrWrapper then
+            -- local ModifierList = AttrWrapper.AppliedModifierDesc
+            -- local ModifierString = ""
+            -- local ModifierCount = ModifierList:Length()
+            -- if ModifierCount > 0 then
+            --     for i = 1, ModifierCount do
+            --         ---@type UAttributeModifierDescObject
+            --         local Desc = ModifierList:Get(i)
+            --         if Desc then
+            --             if #ModifierString > 0 then
+            --                 ModifierString = ModifierString .. ","
+            --             end
+            --             ModifierString = string.format("%s%s[%s]", ModifierString, Desc:GetEffectString(), Desc:GetSourceString())
+            --         end
+            --     end
+            -- end
+            -- if #ModifierString > 0 then
+            --     return string.format("%d(%s)", AttrWrapper:GetValue(), ModifierString)
+            -- else
+                return tostring(AttrWrapper:GetValue())
+            -- end
+        end
+    end
+
+    -- Use original string
+    return InString
+end
+
 function WidgetCardListItem:OnListItemObjectSet(InObject)
-    ---@type UCardDescObject
+    --- Remove the callback of description change
+    if self.Data ~= nil then
+        self.Data.OnDescUpdated:Remove(self, self.OnDescUpdated)
+    end
+
     self.Data = InObject:GetData()
     if self.Data then
-        self.ViewModel.CardName = self.Data.CardName
-        self.ViewModel.CardDesc = self.Data.CardDesc
-        self.ViewModel.CardPicture = self.Data.CardPicturePath
+        --- Listen to description change
+        self.Data.OnDescUpdated:Add(self, self.OnDescUpdated)
+
+        self:OnDescUpdated()
     end
+
     self.ViewModel.BackgroundColor = self.NormalColor
+end
+
+function WidgetCardListItem:OnDescUpdated()
+    if self.Data then
+        self.ViewModel.CardName = self.Data.CardName
+        self.ViewModel.CardPicture = self.Data.CardPicturePath
+
+        self.ViewModel.CardDesc = self.Data.CardDesc
+
+        -- Init modifier list
+        if self.CardModifierList then
+            self.CardModifierList:InitModifierList(self.Data)
+        end
+    end
 end
 
 ---Update the background image color based on select state

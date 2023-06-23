@@ -10,9 +10,9 @@
 class UCardCommand;
 class UCardAsyncCommand;
 class UCardConcurrentCallbackCommand;
-class UCardModifier;
 class UCardDescObject;
 class UCardLogic;
+class UAttributeModifierBasedObject;
 
 UENUM()
 enum class ECardExecutionResult : uint8
@@ -36,6 +36,8 @@ public:
 
 	// ------------------- Initialize ----------------------
 	virtual void InitDescObject();
+
+	virtual void UpdateDescObject();
 
 	UFUNCTION(BlueprintCallable, Category="Card")
 	void SetInstanceId(int32 InId);
@@ -83,14 +85,14 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable, Category="Card")
-	void AddModifierObject(UCardModifier* InModifier);
+	void AddModifierObject(UAttributeModifierBasedObject* InModifier);
 
 	UFUNCTION(BlueprintCallable, Category="Card")
-	void RemoveModifierObject(UCardModifier* InModifier);
+	void RemoveModifierObject(UAttributeModifierBasedObject* InModifier);
 
 	// ---------------- Card Logic ---------------------
 	UFUNCTION(BlueprintCallable, Category="Card")
-	void SetCardLogicPath(const FString&  InPath);
+	void SetCardLogicId(int32 InId);
 
 protected:
 	void CreateCardLogic();
@@ -122,7 +124,7 @@ public:
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Card")
-	FString LogicScriptPath;
+	int32 CardLogicId;
 
 protected:
 	UPROPERTY(Transient)

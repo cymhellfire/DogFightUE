@@ -9,9 +9,9 @@ AGameEffectSequence::AGameEffectSequence(const FObjectInitializer& ObjectInitial
 {
 }
 
-void AGameEffectSequence::PlayEffect()
+void AGameEffectSequence::PlayEffect_Implementation()
 {
-	Super::PlayEffect();
+	Super::PlayEffect_Implementation();
 
 	if (LevelSequence.IsNull())
 	{

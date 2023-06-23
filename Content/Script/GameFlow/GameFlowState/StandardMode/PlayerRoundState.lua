@@ -10,7 +10,12 @@ function PlayerRoundState:OnEnter()
     self.CurPlayerId = UE.UCommonGameFlowFunctionLibrary.GetCurrentPlayerId(self.OwnerState)
 
     -- Listen to player card events
-    GetGameService(self.OwnerState, GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_PlayerCardFinished, self, self.OnCardFinished)
+    ---@type LuaEventService
+    local LuaEventService = GetGameService(self.OwnerState, GameServiceNameDef.LuaEventService)
+    if LuaEventService then
+        LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_PlayerCardFinished, self, self.OnCardFinished)
+        LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_FinishPlayerRound, self, self.OnPlayerFinished)
+    end
 
     -- Add use card mapping to current player
     local CurPlayerId = UE.UCommonGameFlowFunctionLibrary.GetCurrentPlayerId(self.OwnerState)
@@ -21,7 +26,12 @@ function PlayerRoundState:OnExit()
     print("PlayerRoundState: OnExit")
 
     -- Stop listen to player card events
-    GetGameService(self.OwnerState, GameServiceNameDef.LuaEventService):UnregisterListener(UE.ELuaEvent.LuaEvent_PlayerCardFinished, self, self.OnCardFinished)
+    ---@type LuaEventService
+    local LuaEventService = GetGameService(self.OwnerState, GameServiceNameDef.LuaEventService)
+    if LuaEventService then
+        LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_PlayerCardFinished, self, self.OnCardFinished)
+        LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_FinishPlayerRound, self, self.OnPlayerFinished)
+    end
 
     -- Remove use card mapping from current player
     local CurPlayerId = UE.UCommonGameFlowFunctionLibrary.GetCurrentPlayerId(self.OwnerState)
@@ -40,6 +50,16 @@ function PlayerRoundState:OnCardFinished(InPlayerId, InId)
     if CardNum <= 0 then
         self:FinishState()
     end
+end
+
+---@param InPlayerId number
+function PlayerRoundState:OnPlayerFinished(InPlayerId)
+    -- Skip if the event not triggered by current player
+    if InPlayerId ~= self.CurPlayerId then
+        return
+    end
+
+    self:FinishState()
 end
 
 function PlayerRoundState:FinishState()

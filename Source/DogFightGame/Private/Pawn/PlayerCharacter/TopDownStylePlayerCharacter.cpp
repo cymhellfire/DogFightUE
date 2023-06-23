@@ -2,6 +2,7 @@
 
 #include "AIController.h"
 #include "GameObject/Buff/NewBuffBase.h"
+#include "Pawn/PlayerCharacter/BuffManagerComponent.h"
 #include "Pawn/PlayerCharacter/RagdollComponent.h"
 #include "UI/InGame/PlayerCharacterStateWidget.h"
 
@@ -11,6 +12,7 @@ ATopDownStylePlayerCharacter::ATopDownStylePlayerCharacter()
 	DamageReceiverComponent = CreateDefaultSubobject<UDamageReceiverComponent>("DamageReceiverComponent");
 	StateWidgetLocatorComponent = CreateDefaultSubobject<UWidgetLocatorComponent>("StateWidgetLocatorComponent");
 	RagdollComponent = CreateDefaultSubobject<URagdollComponent>("RagdollComponent");
+	BuffManagerComponent = CreateDefaultSubobject<UBuffManagerComponent>("BuffManagerComponent");
 
 	// Initial value
 	bAlive = true;
@@ -136,35 +138,16 @@ void ATopDownStylePlayerCharacter::OnNoHealth()
 
 void ATopDownStylePlayerCharacter::AddBuff(UNewBuffBase* InBuff)
 {
-	if (!IsValid(InBuff))
+	if (IsValid(BuffManagerComponent))
 	{
-		return;
+		BuffManagerComponent->AddBuff(InBuff);
 	}
-
-	// Do NOT add one buff multiple times
-	if (AppliedBuffs.Contains(InBuff))
-	{
-		return;
-	}
-
-	// Apply new buff
-	InBuff->Apply(this);
-	AppliedBuffs.Add(InBuff);
 }
 
 void ATopDownStylePlayerCharacter::RemoveBuff(UNewBuffBase* InBuff)
 {
-	if (!IsValid(InBuff))
+	if (IsValid(BuffManagerComponent))
 	{
-		return;
+		BuffManagerComponent->RemoveBuff(InBuff);
 	}
-
-	if (!AppliedBuffs.Contains(InBuff))
-	{
-		return;
-	}
-
-	// Remove buff from list
-	InBuff->Remove();
-	AppliedBuffs.Remove(InBuff);
 }

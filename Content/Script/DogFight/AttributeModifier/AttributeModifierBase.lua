@@ -3,13 +3,32 @@
 local AttributeModifierBase = UnrealClass()
 
 ---Load and initialize modifier script.
----@param InScript string Path of script to load.
-function AttributeModifierBase:LoadAndInitModifierScript(InScript)
-    local ScriptTemp = require(InScript)
+---@param InId number Id of modifier config.
+function AttributeModifierBase:LoadAndInitModifierScript(InId)
+    local Config
+    if self.ModifierType == UE.ELuaAttributeModifierType.AMT_CardAttribute then
+        ---@type CardModifierService
+        local CardModifierService = GetGameService(self, GameServiceNameDef.CardModifierService)
+        if CardModifierService then
+            Config = CardModifierService.Config:GetConfig(InId)
+        end
+    elseif self.ModifierType == UE.ELuaAttributeModifierType.AMT_CharacterStatus then
+        ---@type CharacterModifierService
+        local CharacterModifierService = GetGameService(self, GameServiceNameDef.CharacterModifierService)
+        if CharacterModifierService then
+            Config = CharacterModifierService.Config:GetConfig(InId)
+        end
+    end
+
+    if Config == nil or Config.Script == nil then
+        return
+    end
+
+    local ScriptTemp = require(Config.Script)
     if ScriptTemp then
         self._ModifierScirpt = ScriptTemp:New()
         -- Initialize new script instance
-        self._ModifierScirpt:Init(self)
+        self._ModifierScirpt:Init(self, Config)
     else
         print("[AttributeModifierBase] Failed to load modifier script: " .. InScript)
     end

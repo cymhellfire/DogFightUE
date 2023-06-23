@@ -225,3 +225,13 @@ void ANewProjectileBase::HomingToTargetWithSpeed_Implementation(AActor* Target, 
 	auto MuzzleVelocity = TargetDirection * MuzzleSpeed;
 	HomingToTargetWithVelocity(Target, MuzzleVelocity);
 }
+
+void ANewProjectileBase::Detonate()
+{
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	Dead();
+}

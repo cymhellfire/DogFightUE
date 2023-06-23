@@ -256,21 +256,24 @@ protected:
 	 * @param InName			Name of attribute to search.
 	 * @return The wrapper struct if found.
 	 */
-	UAttributeBooleanWrapperObject* GetBooleanAttributeWrapperByName(FName InName);
+	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
+	virtual UAttributeBooleanWrapperObject* GetBooleanAttributeWrapperByName(FName InName);
 
 	/**
 	 * @brief Getter function for dynamically created wrapper struct of integer attribute.
 	 * @param InName			Name of attribute to search.
 	 * @return The wrapper struct if found.
 	 */
-	UAttributeIntegerWrapperObject* GetIntegerAttributeWrapperByName(FName InName);
+	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
+	virtual UAttributeIntegerWrapperObject* GetIntegerAttributeWrapperByName(FName InName);
 
 	/**
 	 * @brief Getter function for dynamically created wrapper struct of float attribute.
 	 * @param InName			Name of attribute to search.
 	 * @return The wrapper struct if found.
 	 */
-	UAttributeFloatWrapperObject* GetFloatAttributeWrapperByName(FName InName);
+	UFUNCTION(BlueprintCallable, Category="AttributeCarrier")
+	virtual UAttributeFloatWrapperObject* GetFloatAttributeWrapperByName(FName InName);
 
 	/**
 	 * @brief Iterate through specified wrapper object map and remove invalid records.

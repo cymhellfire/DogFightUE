@@ -16,7 +16,7 @@ class DOGFIGHTGAME_API AGameEffectNiagara : public AGameEffectBase
 public:
 	AGameEffectNiagara(const FObjectInitializer& ObjectInitializer);
 
-	virtual void PlayEffect() override;
+	virtual void PlayEffect_Implementation() override;
 
 protected:
 	virtual void BeginPlay() override;

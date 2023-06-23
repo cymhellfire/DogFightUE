@@ -80,6 +80,16 @@ void UCommonGameFlowFunctionLibrary::MoveTimelineForward(const UObject* WorldCon
 	}
 }
 
+int32 UCommonGameFlowFunctionLibrary::GetTimelineFirstPlayerId(const UObject* WorldContextObject)
+{
+	if (auto Timeline = GetCurrentTimeline_Server(WorldContextObject))
+	{
+		return Timeline->GetFirstPlayerId();
+	}
+
+	return -1;
+}
+
 UGameTimelineComponent* UCommonGameFlowFunctionLibrary::GetCurrentTimeline_Server(const UObject* WorldContextObject)
 {
 	// Only server can access the game mode.
@@ -125,6 +135,14 @@ void UCommonGameFlowFunctionLibrary::SyncCurrentPlayerIdWithTimeline(const UObje
 		{
 			GameState->SetCurrentPlayerId(Timeline->GetFirstPlayerId());
 		}
+	}
+}
+
+void UCommonGameFlowFunctionLibrary::RequestFinishLocalPlayerRound(const UObject* WorldContextObject)
+{
+	if (auto PlayerController = GetLocalPlayerController(WorldContextObject))
+	{
+		PlayerController->ServerRequestFinishRound();
 	}
 }
 

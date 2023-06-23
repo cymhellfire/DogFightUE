@@ -21,7 +21,7 @@ void UCardDescObject::SetCardName(FText InName)
 	CardName = InName;
 }
 
-void UCardDescObject::SetCardDesc(FText InDesc)
+void UCardDescObject::SetCardDesc(const FText& InDesc)
 {
 	MARK_PROPERTY_DIRTY_FROM_NAME(UCardDescObject, CardDesc, this);
 	CardDesc = InDesc;
@@ -37,4 +37,9 @@ void UCardDescObject::SetCardInstanceId(int32 InId)
 {
 	MARK_PROPERTY_DIRTY_FROM_NAME(UCardDescObject, CardInstanceId, this);
 	CardInstanceId = InId;
+}
+
+void UCardDescObject::OnRep_CardDesc()
+{
+	OnDescUpdated.Broadcast();
 }

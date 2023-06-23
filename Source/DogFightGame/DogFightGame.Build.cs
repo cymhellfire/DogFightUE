@@ -35,6 +35,7 @@ public class DogFightGame : ModuleRules
                 "UMG",
                 "Lua",
                 "AttributeSystem",
+                "ImGui",
             }
         );
         

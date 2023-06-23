@@ -1,11 +1,12 @@
 local CharacterModifierTypeDef = require "DogFight.Services.CharacterModifierService.CharacterModifierTypeDef"
 
----@class AddPhysResistBuff : BuffLogicBase Add physics resistance buff.
+---@class BuffAddPhysResist : BuffLogicBase Add physics resistance buff.
 ---@field _Modifier UCharacterStatusModifier Character status modifier instance.
-local AddPhysResistBuff = UnrealClass("DogFight.Buff.BuffLogic.BuffLogicBase")
+---@field _Effect AGameEffectBase Effect instance.
+local BuffAddPhysResist = UnrealClass("DogFight.Buff.BuffLogic.BuffLogicBase")
 
 ---@param InCharacter ATopDownStylePlayerCharacter
-function AddPhysResistBuff:OnApply(InCharacter)
+function BuffAddPhysResist:OnApply(InCharacter)
     self.Super.OnApply(self, InCharacter)
 
     -- Create modifier
@@ -18,11 +19,20 @@ function AddPhysResistBuff:OnApply(InCharacter)
                 InCharacter.DamageReceiverComponent:AddModifierObject(self._Modifier)
             end
         end
+
+        ---@type GameEffectService
+        local GameEffectService = GetGameService(self._Owner, GameServiceNameDef.GameEffectService)
+        if GameEffectService then
+            self._Effect = GameEffectService:SpawnEffectAtPos(3, UE.FVector(), UE.FRotator())
+            if self._Effect then
+                self._Effect:SetTarget(InCharacter)
+            end
+        end
     end
 end
 
 ---@param InCharacter ATopDownStylePlayerCharacter
-function AddPhysResistBuff:OnRemove(InCharacter)
+function BuffAddPhysResist:OnRemove(InCharacter)
     self.Super.OnRemove(self, InCharacter)
 
     -- Remove modifier from character
@@ -31,10 +41,16 @@ function AddPhysResistBuff:OnRemove(InCharacter)
             InCharacter.DamageReceiverComponent:RemoveModifierObject(self._Modifier)
         end
     end
+
+    -- Remove game effect
+    if self._Effect then
+        self._Effect:K2_DestroyActor()
+        self._Effect = nil
+    end
 end
 
-function AddPhysResistBuff:tostring()
-    return "AddPhysResistBuff"
+function BuffAddPhysResist:tostring()
+    return "BuffAddPhysResist"
 end
 
-return AddPhysResistBuff
+return BuffAddPhysResist

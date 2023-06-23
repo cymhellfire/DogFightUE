@@ -7,7 +7,7 @@ local Config = {
     [CharacterModifierTypeDef.Add10PhysicalResistance] = {
         Name = "Add 10 Physical Resistance",
         Desc = "Add 10 Physical Resistance",
-        Path = "DogFight.AttributeModifier.CharacterStatusModifier.CSM_Add10PhysResist",
+        Script = "DogFight.AttributeModifier.CharacterStatusModifier.CSM_Add10PhysResist",
     },
 }
 

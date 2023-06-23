@@ -6,10 +6,22 @@ local CardCommandResultDef = require "Card.CardCommand.CardCommandResultDef"
 local CardLogic = UnrealClass()
 
 ---Load logic script and initialize this logic. (Invoke by UCardLogic::InitLogic)
----@param ScriptPath string Logic script path.
-function CardLogic:LoadAndInitLogicScript(ScriptPath)
+---@param CardId number Card config Id.
+function CardLogic:LoadAndInitLogicScript(CardId)
+    -- Get the card config
+    ---@type CardGeneratorService
+    local CardGeneratorService = GetGameService(self, GameServiceNameDef.CardGeneratorService)
+    if not CardGeneratorService then
+        print("[CardLogic] Failed to get card generator service.")
+        return
+    end
+    local CardConfig = CardGeneratorService.Config:GetConfig(CardId)
+    if not CardConfig then
+        print("[CardLogic] Failed to get card config with id: " .. CardId)
+        return
+    end
     -- Instantiate logic script
-    self.LogicCommand = CardCommandHelper.CreateCardCommand(ScriptPath)
+    self.LogicCommand = CardCommandHelper.CreateCardCommand(CardConfig.LogicPath, CardConfig.LogicParam)
     if self.LogicCommand then
         self.LogicCommand._CardLogic = self
         self.LogicCommand:SetCallback(self, self.OnCardLogicFinished)
@@ -26,6 +38,19 @@ function CardLogic:SetupCardDescObject(DescObject)
         else
             -- Set error name to notify the missing function
             DescObject:SetCardName("Setup Func Missing")
+        end
+    end
+end
+
+---@param DescObject UCardDescObject
+function CardLogic:UpdateCardDescObject(DescObject)
+    if self.LogicCommand then
+        -- Check update function from logic script
+        if type(self.LogicCommand.UpdateDescObject) == "function" then
+            self.LogicCommand:UpdateDescObject(DescObject)
+        else
+            -- Set error name to notify the missing function
+            DescObject:SetCardName("Update Func Missing")
         end
     end
 end

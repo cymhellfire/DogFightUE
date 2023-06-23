@@ -24,6 +24,8 @@ public:
 
 	void PlayerReadyForGame(ATopDownStylePlayerController* InPC);
 
+	void PlayerRequestFinishRound(ATopDownStylePlayerController* InPC);
+
 	TArray<TWeakObjectPtr<ATopDownStylePlayerController>> GetAllPlayerControllers() const
 	{
 		return AllPlayerControllers;

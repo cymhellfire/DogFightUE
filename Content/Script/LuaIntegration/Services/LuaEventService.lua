@@ -1,6 +1,6 @@
 require "Common.TableUtils"
 
----@class LuaEventService
+---@class LuaEventService : ULuaEventService
 local LuaEventService = UnrealClass("DogFight.Services.GameServiceBase")
 
 function LuaEventService:StartupScript(ServiceName)

@@ -1,6 +1,6 @@
 require "LuaIntegration.Common.UnrealUtils"
 
----@class CardGameService Service to handle card relative functionality.
+---@class CardGameService : UCardGameService Service to handle card relative functionality.
 local CardGameService = UnrealClass("DogFight.Services.GameServiceBase")
 
 function CardGameService:StartupScript(ServiceName)
@@ -10,10 +10,10 @@ function CardGameService:StartupScript(ServiceName)
     self.CardInstanceId = 0
 end
 
----Create a card with given logic script path.
----@param LogicPath string Path of card logic script
+---Create a card with given config id.
+---@param CardConfigId number Id of card config
 ---@param Instigator AController Instigator of creation
-function CardGameService:CreateCard(LogicPath, Instigator)
+function CardGameService:CreateCard(CardConfigId, Instigator)
     -- Ensure the type of Instigator
     local OwnerCtrl = IsDerivedFrom(Instigator, UE.AController.StaticClass())
     if not OwnerCtrl then
@@ -29,7 +29,7 @@ function CardGameService:CreateCard(LogicPath, Instigator)
     ---@type CardBase Create card object
     local NewCard = NewObject(DefaultClass, Instigator)
     -- Set card logic 
-    NewCard:SetCardLogicPath(LogicPath)
+    NewCard:SetCardLogicId(CardConfigId)
     -- Set instance id to new card
     NewCard:SetInstanceId(self:GetNewCardInstanceId())
     -- Set owner controller

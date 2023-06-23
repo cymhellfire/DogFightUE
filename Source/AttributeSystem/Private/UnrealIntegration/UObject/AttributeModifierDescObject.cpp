@@ -10,6 +10,7 @@ void UAttributeModifierDescObject::GetLifetimeReplicatedProps(TArray<FLifetimePr
 
 	DOREPLIFETIME_WITH_PARAMS_FAST(UAttributeModifierDescObject, Source, SharedParams);
 	DOREPLIFETIME_WITH_PARAMS_FAST(UAttributeModifierDescObject, Effect, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(UAttributeModifierDescObject, Desc, SharedParams);
 }
 
 void UAttributeModifierDescObject::SetSourceString(FString InStr)
@@ -27,6 +28,15 @@ void UAttributeModifierDescObject::SetEffectString(FString InStr)
 	{
 		MARK_PROPERTY_DIRTY_FROM_NAME(UAttributeModifierDescObject, Effect, this);
 		Effect = InStr;
+	}
+}
+
+void UAttributeModifierDescObject::SetDescString(FText InDesc)
+{
+	if (!InDesc.EqualTo(Desc))
+	{
+		MARK_PROPERTY_DIRTY_FROM_NAME(UAttributeModifierDescObject, Desc, this);
+		Desc = InDesc;
 	}
 }
 

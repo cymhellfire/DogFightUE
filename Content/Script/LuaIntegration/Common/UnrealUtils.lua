@@ -41,21 +41,8 @@ end
 ---Enum of all localization strint table.
 local LocalizationTable = {
     CardDisplay = "ST_CardDisplay",
+    Attribute = "ST_Attribute",
 }
-
----Get localized version string in current culture.
----@param WorldContextObject UObject Object instance to get world with.
----@param InTable string Name of string table to search localization.
----@param InKey string Key of the localization data.
----@param ParamList table 
----@return string Localized version string.
-local function GetLocalizedString(WorldContextObject, InTable, InKey, ParamList)
-    if type(ParamList) == "table" then
-        return UE.ULuaIntegrationFunctionLibrary.GetLocalizedStringWithParam(WorldContextObject, InTable, InKey, ArrayHelper.StringArrayFromTable(ParamList))
-    else
-        return UE.ULuaIntegrationFunctionLibrary.GetLocalizedString(WorldContextObject, InTable, InKey)
-    end
-end
 
 ---Generic notify receiver function for lua side.
 ---@param Service LuaEventService Lua event service instance.
@@ -66,11 +53,19 @@ local function ReceiveNotifyFromC(Service, NotifyIndex, ...)
     end
 end
 
+---Get localized string.
+---@param InTable string Name of localization string table.
+---@param InKey string Localization key.
+---@param ... any Arguments of localization string.
+local function GetLocalizedString(InTable, InKey, ...)
+    return _G.GetLocalizedString(InTable, InKey, ...)
+end
+
 _G.GetCurrentWorld = GetCurrentWorld
 _G.GetGameInstance = GetGameInstance
 _G.LoadClass = LoadClass
 _G.IsDerivedFrom = IsDerivedFrom
 _G.GetLocalPlayerController = GetLocalPlayerController
 _G.LocalizationTable = LocalizationTable
-_G.GetLocalizedString = GetLocalizedString
 _G.ReceiveNotifyFromC = ReceiveNotifyFromC
+_G.GetLocalizedString = GetLocalizedString

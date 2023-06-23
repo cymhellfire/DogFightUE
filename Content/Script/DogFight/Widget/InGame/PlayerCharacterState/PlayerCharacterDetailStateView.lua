@@ -49,16 +49,21 @@ function PlayerCharacterDetailStateView:GatherInfo(InCharacter)
             -- Integer attributes
             local IntAttrList = DRC.IntegerWrapperList:ToTable()
             if #IntAttrList > 0 then
-                for i = 0, #IntAttrList do
+                for i = 1, #IntAttrList do
                     ---@type UAttributeIntegerWrapperObject
                     local AttrItem = IntAttrList[i]
-                    AttrItemList[#AttrItemList + 1] = AttrItem
+                    -- Filter attributes that has origin value and added automatically
+                    if not AttrItem:HasFlag(UE.EAttributeFlag.AF_AutoAdd) or not AttrItem:IsBaseValue() then
+                        AttrItemList[#AttrItemList + 1] = AttrItem
+                    end
                 end
             end
         end
 
         if #AttrItemList > 0 then
             self.DRCAttrList:LoadDataByList(AttrItemList)
+        else
+            self.DRCAttrList:Clear()
         end
     end
 end
