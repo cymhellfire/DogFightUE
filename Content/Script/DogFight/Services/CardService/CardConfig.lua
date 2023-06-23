@@ -1,5 +1,6 @@
 local CardTypeDef = require("DogFight.Services.CardService.CardTypeDef")
 local BuffTypeDef = require "DogFight.Services.BuffService.BuffTypeDef"
+local AttributeNameDef = require "DogFight.Common.AttributeNameDef"
 
 ---@class CardConfig : ServiceConfigBase
 local CardConfig = UnrealClass("DogFight.Services.ServiceConfigBase")
@@ -30,8 +31,8 @@ local Config = {
                 }
             },
             AttrInfo = {
-                {Name = "Damage", DisplayName = "Attr_Damage", Type = "Integer", Value = 10},
-                {Name = "ProjectileSpeed", DisplayName = "Attr_ProjSpeed", Type = "Integer", Value = 500},
+                {Name = AttributeNameDef.Damage, Type = "Integer", Value = 10},
+                {Name = AttributeNameDef.ProjectileSpeed, Type = "Integer", Value = 500},
             },
         },
     },

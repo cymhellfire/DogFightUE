@@ -8,6 +8,7 @@
 #include "GameService/GameService.h"
 #include "GameService/LuaEventService.h"
 #include "Pawn/PlayerPawn/TopDownStylePlayerPawn.h"
+#include "Player/TopDownStylePlayerState.h"
 #include "PlayerController/TopDownStylePlayerController.h"
 
 ATopDownStyleGameMode::ATopDownStyleGameMode(const FObjectInitializer& ObjectInitializer)
@@ -53,6 +54,25 @@ void ATopDownStyleGameMode::PlayerReadyForGame(ATopDownStylePlayerController* In
 	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>())
 	{
 		LuaEventService->SendEventToLua(ELuaEvent::Type::LuaEvent_ReadyPlayerCount, FString::Printf(TEXT("%d"), ReadyPlayerCount));
+	}
+}
+
+void ATopDownStyleGameMode::PlayerRequestFinishRound(ATopDownStylePlayerController* InPC)
+{
+	if (!IsValid(InPC))
+	{
+		return;
+	}
+
+	int32 PlayerId = -1;
+	if (auto PS = InPC->GetPlayerState<ATopDownStylePlayerState>())
+	{
+		PlayerId = PS->GetPlayerId();
+	}
+
+	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>())
+	{
+		LuaEventService->SendEventToLua(ELuaEvent::Type::LuaEvent_FinishPlayerRound, PlayerId);
 	}
 }
 

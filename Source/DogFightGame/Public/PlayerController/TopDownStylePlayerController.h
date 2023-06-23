@@ -35,6 +35,10 @@ public:
 	UFUNCTION(Client, Reliable)
 	void ClientRemoveInputMapping(EInputMappingType::Type InputType);
 
+	// -----=========== Gameflow ===========-----
+	UFUNCTION(Server, Reliable)
+	void ServerRequestFinishRound();
+
 	// -----=========== Character ===========-----
 	void SpawnCharacterPawn();
 

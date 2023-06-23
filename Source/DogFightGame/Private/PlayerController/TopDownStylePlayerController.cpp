@@ -80,6 +80,14 @@ void ATopDownStylePlayerController::ClientRemoveInputMapping_Implementation(EInp
 	}
 }
 
+void ATopDownStylePlayerController::ServerRequestFinishRound_Implementation()
+{
+	if (ATopDownStyleGameMode* GameMode = Cast<ATopDownStyleGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		GameMode->PlayerRequestFinishRound(this);
+	}
+}
+
 void ATopDownStylePlayerController::SpawnCharacterPawn()
 {
 	if (HasAuthority())

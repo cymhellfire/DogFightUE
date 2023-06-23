@@ -1,6 +1,7 @@
 local CardLogicCommand = require "Card.CardCommand.CardLogicCommand"
 local ProjectileTypeDef = require "DogFight.Services.ProjectileService.ProjectileTypeDef"
 local CardModifierTypeDef = require "DogFight.Services.CardModifierService.CardModifierTypeDef"
+local AttributeNameDef = require "DogFight.Common.AttributeNameDef"
 
 ---@class LogicFireball : CardLogicCommand Shoot fireball toward target.
 local LogicFireball = UnrealClass(CardLogicCommand)
@@ -62,8 +63,8 @@ end
 ---Command create callback
 ---@param InCommand ActionLaunchProjectile
 function LogicFireball:OnFireProjectileCreated(InCommand)
-    local bOverrideDamage, ProjectileDamage = self._CardLogic:GetOwnerCard():GetAttributeIntegerValue("Damage")
-    local bOverrideProjectileSpeed, ProjectileSpeed = self._CardLogic:GetOwnerCard():GetAttributeIntegerValue("ProjectileSpeed")
+    local bOverrideDamage, ProjectileDamage = self._CardLogic:GetOwnerCard():GetAttributeIntegerValue(AttributeNameDef.Damage)
+    local bOverrideProjectileSpeed, ProjectileSpeed = self._CardLogic:GetOwnerCard():GetAttributeIntegerValue(AttributeNameDef.ProjectileSpeed)
 
     local ProjectileInfo = {
         Id = ProjectileTypeDef.Fireball,

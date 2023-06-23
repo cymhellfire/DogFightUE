@@ -87,6 +87,12 @@ public:
 	static void SyncCurrentPlayerIdWithTimeline(const UObject* WorldContextObject);
 
 	/**
+	 * Send a request to finish local player's round immediately.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameFlow")
+	static void RequestFinishLocalPlayerRound(const UObject* WorldContextObject);
+
+	/**
 	 * Get the player controller of local player.
 	 * @return			Player controller.
 	 */

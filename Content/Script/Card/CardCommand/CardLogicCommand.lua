@@ -51,7 +51,7 @@ function CardLogicCommand:SetupDescObject(DescObject)
         ---@type Cardbase
         local Card = self._CardLogic:GetOwnerCard()
         for _, v in ipairs(AttrInfo) do
-            local LocalizedAttrName = GetLocalizedString(LocalizationTable.Attribute, v.DisplayName or v.Name)
+            local LocalizedAttrName = GetLocalizedString(LocalizationTable.Attribute, "Attr_" .. v.Name)
             Card:CreateAttribute({
                 Name = v.Name,
                 DisplayName = LocalizedAttrName,

@@ -14,7 +14,7 @@ function CardGeneratorService:GetRandomCard()
         -- local Index = math.random(0, TotalNum - 1)
         -- local Config = self.Config:GetConfig(Index)
         -- return Config.Id
-        return CardTypeDef.Attack
+        return CardTypeDef.AddPhysResist
     end
     
     return nil

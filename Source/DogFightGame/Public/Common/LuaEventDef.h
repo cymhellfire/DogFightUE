@@ -11,6 +11,8 @@ namespace ELuaEvent
 		LuaEvent_ReceiveTitleMessage,
 		LuaEvent_GameTimelineChanged,
 		LuaEvent_ReceiveInGameChatMessage,
+		// --------------- Game Flow ------------------
+		LuaEvent_FinishPlayerRound,
 		// ------------------ Card --------------------
 		LuaEvent_CardListChanged,
 		/** Triggered when local player begin using a card (Client only) */

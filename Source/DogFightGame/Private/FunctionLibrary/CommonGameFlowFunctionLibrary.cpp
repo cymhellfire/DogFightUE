@@ -138,6 +138,14 @@ void UCommonGameFlowFunctionLibrary::SyncCurrentPlayerIdWithTimeline(const UObje
 	}
 }
 
+void UCommonGameFlowFunctionLibrary::RequestFinishLocalPlayerRound(const UObject* WorldContextObject)
+{
+	if (auto PlayerController = GetLocalPlayerController(WorldContextObject))
+	{
+		PlayerController->ServerRequestFinishRound();
+	}
+}
+
 ATopDownStylePlayerController* UCommonGameFlowFunctionLibrary::GetLocalPlayerController(const UObject* WorldContextObject)
 {
 	if (auto World = ULuaIntegrationFunctionLibrary::GetCurrentWorld(WorldContextObject))
