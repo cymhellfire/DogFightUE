@@ -7,6 +7,12 @@ namespace ELuaEvent
 {
 	enum Type
 	{
+		// --------------- Game Lobby ------------------
+		LuaEvent_OnPlayerEnterLobby,
+		LuaEvent_OnPlayerLeaveLobby,
+		LuaEvent_OnGameReadyChanged,
+		LuaEvent_OnAIPlayerCountChanged,
+		
 		LuaEvent_ReadyPlayerCount,
 		LuaEvent_ReceiveTitleMessage,
 		LuaEvent_GameTimelineChanged,

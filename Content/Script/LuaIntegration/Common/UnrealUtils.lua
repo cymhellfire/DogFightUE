@@ -40,6 +40,7 @@ end
 
 ---Enum of all localization strint table.
 local LocalizationTable = {
+    CommonUI = "ST_CommonUI",
     CardDisplay = "ST_CardDisplay",
     Attribute = "ST_Attribute",
 }
