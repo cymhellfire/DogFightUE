@@ -51,12 +51,6 @@ void AGameLobbyGameState::AddPlayerState(APlayerState* PlayerState)
 	{
 		LobbyPlayerStateList.AddUnique(PS);
 
-		if (HasAuthority())
-		{
-			// Let client upload player info
-			PS->ClientRequestPlayerInfo();
-		}
-
 		PS->OnReadyStatusChanged.AddUniqueDynamic(this, &AGameLobbyGameState::OnPlayerReadyStatusChanged);
 	}
 

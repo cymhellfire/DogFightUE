@@ -49,6 +49,7 @@ function GameLobbyMainView:PostInitialized()
 
     self.ReadyButton.OnClicked:Add(self, self.OnReadyButtonClicked)
     self.StartGameButton.OnClicked:Add(self, self.OnStartGameButtoClicked)
+    self.BackButton.OnClicked:Add(self, self.OnBackButtonClicked)
     self.AIPlayerCountSlider.OnValueChanged:Add(self, self.OnAIPlayerSliderChanged)
 
     --- Init AI count
@@ -58,7 +59,7 @@ function GameLobbyMainView:PostInitialized()
         self.AIPlayerCountSlider:SetValue(GameInstance.GameAICount)
     end
 
-    -- Update game ready state
+    -- Update player list and game ready state
     self:UpdateGameReadyStatus()
 
     -- Listen local player state changes
@@ -77,6 +78,7 @@ function GameLobbyMainView:UnInitialize()
 
     self.ReadyButton.OnClicked:Remove(self, self.OnReadyButtonClicked)
     self.StartGameButton.OnClicked:Remove(self, self.OnStartGameButtoClicked)
+    self.BackButton.OnClicked:Remove(self, self.OnBackButtonClicked)
     self.AIPlayerCountSlider.OnValueChanged:Remove(self, self.OnAIPlayerSliderChanged)
 
     -- Stop listening local player state changes
@@ -155,6 +157,17 @@ end
 
 function GameLobbyMainView:OnStartGameButtoClicked()
     
+end
+
+function GameLobbyMainView:OnBackButtonClicked()
+    ---@type UCommonSessionSubsystem
+    local CommonSessionSubsystem = UE.UGameLobbyFunctionLibrary.GetCommonSessionSubSystem(self)
+    if CommonSessionSubsystem then
+        CommonSessionSubsystem:CleanUpSessions()
+    end
+
+    -- Back to main menu
+    UE.UGameplayStatics.OpenLevel(self, "/Game/DogFightGame/Level/MainMenu/MainMenu")
 end
 
 return GameLobbyMainView

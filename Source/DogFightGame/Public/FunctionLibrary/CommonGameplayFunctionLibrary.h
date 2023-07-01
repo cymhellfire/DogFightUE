@@ -9,12 +9,20 @@ class ATopDownStylePlayerController;
 class ATopDownStylePlayerCharacter;
 class ATopDownStylePlayerState;
 class AGameEffectBase;
+class UGameplayDataSubsystem;
 
 UCLASS()
 class DOGFIGHTGAME_API UCommonGameplayFunctionLibrary : public UCommonFunctionLibraryBase
 {
 	GENERATED_BODY()
 public:
+	/**
+	 * Get gameplay data subsystem.
+	 * @return Gameplay data subsystem of current game.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
+	static UGameplayDataSubsystem* GetGameplayDataSubsystem(const UObject* WorldContextObject);
+
 	/**
 	 * Get PlayerState by player id.
 	 * @param InPlayerId		Id of player that acquire state for.

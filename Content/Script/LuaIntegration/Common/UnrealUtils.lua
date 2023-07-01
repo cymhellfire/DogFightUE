@@ -59,7 +59,7 @@ end
 ---@param InKey string Localization key.
 ---@param ... any Arguments of localization string.
 local function GetLocalizedString(InTable, InKey, ...)
-    return _G.GetLocalizedString(InTable, InKey, ...)
+    return _G.GetNativeLocalizedString(InTable, InKey, ...)
 end
 
 _G.GetCurrentWorld = GetCurrentWorld

@@ -53,12 +53,6 @@ void AGameLobbyPlayerState::ServerSetPlayerHostStatus_Implementation(bool bHost)
 	}
 }
 
-void AGameLobbyPlayerState::ClientRequestPlayerInfo_Implementation()
-{
-	// Upload host info
-	ServerSetPlayerHostStatus(GetNetMode() != NM_Client);
-}
-
 void AGameLobbyPlayerState::OnRep_IsReady()
 {
 	OnReadyStatusChanged.Broadcast(this, bIsReady);

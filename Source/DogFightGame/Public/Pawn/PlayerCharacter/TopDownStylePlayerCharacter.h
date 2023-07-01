@@ -13,6 +13,7 @@ class URagdollComponent;
 class UPathFollowingComponent;
 class UNewBuffBase;
 class UBuffManagerComponent;
+class UGameplayAttributesComponent;
 struct FPathFollowingResult;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTopDownStylePlayerCharacterDeadEvent, ATopDownStylePlayerCharacter*, Character);
@@ -80,17 +81,20 @@ public:
 	FTopDownStylePlayerCharacterMoveFinishedEvent OnCharacterMoveFinished;
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="TopDownStylePlayerCharacter")
 	UDamageReceiverComponent* DamageReceiverComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="TopDownStylePlayerCharacter")
 	UWidgetLocatorComponent* StateWidgetLocatorComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="TopDownStylePlayerCharacter")
 	URagdollComponent* RagdollComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="TopDownStylePlayerCharacter")
 	UBuffManagerComponent* BuffManagerComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="TopDownStylePlayerCharacter")
+	UGameplayAttributesComponent* GameplayAttributesComponent;
 
 	UPROPERTY(Transient)
 	UPlayerCharacterStateWidget* StateWidget;

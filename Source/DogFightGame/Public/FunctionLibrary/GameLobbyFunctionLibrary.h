@@ -9,6 +9,8 @@ class AGameLobbyGameMode;
 class AGameLobbyGameState;
 class AGameLobbyPlayerState;
 class AGameLobbyPlayerController;
+class UCommonSessionSubsystem;
+class UGameplayExperience;
 
 /**
  * 
@@ -46,4 +48,11 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="GameLobbyFunctionLibrary")
 	static AGameLobbyGameState* GetCurrentLobbyGameState(const UObject* WorldContext);
+
+	/**
+	 * Get available common session subsystem.
+	 * @return Common session subsystem.
+	 */
+	UFUNCTION(BlueprintCallable, Category="GameLobbyFunctionLibrary")
+	static UCommonSessionSubsystem* GetCommonSessionSubSystem(const UObject* WorldContext);
 };

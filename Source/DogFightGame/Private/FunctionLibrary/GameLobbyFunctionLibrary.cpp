@@ -2,6 +2,8 @@
 
 
 #include "FunctionLibrary/GameLobbyFunctionLibrary.h"
+
+#include "CommonSessionSubsystem.h"
 #include "GameMode/GameLobbyGameState.h"
 #include "Player/GameLobbyPlayerState.h"
 #include "PlayerController/GameLobbyPlayerController.h"
@@ -44,6 +46,22 @@ AGameLobbyGameState* UGameLobbyFunctionLibrary::GetCurrentLobbyGameState(const U
 	if (auto CurWorld = WorldContext->GetWorld())
 	{
 		return Cast<AGameLobbyGameState>(CurWorld->GetGameState());
+	}
+
+	return nullptr;
+}
+
+UCommonSessionSubsystem* UGameLobbyFunctionLibrary::GetCommonSessionSubSystem(const UObject* WorldContext)
+{
+	if (IsValid(WorldContext))
+	{
+		if (auto CurWorld = WorldContext->GetWorld())
+		{
+			if (auto GameInstance = CurWorld->GetGameInstance())
+			{
+				return GameInstance->GetSubsystem<UCommonSessionSubsystem>();
+			}
+		}
 	}
 
 	return nullptr;

@@ -2,7 +2,7 @@
 local $Class$ = {}
 
 $Class$.BindingTable = {
-    --"TitleMessage" = "",
+    --TitleMessage = "",
 }
 
 return $Class$

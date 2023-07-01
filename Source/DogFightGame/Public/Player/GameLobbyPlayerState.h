@@ -39,9 +39,6 @@ public:
 		return bIsHost;
 	}
 
-	UFUNCTION(Client, Reliable)
-	void ClientRequestPlayerInfo();
-
 protected:
 	UFUNCTION()
 	void OnRep_IsReady();

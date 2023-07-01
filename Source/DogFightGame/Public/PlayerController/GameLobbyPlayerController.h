@@ -6,6 +6,18 @@
 #include "Player/DogFightPlayerController.h"
 #include "GameLobbyPlayerController.generated.h"
 
+USTRUCT()
+struct FGameLobbyPlayerInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString PlayerName;
+
+	UPROPERTY()
+	bool bHost;
+};
+
 UCLASS()
 class DOGFIGHTGAME_API AGameLobbyPlayerController : public ADogFightPlayerController
 {
@@ -16,5 +28,12 @@ public:
 	AGameLobbyPlayerController();
 
 	UFUNCTION(Server, Reliable)
+	void ServerSetPlayerInfo(const FGameLobbyPlayerInfo& PlayerInfo);
+
+	UFUNCTION(Server, Reliable)
 	void ServerMarkPlayerReady(bool bIsReady);
+
+protected:
+
+	virtual void GatherPlayerInfo() override;
 };
