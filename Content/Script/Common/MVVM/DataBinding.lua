@@ -61,4 +61,20 @@ function DataBinding.TexturePathBinding(bMatchSize)
     return NewBinding
 end
 
+---Create data binding to modify the widget enable state.
+function DataBinding.WidgetEnableBinding()
+    local NewBinding = {}
+    ---@param widget UWidget
+    ---@param value boolean
+    NewBinding.SetValue = function(self, widget, value)
+        if type(value) ~= "boolean" then
+            error("WidgetEnableBinding need boolean type value input.")
+            return
+        end
+
+        widget:SetIsEnabled(value)
+    end
+    return NewBinding
+end
+
 return DataBinding

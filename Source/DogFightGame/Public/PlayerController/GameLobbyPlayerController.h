@@ -33,6 +33,10 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerMarkPlayerReady(bool bIsReady);
 
+	virtual void ClientReturnToMainMenuWithReason2_Implementation(EReturnToMainMenuReason::Type Reason) override;
+
+	virtual void HandleReturnToMainMenu2() override;
+
 protected:
 
 	virtual void GatherPlayerInfo() override;

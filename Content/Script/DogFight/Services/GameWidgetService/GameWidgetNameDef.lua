@@ -1,5 +1,8 @@
 ---@class GameWidgetNameDef Table contains all widget name in game.
 local GameWidgetNameDef = {
+    --- Common
+    WidgetGenericMessageDialog = "WidgetGenericMessageDialog",
+    WidgetJoiningSession = "WidgetJoiningSession",
     --- Main Menu
     WidgetCreateLobbyDialog = "WidgetCreateLobbyDialog",
     WidgetLobbyBrowser = "WidgetLobbyBrowser",

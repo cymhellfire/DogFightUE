@@ -19,4 +19,7 @@ function $Class$:UnInitialize()
 
 end
 
+function $Class$:OnShow()
+end
+
 return $Class$

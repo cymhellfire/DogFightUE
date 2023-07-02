@@ -60,7 +60,7 @@ function GameLobbyMainView:PostInitialized()
     end
 
     -- Update player list and game ready state
-    self:UpdateGameReadyStatus()
+    self:OnPlayerListChanged()
 
     -- Listen local player state changes
     RegisterCallback(self)
@@ -160,11 +160,14 @@ function GameLobbyMainView:OnStartGameButtoClicked()
 end
 
 function GameLobbyMainView:OnBackButtonClicked()
-    ---@type UCommonSessionSubsystem
-    local CommonSessionSubsystem = UE.UGameLobbyFunctionLibrary.GetCommonSessionSubSystem(self)
-    if CommonSessionSubsystem then
-        CommonSessionSubsystem:CleanUpSessions()
-    end
+    -- ---@type UCommonSessionSubsystem
+    -- local CommonSessionSubsystem = UE.UGameLobbyFunctionLibrary.GetCommonSessionSubSystem(self)
+    -- if CommonSessionSubsystem then
+    --     CommonSessionSubsystem:CleanUpSessions()
+    -- end
+
+    -- Dismiss session
+    UE.UGameLobbyFunctionLibrary.DismissGameLobby(self)
 
     -- Back to main menu
     UE.UGameplayStatics.OpenLevel(self, "/Game/DogFightGame/Level/MainMenu/MainMenu")

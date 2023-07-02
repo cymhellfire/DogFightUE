@@ -74,6 +74,13 @@ function CreateLobbyDialogView:OnSessionCreated()
 
         SessionSubsystem:SetHostSessionSetting("LobbyName", self.LobbyName_InputBox:GetText() or self.DefaultLobbyName)
         SessionSubsystem:UpdateHostSessionSetting()
+
+        ---Let gameplay subsystem listening network failures
+        ---@type GameplayDataSubsystem
+        local GameplayDataSubsystem = UE.UCommonGameplayFunctionLibrary.GetGameplayDataSubsystem(self)
+        if GameplayDataSubsystem then
+            GameplayDataSubsystem:StartListenNetworkFailure()
+        end
     end
 end
 

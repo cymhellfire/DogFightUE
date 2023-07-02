@@ -12,7 +12,9 @@ local GameWidgetNameDef = require("DogFight.Services.GameWidgetService.GameWidge
 function LobbyBrowserView:PostInitialized()
     local NewVM = InstantiateViewModel(LobbyBrowserVM)
     self:BindViewModel(NewVM, {
-        {BindKey = "LobbyListSwitcher",   UIKey = "LobbyList_Switcher",   DataBinding = DataBinding.SwitcherIndexBinding() }
+        {BindKey = "LobbyListSwitcher",   UIKey = "LobbyList_Switcher",   DataBinding = DataBinding.SwitcherIndexBinding() },
+        {BindKey = "RefreshButtonEnable",   UIKey = "RefreshLobby_Button",  DataBinding = DataBinding.WidgetEnableBinding() },
+        {BindKey = "JoinButtonEnable",      UIKey = "JoinLobby_Button",     DataBinding = DataBinding.WidgetEnableBinding() },
     })
 
     ---@type ListViewWrapper 
@@ -22,9 +24,6 @@ function LobbyBrowserView:PostInitialized()
     self.RefreshLobby_Button.OnClicked:Add(self, self.OnRefreshButtonClicked)
     self.JoinLobby_Button.OnClicked:Add(self, self.OnJoinLobbyButtonClicked)
     self.LobbyList_ListView.BP_OnItemSelectionChanged:Add(self, self.OnLobbyItemSelectionChanged)
-
-    -- Request lobby list once show
-    self:OnRefreshButtonClicked()
 end
 
 function LobbyBrowserView:UnInitialize()
@@ -40,10 +39,19 @@ function LobbyBrowserView:UnInitialize()
     self.LobbyList_ListView.BP_OnItemSelectionChanged:Remove(self, self.OnLobbyItemSelectionChanged)
 end
 
+function LobbyBrowserView:OnShow()
+    -- Request lobby list once show
+    self:OnRefreshButtonClicked()
+end
+
 ---@param self LobbyBrowserView
 local function RefreshLobbyList(self)
-    --- Clear selection first
+    -- Clear selection first
     self.SelectItem = nil
+    self.ViewModel.JoinButtonEnable = false
+
+    -- Disable refresh button until finished
+    self.ViewModel.RefreshButtonEnable = false
 
     ---@type UCommonSessionSubsystem
     local SessionSubsystem = UE.UGameLobbyFunctionLibrary.GetCommonSessionSubSystem(self)
@@ -86,6 +94,9 @@ function LobbyBrowserView:OnSearchFinished(bSuccess, Msg)
     -- Print result
     print("Search game: " .. tostring(bSuccess) .. " Msg: " .. Msg)
 
+    -- Recover refresh button
+    self.ViewModel.RefreshButtonEnable = true
+
     if self.GameSearchRequest then
         self.GameSearchRequest.K2_OnSearchFinished:Remove(self, self.OnSearchFinished)
 
@@ -102,6 +113,8 @@ end
 function LobbyBrowserView:OnLobbyItemSelectionChanged(Item, bSelected)
     if bSelected then
         self.SelectItem = Item
+
+        self.ViewModel.JoinButtonEnable = true
     end
 end
 
@@ -113,10 +126,40 @@ function LobbyBrowserView:OnJoinLobbyButtonClicked()
             ---@type UCommonSessionSubsystem
             local SessionSubsystem = UE.UGameLobbyFunctionLibrary.GetCommonSessionSubSystem(self)
             if SessionSubsystem then
+                SessionSubsystem.K2_OnJoinSessionCompleteEvent:Add(self, self.OnJoinSessionSuccess)
+
                 local LocalPC = UE.ULuaIntegrationFunctionLibrary.GetFirstLocalPlayerController(self)
                 SessionSubsystem:JoinSession(LocalPC, SearchResult)
             end
         end
+
+        ---@type GameWidgetService
+        local GameWidgetService = GetGameService(self, GameServiceNameDef.GameWidgetService)
+        if GameWidgetService then
+            GameWidgetService:RemoveWidget(GameWidgetNameDef.WidgetLobbyBrowser)
+            GameWidgetService:ShowWidget(GameWidgetNameDef.WidgetJoiningSession, true)
+        end
+    end
+end
+
+function LobbyBrowserView:OnJoinSessionSuccess()
+    ---@type UCommonSessionSubsystem
+    local SessionSubsystem = UE.UGameLobbyFunctionLibrary.GetCommonSessionSubSystem(self)
+    if SessionSubsystem then
+        SessionSubsystem.K2_OnJoinSessionCompleteEvent:Remove(self, self.OnJoinSessionSuccess)
+    end
+
+    ---@type GameWidgetService
+    local GameWidgetService = GetGameService(self, GameServiceNameDef.GameWidgetService)
+    if GameWidgetService then
+        GameWidgetService:RemoveWidget(GameWidgetNameDef.WidgetJoiningSession)
+    end
+
+    ---Let gameplay subsystem listening network failures
+    ---@type GameplayDataSubsystem
+    local GameplayDataSubsystem = UE.UCommonGameplayFunctionLibrary.GetGameplayDataSubsystem(self)
+    if GameplayDataSubsystem then
+        GameplayDataSubsystem:StartListenNetworkFailure()
     end
 end
 

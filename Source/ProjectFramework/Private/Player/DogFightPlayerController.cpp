@@ -41,6 +41,19 @@ void ADogFightPlayerController::ClientReturnToMainMenuWithReason_Implementation(
 	}
 }
 
+void ADogFightPlayerController::ClientReturnToMainMenuWithReason2_Implementation(EReturnToMainMenuReason::Type Reason)
+{
+	if (UGameInstance* const GameInstance = GetGameInstance())
+	{
+		GameInstance->ReturnToMainMenu();
+	}
+	else
+	{
+		UWorld* const World = GetWorld();
+		GEngine->HandleDisconnect(World, World->GetNetDriver());
+	}
+}
+
 void ADogFightPlayerController::HandleReturnToMainMenu()
 {
 	CleanupSessionOnReturnMain();

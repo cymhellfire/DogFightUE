@@ -2,7 +2,9 @@
 local LobbyBrowserVM = {}
 
 LobbyBrowserVM.BindingTable = {
-    ["LobbyListSwitcher"] = NoInitValue,
+    LobbyListSwitcher = NoInitValue,
+    RefreshButtonEnable = NoInitValue,
+    JoinButtonEnable = NoInitValue,
 }
 
 return LobbyBrowserVM

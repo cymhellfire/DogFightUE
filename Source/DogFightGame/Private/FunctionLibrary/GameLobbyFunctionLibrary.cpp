@@ -4,6 +4,7 @@
 #include "FunctionLibrary/GameLobbyFunctionLibrary.h"
 
 #include "CommonSessionSubsystem.h"
+#include "GameMode/DogFightGameModeBase.h"
 #include "GameMode/GameLobbyGameState.h"
 #include "Player/GameLobbyPlayerState.h"
 #include "PlayerController/GameLobbyPlayerController.h"
@@ -65,4 +66,24 @@ UCommonSessionSubsystem* UGameLobbyFunctionLibrary::GetCommonSessionSubSystem(co
 	}
 
 	return nullptr;
+}
+
+void UGameLobbyFunctionLibrary::DismissGameLobby(const UObject* WorldContext)
+{
+	if (!IsValid(WorldContext))
+	{
+		return;
+	}
+
+	if (auto CurWorld = WorldContext->GetWorld())
+	{
+		if (auto GM = Cast<ADogFightGameModeBase>(CurWorld->GetAuthGameMode()))
+		{
+			GM->DismissCurrentGameSession();
+		}
+		else if (auto PC = Cast<ADogFightPlayerController>(GEngine->GetFirstLocalPlayerController(CurWorld)))
+		{
+			PC->HandleReturnToMainMenu2();
+		}
+	}
 }

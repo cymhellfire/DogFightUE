@@ -55,4 +55,10 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="GameLobbyFunctionLibrary")
 	static UCommonSessionSubsystem* GetCommonSessionSubSystem(const UObject* WorldContext);
+
+	/**
+	 * Dismiss current game lobby.
+	 */
+	UFUNCTION(BlueprintCallable, Category="GameLobbyFunctionLibrary")
+	static void DismissGameLobby(const UObject* WorldContext);
 };

@@ -7,11 +7,15 @@ namespace ELuaEvent
 {
 	enum Type
 	{
+		// ----------------- Generic -------------------
+		LuaEvent_PostLoadMap,
+		LuaEvent_NetworkFailure,
 		// --------------- Game Lobby ------------------
 		LuaEvent_OnPlayerEnterLobby,
 		LuaEvent_OnPlayerLeaveLobby,
 		LuaEvent_OnGameReadyChanged,
 		LuaEvent_OnAIPlayerCountChanged,
+		LuaEvent_SessionDismiss,
 		
 		LuaEvent_ReadyPlayerCount,
 		LuaEvent_ReceiveTitleMessage,

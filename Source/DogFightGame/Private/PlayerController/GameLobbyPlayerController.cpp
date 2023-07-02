@@ -3,6 +3,8 @@
 
 #include "PlayerController/GameLobbyPlayerController.h"
 
+#include "Common/LuaEventDef.h"
+#include "GameService/LuaEventService.h"
 #include "Player/GameLobbyPlayerState.h"
 
 
@@ -37,4 +39,18 @@ void AGameLobbyPlayerController::GatherPlayerInfo()
 	NewInfo.bHost = GetNetMode() != NM_Client;
 
 	ServerSetPlayerInfo(NewInfo);
+}
+
+void AGameLobbyPlayerController::ClientReturnToMainMenuWithReason2_Implementation(EReturnToMainMenuReason::Type Reason)
+{
+	Super::ClientReturnToMainMenuWithReason2_Implementation(Reason);
+
+	SEND_LUA_EVENT(ELuaEvent::LuaEvent_SessionDismiss, Reason)
+}
+
+void AGameLobbyPlayerController::HandleReturnToMainMenu2()
+{
+	Super::HandleReturnToMainMenu2();
+
+	SEND_LUA_EVENT(ELuaEvent::LuaEvent_SessionDismiss, EReturnToMainMenuReason::Unknown)
 }

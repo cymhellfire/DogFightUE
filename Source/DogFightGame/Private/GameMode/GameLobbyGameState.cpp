@@ -8,12 +8,6 @@
 #include "GameService/LuaEventService.h"
 #include "Player/GameLobbyPlayerState.h"
 
-#define SEND_LUA_EVENT(EventName, ...)		\
-	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>()) \
-	{ \
-		LuaEventService->SendEventToLua(EventName, __VA_ARGS__); \
-	}
-
 // Sets default values
 AGameLobbyGameState::AGameLobbyGameState()
 {

@@ -53,6 +53,12 @@ local function RemoveAndDestroyWidget(self, InWidget)
     return false
 end
 
+---@param self GameWidgetService
+local function ClearCache(self)
+    self.HiddenWidgetMap = {}
+    self.ShownWidgetMap = {}
+end
+
 function GameWidgetService:StartupScript(ServiceName)
     self.Super.StartupScript(self, ServiceName)
 
@@ -68,11 +74,18 @@ function GameWidgetService:PostStartupScript()
     local LuaEventService = GetGameService(self, GameServiceNameDef.LuaEventService)
     if LuaEventService then
         LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_ShowWidget, self, self.OnShowWidgetEvent)
+        LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_PostLoadMap, self, self.OnPostLoadMap)
     end
 end
 
 function GameWidgetService:OnShowWidgetEvent(InWidget, ...)
     self:ShowWidget(InWidget, true, table.pack(...))
+end
+
+---@param World UWorld
+function GameWidgetService:OnPostLoadMap(World)
+    -- Clear widget cache once load map
+    --ClearCache(self)
 end
 
 ---Create and add a new widget to viewport.
@@ -180,15 +193,36 @@ end
 ---@param InWidget string Name of widget to check.
 ---@return boolean Whether the widget is displaying.
 function GameWidgetService:IsWidgetShown(InWidget)
+    local bShown = false
+    local WidgetShown = self.ShownWidgetMap[InWidget]
+    if WidgetShown then
+        bShown = WidgetShown:IsValid()
+
+        --- Clear invalid widget cache
+        if not bShown then
+            self.ShownWidgetMap[InWidget] = nil
+        end
+    end
     -- Check in alive widget map
-    return self.ShownWidgetMap[InWidget] or false
+    return bShown
 end
 
 ---Check if given widget is already created.
 ---@param InWidget string Name of widget to check.
 ---@return boolean Whether the widget is exist.
 function GameWidgetService:IsWidgetCreated(InWidget)
-    return self.ShownWidgetMap[InWidget] or self.HiddenWidgetMap[InWidget] or false
+    local bShown = self:IsWidgetShown(InWidget)
+    local bHidden = false
+    local WidgetHidden = self.HiddenWidgetMap[InWidget]
+    if WidgetHidden then
+        bHidden = WidgetHidden:IsValid()
+
+        --- Clear invalid widget cache
+        if not bHidden then
+            self.HiddenWidgetMap[InWidget] = nil
+        end
+    end
+    return bShown or bHidden or false
 end
 
 ---Get created widget by name.
