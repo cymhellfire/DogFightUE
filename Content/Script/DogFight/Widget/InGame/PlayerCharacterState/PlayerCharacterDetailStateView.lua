@@ -9,7 +9,7 @@ function PlayerCharacterDetailStateView:PostInitialized()
     local NewVM = InstantiateViewModel(PlayerCharacterDetailStateVM)
     self:BindViewModel(NewVM, {
         {BindKey = "CharacterName",     UIKey = "CharacterName_Text",   DataBinding = DataBinding.TextContextBinding(), },
-        {BindKey = "HealthText",        UIKey = "Health_Text",          DataBinding = DataBinding.TextContextBinding(), },
+        --{BindKey = "HealthText",        UIKey = "Health_Text",          DataBinding = DataBinding.TextContextBinding(), },
     })
 
     ---@type ListViewWrapper 

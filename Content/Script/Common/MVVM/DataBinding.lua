@@ -61,6 +61,22 @@ function DataBinding.TexturePathBinding(bMatchSize)
     return NewBinding
 end
 
+---@param bMatchSize boolean
+function DataBinding.TextureAssetBinding(bMatchSize)
+    local NewBinding = {}
+    NewBinding.bMatchSize = bMatchSize
+    ---@param widget UImage
+    ---@param value UTexture2D
+    NewBinding.SetValue = function(self, widget, value)
+        if not value then
+            return
+        end
+
+        UE.UCommonWidgetFunctionLibrary.SetImageByTextureAsset(widget, value, self.bMatchSize or false)
+    end
+    return NewBinding
+end
+
 ---Create data binding to modify the widget enable state.
 function DataBinding.WidgetEnableBinding()
     local NewBinding = {}
@@ -73,6 +89,34 @@ function DataBinding.WidgetEnableBinding()
         end
 
         widget:SetIsEnabled(value)
+    end
+    return NewBinding
+end
+
+---Create data binding that control visibility of widget.
+---@param HitTest boolean Whether this widget is hitable when show.
+function DataBinding.WidgetVisibilityBinding(HitTest)
+    local NewBinding = {}
+    NewBinding.bHitTest = HitTest
+    ---@param widget UWidget
+    ---@param value boolean
+    NewBinding.SetValue = function(self, widget, value)
+        if type(value) ~= "boolean" then
+            error("WidgetVisibilityBinding need boolean type value input.")
+            return
+        end
+
+        local Visibility
+        if value then
+            if self.bHitTest then
+                Visibility = UE.ESlateVisibility.Visible
+            else
+                Visibility = UE.ESlateVisibility.SelfHitTestInvisible
+            end
+        else
+            Visibility = UE.ESlateVisibility.Collapsed
+        end
+        widget:SetVisibility(Visibility)
     end
     return NewBinding
 end

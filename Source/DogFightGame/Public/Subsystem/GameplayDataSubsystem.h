@@ -34,6 +34,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="GameplayDataSubsystem")
 	TArray<UGameplayExperience*> GetGameplayExperiencesByType(EGameplayExperienceType::Type InType);
 
+	UFUNCTION(BlueprintCallable, Category="GameplayDataSubsystem")
+	void LoadGameplayExperience(UGameplayExperience* GameplayExperience);
+
 protected:
 
 	void LoadAllGameExperiences();

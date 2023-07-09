@@ -1,7 +1,7 @@
 ---@class DamageDisplayUnit : BP_Widget_DamageDisplayUnit_C
 local DamageDisplayUnit = UnrealClass("Common.MVVM.ModelBase")
 local DamageDisplayUnitVM = require("DogFight.Widget.InGame.DamageDisplay.DamageDisplayUnitVM")
-local WidgetNameDef = require("DogFight.Services.Config.GameWidgetNameDef")
+local WidgetNameDef = require("DogFight.Services.GameWidgetService.GameWidgetNameDef")
 local ViewModelBase = require("Common.MVVM.ViewModelBase")
 local DataBinding = require("Common.MVVM.DataBinding")
 

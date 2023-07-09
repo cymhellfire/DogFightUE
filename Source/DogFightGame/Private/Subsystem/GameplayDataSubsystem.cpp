@@ -41,6 +41,18 @@ TArray<UGameplayExperience*> UGameplayDataSubsystem::GetGameplayExperiencesByTyp
 	return Result;
 }
 
+void UGameplayDataSubsystem::LoadGameplayExperience(UGameplayExperience* GameplayExperience)
+{
+	if (!IsValid(GameplayExperience))
+	{
+		return;
+	}
+
+	FString TravelUrl = GameplayExperience->GetMapURL();
+	TravelUrl += "?listen";
+	GetWorld()->ServerTravel(TravelUrl, true);
+}
+
 void UGameplayDataSubsystem::LoadAllGameExperiences()
 {
 	if (auto AssetManager = UAssetManager::GetIfValid())

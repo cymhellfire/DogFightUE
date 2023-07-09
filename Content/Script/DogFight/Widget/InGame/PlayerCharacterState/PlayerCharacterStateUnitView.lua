@@ -4,7 +4,7 @@ local ViewModelBase = require("Common.MVVM.ViewModelBase")
 local DataBinding = require("Common.MVVM.DataBinding")
 local PlayerCharacterStateUnitVM = require("DogFight.Widget.InGame.PlayerCharacterState.PlayerCharacterStateUnitVM")
 --local ListWrapper = require("Common.ListView.ListViewWrapper")
-local WidgetNameDef = require("DogFight.Services.Config.GameWidgetNameDef")
+local WidgetNameDef = require("DogFight.Services.GameWidgetService.GameWidgetNameDef")
 
 function PlayerCharacterStateUnitView:PostInitialized()
     local NewVM = InstantiateViewModel(PlayerCharacterStateUnitVM)

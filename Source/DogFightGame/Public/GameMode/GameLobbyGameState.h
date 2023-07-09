@@ -7,6 +7,7 @@
 #include "GameLobbyGameState.generated.h"
 
 class AGameLobbyPlayerState;
+class UGameplayExperience;
 
 UCLASS()
 class DOGFIGHTGAME_API AGameLobbyGameState : public ADogFightGameStateBase
@@ -42,6 +43,15 @@ public:
 		return AIPlayerCount;
 	}
 
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category="GameLobbyGameState")
+	void ServerSetGameplayExperience(UGameplayExperience* InGameplayExperience);
+
+	UFUNCTION(BlueprintCallable, Category="GameLobbyGameState")
+	UGameplayExperience* GetGameplayExperience() const
+	{
+		return GameplayExperience;
+	}
+
 protected:
 	void UpdateGameReadyStatus();
 
@@ -56,12 +66,18 @@ protected:
 	UFUNCTION()
 	void OnRep_AIPlayerCount();
 
+	UFUNCTION()
+	void OnRep_GameplayExperience();
+
 protected:
 	UPROPERTY(ReplicatedUsing=OnRep_IsGameReady)
 	bool bIsGameReady;
 
 	UPROPERTY(ReplicatedUsing=OnRep_AIPlayerCount)
 	int32 AIPlayerCount;
+
+	UPROPERTY(ReplicatedUsing=OnRep_GameplayExperience)
+	UGameplayExperience* GameplayExperience;
 
 	TArray<AGameLobbyPlayerState*> LobbyPlayerStateList;
 };

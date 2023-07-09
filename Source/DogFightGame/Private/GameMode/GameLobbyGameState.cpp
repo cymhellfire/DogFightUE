@@ -7,6 +7,7 @@
 #include "GameService/GameService.h"
 #include "GameService/LuaEventService.h"
 #include "Player/GameLobbyPlayerState.h"
+#include "DataAsset/GameplayExperience.h"
 
 // Sets default values
 AGameLobbyGameState::AGameLobbyGameState()
@@ -23,6 +24,7 @@ void AGameLobbyGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 
 	DOREPLIFETIME_WITH_PARAMS_FAST(AGameLobbyGameState, bIsGameReady, SharedParams);
 	DOREPLIFETIME_WITH_PARAMS_FAST(AGameLobbyGameState, AIPlayerCount, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(AGameLobbyGameState, GameplayExperience, SharedParams);
 }
 
 void AGameLobbyGameState::OnRep_IsGameReady()
@@ -35,6 +37,12 @@ void AGameLobbyGameState::OnRep_AIPlayerCount()
 {
 	// Trigger lua event
 	SEND_LUA_EVENT(ELuaEvent::LuaEvent_OnAIPlayerCountChanged, AIPlayerCount)
+}
+
+void AGameLobbyGameState::OnRep_GameplayExperience()
+{
+	// Trigger lua event
+	SEND_LUA_EVENT(ELuaEvent::LuaEvent_OnGameplayExperienceChanged, GameplayExperience);
 }
 
 void AGameLobbyGameState::AddPlayerState(APlayerState* PlayerState)
@@ -78,6 +86,20 @@ void AGameLobbyGameState::ServerSetAIPlayerCount_Implementation(int32 InCount)
 	if (HasAuthority())
 	{
 		OnRep_AIPlayerCount();
+	}
+}
+
+void AGameLobbyGameState::ServerSetGameplayExperience_Implementation(UGameplayExperience* InGameplayExperience)
+{
+	if (InGameplayExperience == GameplayExperience)
+		return;
+
+	MARK_PROPERTY_DIRTY_FROM_NAME(AGameLobbyGameState, GameplayExperience, this);
+	GameplayExperience = InGameplayExperience;
+
+	if (HasAuthority())
+	{
+		OnRep_GameplayExperience();
 	}
 }
 

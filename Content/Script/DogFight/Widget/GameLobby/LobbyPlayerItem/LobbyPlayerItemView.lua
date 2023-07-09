@@ -1,4 +1,4 @@
----@class LobbyPlayerItemView : BP_Widget_CardModifierListItem_C
+---@class LobbyPlayerItemView : BP_Widget_LobbyPlayerListItem_C
 ---@field Data AGameLobbyPlayerState
 ---@field bHost boolean Whether this player is host
 local LobbyPlayerItemView = UnrealClass("Common.MVVM.ModelBase")
