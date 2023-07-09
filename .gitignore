@@ -96,3 +96,5 @@ Content/untitled_category/*
 # Other programs
 /Programs/ExcelExporter/bin/Debug/
 /Programs/ExcelExporter/obj/Debug/
+/Programs/LuaPathConverter/obj/
+/Programs/LuaPathConverter/bin/
