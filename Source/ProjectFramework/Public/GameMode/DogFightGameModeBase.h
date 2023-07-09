@@ -42,6 +42,9 @@ public:
 
 	virtual EPlayerRelation GetPlayersRelation(AController* PlayerA, AController* PlayerB);
 
+	/** Dismiss current game session and let all players return to main menu. */
+	virtual void DismissCurrentGameSession();
+
 protected:
 
 	virtual void BeginPlay() override;

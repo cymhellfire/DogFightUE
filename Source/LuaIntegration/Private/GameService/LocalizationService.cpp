@@ -34,7 +34,7 @@ void ULocalizationService::LoadData()
 void ULocalizationService::RegisterLuaFunction()
 {
 	lua_State* l = IUnLuaModule::Get().GetEnv(this)->GetMainState();
-	lua_register(l, "GetLocalizedString", Lua_LocalizeString);
+	lua_register(l, "GetNativeLocalizedString", Lua_LocalizeString);
 }
 
 int ULocalizationService::Lua_LocalizeString(lua_State* L)

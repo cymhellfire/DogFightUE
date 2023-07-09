@@ -5,14 +5,12 @@ local DataBinding = require("Common.MVVM.DataBinding")
 local PlayerOperationPanelVM = require("DogFight.Widget.InGame.PlayerOperationPanel.PlayerOperationPanelVM")
 --local ListWrapper = require("Common.ListView.ListViewWrapper")
 
-function PlayerOperationPanelView:Initialize()
+function PlayerOperationPanelView:PostInitialized()
     local NewVM = InstantiateViewModel(PlayerOperationPanelVM)
     self:BindViewModel(NewVM, {
         --{BindKey = "TitleMessage",   UIKey = "TitleMessage_Text",   DataBinding = DataBinding.TextContextBinding(), }
     })
-end
 
-function PlayerOperationPanelView:PostInitialized()
     ---@type ListViewWrapper 
     --self.MyListWrapper = ListWrapper.New(self, self.ListView)
 

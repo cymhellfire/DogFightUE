@@ -18,6 +18,14 @@ void UCommonWidgetFunctionLibrary::SetImageByTexturePath(UImage* InWidget, const
 	}
 }
 
+void UCommonWidgetFunctionLibrary::SetImageByTextureAsset(UImage* InWidget, UTexture2D* InTexture, bool bMatchSize)
+{
+	if (IsValid(InWidget) && IsValid(InTexture))
+	{
+		InWidget->SetBrushFromTexture(InTexture, bMatchSize);
+	}
+}
+
 FText UCommonWidgetFunctionLibrary::GetAttributeLocalizedName(UAttributeWrapperObjectBase* InAttrObject)
 {
 	if (auto LocalizeService = UGameService::GetGameServiceBySuperClass<ULocalizationService>())

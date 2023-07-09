@@ -37,7 +37,8 @@ function LuaEventService:UnregisterListener(EventIndex, Object, Callback)
 end
 
 function LuaEventService:OnReceiveNativeNotify(EventIndex, ...)
-    print(self, ":OnReceiveNativeNotify ", EventIndex, " Params: ", ...)
+    local EventName = UE.ELuaEvent.GetNameStringByValue(EventIndex) or EventIndex
+    print(self, ":OnReceiveNativeNotify ", EventName, " Params: ", ...)
     self:TriggerDelegate(EventIndex, ...)
 end
 

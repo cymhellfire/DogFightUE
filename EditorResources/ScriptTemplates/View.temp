@@ -5,16 +5,21 @@ local DataBinding = require("Common.MVVM.DataBinding")
 local $ClassPure$VM = require("$Path$.$ClassPure$VM")
 --local ListWrapper = require("Common.ListView.ListViewWrapper")
 
-function $Class$:Initialize()
+function $Class$:PostInitialized()
     local NewVM = InstantiateViewModel($ClassPure$VM)
     self:BindViewModel(NewVM, {
         --{BindKey = "TitleMessage",   UIKey = "TitleMessage_Text",   DataBinding = DataBinding.TextContextBinding(), }
     })
-end
 
-function $Class$:PostInitialized()
     ---@type ListViewWrapper 
     --self.MyListWrapper = ListWrapper.New(self, self.ListView)
+end
+
+function $Class$:UnInitialize()
+
+end
+
+function $Class$:OnShow()
 end
 
 return $Class$

@@ -5,15 +5,12 @@ local DataBinding = require("Common.MVVM.DataBinding")
 local CardModifierListVM = require("DogFight.Widget.InGame.CardModifierList.CardModifierListVM")
 local ListWrapper = require("Common.ListView.ListViewWrapper")
 
-function CardModifierListView:Initialize()
+function CardModifierListView:PostInitialized()
     local NewVM = InstantiateViewModel(CardModifierListVM)
     self:BindViewModel(NewVM, {
         --{BindKey = "TitleMessage",   UIKey = "TitleMessage_Text",   DataBinding = DataBinding.TextContextBinding(), }
     })
 
-end
-
-function CardModifierListView:PostInitialized()
     ---@type ListViewWrapper 
     self.ModifierList = ListWrapper.New(self, self.ModifierList_ListView)
 end

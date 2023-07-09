@@ -23,9 +23,18 @@ public:
 	}
 
 	template <typename T>
-	static T* GetGameService()
+	static T* GetGameService(const UObject* WorldContext = nullptr)
 	{
-		if (UWorld* CurrentWorld = GetActiveWorld())
+		UWorld* CurrentWorld;
+		if (IsValid(WorldContext))
+		{
+			CurrentWorld = WorldContext->GetWorld();
+		}
+		else
+		{
+			CurrentWorld = GetActiveWorld();
+		}
+		if (IsValid(CurrentWorld))
 		{
 			UDogFightGameInstance* DogFightGameInstance = Cast<UDogFightGameInstance>(CurrentWorld->GetGameInstance());
 			if (DogFightGameInstance)

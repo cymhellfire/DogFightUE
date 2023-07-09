@@ -7,6 +7,17 @@
 #include "LuaEventService.generated.h"
 
 /**
+ * @brief Send event to lua side with parameters. 
+ * @param EventName Event index to send
+ * @param ... Variable arguments to send
+ */
+#define SEND_LUA_EVENT(EventName, ...)		\
+	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>(this)) \
+	{ \
+		LuaEventService->SendEventToLua(EventName, __VA_ARGS__); \
+	}
+
+/**
  * Service that can send event to lua side.
  */
 UCLASS()

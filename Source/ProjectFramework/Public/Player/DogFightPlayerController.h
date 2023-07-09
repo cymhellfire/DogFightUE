@@ -22,7 +22,12 @@ public:
 	UFUNCTION(Client, Reliable)
 	virtual void ClientReturnToMainMenuWithReason(EReturnToMainMenuReason::Type Reason);
 
+	UFUNCTION(Client, Reliable)
+	virtual void ClientReturnToMainMenuWithReason2(EReturnToMainMenuReason::Type Reason);
+
 	virtual void HandleReturnToMainMenu();
+
+	virtual void HandleReturnToMainMenu2() {}
  
 	/** Send just before the host start game. */
 	UFUNCTION(Client, Reliable)

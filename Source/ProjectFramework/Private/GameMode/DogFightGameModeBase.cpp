@@ -80,3 +80,26 @@ void ADogFightGameModeBase::Logout(AController* Exiting)
 
 	Super::Logout(Exiting);
 }
+
+void ADogFightGameModeBase::DismissCurrentGameSession()
+{
+	ADogFightPlayerController* LocalPlayerController = nullptr;
+
+	// Notify everyone else to leave game
+	for (ADogFightPlayerController* PlayerController : PlayerControllerList)
+	{
+		if (!PlayerController->IsLocalController())
+		{
+			PlayerController->ClientReturnToMainMenuWithReason2(EReturnToMainMenuReason::HostLeft);
+		}
+		else
+		{
+			LocalPlayerController = PlayerController;
+		}
+	}
+
+	if (LocalPlayerController != nullptr)
+	{
+		LocalPlayerController->HandleReturnToMainMenu2();
+	}
+}

@@ -18,8 +18,13 @@ public:
 protected:
 	virtual void NativeOnInitialized() override;
 
+	virtual void NativeDestruct() override;
+
 	UFUNCTION(BlueprintImplementableEvent, Category="LuaUserWidget")
 	void PostInitialized();
+
+	UFUNCTION(BlueprintImplementableEvent, Category="LuaUserWidget")
+	void UnInitialize();
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="LuaUserWidget")

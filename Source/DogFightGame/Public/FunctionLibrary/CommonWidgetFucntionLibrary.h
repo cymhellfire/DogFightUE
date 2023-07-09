@@ -18,5 +18,8 @@ public:
 	static void SetImageByTexturePath(UImage* InWidget, const FString& InPath, bool bMatchSize = false);
 
 	UFUNCTION(BlueprintCallable, Category="CommonWidgetFunctionLibrary")
+	static void SetImageByTextureAsset(UImage* InWidget, UTexture2D* InTexture, bool bMatchSize = false);
+
+	UFUNCTION(BlueprintCallable, Category="CommonWidgetFunctionLibrary")
 	static FText GetAttributeLocalizedName(UAttributeWrapperObjectBase* InAttrObject);
 };

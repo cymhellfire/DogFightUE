@@ -6,7 +6,7 @@ local DataBinding = require("Common.MVVM.DataBinding")
 local WidgetCardListItemVM = require("DogFight.Widget.InGame.CardList.WidgetCardListItemVM")
 local ListWrapper = require("Common.ListView.ListViewWrapper")
 
-function WidgetCardListItem:Initialize()
+function WidgetCardListItem:PostInitialized()
     local NewVM = InstantiateViewModel(WidgetCardListItemVM)
     self:BindViewModel(NewVM, {
         {BindKey = "CardName",          UIKey = "CardName_Text",    DataBinding = DataBinding.TextContextBinding() },
@@ -77,7 +77,7 @@ end
 
 function WidgetCardListItem:OnListItemObjectSet(InObject)
     --- Remove the callback of description change
-    if self.Data ~= nil then
+    if self.Data ~= nil and self.Data:IsValid() then
         self.Data.OnDescUpdated:Remove(self, self.OnDescUpdated)
     end
 

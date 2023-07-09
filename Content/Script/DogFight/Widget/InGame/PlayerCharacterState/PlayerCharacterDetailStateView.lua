@@ -5,15 +5,13 @@ local DataBinding = require("Common.MVVM.DataBinding")
 local PlayerCharacterDetailStateVM = require("DogFight.Widget.InGame.PlayerCharacterState.PlayerCharacterDetailStateVM")
 local ListWrapper = require("Common.ListView.ListViewWrapper")
 
-function PlayerCharacterDetailStateView:Initialize()
+function PlayerCharacterDetailStateView:PostInitialized()
     local NewVM = InstantiateViewModel(PlayerCharacterDetailStateVM)
     self:BindViewModel(NewVM, {
         {BindKey = "CharacterName",     UIKey = "CharacterName_Text",   DataBinding = DataBinding.TextContextBinding(), },
-        {BindKey = "HealthText",        UIKey = "Health_Text",          DataBinding = DataBinding.TextContextBinding(), },
+        --{BindKey = "HealthText",        UIKey = "Health_Text",          DataBinding = DataBinding.TextContextBinding(), },
     })
-end
 
-function PlayerCharacterDetailStateView:PostInitialized()
     ---@type ListViewWrapper 
     self.DRCAttrList = ListWrapper.New(self, self.DRC_AttributeList)
 end

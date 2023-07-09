@@ -6,14 +6,12 @@ local DataBinding = require("Common.MVVM.DataBinding")
 local WidgetCardListVM = require("DogFight.Widget.InGame.CardList.WidgetCardListVM")
 local ListWrapper = require("Common.ListView.ListViewWrapper")
 
-function WidgetCardList:Initialize()
+function WidgetCardList:PostInitialized()
     local NewVM = InstantiateViewModel(WidgetCardListVM)
     self:BindViewModel(NewVM, {
         --{BindKey = "TitleMessage",   UIKey = "TitleMessage_Text",   DataBinding = DataBinding.TextContextBinding(), }
     })
-end
 
-function WidgetCardList:PostInitialized()
     self.CardListWrapper = ListWrapper.New(self, self.CardList_ListView)
 
     -- Cache local player id

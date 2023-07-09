@@ -10,6 +10,17 @@
 #include "Player/TopDownStylePlayerState.h"
 #include "PlayerController/TopDownStylePlayerController.h"
 #include "PlayerController/PlayerControllerComponent/InGameWidgetManipulatorComponent.h"
+#include "Subsystem/GameplayDataSubsystem.h"
+
+UGameplayDataSubsystem* UCommonGameplayFunctionLibrary::GetGameplayDataSubsystem(const UObject* WorldContextObject)
+{
+	if (auto GameInstance = WorldContextObject->GetWorld()->GetGameInstance())
+	{
+		return GameInstance->GetSubsystem<UGameplayDataSubsystem>();
+	}
+
+	return nullptr;
+}
 
 APlayerState* UCommonGameplayFunctionLibrary::GetPlayerStateById(const UObject* WorldContextObject, int32 InPlayerId)
 {

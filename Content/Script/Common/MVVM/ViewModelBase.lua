@@ -1,7 +1,13 @@
 require "Common.TableUtils"
 
+---@class ViewModelBase
 local ViewModelBase = {}
 
+local NoInitValue = {}
+
+---@param t ViewModelBase
+---@param k string Key of bind
+---@param v any Value to assign
 local function NewIndex(t, k, v)
     t:__TriggerDelegate(k, v)
     rawset(t.BindingTable, k, v)
@@ -48,6 +54,14 @@ function ViewModelBase:AddBinding(InTable)
         return
     end
 
+    -- Skip binding with non-exist target UI
+    local ViewWidget = rawget(self, "BindView")
+    local Widget = ViewWidget[InTable.UIKey]
+    if Widget == nil then
+        error(InTable.UIKey .. " is invalid widget name to bind.")
+        return
+    end
+
     -- Skip the non-exist binding
     local BindingTable = rawget(self, "BindingTable")
     if not table.containsKey(BindingTable, BindKey) then
@@ -67,8 +81,21 @@ function ViewModelBase:AddBinding(InTable)
         ["UIKey"] = InTable.UIKey,
         ["DataBinding"] = InTable.DataBinding,
     }
+
+    -- Setup initial value
+    local InitValue = BindingTable[BindKey] or NoInitValue
+    if InitValue ~= NoInitValue then
+        -- local ViewWidget = rawget(self, "BindView")
+        -- local Widget = ViewWidget[InTable.UIKey]
+        -- if Widget then
+        --     InTable.DataBinding:SetValue(Widget, InitValue)
+        -- end
+        NewIndex(self, InTable.BindKey, InitValue)
+    end
 end
 
+---@param key string Key of binding
+---@param value any Value to assign
 function ViewModelBase:__TriggerDelegate(key, value)
     local DelegateMap = rawget(self, "DelegateMap")
     local ViewWidget = rawget(self, "BindView")
@@ -85,5 +112,6 @@ function ViewModelBase:__TriggerDelegate(key, value)
 end
 
 _G.InstantiateViewModel = InstantiateViewModel
+_G.NoInitValue = NoInitValue
 
 return ViewModelBase

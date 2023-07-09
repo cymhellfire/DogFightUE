@@ -36,6 +36,7 @@ public class DogFightGame : ModuleRules
                 "Lua",
                 "AttributeSystem",
                 "ImGui",
+                "CommonUser",
             }
         );
         

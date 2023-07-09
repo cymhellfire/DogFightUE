@@ -1,20 +1,16 @@
 ---@class DamageDisplayUnit : BP_Widget_DamageDisplayUnit_C
 local DamageDisplayUnit = UnrealClass("Common.MVVM.ModelBase")
 local DamageDisplayUnitVM = require("DogFight.Widget.InGame.DamageDisplay.DamageDisplayUnitVM")
-local WidgetNameDef = require("DogFight.Services.Config.GameWidgetNameDef")
+local WidgetNameDef = require("DogFight.Services.GameWidgetService.GameWidgetNameDef")
 local ViewModelBase = require("Common.MVVM.ViewModelBase")
 local DataBinding = require("Common.MVVM.DataBinding")
 
-function DamageDisplayUnit:Initialize()
+function DamageDisplayUnit:PostInitialized()
     local NewVM = InstantiateViewModel(DamageDisplayUnitVM)
     self:BindViewModel(NewVM, {
         {BindKey = "DamageValueText",   UIKey = "DamageText",   DataBinding = DataBinding.TextContextBinding() },
         {BindKey = "DamageColor",       UIKey = "DamageText",   DataBinding = DataBinding.ColorAndOpacityBinding() },
     })
-end
-
-function DamageDisplayUnit:PostInitialized()
-    
 end
 
 ---Triggered when take damage.

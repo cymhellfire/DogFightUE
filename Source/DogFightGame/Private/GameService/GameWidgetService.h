@@ -45,6 +45,6 @@ public:
 
 	virtual FString GetModuleName_Implementation() const override
 	{
-		return "DogFight.Services.GameWidgetService";
+		return "DogFight.Services.GameWidgetService.GameWidgetService";
 	}
 };
