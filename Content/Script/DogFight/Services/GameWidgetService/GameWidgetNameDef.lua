@@ -3,6 +3,7 @@ local GameWidgetNameDef = {
     --- Common
     WidgetGenericMessageDialog = "WidgetGenericMessageDialog",
     WidgetJoiningSession = "WidgetJoiningSession",
+    WidgetGameLoading = "WidgetGameLoading",
     --- Main Menu
     WidgetCreateLobbyDialog = "WidgetCreateLobbyDialog",
     WidgetLobbyBrowser = "WidgetLobbyBrowser",

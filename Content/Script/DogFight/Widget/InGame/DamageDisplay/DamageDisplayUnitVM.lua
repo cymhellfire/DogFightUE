@@ -2,7 +2,7 @@ local DamageDisplayUnitVM = {}
 
 DamageDisplayUnitVM.BindingTable = {
     DamageValueText = "",
-    DamageColor = "",
+    DamageColor = NoInitValue,
 }
 
 return DamageDisplayUnitVM

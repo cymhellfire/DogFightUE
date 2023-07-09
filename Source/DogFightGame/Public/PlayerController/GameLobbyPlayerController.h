@@ -35,6 +35,8 @@ public:
 
 	virtual void ClientReturnToMainMenuWithReason2_Implementation(EReturnToMainMenuReason::Type Reason) override;
 
+	virtual void ClientPreStartGame_Implementation() override;
+
 	virtual void HandleReturnToMainMenu2() override;
 
 protected:

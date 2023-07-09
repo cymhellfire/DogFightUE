@@ -9,6 +9,8 @@ local DataBinding = require("Common.MVVM.DataBinding")
 local GameLobbyMainVM = require("DogFight.Widget.GameLobby.GameLobbyMainVM")
 local ListWrapper = require("Common.ListView.ListViewWrapper")
 
+local GameWidgetNameDef = require("DogFight.Services.GameWidgetService.GameWidgetNameDef")
+
 ---@param self GameLobbyMainView
 local function RegisterCallback(self)
     self.LocalPlayerState = UE.UGameLobbyFunctionLibrary.GetLocalGameLobbyPlayerState(self)
@@ -45,10 +47,22 @@ local function LoadGameExperiences(self)
             self.MapList:LoadDataByList(ExperienceList)
 
             -- Select first experience as default
-            self.SelectedGameExperience = ExperienceList[1]
-            InitMapInfo(self)
+            self.PendingGameExperience = ExperienceList[1]
+            self:OnConfirmMapButtonClicked()
         else
             self.MapList:Clear()
+        end
+    end
+end
+
+---@param self GameLobbyMainView
+local function DisplayCurrentExperience(self)
+    ---@type AGameLobbyGameState
+    local GameState = UE.UGameLobbyFunctionLibrary.GetCurrentLobbyGameState(self)
+    if GameState then
+        local CurrentExperience = GameState:GetGameplayExperience()
+        if CurrentExperience then
+            InitMapInfo(self, CurrentExperience)
         end
     end
 end
@@ -78,6 +92,7 @@ function GameLobbyMainView:PostInitialized()
         LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_OnGameReadyChanged, self, self.UpdateGameReadyStatus)
         LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_OnGameplayExperienceChanged, self, self.OnGameplayExperienceChanged)
         LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_OnAIPlayerCountChanged, self, self.OnAIPlayerCountChanged)
+        LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_NotifyGameLoading, self, self.NotifyGameLoading)
     end
 
     -- Change ready button based on net role
@@ -109,7 +124,11 @@ function GameLobbyMainView:PostInitialized()
     RegisterCallback(self)
 
     -- Load game experiences
-    LoadGameExperiences(self)
+    if self.bIsServer then
+        LoadGameExperiences(self)
+    else
+        DisplayCurrentExperience(self)
+    end
 end
 
 function GameLobbyMainView:UnInitialize()
@@ -121,6 +140,7 @@ function GameLobbyMainView:UnInitialize()
         LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_OnGameReadyChanged, self, self.UpdateGameReadyStatus)
         LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_OnGameplayExperienceChanged, self, self.OnGameplayExperienceChanged)
         LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_OnAIPlayerCountChanged, self, self.OnAIPlayerCountChanged)
+        LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_NotifyGameLoading, self, self.NotifyGameLoading)
     end
 
     self.ReadyButton.OnClicked:Remove(self, self.OnReadyButtonClicked)
@@ -266,6 +286,14 @@ end
 function GameLobbyMainView:OnMapListSelectChanged(Item, bSelected)
     if bSelected then
         self.PendingGameExperience = Item:GetData()
+    end
+end
+
+function GameLobbyMainView:NotifyGameLoading()
+    ---@type GameWidgetService
+    local GameWidgetService = GetGameService(self, GameServiceNameDef.GameWidgetService)
+    if GameWidgetService then
+        GameWidgetService:ShowWidget(GameWidgetNameDef.WidgetGameLoading, true)
     end
 end
 

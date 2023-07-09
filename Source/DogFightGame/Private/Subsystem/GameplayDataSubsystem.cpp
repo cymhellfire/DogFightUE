@@ -5,6 +5,7 @@
 
 #include "Common/GameExperienceDef.h"
 #include "Engine/AssetManager.h"
+#include "GameMode/DogFightGameModeBase.h"
 
 UGameplayDataSubsystem::UGameplayDataSubsystem()
 {
@@ -46,6 +47,15 @@ void UGameplayDataSubsystem::LoadGameplayExperience(UGameplayExperience* Gamepla
 	if (!IsValid(GameplayExperience))
 	{
 		return;
+	}
+
+	// Notify client the loading
+	if (auto GameMode = GetWorld()->GetAuthGameMode())
+	{
+		if (auto DogFightGM = Cast<ADogFightGameModeBase>(GameMode))
+		{
+			DogFightGM->NotifyClientGameWillStart();
+		}
 	}
 
 	FString TravelUrl = GameplayExperience->GetMapURL();

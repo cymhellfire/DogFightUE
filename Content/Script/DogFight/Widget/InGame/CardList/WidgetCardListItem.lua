@@ -77,7 +77,7 @@ end
 
 function WidgetCardListItem:OnListItemObjectSet(InObject)
     --- Remove the callback of description change
-    if self.Data ~= nil then
+    if self.Data ~= nil and self.Data:IsValid() then
         self.Data.OnDescUpdated:Remove(self, self.OnDescUpdated)
     end
 

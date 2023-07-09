@@ -48,6 +48,11 @@ void AGameLobbyPlayerController::ClientReturnToMainMenuWithReason2_Implementatio
 	SEND_LUA_EVENT(ELuaEvent::LuaEvent_SessionDismiss, Reason)
 }
 
+void AGameLobbyPlayerController::ClientPreStartGame_Implementation()
+{
+	SEND_LUA_EVENT(ELuaEvent::LuaEvent_NotifyGameLoading)
+}
+
 void AGameLobbyPlayerController::HandleReturnToMainMenu2()
 {
 	Super::HandleReturnToMainMenu2();

@@ -17,6 +17,8 @@ namespace ELuaEvent
 		LuaEvent_OnAIPlayerCountChanged,
 		LuaEvent_OnGameplayExperienceChanged,
 		LuaEvent_SessionDismiss,
+		LuaEvent_NotifyGameLoading,
+
 		
 		LuaEvent_ReadyPlayerCount,
 		LuaEvent_ReceiveTitleMessage,

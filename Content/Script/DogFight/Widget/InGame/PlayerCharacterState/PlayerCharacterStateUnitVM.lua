@@ -2,7 +2,7 @@
 local PlayerCharacterStateUnitVM = {}
 
 PlayerCharacterStateUnitVM.BindingTable = {
-    HealthText = "",
+    HealthText = NoInitValue,
 }
 
 return PlayerCharacterStateUnitVM
