@@ -1,10 +1,11 @@
 local TestCard = UnrealClass("DogFight.Card.CardBase")
+local AttributeEnum = require "DogFight.DataBridge.AttributeEnum"
 
 function TestCard:OnInitialized()
     -- Create attributes
     self:CreateAttribute({
         Name = "Damage",
-        DataType = "Integer",
+        DataType = AttributeEnum.DataType.Integer,
         Value = 50,
         Tags = {"Tag1", "Tag2"},
     })

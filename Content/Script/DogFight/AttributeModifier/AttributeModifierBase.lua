@@ -42,4 +42,12 @@ function AttributeModifierBase:InitDescObjectScript(InDescObject)
     end
 end
 
+---Initialize this modifier with given arguments
+---@param InArgs table Arguments to initialize with.
+function AttributeModifierBase:SetupArguments(InArgs)
+    if self._ModifierScirpt then
+        self._ModifierScirpt:SetupArguments(InArgs)
+    end
+end
+
 return AttributeModifierBase

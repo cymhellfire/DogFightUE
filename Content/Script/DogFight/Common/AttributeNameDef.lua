@@ -3,6 +3,8 @@ local AttributeNameDef = {
     --- Card
     Damage = "Damage",
     ProjectileSpeed = "ProjectileSpeed",
+    ResistValue = "ResistValue",
+    BuffDuration = "BuffDuration",
     --- Character
     HandCardCapacity = "HandCardCapacity",
 }

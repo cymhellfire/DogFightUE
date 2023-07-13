@@ -8,11 +8,27 @@ local CardCommandHelper = require "Card.CardCommand.CardCommandHelper"
 ---@class ActionAddBuff : CardActionCommand Action that add a buff to given character.
 local ActionAddBuff = UnrealClass(CardActionCommand)
 
+---@param self ActionAddBuff
+---@param InArgs table
+local function ConvertBuffArgumentList(self, InArgs)
+    if type(InArgs) ~= "table" then
+        return
+    end
+
+    local NewArgs = {}
+    for k, v in pairs(InArgs) do
+        NewArgs[k] = self:GetArgumentValue(v)
+    end
+
+    return NewArgs
+end
+
 ---Initialize the buff creating settings.
 ---@param InTable table Create parameters.
 function ActionAddBuff:InitBuffSettings(InTable)
     self._BuffId = InTable.BuffId
     self._BuffDuration = InTable.Duration
+    self._Arguments = ConvertBuffArgumentList(self, InTable.Arguments)
     self._TargetList = InTable.TargetList
 end
 
@@ -26,12 +42,16 @@ local function CreateBuffAndApply(self, InTarget)
     ---@type BuffService
     local BuffService = GetGameService(self._CardLogic, GameServiceNameDef.BuffService)
     if BuffService then
-        ---@type UNewBuffBase
+        ---@type BuffBase
         local NewBuff = BuffService:CreateBuff(self._BuffId)
         if NewBuff then
             -- Setup the lifespan
             if type(self._BuffDuration) == "number" and type(NewBuff.SetDuration) == "function" then
                 NewBuff:SetDuration(self._BuffDuration)
+            end
+            -- Initialize buff
+            if type(self._Arguments) == "table" and type(NewBuff.SetupArgument) == "function" then
+                NewBuff:SetupArgument(self._Arguments)
             end
             InTarget:AddBuff(NewBuff)
         end
