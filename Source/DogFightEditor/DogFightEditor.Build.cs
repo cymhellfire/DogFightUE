@@ -14,6 +14,7 @@ public class DogFightEditor : ModuleRules
             {
                 "Core", 
                 "UnrealEd",
+                "DeveloperSettings",
             }
         );
 

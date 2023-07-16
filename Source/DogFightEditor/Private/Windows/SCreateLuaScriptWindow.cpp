@@ -1,6 +1,7 @@
 #include "SCreateLuaScriptWindow.h"
 
 #include "DetailLayoutBuilder.h"
+#include "Settings/CreateLuaScriptSettings.h"
 #include "Utils/DogFightUtilsFunctionLibrary.h"
 #include "Widgets/Input/SEditableText.h"
 #include "Widgets/Layout/SConstraintCanvas.h"
@@ -20,14 +21,47 @@ SCreateLuaScriptWindow::SCreateLuaScriptWindow()
 
 void SCreateLuaScriptWindow::Construct(const FArguments& InArgs)
 {
-	ModuleNameList.Add(MakeShareable(new FString("DogFight")));
-	ModuleNameList.Add(MakeShareable(new FString("GameFlow")));
+	auto CreateLuaSettings = GetDefault<UCreateLuaScriptSettings>();
+	if (CreateLuaSettings)
+	{
+		// Fill module name
+		for (auto& Setting : CreateLuaSettings->ModuleList)
+		{
+			ModuleNameList.Add(MakeShareable(new FString(Setting.ModuleName)));
+		}
+
+		// Fill template name
+		for (auto& Setting : CreateLuaSettings->TemplateList)
+		{
+			TemplateNameList.Add(MakeShareable(new FString(Setting.TemplateName)));
+		}
+	}
+	else
+	{
+		ModuleNameList.Add(MakeShareable(new FString("DogFight")));
+		ModuleNameList.Add(MakeShareable(new FString("GameFlow")));
+		TemplateNameList.Add(MakeShareable(new FString("Card")));
+		TemplateNameList.Add(MakeShareable(new FString("CardModifier")));
+		TemplateNameList.Add(MakeShareable(new FString("GameFlowState")));
+		TemplateNameList.Add(MakeShareable(new FString("CardLogic")));
+		TemplateNameList.Add(MakeShareable(new FString("CardAction")));
+	}
+
+	if (ModuleNameList.Num() == 0 || TemplateNameList.Num() == 0)
+	{
+		ChildSlot[
+			SNew(SBox)
+			.HAlign(HAlign_Center)
+			.VAlign(VAlign_Center)
+			[
+				SNew(STextBlock)
+				.Text(FText::FromString("Create lua setting invalid."))
+			]
+		];
+		return;
+	}
+
 	SelectedModule = ModuleNameList[0];
-	TemplateNameList.Add(MakeShareable(new FString("Card")));
-	TemplateNameList.Add(MakeShareable(new FString("CardModifier")));
-	TemplateNameList.Add(MakeShareable(new FString("GameFlowState")));
-	TemplateNameList.Add(MakeShareable(new FString("CardLogic")));
-	TemplateNameList.Add(MakeShareable(new FString("CardAction")));
 	SelectedTemplate = TemplateNameList[0];
 	SetCreateTemplateList(*SelectedTemplate);
 
