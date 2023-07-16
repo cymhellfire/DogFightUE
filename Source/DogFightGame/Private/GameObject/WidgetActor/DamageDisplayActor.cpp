@@ -10,6 +10,8 @@ ADamageDisplayActor::ADamageDisplayActor()
 
 	// Create locator component
 	LocatorComponent = CreateDefaultSubobject<UWidgetLocatorComponent>("LocatorComponent");
+
+	CollisionDuration = 0.5f;
 }
 
 void ADamageDisplayActor::SetWidget(UDamageDisplayWidget* InWidget)
@@ -38,6 +40,9 @@ void ADamageDisplayActor::Activate(float Lifetime)
 		SetLifeSpan(Lifetime);
 	}
 
+	// Set collision timer
+	GetWorldTimerManager().SetTimer(NoCollisionHandle, this, &ADamageDisplayActor::NoCollisionTimerExpired, CollisionDuration);
+
 	// Notify the widget
 	if (IsValid(DamageDisplayWidget))
 	{
@@ -60,4 +65,9 @@ void ADamageDisplayActor::Dead()
 
 	// Broadcast event
 	OnDamageDisplayActorDead.Broadcast(this);
+}
+
+void ADamageDisplayActor::NoCollisionTimerExpired()
+{
+	OnDamageDisplayActorNoCollision.Broadcast(this);
 }

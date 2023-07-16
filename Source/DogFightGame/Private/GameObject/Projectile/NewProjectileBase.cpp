@@ -94,7 +94,8 @@ void ANewProjectileBase::Dead()
 		{
 			if (WarheadData.DamageRadius > 0.f)
 			{
-				
+				// Cause damage inside a sphere
+				UCommonGameplayFunctionLibrary::DamageArea(this, WarheadData.DamageId, GetActorLocation(), WarheadData.DamageRadius, Damage, this);
 			}
 			else
 			{

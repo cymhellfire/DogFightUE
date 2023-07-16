@@ -14,6 +14,11 @@ end
 function BuffLogicBase:SetupArgument(InArgs)
     print("[BuffLogic] " .. self:tostring() .. " setup arguments.")
     self._BuffArgs = InArgs
+
+    --- Trigger the setup callback
+    if type(self.OnSetupArgument) == "function" then
+        self:OnSetupArgument()
+    end
 end
 
 function BuffLogicBase:OnInit()

@@ -25,9 +25,10 @@ end
 function ActionLaunchProjectile:SetCommandInfo(ProjectileInfo, TargetInfo)
     -- Read in all settings for projectile
     if ProjectileInfo then
-        self._ProjectileId = ProjectileInfo.Id or ProjectileTypeDef.DefaultProjectile
-        self._MuzzleSpeed = ProjectileInfo.MuzzleSpeed or 100
-        self._ProjectileDamage = ProjectileInfo.Damage or nil
+        local Argument = self:ConvertArgumentTable(ProjectileInfo)
+        self._ProjectileId = Argument.ProjectileId or ProjectileTypeDef.DefaultProjectile
+        self._MuzzleSpeed = Argument.Speed or 100
+        self._ProjectileDamage = Argument.Damage or nil
     end
 
     -- Record all target information

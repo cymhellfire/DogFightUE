@@ -11,6 +11,8 @@ class DOGFIGHTGAME_API UInGameWidgetManipulatorComponent : public UActorComponen
 public:
 	UInGameWidgetManipulatorComponent(const FObjectInitializer& ObjectInitializer);
 
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 	/**
 	 * Notify client side create a new widget with given name.
 	 * @param InWidgetName			Name of widget to create.
@@ -46,4 +48,9 @@ public:
 	 */
 	UFUNCTION(Client, Reliable)
 	void ClientShowDamageWidget(const FDamageDisplayParams& DamageDisplayParams);
+
+private:
+	void ProcessDamageDisplayQueue();
+
+	TArray<FDamageDisplayParams> DamageDisplayQueue;
 };

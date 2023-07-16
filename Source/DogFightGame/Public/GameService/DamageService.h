@@ -51,9 +51,10 @@ public:
 	/**
 	 * Create a damage display actor with given data.
 	 * @param DisplayParams		Damage display parameter set.
+	 * @return Whether the display is shown normally.
 	 */
 	UFUNCTION(BlueprintCallable, Category="DamageService")
-	void CreateDamageDisplay(const FDamageDisplayParams& DisplayParams);
+	bool CreateDamageDisplay(const FDamageDisplayParams& DisplayParams);
 
 	virtual FString GetModuleName_Implementation() const override
 	{
@@ -73,7 +74,12 @@ protected:
 	UFUNCTION()
 	void OnDamageDisplayActorDead(ADamageDisplayActor* Instance);
 
+	UFUNCTION()
+	void OnDamageDisplayActorNoCollision(ADamageDisplayActor* Instance);
+
 protected:
 	UPROPERTY(Transient)
 	TMap<int32, UExtendedDamageInstance*> DamageTypeMap;
+
+	TArray<FVector> CollisionLocation;
 };

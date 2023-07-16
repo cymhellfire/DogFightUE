@@ -30,6 +30,16 @@ local function ConvertDescArgument(DescObject, InString)
         if AttrWrapper then
             return AttrWrapper:GetValue()
         end
+    elseif string.startWith(InString, "[Float]") then
+        local SuffixString = string.sub(InString, 8, #InString)
+        -- Check the output format
+        local bPercent = string.startWith(SuffixString, "[Percent]")
+        local AttrName = bPercent and string.sub(SuffixString, 10, #SuffixString) or SuffixString
+        ---@type UAttributeFloatWrapperObject
+        local AttrWrapper = DescObject:GetFloatAttributeWrapperByName(AttrName)
+        if AttrWrapper then
+            return bPercent and string.format("%.0f%%", AttrWrapper:GetValue() * 100) or AttrWrapper:GetValue()
+        end
     end
 
     -- Use original string

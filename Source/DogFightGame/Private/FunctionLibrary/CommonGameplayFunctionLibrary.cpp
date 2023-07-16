@@ -184,8 +184,17 @@ void UCommonGameplayFunctionLibrary::DamageActor(const UObject* WorldContextObje
 	}
 }
 
+void UCommonGameplayFunctionLibrary::DamageArea(const UObject* WorldContextObject, int32 DamageId,
+	const FVector& Origin, float Radius, float BaseDamage, AActor* Causer)
+{
+	if (auto GameMode = GetCurrentTopDownStyleGameMode(WorldContextObject))
+	{
+		GameMode->DamageArea(DamageId, Origin, Radius, BaseDamage, Causer);
+	}
+}
+
 void UCommonGameplayFunctionLibrary::MovePlayerCharacterToPosition(const UObject* WorldContextObject, int32 PlayerId,
-	FVector TargetPosition)
+                                                                   FVector TargetPosition)
 {
 	ForEachPlayerControllerDo(WorldContextObject, [TargetPosition](ATopDownStylePlayerController* InPC)
 	{

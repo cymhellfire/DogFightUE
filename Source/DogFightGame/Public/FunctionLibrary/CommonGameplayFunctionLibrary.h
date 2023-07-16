@@ -145,6 +145,17 @@ public:
 	static void DamageActor(const UObject* WorldContextObject, int32 DamageId, AActor* Target, float BaseDamage, AActor* Causer);
 
 	/**
+	 * Apply damage to all actors in given sphere.
+	 * @param DamageId			Id of damage to apply.
+	 * @param Origin			Target location.
+	 * @param Radius			Sphere radius.
+	 * @param BaseDamage		Base damage value.
+	 * @param Causer			Damage source.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
+	static void DamageArea(const UObject* WorldContextObject, int32 DamageId, const FVector& Origin, float Radius, float BaseDamage, AActor* Causer);
+
+	/**
 	 * Let character of specified player move to given position.
 	 * @param PlayerId			Id of character owner.
 	 * @param TargetPosition	Target position.

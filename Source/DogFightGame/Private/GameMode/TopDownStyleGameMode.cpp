@@ -113,8 +113,41 @@ void ATopDownStyleGameMode::DamageActor(int32 DamageId, AActor* Target, float Ba
 	}
 }
 
+void ATopDownStyleGameMode::DamageArea(int32 DamageId, const FVector& Origin, float Radius, float BaseDamage,
+	AActor* Causer)
+{
+	if (!IsValid(DamageCalculator))
+	{
+		return;
+	}
+
+	if (auto DamageService = UGameService::GetGameService<UDamageService>())
+	{
+		TArray<FOverlapResult> OverlapResults;
+		FCollisionShape CollisionSphere;
+		CollisionSphere.SetSphere(Radius);
+		if (GetWorld()->OverlapMultiByChannel(OverlapResults, Origin, FQuat::Identity, ECC_WorldStatic, CollisionSphere))
+		{
+			TArray<AActor*> AppliedActors;
+			// Apply damage to all result
+			for (auto& Result : OverlapResults)
+			{
+				if (auto Actor = Result.GetActor())
+				{
+					// Do NOT damage same actor multiple times
+					if (!AppliedActors.Contains(Actor))
+					{
+						DamageService->ApplyDamageToActor(DamageId, Actor, BaseDamage, Causer, DamageCalculator);
+						AppliedActors.Add(Actor);
+					}
+				}
+			}
+		}
+	}
+}
+
 void ATopDownStyleGameMode::OnDamageEventOccured(UExtendedDamageInstance* DamageInstance,
-	const FExtendedDamageEvent& DamageEvent)
+                                                 const FExtendedDamageEvent& DamageEvent)
 {
 	if (auto DamageService = UGameService::GetGameService<UDamageService>())
 	{

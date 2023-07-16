@@ -31,8 +31,14 @@ public:
 protected:
 	void Dead();
 
+	UFUNCTION()
+	void NoCollisionTimerExpired();
+
 public:
+	float CollisionDuration;
+
 	FOnDamageDisplayActorDead OnDamageDisplayActorDead;
+	FOnDamageDisplayActorDead OnDamageDisplayActorNoCollision;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="DamageDisplayActor")
@@ -40,4 +46,6 @@ protected:
 
 	UPROPERTY(Transient)
 	UDamageDisplayWidget* DamageDisplayWidget;
+
+	FTimerHandle NoCollisionHandle;
 };

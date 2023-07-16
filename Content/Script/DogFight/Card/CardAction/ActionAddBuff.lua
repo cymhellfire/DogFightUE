@@ -8,27 +8,12 @@ local CardCommandHelper = require "Card.CardCommand.CardCommandHelper"
 ---@class ActionAddBuff : CardActionCommand Action that add a buff to given character.
 local ActionAddBuff = UnrealClass(CardActionCommand)
 
----@param self ActionAddBuff
----@param InArgs table
-local function ConvertBuffArgumentList(self, InArgs)
-    if type(InArgs) ~= "table" then
-        return
-    end
-
-    local NewArgs = {}
-    for k, v in pairs(InArgs) do
-        NewArgs[k] = self:GetArgumentValue(v)
-    end
-
-    return NewArgs
-end
-
 ---Initialize the buff creating settings.
 ---@param InTable table Create parameters.
 function ActionAddBuff:InitBuffSettings(InTable)
-    self._BuffId = InTable.BuffId
-    self._BuffDuration = InTable.Duration
-    self._Arguments = ConvertBuffArgumentList(self, InTable.Arguments)
+    self._Arguments = self:ConvertArgumentTable(InTable)
+    self._BuffId = self._Arguments.BuffId
+    self._BuffDuration = self._Arguments.Duration
     self._TargetList = InTable.TargetList
 end
 

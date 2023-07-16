@@ -33,10 +33,10 @@ void AGameEffectNiagara::PlayEffect_Implementation()
 #if WITH_EDITOR
 			if (bIsRuntime)
 			{
-				NiagaraComponent->OnSystemFinished.AddDynamic(this, &AGameEffectNiagara::OnNiagaraSystemFinished);
+				NiagaraComponent->OnSystemFinished.AddUniqueDynamic(this, &AGameEffectNiagara::OnNiagaraSystemFinished);
 			}
 #else
-			NiagaraComponent->OnSystemFinished.AddDynamic(this, &AGameEffectNiagara::OnNiagaraSystemFinished);
+			NiagaraComponent->OnSystemFinished.AddUniqueDynamic(this, &AGameEffectNiagara::OnNiagaraSystemFinished);
 #endif
 		}
 	}
@@ -50,10 +50,10 @@ void AGameEffectNiagara::PlayEffect_Implementation()
 #if WITH_EDITOR
 			if (bIsRuntime)
 			{
-				AudioComponent->OnAudioFinished.AddDynamic(this, &AGameEffectNiagara::OnAudioFinished);
+				AudioComponent->OnAudioFinished.AddUniqueDynamic(this, &AGameEffectNiagara::OnAudioFinished);
 			}
 #else
-			AudioComponent->OnAudioFinished.AddDynamic(this, &AGameEffectNiagara::OnAudioFinished);
+			AudioComponent->OnAudioFinished.AddUniqueDynamic(this, &AGameEffectNiagara::OnAudioFinished);
 #endif
 		}
 	}

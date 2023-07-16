@@ -54,6 +54,16 @@ public:
 	 */
 	void DamageActor(int32 DamageId, AActor* Target, float BaseDamage, AActor* Causer);
 
+	/**
+	 * Apply damage to all actors inside area.
+	 * @param DamageId			Id of damage config.
+	 * @param Origin			Target location.
+	 * @param Radius			Sphere radius.
+	 * @param BaseDamage		Original damage value.
+	 * @param Causer			Causer of this damage.
+	 */
+	void DamageArea(int32 DamageId, const FVector& Origin, float Radius, float BaseDamage, AActor* Causer);
+
 protected:
 	UFUNCTION()
 	void OnDamageEventOccured(class UExtendedDamageInstance* DamageInstance, const FExtendedDamageEvent& DamageEvent);

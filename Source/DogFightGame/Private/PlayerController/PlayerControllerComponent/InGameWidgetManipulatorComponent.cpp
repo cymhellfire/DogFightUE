@@ -8,6 +8,17 @@ UInGameWidgetManipulatorComponent::UInGameWidgetManipulatorComponent(const FObje
 	: Super(ObjectInitializer)
 {
 	SetIsReplicatedByDefault(true);
+
+	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bStartWithTickEnabled = true;
+}
+
+void UInGameWidgetManipulatorComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+	FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	ProcessDamageDisplayQueue();
 }
 
 void UInGameWidgetManipulatorComponent::ClientAddInGameWidget_Implementation(const FString& InWidgetName, bool bSilent)
@@ -47,6 +58,37 @@ void UInGameWidgetManipulatorComponent::ClientShowDamageWidget_Implementation(co
 	// Create damage display locally
 	if (auto DamageService = UGameService::GetGameService<UDamageService>())
 	{
-		DamageService->CreateDamageDisplay(DamageDisplayParams);
+		if (!DamageService->CreateDamageDisplay(DamageDisplayParams))
+		{
+			// Push damage info into queue.
+			DamageDisplayQueue.Push(DamageDisplayParams);
+		}
+	}
+}
+
+void UInGameWidgetManipulatorComponent::ProcessDamageDisplayQueue()
+{
+	if (DamageDisplayQueue.IsEmpty())
+	{
+		return;
+	}
+
+	TArray<int32> RemoveIndex;
+	for (int32 i = 0; i < DamageDisplayQueue.Num(); ++i)
+	{
+		if (auto DamageService = UGameService::GetGameService<UDamageService>())
+		{
+			if (DamageService->CreateDamageDisplay(DamageDisplayQueue[i]))
+			{
+				// Record all damage display succeed
+				RemoveIndex.Add(i);
+			}
+		}
+	}
+
+	// Clear the damage info
+	for (int32 i = RemoveIndex.Num() - 1; i >=0; --i)
+	{
+		DamageDisplayQueue.RemoveAt(RemoveIndex[i]);
 	}
 }

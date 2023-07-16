@@ -1,5 +1,6 @@
 local CardTypeDef = require("DogFight.Services.CardService.CardTypeDef")
 local BuffTypeDef = require "DogFight.Services.BuffService.BuffTypeDef"
+local ProjectileTypeDef = require "DogFight.Services.ProjectileService.ProjectileTypeDef"
 local AttributeNameDef = require "DogFight.Common.AttributeNameDef"
 
 local AttributeEnum = require ("DogFight.DataBridge.AttributeEnum")
@@ -33,6 +34,11 @@ local Config = {
                     },
                 }
             },
+            ProjectileInfo = {
+                ProjectileId = ProjectileTypeDef.Fireball,
+                Damage = "[Int]" .. AttributeNameDef.Damage,
+                Speed = "[Int]" .. AttributeNameDef.ProjectileSpeed,
+            },
             AttrInfo = {
                 {Name = AttributeNameDef.Damage, Type = AttributeEnum.DataType.Integer, Value = 10},
                 {Name = AttributeNameDef.ProjectileSpeed, Type = AttributeEnum.DataType.Integer, Value = 500},
@@ -55,9 +61,7 @@ local Config = {
             BuffInfo = { 
                 BuffId = BuffTypeDef.AddPhysResist,
                 Duration = 1,
-                Arguments = {
-                    ResistValue = "[Int]" .. AttributeNameDef.ResistValue,
-                }
+                ResistValue = "[Int]" .. AttributeNameDef.ResistValue,
             },
             AttrInfo = {
                 {Name = AttributeNameDef.ResistValue, Type = AttributeEnum.DataType.Integer, Value = 10},
@@ -69,11 +73,27 @@ local Config = {
         LogicPath = "DogFight.Card.CardLogic.LogicAddBuff",
         LogicParam = {
             CardInfo = {
-                Name = "LuckyBomb",
+                Name = "Name_LuckyBomb",
+                Desc = {
+                    Key = "Desc_LuckyBomb",
+                    Param = {
+                        "[Float][Percent]" .. AttributeNameDef.BuffRatio,
+                        "[Int]" .. AttributeNameDef.Damage,
+                        "[Float]" .. AttributeNameDef.DamageRadius,
+                    }
+                }
             },
             BuffInfo = {
                 BuffId = BuffTypeDef.LuckyBomb,
+                BuffRatio = "[Float]" .. AttributeNameDef.BuffRatio,
+                Damage = "[Int]" .. AttributeNameDef.Damage,
+                DamageRadius = "[Float]" .. AttributeNameDef.DamageRadius,
             },
+            AttrInfo = {
+                {Name = AttributeNameDef.Damage, Type = AttributeEnum.DataType.Integer, Value = 10},
+                {Name = AttributeNameDef.DamageRadius, Type = AttributeEnum.DataType.Float, Value = 250},
+                {Name = AttributeNameDef.BuffRatio, Type = AttributeEnum.DataType.Float, Value = 0.35},
+            }
         },
     },
 }
