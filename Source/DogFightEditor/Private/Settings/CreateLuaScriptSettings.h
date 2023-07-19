@@ -6,6 +6,15 @@
 #include "Engine/DeveloperSettings.h"
 #include "CreateLuaScriptSettings.generated.h"
 
+UENUM(BlueprintType)
+enum class ECreateLuaScriptTabType : uint8
+{
+	TT_Default		UMETA(DisplayName="Default"),
+	TT_Group		UMETA(DisplayName="Group"),
+};
+
+enum class ELuaScriptNameTemplateMode : uint8;
+
 USTRUCT(BlueprintType)
 struct FCreateLuaScriptTemplateSettings
 {
@@ -36,6 +45,27 @@ struct FCreateLuaScriptModuleSettings
 	FString OverridePath;
 };
 
+USTRUCT(BlueprintType)
+struct FCreateLuaScriptTabSettings
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CreateLuaScriptTabSettings", Config)
+	FString TabName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CreateLuaScriptTabSettings", Config)
+	ECreateLuaScriptTabType Type;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CreateLuaScriptTabSettings", Config)
+	TArray<FCreateLuaScriptModuleSettings> ModuleList;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CreateLuaScriptTabSettings", Config)
+	TArray<FCreateLuaScriptTemplateSettings> TemplateList;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CreateLuaScriptTabSettings", Config)
+	ELuaScriptNameTemplateMode DefaultTemplateNameMode;
+};
+
 /**
  * Settings of create lua scripts window.
  */
@@ -46,8 +76,5 @@ class DOGFIGHTEDITOR_API UCreateLuaScriptSettings : public UDeveloperSettings
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CreateLuaScriptSetting", Config)
-	TArray<FCreateLuaScriptModuleSettings> ModuleList;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CreateLuaScriptSetting", Config)
-	TArray<FCreateLuaScriptTemplateSettings> TemplateList;
+	TArray<FCreateLuaScriptTabSettings> TabList;
 };
