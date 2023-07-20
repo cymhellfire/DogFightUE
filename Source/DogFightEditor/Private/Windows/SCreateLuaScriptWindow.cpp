@@ -11,8 +11,6 @@
 
 SCreateLuaScriptWindow::SCreateLuaScriptWindow()
 {
-	bUseScriptPrefix = true;
-	SelectedTab = ELuaScriptWindowTab::Default;
 	SelectedTemplateMode = ELuaScriptNameTemplateMode::TM_None;
 
 	DefaultRowPadding = FMargin(FVector4(5, 5, 0, 0));
@@ -552,7 +550,7 @@ void SCreateLuaScriptWindow::OnTemplateSelectionChanged(TSharedPtr<FCreateLuaScr
 
 	SelectedTemplate = InSelectedItem;
 
-	SetCreateTemplateList(*SelectedTemplate);
+	SetCreateTemplateList(SelectedTemplate);
 }
 
 void SCreateLuaScriptWindow::OnScriptNameTemplateModeSelectionChanged(TSharedPtr<int32> InSelectedItem,
@@ -620,10 +618,11 @@ void SCreateLuaScriptWindow::ApplyTabSettings(int32 Index)
 	TemplateSettingList.Empty();
 	for (auto& TemplateSetting : CurTabSetting.TemplateList)
 	{
-		TemplateSettingList.Add(MakeShareable(new FCreateLuaScriptTemplateSettings(TemplateSetting)));
+		TSharedPtr<FCreateLuaScriptTemplateSettings> NewSettings = MakeShareable(new FCreateLuaScriptTemplateSettings(TemplateSetting));
+		TemplateSettingList.Add(NewSettings);
 		if (CurTabSetting.Type == ECreateLuaScriptTabType::TT_Group)
 		{
-			AddCreateTemplateList(TemplateSetting);
+			AddCreateTemplateList(NewSettings);
 		}
 	}
 	if (TemplateSettingList.Num() > 0)
@@ -631,7 +630,7 @@ void SCreateLuaScriptWindow::ApplyTabSettings(int32 Index)
 		if (CurTabSetting.Type == ECreateLuaScriptTabType::TT_Default)
 		{
 			SelectedTemplate = TemplateSettingList[0];
-			SetCreateTemplateList(*SelectedTemplate);
+			SetCreateTemplateList(SelectedTemplate);
 		}
 	}
 
@@ -653,28 +652,36 @@ FLuaScriptCreateArgument SCreateLuaScriptWindow::GetCurrentArgument(int32 Index)
 
 	FLuaScriptCreateArgument NewArgument;
 	NewArgument.ModuleName = SelectedModule.IsValid() ? SelectedModule->ModuleName : "Untitled";
-	NewArgument.TemplateName = CreateTemplateList[Index].TemplateName;
-	if (HardcodedSubfolder.IsSet())
+	auto& TemplateSettings = CreateTemplateList[Index];
+	if (TemplateSettings.IsValid())
 	{
-		if (ScriptPath.IsEmpty())
+		NewArgument.TemplateName = TemplateSettings->TemplateName;
+		NewArgument.TemplateOutName = TemplateSettings->bOverrideShortName ? TemplateSettings->ShortName : TemplateSettings->TemplateName;
+	}
+	else
+	{
+		NewArgument.TemplateName = "NoTemplate";
+	}
+	auto& TabSettings = TabSettingList[SelectTabIndex];
+	NewArgument.Path = ScriptPath.ToString();
+	NewArgument.ScriptName = NewScriptName.ToString();
+	NewArgument.TemplateMode = SelectedTemplateMode;
+	
+	if (TabSettings.Type == ECreateLuaScriptTabType::TT_Group)
+	{
+		NewArgument.bOverrideTemplateFolder = true;
+		if (TabSettings.FolderNameType == ECreateLuaScriptGroupFolderNameType::FNT_Fixed)
 		{
-			NewArgument.Path = HardcodedSubfolder.GetValue();
+			NewArgument.OverrideFolder = TabSettings.OverrideSubfolder;
 		}
 		else
 		{
-			NewArgument.Path = HardcodedSubfolder.GetValue() / *ScriptPath.ToString();
+			NewArgument.OverrideFolder = NewScriptName.ToString();
 		}
 	}
 	else
 	{
-		NewArgument.Path = ScriptPath.ToString();
-	}
-	NewArgument.ScriptName = NewScriptName.ToString();
-	NewArgument.TemplateMode = SelectedTemplateMode;
-	if (OverrideFolder.IsSet())
-	{
-		NewArgument.bOverrideTemplateFolder = true;
-		NewArgument.OverrideFolder = OverrideFolder.GetValue();
+		NewArgument.bOverrideTemplateFolder = false;
 	}
 
 	return NewArgument;
@@ -696,14 +703,14 @@ FString SCreateLuaScriptWindow::GetPreviewPathText(int32 Index) const
 		GetCurrentArgument(Index)));
 }
 
-void SCreateLuaScriptWindow::SetCreateTemplateList(const FCreateLuaScriptTemplateSettings& InTemplate)
+void SCreateLuaScriptWindow::SetCreateTemplateList(TSharedPtr<FCreateLuaScriptTemplateSettings> InTemplate)
 {
 	ClearCreateTemplateList();
 
 	AddCreateTemplateList(InTemplate);
 }
 
-void SCreateLuaScriptWindow::AddCreateTemplateList(const FCreateLuaScriptTemplateSettings& InTemplate)
+void SCreateLuaScriptWindow::AddCreateTemplateList(TSharedPtr<FCreateLuaScriptTemplateSettings> InTemplate)
 {
 	CreateTemplateList.Add(InTemplate);
 }

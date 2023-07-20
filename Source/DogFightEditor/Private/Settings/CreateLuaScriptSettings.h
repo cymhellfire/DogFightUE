@@ -13,6 +13,13 @@ enum class ECreateLuaScriptTabType : uint8
 	TT_Group		UMETA(DisplayName="Group"),
 };
 
+UENUM(BlueprintType)
+enum class ECreateLuaScriptGroupFolderNameType : uint8
+{
+	FNT_ScriptName	UMETA(DisplayName="ScriptName"),
+	FNT_Fixed		UMETA(DisplayName="Fixed"),
+};
+
 enum class ELuaScriptNameTemplateMode : uint8;
 
 USTRUCT(BlueprintType)
@@ -22,6 +29,15 @@ struct FCreateLuaScriptTemplateSettings
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CreateLuaScriptSettings")
 	FString TemplateName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CreateLuaScriptSettings")
+	bool bOverrideShortName;
+
+	/**
+	 * The name used as prefix or suffix.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CreateLuaScriptSettings", meta=(EditConditionHides, EditCondition="bOverrideShortName==true"))
+	FString ShortName;
 };
 
 USTRUCT(BlueprintType)
@@ -64,6 +80,12 @@ struct FCreateLuaScriptTabSettings
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CreateLuaScriptTabSettings", Config)
 	ELuaScriptNameTemplateMode DefaultTemplateNameMode;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CreateLuaScriptTabSettings", meta=(EditConditionHides, EditCondition="Type==ECreateLuaScriptTabType::TT_Group"))
+	ECreateLuaScriptGroupFolderNameType FolderNameType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CreateLuaScriptTabSettings", meta=(EditConditionHides, EditCondition="FolderNameType==ECreateLuaScriptGroupFolderNameType::FNT_Fixed"))
+	FString OverrideSubfolder;
 };
 
 /**

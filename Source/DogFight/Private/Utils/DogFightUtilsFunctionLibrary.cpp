@@ -10,7 +10,7 @@ FString UDogFightUtilsFunctionLibrary::GenerateLuaScriptFolder(const FLuaScriptC
 
 	if (!InArgument.Path.IsEmpty())
 	{
-		SubFolder = SubFolder / InArgument.Path;
+		SubFolder = FString::Printf(TEXT("/%s%s"), *InArgument.Path , *SubFolder);
 	}
 
 	return FString::Printf(TEXT("%s%s%s%s"), *FPaths::ProjectContentDir(), LUA_SCRIPT_BASE_PATH, *InArgument.ModuleName,
@@ -23,10 +23,10 @@ FString UDogFightUtilsFunctionLibrary::GenerateLuaScriptPath(const FLuaScriptCre
 	switch (InArgument.TemplateMode)
 	{
 		case ELuaScriptNameTemplateMode::TM_Prefix:
-			NewFileName = InArgument.TemplateName + NewFileName;
+			NewFileName = InArgument.TemplateOutName + NewFileName;
 			break;
 		case ELuaScriptNameTemplateMode::TM_Suffix:
-			NewFileName = NewFileName + InArgument.TemplateName ;
+			NewFileName = NewFileName + InArgument.TemplateOutName ;
 			break;
 		case ELuaScriptNameTemplateMode::TM_None:
 		default: ;
@@ -44,10 +44,10 @@ FString UDogFightUtilsFunctionLibrary::CreateLuaScriptByTemplate(const FLuaScrip
 	switch (InArgument.TemplateMode)
 	{
 	case ELuaScriptNameTemplateMode::TM_Prefix:
-		NewClassName = InArgument.TemplateName + NewClassName;
+		NewClassName = InArgument.TemplateOutName + NewClassName;
 		break;
 	case ELuaScriptNameTemplateMode::TM_Suffix:
-		NewClassName = NewClassName + InArgument.TemplateName ;
+		NewClassName = NewClassName + InArgument.TemplateOutName ;
 		break;
 	case ELuaScriptNameTemplateMode::TM_None:
 	default: ;

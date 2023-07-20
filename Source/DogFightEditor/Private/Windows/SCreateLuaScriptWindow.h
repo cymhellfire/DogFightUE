@@ -7,12 +7,6 @@
 struct FLuaScriptCreateArgument;
 enum class ELuaScriptNameTemplateMode : uint8;
 
-enum class ELuaScriptWindowTab
-{
-	Default,
-	MVVM,
-};
-
 class SCreateLuaScriptWindow : public SCompoundWidget
 {
 public:
@@ -55,14 +49,11 @@ private:
 
 	FString GetPreviewPathText(int32 Index) const;
 
-	void SetCreateTemplateList(const FCreateLuaScriptTemplateSettings& InTemplate);
-	void AddCreateTemplateList(const FCreateLuaScriptTemplateSettings& InTemplate);
+	void SetCreateTemplateList(TSharedPtr<FCreateLuaScriptTemplateSettings> InTemplate);
+	void AddCreateTemplateList(TSharedPtr<FCreateLuaScriptTemplateSettings> InTemplate);
 	void ClearCreateTemplateList();
 
-	bool bUseScriptPrefix;
-	TOptional<FString> OverrideFolder;
 	TOptional<FString> bLastCreateResult;
-	TOptional<FString> HardcodedSubfolder;
 
 	TSharedPtr<FCreateLuaScriptModuleSettings> SelectedModule;
 	TSharedPtr<FCreateLuaScriptTemplateSettings> SelectedTemplate;
@@ -75,9 +66,8 @@ private:
 	TArray<FString> ScriptNameTemplateModeDesc;
 	ELuaScriptNameTemplateMode SelectedTemplateMode;
 
-	TArray<FCreateLuaScriptTemplateSettings> CreateTemplateList;
+	TArray<TSharedPtr<FCreateLuaScriptTemplateSettings>> CreateTemplateList;
 
-	ELuaScriptWindowTab SelectedTab;
 	int32 SelectTabIndex;
 	FMargin DefaultRowPadding;
 };

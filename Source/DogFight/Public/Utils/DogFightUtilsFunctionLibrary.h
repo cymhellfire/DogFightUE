@@ -33,6 +33,9 @@ struct FLuaScriptCreateArgument
 	ELuaScriptNameTemplateMode TemplateMode;
 
 	UPROPERTY(BlueprintReadWrite)
+	FString TemplateOutName;
+
+	UPROPERTY(BlueprintReadWrite)
 	bool bOverrideTemplateFolder;
 
 	UPROPERTY(BlueprintReadWrite)
