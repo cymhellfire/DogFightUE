@@ -5,6 +5,7 @@ local CardTypeDef = {
     AddPhysResist = 2,
     LuckyBomb = 3,
     HolyShield = 4,
+    NuclearStrike = 5,
 }
 
 return CardTypeDef

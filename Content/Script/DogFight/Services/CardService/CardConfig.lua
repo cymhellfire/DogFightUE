@@ -118,6 +118,38 @@ local Config = {
             }
         }
     },
+    [CardTypeDef.NuclearStrike] = {
+        Name = "NuclearStrike",
+        LogicPath = "DogFight.Card.CardLogic.LogicRandomDropProjectile",
+        LogicParam = {
+            CardInfo = {
+                Name = "Name_NuclearStrike",
+                Desc = {
+                    Key = "Desc_NuclearStrike",
+                    Param = {
+                        "[Int]" .. AttributeNameDef.Damage,
+                        "[Float]" .. AttributeNameDef.DamageRadius,
+                    }
+                }
+            },
+            TargetInfo = {
+                Count = "[Int]" .. AttributeNameDef.TargetCount,
+                Type = UE.ECardTargetType.CTT_Point,
+                Random = true,
+            },
+            ProjectileInfo = {
+                ProjectileId = ProjectileTypeDef.NuclearBomb,
+                SpawnHeight = 1000,
+                Damage = "[Int]" .. AttributeNameDef.Damage,
+                DamageRadius = "[Float]" .. AttributeNameDef.DamageRadius,
+            },
+            AttrInfo = {
+                {Name = AttributeNameDef.Damage, Type = AttributeEnum.DataType.Integer, Value = 50},
+                {Name = AttributeNameDef.DamageRadius, Type = AttributeEnum.DataType.Float, Value = 500},
+                {Name = AttributeNameDef.TargetCount, Type = AttributeEnum.DataType.Integer, Value = 1},
+            }
+        }
+    },
 }
 
 function CardConfig:GetData()

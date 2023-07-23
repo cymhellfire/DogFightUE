@@ -3,7 +3,7 @@ local ProjectileTypeDef = {
     DefaultProjectile = 1,
     Fireball = 2,
     HomingProjectile = 3,
-    PeriodHomingProjectile = 4,
+    NuclearBomb = 4,
     LuckyBomb = 5,
 }
 

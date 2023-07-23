@@ -4,15 +4,18 @@ local CardCommandHelper = require "Card.CardCommand.CardCommandHelper"
 
 ---@field _Count number Amount of target to acquire.
 ---@field _Type ECardTargetType Type of target to acquire.
+---@field _bRandom boolean Whether generate target automatically.
 ---@field _DelegateHelper DelegateHelper Helper to receive the target acqurie notify.
 ---@class ActionCardAcquireTarget : CardActionCommand Action to select target for card.
 local ActionCardAcquireTarget = UnrealClass(CardActionCommand)
 
 ---@param InCount number Target count.
 ---@param InType ECardTargetType Target type.
-function ActionCardAcquireTarget:InitAcquireSettings(InCount, InType)
-    self._Count = InCount
+---@param IsRandom boolean Target is randomly generated.
+function ActionCardAcquireTarget:InitAcquireSettings(InCount, InType, IsRandom)
+    self._Count = self:GetArgumentValue(InCount)
     self._Type = InType
+    self._bRandom = IsRandom or false
 end
 
 function ActionCardAcquireTarget:StartCommand()

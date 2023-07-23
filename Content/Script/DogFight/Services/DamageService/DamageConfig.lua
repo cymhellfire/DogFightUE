@@ -13,7 +13,12 @@ local Config = {
         },
     },
     [DamageTypeDef.Explosion] = {
-        Name = "Explosion"
+        Name = "Explosion",
+        DamageType = UE.UExtendedDamageType.StaticClass(),
+        Script = "DogFight.DamageInstance.DefaultDamage",
+        DisplayParams = {
+            Color = {1, 1, 0},
+        },
     }
 }
 

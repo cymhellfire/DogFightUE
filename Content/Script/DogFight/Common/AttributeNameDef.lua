@@ -7,6 +7,7 @@ local AttributeNameDef = {
     ResistValue = "ResistValue",
     BuffDuration = "BuffDuration",
     BuffRatio = "BuffRatio",
+    TargetCount = "TargetCount",
     --- Character
     HandCardCapacity = "HandCardCapacity",
 }
