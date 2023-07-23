@@ -1,6 +1,7 @@
 #include "GameObject/GameEffect/GameEffectNiagara.h"
 #include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
+#include "GameFramework/Character.h"
 
 AGameEffectNiagara::AGameEffectNiagara(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -14,6 +15,35 @@ AGameEffectNiagara::AGameEffectNiagara(const FObjectInitializer& ObjectInitializ
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>("AudioComponent");
 	AudioComponent->SetupAttachment(RootComponent);
 	AudioComponent->SetAutoActivate(false);
+}
+
+void AGameEffectNiagara::SetTarget(AActor* InTarget)
+{
+	Super::SetTarget(InTarget);
+
+	if (!IsValid(InTarget))
+	{
+		return;
+	}
+
+	if (AttachSocketName.IsNone())
+	{
+		SetActorLocation(InTarget->GetActorLocation());
+	}
+	else
+	{
+		FAttachmentTransformRules AttachRules(EAttachmentRule::SnapToTarget,
+			EAttachmentRule::SnapToTarget,EAttachmentRule::KeepWorld, false);
+
+		if (auto Character = Cast<ACharacter>(InTarget))
+		{
+			AttachToComponent(Character->GetMesh(), AttachRules, AttachSocketName);
+		}
+		else
+		{
+			AttachToActor(InTarget, AttachRules, AttachSocketName);
+		}
+	}
 }
 
 void AGameEffectNiagara::PlayEffect_Implementation()

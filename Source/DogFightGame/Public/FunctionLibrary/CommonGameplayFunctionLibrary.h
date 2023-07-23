@@ -162,6 +162,14 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
 	static void MovePlayerCharacterToPosition(const UObject* WorldContextObject, int32 PlayerId, FVector TargetPosition);
+
+	/**
+	 * Set specified actor invincible/vulnerable.
+	 * @param Actor				Target actor to set.
+	 * @param InvincibleCauser			Invincible or vulnerable.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
+	static void SetActorInvincible(AActor* Actor, bool InValue, UObject* InvincibleCauser);
 protected:
 	/**
 	 * Do specified function on every player state in current game meet the id mask.

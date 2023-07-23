@@ -1,11 +1,13 @@
 ﻿#include "FunctionLibrary/CommonGameplayFunctionLibrary.h"
 
+#include "DamageReceiver/DamageReceiverComponent.h"
 #include "FunctionLibrary/CommonGameFlowFunctionLibrary.h"
 #include "FunctionLibrary/LuaIntegrationFunctionLibrary.h"
 #include "GameInstance/DogFightGameInstance.h"
 #include "GameMode/TopDownStyleGameMode.h"
 #include "GameMode/TopDownStyleGameState.h"
 #include "GameService/GameEffectService.h"
+#include "Interface/DamageReceiverActorInterface.h"
 #include "Pawn/PlayerPawn/TopDownStylePlayerPawn.h"
 #include "Player/TopDownStylePlayerState.h"
 #include "PlayerController/TopDownStylePlayerController.h"
@@ -205,8 +207,31 @@ void UCommonGameplayFunctionLibrary::MovePlayerCharacterToPosition(const UObject
 	}, PlayerId);
 }
 
+void UCommonGameplayFunctionLibrary::SetActorInvincible(AActor* Actor, bool InValue, UObject* InvincibleCauser)
+{
+	if (!IsValid(Actor) || !IsValid(InvincibleCauser))
+	{
+		return;
+	}
+
+	if (auto DamageReceiver = Cast<IDamageReceiverActorInterface>(Actor))
+	{
+		if (auto ReceiveComponent = DamageReceiver->GetDamageReceiverComponent())
+		{
+			if (InValue)
+			{
+				ReceiveComponent->AddInvincibleCauser(InvincibleCauser);
+			}
+			else
+			{
+				ReceiveComponent->RemoveInvincibleCauser(InvincibleCauser);
+			}
+		}
+	}
+}
+
 void UCommonGameplayFunctionLibrary::ForEachPlayerStateDo(const UObject* WorldContextObject,
-	TFunction<void(ATopDownStylePlayerState*)> ExecuteFunc, int32 PlayerIdMask)
+                                                          TFunction<void(ATopDownStylePlayerState*)> ExecuteFunc, int32 PlayerIdMask)
 {
 	if (auto GameState = GetCurrentTopDownStyleGameState(WorldContextObject))
 	{

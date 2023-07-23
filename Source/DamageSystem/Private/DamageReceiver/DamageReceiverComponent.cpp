@@ -40,6 +40,7 @@ void UDamageReceiverComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 
 	DOREPLIFETIME_WITH_PARAMS_FAST(UDamageReceiverComponent, Health, SharedParam);
 	DOREPLIFETIME_WITH_PARAMS_FAST(UDamageReceiverComponent, MaxHealth, SharedParam);
+	DOREPLIFETIME_WITH_PARAMS_FAST(UDamageReceiverComponent, bInvincible, SharedParam);
 }
 
 void UDamageReceiverComponent::TakeDamage(UExtendedDamageInstance* DamageInstance, const FExtendedDamageEvent& InEvent)
@@ -63,6 +64,43 @@ void UDamageReceiverComponent::SetHealth(int32 InValue)
 	Health = InValue;
 
 	OnRep_Health(OldValue);
+}
+
+void UDamageReceiverComponent::SetInvincible(bool Value)
+{
+	if (Value == bInvincible || GetOwnerRole() != ROLE_Authority)
+	{
+		return;
+	}
+
+	MARK_PROPERTY_DIRTY_FROM_NAME(UDamageReceiverComponent, bInvincible, this);
+	bInvincible = Value;
+}
+
+void UDamageReceiverComponent::AddInvincibleCauser(UObject* Causer)
+{
+	if (IsValid(Causer))
+	{
+		InvincibleCauserList.AddUnique(Causer);
+
+		if (InvincibleCauserList.Num() > 0)
+		{
+			SetInvincible(true);
+		}
+	}
+}
+
+void UDamageReceiverComponent::RemoveInvincibleCauser(UObject* Causer)
+{
+	if (IsValid(Causer))
+	{
+		InvincibleCauserList.Remove(Causer);
+
+		if (InvincibleCauserList.Num() == 0)
+		{
+			SetInvincible(false);
+		}
+	}
 }
 
 void UDamageReceiverComponent::Sync_OnIntegerWrapperAdded(UAttributeIntegerWrapperObject* InWrapper)

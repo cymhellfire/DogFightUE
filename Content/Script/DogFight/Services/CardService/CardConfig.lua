@@ -96,6 +96,28 @@ local Config = {
             }
         },
     },
+    [CardTypeDef.HolyShield] = {
+        Name = "HolyShield",
+        LogicPath = "DogFight.Card.CardLogic.LogicAddBuff",
+        LogicParam = {
+            CardInfo = {
+                Name = "Name_HolyShield",
+                Desc = {
+                    Key = "Desc_HolyShield",
+                    Param = {
+                        "[Int]" .. AttributeNameDef.BuffDuration,
+                    }
+                }
+            },
+            BuffInfo = {
+                BuffId = BuffTypeDef.Invincible,
+                Duration = "[Int]" .. AttributeNameDef.BuffDuration,
+            },
+            AttrInfo = {
+                {Name = AttributeNameDef.BuffDuration, Type = AttributeEnum.DataType.Integer, Value = 1},
+            }
+        }
+    },
 }
 
 function CardConfig:GetData()
