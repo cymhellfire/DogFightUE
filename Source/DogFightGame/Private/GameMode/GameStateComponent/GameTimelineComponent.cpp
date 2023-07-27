@@ -68,7 +68,8 @@ void UGameTimelineComponent::InitializeTimeline()
 void UGameTimelineComponent::InitializeRandomPriorityList(int32 InPlayerNum)
 {
 	RandomPriorityList.Empty();
-	for (int32 i = InPlayerNum -1; i >= 0; --i)
+	//for (int32 i = InPlayerNum -1; i >= 0; --i)
+	for (int32 i = 0; i < InPlayerNum; ++i)
 	{
 		RandomPriorityList.Add(i);
 	}

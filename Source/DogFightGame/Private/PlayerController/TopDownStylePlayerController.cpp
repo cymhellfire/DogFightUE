@@ -8,6 +8,7 @@
 #include "GameService/GameEffectService.h"
 #include "GameService/GameInputService.h"
 #include "GameService/GameService.h"
+#include "GameService/LuaEventService.h"
 #include "Net/UnrealNetwork.h"
 #include "Pawn/PlayerCharacter/TopDownStylePlayerCharacter.h"
 #include "Player/TopDownStylePlayerState.h"
@@ -85,6 +86,22 @@ void ATopDownStylePlayerController::ServerRequestFinishRound_Implementation()
 	if (ATopDownStyleGameMode* GameMode = Cast<ATopDownStyleGameMode>(GetWorld()->GetAuthGameMode()))
 	{
 		GameMode->PlayerRequestFinishRound(this);
+	}
+}
+
+void ATopDownStylePlayerController::ClientSendPlayerRoundStartEvent_Implementation(int32 PlayerId)
+{
+	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>())
+	{
+		LuaEventService->SendEventToLua(ELuaEvent::LuaEvent_StartPlayerRound, PlayerId);
+	}
+}
+
+void ATopDownStylePlayerController::ClientSendPlayerRoundFinishEvent_Implementation(int32 PlayerId)
+{
+	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>())
+	{
+		LuaEventService->SendEventToLua(ELuaEvent::LuaEvent_FinishPlayerRound, PlayerId);
 	}
 }
 

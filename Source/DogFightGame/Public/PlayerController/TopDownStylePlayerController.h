@@ -39,6 +39,12 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerRequestFinishRound();
 
+	UFUNCTION(Client, Reliable)
+	void ClientSendPlayerRoundStartEvent(int32 PlayerId);
+
+	UFUNCTION(Client, Reliable)
+	void ClientSendPlayerRoundFinishEvent(int32 PlayerId);
+
 	// -----=========== Character ===========-----
 	void SpawnCharacterPawn();
 

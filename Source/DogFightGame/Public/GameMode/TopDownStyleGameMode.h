@@ -2,12 +2,14 @@
 
 #include "DamageType/ExtendedDamageEvent.h"
 #include "GameMode/GameFlowBasedGameMode.h"
+#include "Player/TopDownStylePlayerState.h"
 #include "TopDownStyleGameMode.generated.h"
 
 class ATopDownStylePlayerController;
 class UInGameMessageSenderComponent;
 class UGameTimelineComponent;
 class UDamageCalculatorBase;
+class ATopDownStylePlayerState;
 
 UCLASS()
 class DOGFIGHTGAME_API ATopDownStyleGameMode : public AGameFlowBasedGameMode
@@ -21,6 +23,8 @@ public:
 	virtual void BeginPlay() override;
 
 	virtual void PostLogin(APlayerController* NewPlayer) override;
+
+	virtual void Logout(AController* Exiting) override;
 
 	void PlayerReadyForGame(ATopDownStylePlayerController* InPC);
 
@@ -67,6 +71,8 @@ public:
 protected:
 	UFUNCTION()
 	void OnDamageEventOccured(class UExtendedDamageInstance* DamageInstance, const FExtendedDamageEvent& DamageEvent);
+
+	void OnAnyPlayerStateChanged(ATopDownStylePlayerState* PlayerState, ETopDownStylePlayerState::Type InState);
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="TopDownStyleGameMode")

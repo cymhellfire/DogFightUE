@@ -44,6 +44,27 @@ void ATopDownStyleGameMode::PostLogin(APlayerController* NewPlayer)
 	if (auto PC = Cast<ATopDownStylePlayerController>(NewPlayer))
 	{
 		AllPlayerControllers.Add(PC);
+
+		if (auto PS = PC->GetPlayerState<ATopDownStylePlayerState>())
+		{
+			PS->OnPlayerStateChanged.AddUObject(this, &ATopDownStyleGameMode::OnAnyPlayerStateChanged);
+		}
+	}
+}
+
+void ATopDownStyleGameMode::Logout(AController* Exiting)
+{
+	Super::Logout(Exiting);
+
+	// Remove exiting player controller
+	if (auto PC = Cast<ATopDownStylePlayerController>(Exiting))
+	{
+		AllPlayerControllers.Remove(PC);
+
+		if (auto PS = PC->GetPlayerState<ATopDownStylePlayerState>())
+		{
+			PS->OnPlayerStateChanged.RemoveAll(this);
+		}
 	}
 }
 
@@ -85,6 +106,15 @@ UGameTimelineComponent* ATopDownStyleGameMode::GetGameTimelineComponent() const
 
 	return nullptr;
 }
+
+#define FOREACH_PLAYER_CONTROLLER_DO(List, FuncName)		\
+	for (auto PC : List) \
+	{ \
+		if (PC.IsValid()) \
+		{ \
+			PC->FuncName(); \
+		} \
+	}
 
 void ATopDownStyleGameMode::SetEnableCharacterMoveForAllPlayers(bool bEnable)
 {
@@ -154,5 +184,29 @@ void ATopDownStyleGameMode::OnDamageEventOccured(UExtendedDamageInstance* Damage
 		auto DisplayParams = DamageService->GetDamageDisplayParameters(DamageInstance, DamageEvent);
 		// Broadcast to all clients
 		UCommonGameplayFunctionLibrary::CreateDamageDisplayByPlayerId(this, DisplayParams, -1);
+	}
+}
+
+void ATopDownStyleGameMode::OnAnyPlayerStateChanged(ATopDownStylePlayerState* PlayerState,
+	ETopDownStylePlayerState::Type InState)
+{
+	if (!IsValid(PlayerState))
+	{
+		return;
+	}
+
+	auto PlayerId = PlayerState->GetPlayerId();
+	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>())
+	{
+		switch(InState)
+		{
+		case ETopDownStylePlayerState::PS_Alive:
+			break;
+		case ETopDownStylePlayerState::PS_Dead:
+			LuaEventService->SendEventToLua(ELuaEvent::Type::LuaEvent_OnPlayerCharacterDead, PlayerId);
+			break;
+		case ETopDownStylePlayerState::PS_None:
+		default: ;
+		}
 	}
 }

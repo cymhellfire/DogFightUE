@@ -7,6 +7,9 @@
 class UCard;
 class UCardDescObject;
 class ATopDownStylePlayerCharacter;
+class ATopDownStylePlayerState;
+
+DECLARE_MULTICAST_DELEGATE_TwoParams(FTopDownStylePlayerStateChangedEvent, ATopDownStylePlayerState*, ETopDownStylePlayerState::Type);
 
 UCLASS()
 class DOGFIGHTGAME_API ATopDownStylePlayerState : public APlayerState
@@ -141,6 +144,9 @@ protected:
 
 	UFUNCTION()
 	void OnCharacterDead(ATopDownStylePlayerCharacter* Character);
+
+public:
+	FTopDownStylePlayerStateChangedEvent OnPlayerStateChanged;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="PlayerState")

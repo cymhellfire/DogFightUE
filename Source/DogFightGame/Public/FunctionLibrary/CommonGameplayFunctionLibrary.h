@@ -15,6 +15,7 @@ UCLASS()
 class DOGFIGHTGAME_API UCommonGameplayFunctionLibrary : public UCommonFunctionLibraryBase
 {
 	GENERATED_BODY()
+	friend class UCommonGameFlowFunctionLibrary;
 public:
 	/**
 	 * Get gameplay data subsystem.
