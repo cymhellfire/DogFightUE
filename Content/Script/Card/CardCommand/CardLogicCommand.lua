@@ -4,6 +4,7 @@ local CardCommandHelper = require "Card.CardCommand.CardCommandHelper"
 ---@field _PendingQueue table List of commands will be executed next frame.
 ---@field _CardInfo table Table of card display infomration.
 ---@field _AttrInfo table Table of all attributes.
+---@field _TargetInfo table Table of all target information.
 ---@class CardLogicCommand : CardCommandBase Base class of all card logic command.
 local CardLogicCommand = UnrealClass(CardCommandBase)
 
@@ -13,6 +14,7 @@ function CardLogicCommand:OnInit(InParam)
     if InParam then
         self._AttrInfo = InParam.AttrInfo
         self._CardInfo = InParam.CardInfo
+        self._TargetInfo = InParam.TargetInfo
     end
 
     self._PendingQueue = {}

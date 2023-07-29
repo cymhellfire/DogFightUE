@@ -1,5 +1,6 @@
 ﻿#include "FunctionLibrary/CommonGameplayFunctionLibrary.h"
 
+#include "NavigationSystem.h"
 #include "DamageReceiver/DamageReceiverComponent.h"
 #include "FunctionLibrary/CommonGameFlowFunctionLibrary.h"
 #include "FunctionLibrary/LuaIntegrationFunctionLibrary.h"
@@ -8,6 +9,8 @@
 #include "GameMode/TopDownStyleGameState.h"
 #include "GameService/GameEffectService.h"
 #include "Interface/DamageReceiverActorInterface.h"
+#include "Math/MathHelper.h"
+#include "Pawn/PlayerCharacter/TopDownStylePlayerCharacter.h"
 #include "Pawn/PlayerPawn/TopDownStylePlayerPawn.h"
 #include "Player/TopDownStylePlayerState.h"
 #include "PlayerController/TopDownStylePlayerController.h"
@@ -228,6 +231,59 @@ void UCommonGameplayFunctionLibrary::SetActorInvincible(AActor* Actor, bool InVa
 			}
 		}
 	}
+}
+
+FVector UCommonGameplayFunctionLibrary::GetRandomPointInNavigationArea(const UObject* WorldContextObject)
+{
+	if (IsValid(WorldContextObject))
+	{
+		if (auto World = WorldContextObject->GetWorld())
+		{
+			if (UNavigationSystemV1* NavSystem = FNavigationSystem::GetCurrent<UNavigationSystemV1>(World))
+			{
+				FNavPathPoint Result;
+				if (NavSystem->GetRandomPoint(Result))
+				{
+					return Result.Location;
+				}
+			}
+		}
+	}
+
+	return FVector::ZeroVector;
+}
+
+TArray<AActor*> UCommonGameplayFunctionLibrary::GetRandomCharacterInGame(const UObject* WorldContextObject, int32 Count,
+	bool bAllowDuplicated)
+{
+	TArray<AActor*> Result;
+	if (IsValid(WorldContextObject))
+	{
+		auto PlayerControllerList = UCommonGameFlowFunctionLibrary::GetAllPlayerControllers(WorldContextObject);
+		if (bAllowDuplicated)
+		{
+			// Random pick character
+			auto PCCount = PlayerControllerList.Num();
+			for (int32 i = 0; i < Count; ++i)
+			{
+				auto Index = FMath::RandRange(0, PCCount - 1);
+				Result.Add(PlayerControllerList[Index]->GetCharacterPawn());
+			}
+		}
+		else
+		{
+			// Randomize player controller list
+			FMathHelper::RandomizeArray(PlayerControllerList);
+			// Clamp result count
+			auto ResultNum = FMath::Min(Count, PlayerControllerList.Num());
+			for (int32 i = 0; i < ResultNum; ++i)
+			{
+				Result.Add(PlayerControllerList[i]->GetCharacterPawn());
+			}
+		}
+	}
+
+	return Result;
 }
 
 void UCommonGameplayFunctionLibrary::ForEachPlayerStateDo(const UObject* WorldContextObject,

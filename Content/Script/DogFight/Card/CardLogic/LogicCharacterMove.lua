@@ -44,7 +44,11 @@ end
 
 ---@param InCommand ActionCardAcquireTarget
 function LogicCharacterMove:OnAcquireTargetCreated(InCommand)
-    InCommand:InitAcquireSettings(1, UE.ECardTargetType.CTT_Point)
+    if self._TargetInfo then
+        InCommand:InitAcquireSettings(self._TargetInfo)
+    else
+        self:FailedWithParams()
+    end
 end
 
 ---Command finish callback

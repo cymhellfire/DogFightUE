@@ -14,9 +14,6 @@ local CommandNameDef = {
 function LogicRandomDropProjectile:OnInit(InParam)
     CardLogicCommand.OnInit(self, InParam)
 
-    -- Record target info
-    self._TargetInfo = InParam.TargetInfo
-
     -- Record projectile info
     self._ProjectileInfo = InParam.ProjectileInfo
 
@@ -46,7 +43,9 @@ end
 ---@param InCommand ActionCardAcquireTarget
 function LogicRandomDropProjectile:OnAcquireTargetCreated(InCommand)
     if self._TargetInfo then
-        InCommand:InitAcquireSettings(self._TargetInfo.Count, self._TargetInfo.Type, self._TargetInfo.Random)
+        InCommand:InitAcquireSettings(self._TargetInfo)
+    else
+        self:FailedWithParams()
     end
 end
 

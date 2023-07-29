@@ -39,6 +39,7 @@ function LogicFireball:OnInit(InParam)
     local CommandTable = {
         [CommandNameDef.AcquireTarget] = {
             Script = "DogFight.Card.CardAction.ActionCardAcquireTarget",
+            OnCreate = self.OnAcquireTargetCreated,
             OnFinish = self.OnAcquireTargetFinished,
         },
         [CommandNameDef.Fireball] = {
@@ -55,6 +56,15 @@ function LogicFireball:StartCommand()
     CardLogicCommand.StartCommand(self)
 
     self:RunCommand(CommandNameDef.AcquireTarget)
+end
+
+---@param InCommand ActionCardAcquireTarget
+function LogicFireball:OnAcquireTargetCreated(InCommand)
+    if self._TargetInfo then
+        InCommand:InitAcquireSettings(self._TargetInfo)
+    else
+        self:FailedWithParams()
+    end
 end
 
 ---Command finish callback

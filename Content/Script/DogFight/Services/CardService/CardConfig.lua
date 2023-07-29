@@ -18,7 +18,11 @@ local Config = {
                 Desc = {
                     Key = "Desc_CharacterMove",
                 }
-            }
+            },
+            TargetInfo = {
+                Count = 1,
+                Type = UE.ECardTargetType.CTT_Point,
+            },
         }
     },
     [CardTypeDef.Attack] = {
@@ -33,6 +37,10 @@ local Config = {
                         "[Int]" .. AttributeNameDef.Damage,
                     },
                 }
+            },
+            TargetInfo = {
+                Count = 1,
+                Type = UE.ECardTargetType.CTT_Actor,
             },
             ProjectileInfo = {
                 ProjectileId = ProjectileTypeDef.Fireball,
@@ -57,6 +65,10 @@ local Config = {
                         "[Int]" .. AttributeNameDef.ResistValue,
                     },
                 }
+            },
+            TargetInfo = {
+                Count = 1,
+                Type = UE.ECardTargetType.CTT_Actor,
             },
             BuffInfo = { 
                 BuffId = BuffTypeDef.AddPhysResist,
@@ -83,6 +95,10 @@ local Config = {
                     }
                 }
             },
+            TargetInfo = {
+                Count = 1,
+                Type = UE.ECardTargetType.CTT_Actor,
+            },
             BuffInfo = {
                 BuffId = BuffTypeDef.LuckyBomb,
                 BuffRatio = "[Float]" .. AttributeNameDef.BuffRatio,
@@ -108,6 +124,10 @@ local Config = {
                         "[Int]" .. AttributeNameDef.BuffDuration,
                     }
                 }
+            },
+            TargetInfo = {
+                Count = 1,
+                Type = UE.ECardTargetType.CTT_Actor,
             },
             BuffInfo = {
                 BuffId = BuffTypeDef.Invincible,

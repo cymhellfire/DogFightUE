@@ -43,7 +43,11 @@ end
 
 ---@param InCommand ActionCardAcquireTarget
 function LogicAddBuff:OnAcquireTargetCreated(InCommand)
-    InCommand:InitAcquireSettings(1, UE.ECardTargetType.CTT_Actor)
+    if self._TargetInfo then
+        InCommand:InitAcquireSettings(self._TargetInfo)
+    else
+        self:FailedWithParams()
+    end
 end
 
 ---Command finish callback
