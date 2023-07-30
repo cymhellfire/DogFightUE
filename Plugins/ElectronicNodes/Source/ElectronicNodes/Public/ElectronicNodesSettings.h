@@ -31,6 +31,13 @@ enum class EWirePriority : uint8
 };
 
 UENUM(BlueprintType)
+enum class EMinDistanceStyle : uint8
+{
+	Line,
+	Spline
+};
+
+UENUM(BlueprintType)
 enum class EBubbleDisplayRule : uint8
 {
 	Always,
@@ -149,6 +156,10 @@ public:
 	/* Bellow this distance, wires will be drawn as straight. Default: 24 */
 	UPROPERTY(config, EditAnywhere, Category = "Wire Style", meta = (ClampMin = "0.0"))
 	float MinDistanceToStyle = 24.0f;
+
+	/* Style for wires bellow MinDistanceToStyle. Default: Line */
+	UPROPERTY(config, EditAnywhere, Category = "Wire Style")
+	EMinDistanceStyle MinDistanceStyle = EMinDistanceStyle::Line;
 
 	/* Horizontal offset of wires from nodes. Default: 16 */
 	UPROPERTY(config, EditAnywhere, Category = "Wire Style")

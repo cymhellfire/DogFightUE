@@ -11,6 +11,8 @@
 
 #include "BlueprintConnectionDrawingPolicy.h"
 
+class FENPathDrawer;
+
 struct ENRibbonConnection
 {
 	float Main;
@@ -68,10 +70,12 @@ private:
 
 	bool IsTree = false;
 
-	void ENCorrectZoomDisplacement(FVector2D& Start, FVector2D& End);
+	void ENCorrectZoomDisplacement(FVector2D& Start, FVector2D& End) const;
 	void ENProcessRibbon(int32 LayerId, FVector2D& Start, FVector2D& StartDirection, FVector2D& End, FVector2D& EndDirection, const FConnectionParams& Params);
 	bool ENIsRightPriority(const FConnectionParams& Params);
 	int32 ENGetZoomLevel();
+	int8 ENGetPinMembersCount(const UEdGraphPin* Pin);
+	void ENDrawMainWire(FENPathDrawer* PathDrawer, EWireStyle WireStyle, FVector2D& Start, FVector2D& StartDirection, FVector2D& End, FVector2D& EndDirection, const FConnectionParams& Params);
 
 	TSharedPtr<SGraphPanel> GetGraphPanel();
 	void BuildRelatedNodes(UEdGraphNode* Node, TArray<UEdGraphNode*>& RelatedNodes, bool InputCheck, bool OutputCheck);

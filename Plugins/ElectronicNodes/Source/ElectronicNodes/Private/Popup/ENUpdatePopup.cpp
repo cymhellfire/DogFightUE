@@ -20,7 +20,7 @@ void ENUpdatePopup::Register()
 {
 	const FString PluginDirectory = IPluginManager::Get().FindPlugin(TEXT("ElectronicNodes"))->GetBaseDir();
 	const FString UpdatedConfigFile = PluginDirectory + "/UpdateConfig.ini";
-	const FString CurrentPluginVersion = "3.7";
+	const FString CurrentPluginVersion = "3.8";
 
 	UENUpdateConfig* ENUpdatePopupConfig = GetMutableDefault<UENUpdateConfig>();
 
@@ -79,7 +79,7 @@ void ENUpdatePopup::Open()
 		[
 			SNew(STextBlock)
 			.Font(HeadingFont)
-			.Text(FText::FromString("Electronic Nodes v3.7"))
+			.Text(FText::FromString("Electronic Nodes v3.8"))
 		]
 		+ SVerticalBox::Slot()
 		  .FillHeight(1.0)
@@ -102,7 +102,18 @@ void ENUpdatePopup::Open()
 
 First thing first, if you've been enjoying using it, it would mean a lot if you could just drop <a id="browser" href="https://bit.ly/2U1YT8O">a small review on the marketplace page</> :). I also wanted to mention that I made another plugin to update the UE4 style called <a id="browser" href="https://bit.ly/2TolSKQ">Darker Nodes</>.
 
-But let's keep it short, here are the cool new features (and bugfixes) of version 3.7!
+I also made a marketplace search engine called <a id="browser" href="https://bit.ly/3uhO9CG">Orbital Market</>. It's completely free, super fast and full of filters to refine your search.
+
+Last but not least, I'm building <a id="browser" href="https://luna-park.app">Luna Park</> (a visual scripting editor for the web) and <a id="browser" href="https://roller-coaster.app">Roller Coaster</> (an automation tool using Luna Park), and I'm looking for beta testers, so if you're interested, feel free to join the <a id="browser" href="https://discord.gg/2eAk2AHvdw">Discord server</>!
+
+But let's keep it short, here are the cool new features (and bugfixes) of version 3.8!
+
+
+<LargeText>Version 3.8</>
+
+<RichTextBlock.Bold>Features</>
+
+* Add a spline type selector for wires bellow minimum distance (<a id="browser" href="https://github.com/hugoattal/ElectronicNodes/issues/66">issue #66</>)
 
 
 <LargeText>Version 3.7</>
