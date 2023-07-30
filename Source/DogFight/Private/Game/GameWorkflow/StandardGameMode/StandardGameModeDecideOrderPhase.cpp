@@ -1,5 +1,4 @@
 ﻿#include "Game/GameWorkflow/StandardGameMode/StandardGameModeDecideOrderPhase.h"
-#include "Actors/Weapons/WeaponBase.h"
 #include "AI/StandardModeAIController.h"
 #include "Game/GameRoundsTimeline.h"
 #include "Game/StandardGameMode.h"
@@ -45,20 +44,20 @@ bool UStandardGameModeDecideOrderPhase::StartPhase()
 			}
 
 			// Equip default weapon
-			if (IsValid(ParentStandardGameMode->CharacterDefaultWeapon))
-			{
-				if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(PlayerController->GetActualPawn()))
-				{
-					UWeaponBase* NewWeapon = NewObject<UWeaponBase>(StandardModePlayerCharacter, ParentStandardGameMode->CharacterDefaultWeapon);
-					StandardModePlayerCharacter->OnWeaponEquippedEvent.AddDynamic(this, &UStandardGameModeDecideOrderPhase::OnWeaponEquipped);
-					StandardModePlayerCharacter->EquipWeapon(NewWeapon);
-
-					// Also update cache location
-					StandardModePlayerCharacter->CacheCurrentLocation();
-
-					WeaponEquipWaitingCharacterCount++;
-				}
-			}
+			// if (IsValid(ParentStandardGameMode->CharacterDefaultWeapon))
+			// {
+			// 	if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(PlayerController->GetActualPawn()))
+			// 	{
+			// 		UWeaponBase* NewWeapon = NewObject<UWeaponBase>(StandardModePlayerCharacter, ParentStandardGameMode->CharacterDefaultWeapon);
+			// 		StandardModePlayerCharacter->OnWeaponEquippedEvent.AddDynamic(this, &UStandardGameModeDecideOrderPhase::OnWeaponEquipped);
+			// 		StandardModePlayerCharacter->EquipWeapon(NewWeapon);
+			//
+			// 		// Also update cache location
+			// 		StandardModePlayerCharacter->CacheCurrentLocation();
+			//
+			// 		WeaponEquipWaitingCharacterCount++;
+			// 	}
+			// }
 		}
 
 		// Register players statistic for AI
@@ -70,20 +69,20 @@ bool UStandardGameModeDecideOrderPhase::StartPhase()
 			}
 
 			// Equip default weapon
-			if (IsValid(ParentStandardGameMode->CharacterDefaultWeapon))
-			{
-				if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(AIController->GetActualPawn()))
-				{
-					UWeaponBase* NewWeapon = NewObject<UWeaponBase>(StandardModePlayerCharacter, ParentStandardGameMode->CharacterDefaultWeapon);
-					StandardModePlayerCharacter->OnWeaponEquippedEvent.AddDynamic(this, &UStandardGameModeDecideOrderPhase::OnWeaponEquipped);
-					StandardModePlayerCharacter->EquipWeapon(NewWeapon);
-
-					// Also update cache location
-					StandardModePlayerCharacter->CacheCurrentLocation();
-
-					WeaponEquipWaitingCharacterCount++;
-				}
-			}
+			// if (IsValid(ParentStandardGameMode->CharacterDefaultWeapon))
+			// {
+			// 	if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(AIController->GetActualPawn()))
+			// 	{
+			// 		UWeaponBase* NewWeapon = NewObject<UWeaponBase>(StandardModePlayerCharacter, ParentStandardGameMode->CharacterDefaultWeapon);
+			// 		StandardModePlayerCharacter->OnWeaponEquippedEvent.AddDynamic(this, &UStandardGameModeDecideOrderPhase::OnWeaponEquipped);
+			// 		StandardModePlayerCharacter->EquipWeapon(NewWeapon);
+			//
+			// 		// Also update cache location
+			// 		StandardModePlayerCharacter->CacheCurrentLocation();
+			//
+			// 		WeaponEquipWaitingCharacterCount++;
+			// 	}
+			// }
 		}
 	}
 
@@ -100,7 +99,7 @@ void UStandardGameModeDecideOrderPhase::OnWeaponEquipped(AActor* CarrierActor)
 {
 	if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(CarrierActor))
 	{
-		StandardModePlayerCharacter->OnWeaponEquippedEvent.RemoveDynamic(this, &UStandardGameModeDecideOrderPhase::OnWeaponEquipped);
+		//StandardModePlayerCharacter->OnWeaponEquippedEvent.RemoveDynamic(this, &UStandardGameModeDecideOrderPhase::OnWeaponEquipped);
 	}
 
 	WeaponEquipWaitingCharacterCount--;

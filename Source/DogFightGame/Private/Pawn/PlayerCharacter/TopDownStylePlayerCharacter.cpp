@@ -2,6 +2,7 @@
 
 #include "AIController.h"
 #include "GameObject/Buff/NewBuffBase.h"
+#include "Pawn/PlayerCharacter/ArsenalComponent.h"
 #include "Pawn/PlayerCharacter/BuffManagerComponent.h"
 #include "Pawn/PlayerCharacter/RagdollComponent.h"
 #include "UI/InGame/PlayerCharacterStateWidget.h"
@@ -13,6 +14,7 @@ ATopDownStylePlayerCharacter::ATopDownStylePlayerCharacter()
 	StateWidgetLocatorComponent = CreateDefaultSubobject<UWidgetLocatorComponent>("StateWidgetLocatorComponent");
 	RagdollComponent = CreateDefaultSubobject<URagdollComponent>("RagdollComponent");
 	BuffManagerComponent = CreateDefaultSubobject<UBuffManagerComponent>("BuffManagerComponent");
+	ArsenalComponent = CreateDefaultSubobject<UArsenalComponent>("ArsenalComponent");
 
 	// Initial value
 	bAlive = true;

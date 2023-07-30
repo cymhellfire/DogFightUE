@@ -19,7 +19,6 @@
 #include "Game/GameRoundsTimeline.h"
 #include "AI/StandardModeAIController.h"
 #include "Common/BitmaskOperation.h"
-#include "Actors/Weapons/WeaponBase.h"
 #include "Game/DogFightDamageCalculatorBase.h"
 #include "Game/GameplayAbilityPool.h"
 #include "Game/GameWorkflow/GameModeStateMachine.h"

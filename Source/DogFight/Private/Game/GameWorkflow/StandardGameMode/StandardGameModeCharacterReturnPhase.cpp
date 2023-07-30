@@ -41,7 +41,7 @@ bool UStandardGameModeCharacterReturnPhase::StartPhase()
 			{
 				if (AStandardModePlayerCharacter* PlayerCharacter = Cast<AStandardModePlayerCharacter>(PlayerController->GetActualPawn()))
 				{
-					PlayerCharacter->GetCarrierReachActionDistanceEvent().AddDynamic(this, &UStandardGameModeCharacterReturnPhase::OnCharacterReturnFinished);
+					//PlayerCharacter->GetCarrierReachActionDistanceEvent().AddDynamic(this, &UStandardGameModeCharacterReturnPhase::OnCharacterReturnFinished);
 					PlayerCharacter->ReturnToCachedLocation();
 				}
 			}
@@ -58,7 +58,7 @@ bool UStandardGameModeCharacterReturnPhase::StartPhase()
 				if (AStandardModePlayerCharacter* PlayerCharacter = Cast<AStandardModePlayerCharacter>(
 					AIController->GetActualPawn()))
 				{
-					PlayerCharacter->GetCarrierReachActionDistanceEvent().AddDynamic(this, &UStandardGameModeCharacterReturnPhase::OnCharacterReturnFinished);
+					//PlayerCharacter->GetCarrierReachActionDistanceEvent().AddDynamic(this, &UStandardGameModeCharacterReturnPhase::OnCharacterReturnFinished);
 					PlayerCharacter->ReturnToCachedLocation();
 				}
 			}
@@ -72,7 +72,7 @@ void UStandardGameModeCharacterReturnPhase::OnCharacterReturnFinished(AActor* Ac
 {
 	if (AStandardModePlayerCharacter* StandardModePlayerCharacter = Cast<AStandardModePlayerCharacter>(Actor))
 	{
-		StandardModePlayerCharacter->GetCarrierReachActionDistanceEvent().RemoveDynamic(this, &UStandardGameModeCharacterReturnPhase::OnCharacterReturnFinished);
+		//StandardModePlayerCharacter->GetCarrierReachActionDistanceEvent().RemoveDynamic(this, &UStandardGameModeCharacterReturnPhase::OnCharacterReturnFinished);
 	}
 
 	ReturnedCharacterCount++;

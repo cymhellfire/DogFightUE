@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Actors/Weapons/WeaponCommon.h"
 #include "Card/Instructions/HandleTargetInstructionBase.h"
 #include "InstructionEnqueueWeaponInput.generated.h"
 
@@ -22,6 +21,5 @@ protected:
 	void OnActionFinished(AActor* Carrier);
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Instruction")
-	EWeaponActionInput WeaponInput;
+
 };

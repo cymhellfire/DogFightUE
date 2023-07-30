@@ -7,7 +7,6 @@
 #include "Actors/Interfaces/BuffableActorInterface.h"
 #include "Actors/Interfaces/GameplayTagsActorInterface.h"
 #include "Actors/Interfaces/GameAnimatedCharacterInterface.h"
-#include "Actors/Interfaces/WeaponCarrierInterface.h"
 #include "GameFramework/Character.h"
 #include "Interface/DamageReceiverActorInterface.h"
 #include "StandardModePlayerCharacter.generated.h"
@@ -16,7 +15,7 @@ class UCardDescObject;
 
 UCLASS(Config=Game)
 class DOGFIGHT_API AStandardModePlayerCharacter : public ACharacter, public IDamageableActorInterface, public IGameAnimatedCharacterInterface,
-	public IBuffableActorInterface, public IGameplayTagsActorInterface, public IWeaponCarrierInterface, public IDamageReceiverActorInterface
+	public IBuffableActorInterface, public IGameplayTagsActorInterface, public IDamageReceiverActorInterface
 {
 	GENERATED_BODY()
 
@@ -63,28 +62,6 @@ public:
 
 #pragma region GameplayTagsActorInterface
 	virtual void GetGameplayTags(FGameplayTagContainer& OutGameplayTags) override;
-#pragma endregion
-
-#pragma region WeaponCarrierInterface
-	virtual UWeaponBase* GetCurrentWeapon() override { return CurrentWeapon; }
-	virtual EWeaponType GetCurrentWeaponType() override;
-	virtual struct FWeaponActionDisplayInfo GetNextActionDisplayInfoByInput(EWeaponActionInput Input) const override;
-	virtual void EquipWeapon(UWeaponBase* NewWeapon) override;
-	virtual void UnEquipWeapon() override;
-	virtual void EnqueueInput(EWeaponActionInput NewInput) override;
-	virtual void SetWeaponTargetActor(AActor* NewTarget) override;
-	virtual void SetWeaponTargetLocation(FVector NewLocation) override;
-	virtual void ClearWeaponTargetActor() override { WeaponTargetActor = nullptr; }
-	virtual void MoveToActionDistance() override;
-	virtual void SetActionDistance(float NewDistance) override;
-	virtual AActor* GetWeaponTargetActor() override { return WeaponTargetActor; }
-	virtual FWeaponCarrierWithOwnerSignature& GetWeaponEquippedEvent() override { return OnWeaponEquippedEvent; }
-	virtual FWeaponCarrierWithOwnerSignature& GetWeaponActionFinishedEvent() override { return OnWeaponActionFinishedEvent; }
-	virtual FWeaponCarrierWithOwnerSignature& GetCarrierReachActionDistanceEvent() override { return OnCarrierReachedActionDistanceEvent; }
-
-	FWeaponCarrierWithOwnerSignature OnWeaponEquippedEvent;
-	FWeaponCarrierWithOwnerSignature OnWeaponActionFinishedEvent;
-	FWeaponCarrierWithOwnerSignature OnCarrierReachedActionDistanceEvent;
 #pragma endregion
 
 #pragma region DamageReceiverActor
@@ -143,15 +120,6 @@ protected:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastPlayMontage(UAnimMontage* MontageToPlay);
-
-	UFUNCTION()
-	void OnWeaponEquipped();
-
-	UFUNCTION()
-	void OnWeaponUnEquipped();
-
-	UFUNCTION()
-	void OnWeaponActionFinished();
 
 	UFUNCTION()
 	void OnPlayerRoundBegin(int32 PlayerId);
@@ -297,9 +265,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Character")
 	FGameplayTagContainer GameplayTags;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Debug")
-	TSubclassOf<UWeaponBase> TestWeaponClass;
-
 	UPROPERTY(Transient, Replicated)
 	TArray<UCardDescObject*> CardDescObjects;
 
@@ -368,15 +333,6 @@ private:
 	class UCharacterFloatingTextPanelWidget* FloatingTextPanelWidget;
 
 	AController* SupremeController;
-
-	UPROPERTY()
-	UWeaponBase* CurrentWeapon;
-
-	UPROPERTY(Replicated)
-	EWeaponType CurrentWeaponType;
-
-	UPROPERTY()
-	UWeaponBase* PendingWeapon;
 
 	AActor* WeaponTargetActor;
 	FVector WeaponTargetLocation;

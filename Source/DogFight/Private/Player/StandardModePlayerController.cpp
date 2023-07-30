@@ -1197,7 +1197,7 @@ void AStandardModePlayerController::ExecUnEquipTestWeapon()
 	if (CharacterPawn == nullptr)
 		return;
 
-	CharacterPawn->UnEquipWeapon();
+	//CharacterPawn->UnEquipWeapon();
 }
 
 void AStandardModePlayerController::ExecEnqueueInput(uint8 InputIndex, int32 InputCount)
@@ -1207,7 +1207,7 @@ void AStandardModePlayerController::ExecEnqueueInput(uint8 InputIndex, int32 Inp
 
 	for (int32 i = 0; i < InputCount; ++i)
 	{
-		CharacterPawn->EnqueueInput(static_cast<EWeaponActionInput>(InputIndex));
+		//CharacterPawn->EnqueueInput(static_cast<EWeaponActionInput>(InputIndex));
 	}
 }
 

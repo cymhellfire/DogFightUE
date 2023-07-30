@@ -14,6 +14,7 @@ class UPathFollowingComponent;
 class UNewBuffBase;
 class UBuffManagerComponent;
 class UGameplayAttributesComponent;
+class UArsenalComponent;
 struct FPathFollowingResult;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTopDownStylePlayerCharacterDeadEvent, ATopDownStylePlayerCharacter*, Character);
@@ -95,6 +96,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="TopDownStylePlayerCharacter")
 	UGameplayAttributesComponent* GameplayAttributesComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="TopDownStylePlayerCharacter")
+	UArsenalComponent* ArsenalComponent;
 
 	UPROPERTY(Transient)
 	UPlayerCharacterStateWidget* StateWidget;
