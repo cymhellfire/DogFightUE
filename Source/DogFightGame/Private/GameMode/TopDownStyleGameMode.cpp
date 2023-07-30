@@ -44,6 +44,27 @@ void ATopDownStyleGameMode::PostLogin(APlayerController* NewPlayer)
 	if (auto PC = Cast<ATopDownStylePlayerController>(NewPlayer))
 	{
 		AllPlayerControllers.Add(PC);
+
+		if (auto PS = PC->GetPlayerState<ATopDownStylePlayerState>())
+		{
+			PS->OnPlayerStateChanged.AddUObject(this, &ATopDownStyleGameMode::OnAnyPlayerStateChanged);
+		}
+	}
+}
+
+void ATopDownStyleGameMode::Logout(AController* Exiting)
+{
+	Super::Logout(Exiting);
+
+	// Remove exiting player controller
+	if (auto PC = Cast<ATopDownStylePlayerController>(Exiting))
+	{
+		AllPlayerControllers.Remove(PC);
+
+		if (auto PS = PC->GetPlayerState<ATopDownStylePlayerState>())
+		{
+			PS->OnPlayerStateChanged.RemoveAll(this);
+		}
 	}
 }
 
@@ -86,6 +107,15 @@ UGameTimelineComponent* ATopDownStyleGameMode::GetGameTimelineComponent() const
 	return nullptr;
 }
 
+#define FOREACH_PLAYER_CONTROLLER_DO(List, FuncName)		\
+	for (auto PC : List) \
+	{ \
+		if (PC.IsValid()) \
+		{ \
+			PC->FuncName(); \
+		} \
+	}
+
 void ATopDownStyleGameMode::SetEnableCharacterMoveForAllPlayers(bool bEnable)
 {
 	for (auto PC : AllPlayerControllers)
@@ -113,13 +143,70 @@ void ATopDownStyleGameMode::DamageActor(int32 DamageId, AActor* Target, float Ba
 	}
 }
 
+void ATopDownStyleGameMode::DamageArea(int32 DamageId, const FVector& Origin, float Radius, float BaseDamage,
+	AActor* Causer)
+{
+	if (!IsValid(DamageCalculator))
+	{
+		return;
+	}
+
+	if (auto DamageService = UGameService::GetGameService<UDamageService>())
+	{
+		TArray<FOverlapResult> OverlapResults;
+		FCollisionShape CollisionSphere;
+		CollisionSphere.SetSphere(Radius);
+		if (GetWorld()->OverlapMultiByChannel(OverlapResults, Origin, FQuat::Identity, ECC_WorldStatic, CollisionSphere))
+		{
+			TArray<AActor*> AppliedActors;
+			// Apply damage to all result
+			for (auto& Result : OverlapResults)
+			{
+				if (auto Actor = Result.GetActor())
+				{
+					// Do NOT damage same actor multiple times
+					if (!AppliedActors.Contains(Actor))
+					{
+						DamageService->ApplyDamageToActor(DamageId, Actor, BaseDamage, Causer, DamageCalculator);
+						AppliedActors.Add(Actor);
+					}
+				}
+			}
+		}
+	}
+}
+
 void ATopDownStyleGameMode::OnDamageEventOccured(UExtendedDamageInstance* DamageInstance,
-	const FExtendedDamageEvent& DamageEvent)
+                                                 const FExtendedDamageEvent& DamageEvent)
 {
 	if (auto DamageService = UGameService::GetGameService<UDamageService>())
 	{
 		auto DisplayParams = DamageService->GetDamageDisplayParameters(DamageInstance, DamageEvent);
 		// Broadcast to all clients
 		UCommonGameplayFunctionLibrary::CreateDamageDisplayByPlayerId(this, DisplayParams, -1);
+	}
+}
+
+void ATopDownStyleGameMode::OnAnyPlayerStateChanged(ATopDownStylePlayerState* PlayerState,
+	ETopDownStylePlayerState::Type InState)
+{
+	if (!IsValid(PlayerState))
+	{
+		return;
+	}
+
+	auto PlayerId = PlayerState->GetPlayerId();
+	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>())
+	{
+		switch(InState)
+		{
+		case ETopDownStylePlayerState::PS_Alive:
+			break;
+		case ETopDownStylePlayerState::PS_Dead:
+			LuaEventService->SendEventToLua(ELuaEvent::Type::LuaEvent_OnPlayerCharacterDead, PlayerId);
+			break;
+		case ETopDownStylePlayerState::PS_None:
+		default: ;
+		}
 	}
 }

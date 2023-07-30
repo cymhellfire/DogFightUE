@@ -20,4 +20,10 @@ function AttributeModifierScriptBase:InitDescObject(InDescObject)
 
 end
 
+---Initialize this modifier with given arguments
+---@param InArgs table
+function AttributeModifierScriptBase:SetupArguments(InArgs)
+    
+end
+
 return AttributeModifierScriptBase

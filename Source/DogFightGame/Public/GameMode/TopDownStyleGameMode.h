@@ -2,12 +2,14 @@
 
 #include "DamageType/ExtendedDamageEvent.h"
 #include "GameMode/GameFlowBasedGameMode.h"
+#include "Player/TopDownStylePlayerState.h"
 #include "TopDownStyleGameMode.generated.h"
 
 class ATopDownStylePlayerController;
 class UInGameMessageSenderComponent;
 class UGameTimelineComponent;
 class UDamageCalculatorBase;
+class ATopDownStylePlayerState;
 
 UCLASS()
 class DOGFIGHTGAME_API ATopDownStyleGameMode : public AGameFlowBasedGameMode
@@ -21,6 +23,8 @@ public:
 	virtual void BeginPlay() override;
 
 	virtual void PostLogin(APlayerController* NewPlayer) override;
+
+	virtual void Logout(AController* Exiting) override;
 
 	void PlayerReadyForGame(ATopDownStylePlayerController* InPC);
 
@@ -54,9 +58,21 @@ public:
 	 */
 	void DamageActor(int32 DamageId, AActor* Target, float BaseDamage, AActor* Causer);
 
+	/**
+	 * Apply damage to all actors inside area.
+	 * @param DamageId			Id of damage config.
+	 * @param Origin			Target location.
+	 * @param Radius			Sphere radius.
+	 * @param BaseDamage		Original damage value.
+	 * @param Causer			Causer of this damage.
+	 */
+	void DamageArea(int32 DamageId, const FVector& Origin, float Radius, float BaseDamage, AActor* Causer);
+
 protected:
 	UFUNCTION()
 	void OnDamageEventOccured(class UExtendedDamageInstance* DamageInstance, const FExtendedDamageEvent& DamageEvent);
+
+	void OnAnyPlayerStateChanged(ATopDownStylePlayerState* PlayerState, ETopDownStylePlayerState::Type InState);
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="TopDownStyleGameMode")

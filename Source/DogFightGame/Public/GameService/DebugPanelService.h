@@ -147,8 +147,13 @@ public:
 		FDebugPanelExecuteComboBoxDelegate Callback, FVector2D Size = FVector2D(120, 200), const FName& TabKey = "Default");
 
 protected:
+	UFUNCTION(BlueprintCallable, Category="DebugPanelService")
+	void RebuildPanel();
+
 	UFUNCTION(BlueprintImplementableEvent, Category="DebugPanelService")
 	void GatherAllControlParams();
+
+	void ClearAllControlParams();
 
 private:
 	void ImGuiTick();

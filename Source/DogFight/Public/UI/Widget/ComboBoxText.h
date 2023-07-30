@@ -23,5 +23,5 @@ private:
 protected:
 
 	/** Override text box generation for localization. */
-	virtual TSharedRef<SWidget> HandleGenerateWidget(::TSharedPtr<FString, ESPMode::Fast> Item) const override;
+	virtual TSharedRef<SWidget> HandleGenerateWidget(TSharedPtr<FString> Item) const override;
 };

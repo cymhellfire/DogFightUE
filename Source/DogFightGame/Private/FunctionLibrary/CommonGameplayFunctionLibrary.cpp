@@ -1,11 +1,16 @@
 ﻿#include "FunctionLibrary/CommonGameplayFunctionLibrary.h"
 
+#include "NavigationSystem.h"
+#include "DamageReceiver/DamageReceiverComponent.h"
 #include "FunctionLibrary/CommonGameFlowFunctionLibrary.h"
 #include "FunctionLibrary/LuaIntegrationFunctionLibrary.h"
 #include "GameInstance/DogFightGameInstance.h"
 #include "GameMode/TopDownStyleGameMode.h"
 #include "GameMode/TopDownStyleGameState.h"
 #include "GameService/GameEffectService.h"
+#include "Interface/DamageReceiverActorInterface.h"
+#include "Math/MathHelper.h"
+#include "Pawn/PlayerCharacter/TopDownStylePlayerCharacter.h"
 #include "Pawn/PlayerPawn/TopDownStylePlayerPawn.h"
 #include "Player/TopDownStylePlayerState.h"
 #include "PlayerController/TopDownStylePlayerController.h"
@@ -184,8 +189,17 @@ void UCommonGameplayFunctionLibrary::DamageActor(const UObject* WorldContextObje
 	}
 }
 
+void UCommonGameplayFunctionLibrary::DamageArea(const UObject* WorldContextObject, int32 DamageId,
+	const FVector& Origin, float Radius, float BaseDamage, AActor* Causer)
+{
+	if (auto GameMode = GetCurrentTopDownStyleGameMode(WorldContextObject))
+	{
+		GameMode->DamageArea(DamageId, Origin, Radius, BaseDamage, Causer);
+	}
+}
+
 void UCommonGameplayFunctionLibrary::MovePlayerCharacterToPosition(const UObject* WorldContextObject, int32 PlayerId,
-	FVector TargetPosition)
+                                                                   FVector TargetPosition)
 {
 	ForEachPlayerControllerDo(WorldContextObject, [TargetPosition](ATopDownStylePlayerController* InPC)
 	{
@@ -196,8 +210,84 @@ void UCommonGameplayFunctionLibrary::MovePlayerCharacterToPosition(const UObject
 	}, PlayerId);
 }
 
+void UCommonGameplayFunctionLibrary::SetActorInvincible(AActor* Actor, bool InValue, UObject* InvincibleCauser)
+{
+	if (!IsValid(Actor) || !IsValid(InvincibleCauser))
+	{
+		return;
+	}
+
+	if (auto DamageReceiver = Cast<IDamageReceiverActorInterface>(Actor))
+	{
+		if (auto ReceiveComponent = DamageReceiver->GetDamageReceiverComponent())
+		{
+			if (InValue)
+			{
+				ReceiveComponent->AddInvincibleCauser(InvincibleCauser);
+			}
+			else
+			{
+				ReceiveComponent->RemoveInvincibleCauser(InvincibleCauser);
+			}
+		}
+	}
+}
+
+FVector UCommonGameplayFunctionLibrary::GetRandomPointInNavigationArea(const UObject* WorldContextObject)
+{
+	if (IsValid(WorldContextObject))
+	{
+		if (auto World = WorldContextObject->GetWorld())
+		{
+			if (UNavigationSystemV1* NavSystem = FNavigationSystem::GetCurrent<UNavigationSystemV1>(World))
+			{
+				FNavPathPoint Result;
+				if (NavSystem->GetRandomPoint(Result))
+				{
+					return Result.Location;
+				}
+			}
+		}
+	}
+
+	return FVector::ZeroVector;
+}
+
+TArray<AActor*> UCommonGameplayFunctionLibrary::GetRandomCharacterInGame(const UObject* WorldContextObject, int32 Count,
+	bool bAllowDuplicated)
+{
+	TArray<AActor*> Result;
+	if (IsValid(WorldContextObject))
+	{
+		auto PlayerControllerList = UCommonGameFlowFunctionLibrary::GetAllPlayerControllers(WorldContextObject);
+		if (bAllowDuplicated)
+		{
+			// Random pick character
+			auto PCCount = PlayerControllerList.Num();
+			for (int32 i = 0; i < Count; ++i)
+			{
+				auto Index = FMath::RandRange(0, PCCount - 1);
+				Result.Add(PlayerControllerList[Index]->GetCharacterPawn());
+			}
+		}
+		else
+		{
+			// Randomize player controller list
+			FMathHelper::RandomizeArray(PlayerControllerList);
+			// Clamp result count
+			auto ResultNum = FMath::Min(Count, PlayerControllerList.Num());
+			for (int32 i = 0; i < ResultNum; ++i)
+			{
+				Result.Add(PlayerControllerList[i]->GetCharacterPawn());
+			}
+		}
+	}
+
+	return Result;
+}
+
 void UCommonGameplayFunctionLibrary::ForEachPlayerStateDo(const UObject* WorldContextObject,
-	TFunction<void(ATopDownStylePlayerState*)> ExecuteFunc, int32 PlayerIdMask)
+                                                          TFunction<void(ATopDownStylePlayerState*)> ExecuteFunc, int32 PlayerIdMask)
 {
 	if (auto GameState = GetCurrentTopDownStyleGameState(WorldContextObject))
 	{

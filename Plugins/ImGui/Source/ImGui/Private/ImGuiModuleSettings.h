@@ -176,7 +176,7 @@ protected:
 	// Path to own implementation of ImGui Input Handler allowing to customize handling of keyboard and gamepad input.
 	// If not set then default handler is used.
 	UPROPERTY(EditAnywhere, config, Category = "Extensions", meta = (MetaClass = "ImGuiInputHandler"))
-	FStringClassReference ImGuiInputHandlerClass;
+	FSoftClassPath ImGuiInputHandlerClass;
 
 	// Whether ImGui should share keyboard input with game.
 	// This defines initial behaviour which can be later changed using 'ImGui.ToggleKeyboardInputSharing' command or

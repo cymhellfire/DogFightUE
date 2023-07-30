@@ -11,8 +11,9 @@ local ActionAddBuff = UnrealClass(CardActionCommand)
 ---Initialize the buff creating settings.
 ---@param InTable table Create parameters.
 function ActionAddBuff:InitBuffSettings(InTable)
-    self._BuffId = InTable.BuffId
-    self._BuffDuration = InTable.Duration
+    self._Arguments = self:ConvertArgumentTable(InTable)
+    self._BuffId = self._Arguments.BuffId
+    self._BuffDuration = self._Arguments.Duration
     self._TargetList = InTable.TargetList
 end
 
@@ -26,12 +27,16 @@ local function CreateBuffAndApply(self, InTarget)
     ---@type BuffService
     local BuffService = GetGameService(self._CardLogic, GameServiceNameDef.BuffService)
     if BuffService then
-        ---@type UNewBuffBase
+        ---@type BuffBase
         local NewBuff = BuffService:CreateBuff(self._BuffId)
         if NewBuff then
             -- Setup the lifespan
             if type(self._BuffDuration) == "number" and type(NewBuff.SetDuration) == "function" then
                 NewBuff:SetDuration(self._BuffDuration)
+            end
+            -- Initialize buff
+            if type(self._Arguments) == "table" and type(NewBuff.SetupArgument) == "function" then
+                NewBuff:SetupArgument(self._Arguments)
             end
             InTarget:AddBuff(NewBuff)
         end

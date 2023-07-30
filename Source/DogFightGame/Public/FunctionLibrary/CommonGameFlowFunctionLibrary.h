@@ -93,6 +93,20 @@ public:
 	static void RequestFinishLocalPlayerRound(const UObject* WorldContextObject);
 
 	/**
+	 * Broadcast player round start event to all players.
+	 * @param PlayerId Id of player that start round.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameFlow")
+	static void BroadcastStartPlayerRound(const UObject* WorldContextObject, int32 PlayerId);
+
+	/**
+	 * Broadcast player round finish event to all players.
+	 * @param PlayerId Id of player that finish round.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameFlow")
+	static void BroadcastFinishPlayerRound(const UObject* WorldContextObject, int32 PlayerId);
+
+	/**
 	 * Get the player controller of local player.
 	 * @return			Player controller.
 	 */

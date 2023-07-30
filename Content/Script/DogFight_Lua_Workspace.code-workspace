@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "../../Plugins/UnLua/Content/Script"
+		},
+		{
+			"path": "../../GameDocument"
 		}
 	],
 	"settings": {

@@ -1,8 +1,10 @@
 local CharacterModifierTypeDef = require "DogFight.Services.CharacterModifierService.CharacterModifierTypeDef"
+local AttributeNameDef = require "DogFight.Common.AttributeNameDef"
 
 ---@class BuffAddPhysResist : BuffLogicBase Add physics resistance buff.
----@field _Modifier UCharacterStatusModifier Character status modifier instance.
+---@field _Modifier AttributeModifierBase Character status modifier instance.
 ---@field _Effect AGameEffectBase Effect instance.
+---@field _ResistValue number Resistance value.
 local BuffAddPhysResist = UnrealClass("DogFight.Buff.BuffLogic.BuffLogicBase")
 
 ---@param InCharacter ATopDownStylePlayerCharacter
@@ -16,6 +18,7 @@ function BuffAddPhysResist:OnApply(InCharacter)
         if CharacterModifierService then
             self._Modifier = CharacterModifierService:CreateCharacterStatusModifier(CharacterModifierTypeDef.Add10PhysicalResistance)
             if self._Modifier then
+                self._Modifier:SetupArguments(self._BuffArgs)
                 InCharacter.DamageReceiverComponent:AddModifierObject(self._Modifier)
             end
         end

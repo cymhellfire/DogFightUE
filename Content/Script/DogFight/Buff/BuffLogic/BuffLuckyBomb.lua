@@ -7,6 +7,8 @@ local ProjectileTypeDef = require "DogFight.Services.ProjectileService.Projectil
 ---@field _Bomb ANewProjectileBase Bomb projectile instance.
 ---@field _DetonateRate number Chance of the bomb detonate every time applied.
 ---@field _DelegateHelper DelegateHelper Helper for listening bomb dead event.
+---@field _Damage number Damage apply when bomb detonate.
+---@field _DamageRadius number Damage radius of bomb.
 local BuffLuckyBomb = UnrealClass("DogFight.Buff.BuffLogic.BuffLogicBase")
 
 local SpawnOffset = 350
@@ -83,20 +85,31 @@ function BuffLuckyBomb:OnInit()
     self._bFinishing = false
     self._bChecking = false
     self._bOnInit = true
-    self._DetonateRate = 0.35
 
     -- Add follow mod
     self:AddMod("BuffModFollowActivePlayer")
+end
 
-    -- Spawn bomb instance
-    ---@type ProjectileService
-    local ProjectileService = GetGameService(self._Owner, GameServiceNameDef.ProjectileService)
-    if ProjectileService then
-        self._Bomb = ProjectileService:SpawnProjectileAtPos(ProjectileTypeDef.LuckyBomb, UE.FVector(), UE.FRotator())
-        self._Bomb:LaunchToTargetWithSpeed(UE.FVector(), 1)
+function BuffLuckyBomb:OnSetupArgument()
+    if self._BuffArgs then
+        self._DetonateRate = self._BuffArgs.BuffRatio or 0.35
+        self._Damage = self._BuffArgs.Damage or 10
+        self._DamageRadius = self._BuffArgs.DamageRadius or 250
 
-        -- Register callback
-        RegisterCallbackToProjectile(self, self._Bomb)
+        -- Spawn bomb instance
+        ---@type ProjectileService
+        local ProjectileService = GetGameService(self._Owner, GameServiceNameDef.ProjectileService)
+        if ProjectileService then
+            self._Bomb = ProjectileService:SpawnProjectileAtPos(ProjectileTypeDef.LuckyBomb, UE.FVector(), UE.FRotator())
+            self._Bomb:LaunchToTargetWithSpeed(UE.FVector(), 1)
+            self._Bomb.Damage = self._Damage
+            self._Bomb.WarheadData.DamageRadius = self._DamageRadius
+
+            -- Register callback
+            RegisterCallbackToProjectile(self, self._Bomb)
+        end
+    else
+        error("BuffLuckyBomb:OnSetupArgument Invalid _BuffArgs")
     end
 end
 

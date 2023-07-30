@@ -1,0 +1,27 @@
+---@class $Class$ : BuffLogicBase 
+local $Class$ = UnrealClass("DogFight.Buff.BuffLogic.BuffLogicBase")
+
+---Init with self._BuffArgs
+function $Class$:OnSetupArgument()
+
+end
+
+---@param InCharacter ATopDownStylePlayerCharacter
+function $Class$:OnApply(InCharacter)
+    self.Super.OnApply(self, InCharacter)
+
+    -- Apply logic
+end
+
+---@param InCharacter ATopDownStylePlayerCharacter
+function $Class$:OnRemove(InCharacter)
+    self.Super.OnRemove(self, InCharacter)
+
+    -- Remove logic
+end
+
+function $Class$:tostring()
+    return "$Class$"
+end
+
+return $Class$

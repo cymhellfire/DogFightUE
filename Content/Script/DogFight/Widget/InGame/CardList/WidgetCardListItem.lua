@@ -26,16 +26,24 @@ end
 function WidgetCardListItem:Construct()
     self.bSelectable = true
     -- Register callback for card using events
-    GetGameService(self, GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_MyCardBeginUsing, self, self.OnCardBeginUsing)
-    GetGameService(self, GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_MyCardFinished, self, self.OnCardFinished)
-    GetGameService(self, GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_MyCardCancelled, self, self.OnCardCancelled)
+    ---@type LuaEventService
+    local LuaEventService = GetGameService(self, GameServiceNameDef.LuaEventService)
+    if LuaEventService then
+        LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_MyCardBeginUsing, self, self.OnCardBeginUsing)
+        LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_MyCardFinished, self, self.OnCardFinished)
+        LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_MyCardCancelled, self, self.OnCardCancelled)
+    end
 end
 
 function WidgetCardListItem:Destruct()
     -- Unregister callback for card using events
-    GetGameService(self, GameServiceNameDef.LuaEventService):UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardBeginUsing, self, self.OnCardBeginUsing)
-    GetGameService(self, GameServiceNameDef.LuaEventService):UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardFinished, self, self.OnCardFinished)
-    GetGameService(self, GameServiceNameDef.LuaEventService):UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardCancelled, self, self.OnCardCancelled)
+    ---@type LuaEventService
+    local LuaEventService = GetGameService(self, GameServiceNameDef.LuaEventService)
+    if LuaEventService then
+        LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardBeginUsing, self, self.OnCardBeginUsing)
+        LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardFinished, self, self.OnCardFinished)
+        LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardCancelled, self, self.OnCardCancelled)
+    end
 end
 
 ---@param DescObject UCardDescObject

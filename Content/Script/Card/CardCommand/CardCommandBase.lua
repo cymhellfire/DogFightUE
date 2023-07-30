@@ -55,6 +55,52 @@ function CardCommandBase:FinishWithParams(Result, ...)
     FinishCommand(self, Result, ...)
 end
 
+---Convert argument list with GetArgumentValue function.
+---@param InTable table Table of arguments to convert.
+---@return table Table of converted argument value.
+function CardCommandBase:ConvertArgumentTable(InTable)
+    if type(InTable) ~= "table" then
+        return
+    end
+
+    local NewArgs = {}
+    for k, v in pairs(InTable) do
+        NewArgs[k] = self:GetArgumentValue(v)
+    end
+
+    return NewArgs
+end
+
+---Get the actual value of given argument.
+---eg. '[Int]Damage' will be converted to the actual integer value of attribute with name 'Damage'.
+---Argument without data type prefix will remains origin value.
+function CardCommandBase:GetArgumentValue(ArgumentName)
+    if self._CardLogic then
+        if type(ArgumentName) == "string" then
+            -- Find data type string
+            local Start, End, TypePrefix = string.find(ArgumentName, "(%[.*%])")
+            if Start and End then
+                local Name = string.sub(ArgumentName, End + 1, #ArgumentName)
+                if TypePrefix then
+                    local bFound, Value
+                    local Card = self._CardLogic:GetOwnerCard()
+                    if Card then
+                        if TypePrefix == "[Int]" then
+                            bFound, Value = Card:GetAttributeIntegerValue(Name)
+                        elseif TypePrefix == "[Float]" then
+                            bFound, Value = Card:GetAttributeFloatValue(Name)
+                        end
+                    end
+
+                    return Value
+                end
+            end
+        end
+    end
+
+    return ArgumentName
+end
+
 function CardCommandBase:tostring()
     return "CardCommandBase"
 end

@@ -19,6 +19,10 @@ void UDamageCalculatorBase::ApplyDamage(AActor* DamagedActor, float BaseDamage, 
 	if (IDamageReceiverActorInterface* DamageReceiver = Cast<IDamageReceiverActorInterface>(DamagedActor))
 	{
 		auto ReceiverComponent = DamageReceiver->GetDamageReceiverComponent();
+		if (ReceiverComponent->IsInvincible())
+		{
+			return;
+		}
 		DamageEvent = FExtendedDamageEvent();
 		DamageEvent->DamageValue = BaseDamage;
 		DamageEvent->ReceiverComponent = ReceiverComponent;

@@ -10,15 +10,6 @@ local CommandNameDef = {
     ApplyBuff = "ApplyBuff",
 }
 
----@param DescObject UCardDescObject
-function LogicAddBuff:SetupDescObject(DescObject)
-    if self._CardInfo then
-        DescObject:SetCardName(self._CardInfo.Name or "LogicAddBuff")
-    else
-        DescObject:SetCardName("LogicAddBuff")
-    end
-end
-
 ---Initialize the card workflow
 function LogicAddBuff:OnInit(InParams)
     CardLogicCommand.OnInit(self, InParams)
@@ -52,7 +43,11 @@ end
 
 ---@param InCommand ActionCardAcquireTarget
 function LogicAddBuff:OnAcquireTargetCreated(InCommand)
-    InCommand:InitAcquireSettings(1, UE.ECardTargetType.CTT_Actor)
+    if self._TargetInfo then
+        InCommand:InitAcquireSettings(self._TargetInfo)
+    else
+        self:FailedWithParams()
+    end
 end
 
 ---Command finish callback

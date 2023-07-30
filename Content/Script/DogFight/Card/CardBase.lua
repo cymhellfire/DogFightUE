@@ -24,8 +24,9 @@ function CardBase:CreateAttribute(InTable)
     end
 
     local DisplayName = InTable["DisplayName"] or NameStr
-    local DataTypeStr = InTable["DataType"]
-    local BaseValue = InTable["Value"] and InTable["Value"] or AttributeEnum.DefaultValue[DataTypeStr]
+    local DataType = InTable["DataType"]
+    local DataTypeStr = AttributeEnum:GetDataTypeString(DataType) 
+    local BaseValue = InTable["Value"] and InTable["Value"] or AttributeEnum:GetDefaultValue(DataType)
 
     -- Set tags
     local TagArray = UE.TArray("")
@@ -40,7 +41,7 @@ function CardBase:CreateAttribute(InTable)
     local NewArgument = UE.FAttributeCreateArgument()
     NewArgument.AttrName = NameStr
     NewArgument.DisplayName = DisplayName
-    NewArgument.DataType = AttributeEnum.DataType[DataTypeStr]
+    NewArgument.DataType = DataType
     NewArgument.Tags = TagArray
     NewArgument["Init" .. DataTypeStr .. "Value"] = BaseValue
     self:AddAttribute(NewArgument)

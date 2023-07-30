@@ -11,8 +11,6 @@
 
 SCreateLuaScriptWindow::SCreateLuaScriptWindow()
 {
-	bUseScriptPrefix = true;
-	SelectedTab = ELuaScriptWindowTab::Default;
 	SelectedTemplateMode = ELuaScriptNameTemplateMode::TM_None;
 
 	DefaultRowPadding = FMargin(FVector4(5, 5, 0, 0));
@@ -20,16 +18,25 @@ SCreateLuaScriptWindow::SCreateLuaScriptWindow()
 
 void SCreateLuaScriptWindow::Construct(const FArguments& InArgs)
 {
-	ModuleNameList.Add(MakeShareable(new FString("DogFight")));
-	ModuleNameList.Add(MakeShareable(new FString("GameFlow")));
-	SelectedModule = ModuleNameList[0];
-	TemplateNameList.Add(MakeShareable(new FString("Card")));
-	TemplateNameList.Add(MakeShareable(new FString("CardModifier")));
-	TemplateNameList.Add(MakeShareable(new FString("GameFlowState")));
-	TemplateNameList.Add(MakeShareable(new FString("CardLogic")));
-	TemplateNameList.Add(MakeShareable(new FString("CardAction")));
-	SelectedTemplate = TemplateNameList[0];
-	SetCreateTemplateList(*SelectedTemplate);
+	auto CreateLuaSettings = GetDefault<UCreateLuaScriptSettings>();
+	if (CreateLuaSettings)
+	{
+		TabSettingList = CreateLuaSettings->TabList;
+	}
+
+	if (TabSettingList.Num() == 0)
+	{
+		ChildSlot[
+			SNew(SBox)
+			.HAlign(HAlign_Center)
+			.VAlign(VAlign_Center)
+			[
+				SNew(STextBlock)
+				.Text(FText::FromString("Create lua setting invalid."))
+			]
+		];
+		return;
+	}
 
 	for (int32 i = 0; i < 3; ++i)
 	{
@@ -38,6 +45,32 @@ void SCreateLuaScriptWindow::Construct(const FArguments& InArgs)
 	ScriptNameTemplateModeDesc.Add(FString("None"));
 	ScriptNameTemplateModeDesc.Add(FString("Prefix"));
 	ScriptNameTemplateModeDesc.Add(FString("Suffix"));
+
+	TSharedPtr<SWidgetSwitcher> TabContainer;
+	SAssignNew(TabContainer, SWidgetSwitcher)
+	.WidgetIndex_Lambda([this]()
+	{
+		return SelectTabIndex;
+	});
+
+	// Create tabs based on settings
+	for (auto& TabSetting : TabSettingList)
+	{
+		if (TabSetting.Type == ECreateLuaScriptTabType::TT_Group)
+		{
+			TabContainer->AddSlot()
+			[
+				ConstructGroupTab()
+			];
+		}
+		else
+		{
+			TabContainer->AddSlot()
+			[
+				ConstructDefaultTab()
+			];
+		}
+	}
 
 	ChildSlot
 	[
@@ -50,66 +83,46 @@ void SCreateLuaScriptWindow::Construct(const FArguments& InArgs)
 		+ SVerticalBox::Slot()
 		.AutoHeight()
 		[
-			SNew(SWidgetSwitcher)
-			.WidgetIndex_Lambda([this]()
-			{
-				return static_cast<int32>(SelectedTab);
-			})
-			+ SWidgetSwitcher::Slot()
-			[
-				ConstructDefaultTab()
-			]
-			+ SWidgetSwitcher::Slot()
-			[
-				ConstructMVVMTab()
-			]
+			TabContainer.ToSharedRef()
 		]
 	];
+
+	SetSelectedTabIndex(0);
 }
 
 TSharedRef<SWidget> SCreateLuaScriptWindow::ConstructTabHeaderList()
 {
-	return SNew(SHorizontalBox)
-		+ SHorizontalBox::Slot()
+	TSharedPtr<SHorizontalBox> TabContainer;
+	SAssignNew(TabContainer, SHorizontalBox);
+
+	if (TabSettingList.Num() > 0)
+		SelectTabIndex = 0;
+
+	for (int32 Index = 0; Index < TabSettingList.Num(); ++Index)
+	{
+		auto& TabSetting = TabSettingList[Index];
+		TabContainer->AddSlot()
 		.AutoWidth()
 		[
 			SNew(SButton)
-			.Text(FText::FromString("Default"))
-			.OnClicked_Lambda([this]()
+			.Text(FText::FromString(TabSetting.TabName))
+			.OnClicked_Lambda([this, Index]()
 			{
-				SelectedTab = ELuaScriptWindowTab::Default;
-				OnSwitchDefaultTab();
+				SetSelectedTabIndex(Index);
 				return FReply::Handled();
 			})
-			.ForegroundColor_Lambda([this]()
+			.ForegroundColor_Lambda([this, Index]()
 			{
-				return SelectedTab == ELuaScriptWindowTab::Default ? FLinearColor::White : FLinearColor::Gray;
+				return SelectTabIndex == Index ? FLinearColor::White : FLinearColor::Gray;
 			})
-			.ButtonColorAndOpacity_Lambda([this]()
+			.ButtonColorAndOpacity_Lambda([this, Index]()
 			{
-				return SelectedTab == ELuaScriptWindowTab::Default ? FLinearColor::Gray : FLinearColor::Black;
-			})
-		]
-		+ SHorizontalBox::Slot()
-		.AutoWidth()
-		[
-			SNew(SButton)
-			.Text(FText::FromString("MVVM"))
-			.OnClicked_Lambda([this]()
-			{
-				SelectedTab = ELuaScriptWindowTab::MVVM;
-				OnSwitchMVVMTab();
-				return FReply::Handled();
-			})
-			.ForegroundColor_Lambda([this]()
-			{
-				return SelectedTab == ELuaScriptWindowTab::MVVM ? FLinearColor::White : FLinearColor::Gray;
-			})
-			.ButtonColorAndOpacity_Lambda([this]()
-			{
-				return SelectedTab == ELuaScriptWindowTab::MVVM ? FLinearColor::Gray : FLinearColor::Black;
+				return SelectTabIndex == Index ? FLinearColor::Gray : FLinearColor::Black;
 			})
 		];
+	}
+
+	return TabContainer.ToSharedRef();
 }
 
 TSharedRef<SWidget> SCreateLuaScriptWindow::ConstructDefaultTab()
@@ -146,18 +159,18 @@ TSharedRef<SWidget> SCreateLuaScriptWindow::ConstructDefaultTab()
 				.VAlign(VAlign_Center)
 				.AutoWidth()
 				[
-					SNew(SComboBox<TSharedPtr<FString>>)
-					.OptionsSource(&TemplateNameList)
+					SNew(SComboBox<TSharedPtr<FCreateLuaScriptTemplateSettings>>)
+					.OptionsSource(&TemplateSettingList)
 					.OnGenerateWidget(this, &SCreateLuaScriptWindow::OnGeneratedTemplateOptionWidget)
 					.OnSelectionChanged(this, &SCreateLuaScriptWindow::OnTemplateSelectionChanged)
-					.InitiallySelectedItem(TemplateNameList.Num() > 0 ? TemplateNameList[0] : nullptr)
+					.InitiallySelectedItem(TemplateSettingList.Num() > 0 ? TemplateSettingList[0] : nullptr)
 					[
 						SNew(STextBlock)
 						.Text_Lambda([this]()
 						{
 							if (SelectedTemplate.IsValid())
 							{
-								return FText::FromString(*SelectedTemplate);
+								return FText::FromString(SelectedTemplate->TemplateName);
 							}
 
 							return FText::GetEmpty();
@@ -189,7 +202,7 @@ TSharedRef<SWidget> SCreateLuaScriptWindow::ConstructDefaultTab()
 		];
 }
 
-TSharedRef<SWidget> SCreateLuaScriptWindow::ConstructMVVMTab()
+TSharedRef<SWidget> SCreateLuaScriptWindow::ConstructGroupTab()
 {
 	return SNew(SOverlay)
 		+ SOverlay::Slot()
@@ -250,18 +263,18 @@ TSharedRef<SWidget> SCreateLuaScriptWindow::CreateModuleChooseSection()
 			.VAlign(VAlign_Center)
 			.AutoWidth()
 			[
-				SNew(SComboBox<TSharedPtr<FString>>)
-				.OptionsSource(&ModuleNameList)
+				SNew(SComboBox<TSharedPtr<FCreateLuaScriptModuleSettings>>)
+				.OptionsSource(&ModuleSettingList)
 				.OnGenerateWidget(this, &SCreateLuaScriptWindow::OnGeneratedModuleOptionWidget)
 				.OnSelectionChanged(this, &SCreateLuaScriptWindow::OnModuleSelectionChanged)
-				.InitiallySelectedItem(ModuleNameList.Num() > 0 ? ModuleNameList[0] : nullptr)
+				.InitiallySelectedItem(ModuleSettingList.Num() > 0 ? ModuleSettingList[0] : nullptr)
 				[
 					SNew(STextBlock)
 					.Text_Lambda([this]()
 					{
 						if (SelectedModule.IsValid())
 						{
-							return FText::FromString(*SelectedModule);
+							return FText::FromString(SelectedModule->ModuleName);
 						}
 
 						return FText::GetEmpty();
@@ -492,22 +505,22 @@ TSharedRef<SWidget> SCreateLuaScriptWindow::CreateCreateFileSection()
 		];
 }
 
-TSharedRef<SWidget> SCreateLuaScriptWindow::OnGeneratedModuleOptionWidget(TSharedPtr<FString> InOption)
+TSharedRef<SWidget> SCreateLuaScriptWindow::OnGeneratedModuleOptionWidget(TSharedPtr<FCreateLuaScriptModuleSettings> InOption)
 {
 	return SNew(SBox)
 	[
 		SNew(STextBlock)
-		.Text(FText::FromString(*InOption))
+		.Text(FText::FromString(InOption->ModuleName))
 		.Font(IDetailLayoutBuilder::GetDetailFont())
 	];
 }
 
-TSharedRef<SWidget> SCreateLuaScriptWindow::OnGeneratedTemplateOptionWidget(TSharedPtr<FString> InOption)
+TSharedRef<SWidget> SCreateLuaScriptWindow::OnGeneratedTemplateOptionWidget(TSharedPtr<FCreateLuaScriptTemplateSettings> InOption)
 {
 	return SNew(SBox)
 	[
 		SNew(STextBlock)
-		.Text(FText::FromString(*InOption))
+		.Text(FText::FromString(InOption->TemplateName))
 		.Font(IDetailLayoutBuilder::GetDetailFont())
 	];
 }
@@ -522,16 +535,22 @@ TSharedRef<SWidget> SCreateLuaScriptWindow::OnGeneratedScriptNameTemplateModeWid
 	];
 }
 
-void SCreateLuaScriptWindow::OnModuleSelectionChanged(TSharedPtr<FString> InSelectedItem, ESelectInfo::Type SelectInfo)
+void SCreateLuaScriptWindow::OnModuleSelectionChanged(TSharedPtr<FCreateLuaScriptModuleSettings> InSelectedItem, ESelectInfo::Type SelectInfo)
 {
+	if (!InSelectedItem.IsValid())
+		return;
+
 	SelectedModule = InSelectedItem;
 }
 
-void SCreateLuaScriptWindow::OnTemplateSelectionChanged(TSharedPtr<FString> InSelectedItem, ESelectInfo::Type SelectInfo)
+void SCreateLuaScriptWindow::OnTemplateSelectionChanged(TSharedPtr<FCreateLuaScriptTemplateSettings> InSelectedItem, ESelectInfo::Type SelectInfo)
 {
+	if (!InSelectedItem.IsValid())
+		return;
+
 	SelectedTemplate = InSelectedItem;
 
-	SetCreateTemplateList(*SelectedTemplate);
+	SetCreateTemplateList(SelectedTemplate);
 }
 
 void SCreateLuaScriptWindow::OnScriptNameTemplateModeSelectionChanged(TSharedPtr<int32> InSelectedItem,
@@ -571,35 +590,56 @@ FReply SCreateLuaScriptWindow::OnOpenFileButtonClicked()
 	return FReply::Handled();
 }
 
-void SCreateLuaScriptWindow::OnSwitchDefaultTab()
+void SCreateLuaScriptWindow::SetSelectedTabIndex(int32 InValue)
 {
-	OverrideFolder.Reset();
-	HardcodedSubfolder.Reset();
+	SelectTabIndex = InValue;
 
-	if (TemplateNameList.Num() > 0)
-	{
-		OnTemplateSelectionChanged(TemplateNameList[0], ESelectInfo::OnMouseClick);
-	}
-
-	if (ScriptNameTemplateModeOptions.Num() > 0)
-	{
-		OnScriptNameTemplateModeSelectionChanged(ScriptNameTemplateModeOptions[0], ESelectInfo::OnMouseClick);
-	}
+	ApplyTabSettings(InValue);
 }
 
-void SCreateLuaScriptWindow::OnSwitchMVVMTab()
+void SCreateLuaScriptWindow::ApplyTabSettings(int32 Index)
 {
 	ClearCreateTemplateList();
 
-	AddCreateTemplateList(TEXT("View"));
-	AddCreateTemplateList(TEXT("VM"));
+	auto& CurTabSetting = TabSettingList[Index];
 
-	HardcodedSubfolder = TEXT("Widget");
-	OverrideFolder = TEXT("");
-
-	if (ScriptNameTemplateModeOptions.Num() > 2)
+	// Load module list
+	ModuleSettingList.Empty();
+	for (auto& ModuleSetting : CurTabSetting.ModuleList)
 	{
-		OnScriptNameTemplateModeSelectionChanged(ScriptNameTemplateModeOptions[2], ESelectInfo::OnMouseClick);
+		ModuleSettingList.Add(MakeShareable(new FCreateLuaScriptModuleSettings(ModuleSetting)));
+	}
+	if (ModuleSettingList.Num() > 0)
+	{
+		SelectedModule = ModuleSettingList[0];
+	}
+
+	// Load template list
+	TemplateSettingList.Empty();
+	for (auto& TemplateSetting : CurTabSetting.TemplateList)
+	{
+		TSharedPtr<FCreateLuaScriptTemplateSettings> NewSettings = MakeShareable(new FCreateLuaScriptTemplateSettings(TemplateSetting));
+		TemplateSettingList.Add(NewSettings);
+		if (CurTabSetting.Type == ECreateLuaScriptTabType::TT_Group)
+		{
+			AddCreateTemplateList(NewSettings);
+		}
+	}
+	if (TemplateSettingList.Num() > 0)
+	{
+		if (CurTabSetting.Type == ECreateLuaScriptTabType::TT_Default)
+		{
+			SelectedTemplate = TemplateSettingList[0];
+			SetCreateTemplateList(SelectedTemplate);
+		}
+	}
+
+	// Set template name mode
+	SelectedTemplateMode = CurTabSetting.DefaultTemplateNameMode;
+
+	if (auto ParentWidget = GetParentWidget())
+	{
+		ParentWidget->Invalidate(EInvalidateWidgetReason::All);
 	}
 }
 
@@ -611,29 +651,37 @@ FLuaScriptCreateArgument SCreateLuaScriptWindow::GetCurrentArgument(int32 Index)
 	}
 
 	FLuaScriptCreateArgument NewArgument;
-	NewArgument.ModuleName = *SelectedModule;
-	NewArgument.TemplateName = CreateTemplateList[Index];
-	if (HardcodedSubfolder.IsSet())
+	NewArgument.ModuleName = SelectedModule.IsValid() ? SelectedModule->ModuleName : "Untitled";
+	auto& TemplateSettings = CreateTemplateList[Index];
+	if (TemplateSettings.IsValid())
 	{
-		if (ScriptPath.IsEmpty())
+		NewArgument.TemplateName = TemplateSettings->TemplateName;
+		NewArgument.TemplateOutName = TemplateSettings->bOverrideShortName ? TemplateSettings->ShortName : TemplateSettings->TemplateName;
+	}
+	else
+	{
+		NewArgument.TemplateName = "NoTemplate";
+	}
+	auto& TabSettings = TabSettingList[SelectTabIndex];
+	NewArgument.Path = ScriptPath.ToString();
+	NewArgument.ScriptName = NewScriptName.ToString();
+	NewArgument.TemplateMode = SelectedTemplateMode;
+	
+	if (TabSettings.Type == ECreateLuaScriptTabType::TT_Group)
+	{
+		NewArgument.bOverrideTemplateFolder = true;
+		if (TabSettings.FolderNameType == ECreateLuaScriptGroupFolderNameType::FNT_Fixed)
 		{
-			NewArgument.Path = HardcodedSubfolder.GetValue();
+			NewArgument.OverrideFolder = TabSettings.OverrideSubfolder;
 		}
 		else
 		{
-			NewArgument.Path = HardcodedSubfolder.GetValue() / *ScriptPath.ToString();
+			NewArgument.OverrideFolder = NewScriptName.ToString();
 		}
 	}
 	else
 	{
-		NewArgument.Path = ScriptPath.ToString();
-	}
-	NewArgument.ScriptName = NewScriptName.ToString();
-	NewArgument.TemplateMode = SelectedTemplateMode;
-	if (OverrideFolder.IsSet())
-	{
-		NewArgument.bOverrideTemplateFolder = true;
-		NewArgument.OverrideFolder = OverrideFolder.GetValue();
+		NewArgument.bOverrideTemplateFolder = false;
 	}
 
 	return NewArgument;
@@ -655,14 +703,14 @@ FString SCreateLuaScriptWindow::GetPreviewPathText(int32 Index) const
 		GetCurrentArgument(Index)));
 }
 
-void SCreateLuaScriptWindow::SetCreateTemplateList(FString InTemplate)
+void SCreateLuaScriptWindow::SetCreateTemplateList(TSharedPtr<FCreateLuaScriptTemplateSettings> InTemplate)
 {
 	ClearCreateTemplateList();
 
 	AddCreateTemplateList(InTemplate);
 }
 
-void SCreateLuaScriptWindow::AddCreateTemplateList(FString InTemplate)
+void SCreateLuaScriptWindow::AddCreateTemplateList(TSharedPtr<FCreateLuaScriptTemplateSettings> InTemplate)
 {
 	CreateTemplateList.Add(InTemplate);
 }

@@ -8,7 +8,6 @@
 #include "SGraphPanel.h"
 #include "Framework/Application/SlateApplication.h"
 #include "MaterialGraph/MaterialGraphSchema.h"
-#include "Policies/ENAnimGraphConnectionDrawingPolicy.h"
 #include "Policies/ENBehaviorTreeConnectionDrawingPolicy.h"
 
 
@@ -36,7 +35,7 @@ FConnectionDrawingPolicy* FENConnectionDrawingPolicyFactory::CreateConnectionPol
 
 		if (ClassName == "AnimationGraphSchema" || ClassName == "AnimationStateGraphSchema")
 		{
-			return new FENAnimGraphConnectionDrawingPolicy(InBackLayerID, InFrontLayerID, ZoomFactor, InClippingRect, InDrawElements, InGraphObj);
+			return new FENConnectionDrawingPolicy(InBackLayerID, InFrontLayerID, ZoomFactor, InClippingRect, InDrawElements, InGraphObj);
 		}
 	}
 
@@ -105,7 +104,15 @@ void FENConnectionDrawingPolicy::DrawConnection(int32 LayerId, const FVector2D& 
 
 	if (FVector2D::Distance(Start, End) < ElectronicNodesSettings.MinDistanceToStyle * ZoomFactor)
 	{
-		PathDrawer.DrawLine(Start, End);
+		switch (ElectronicNodesSettings.MinDistanceStyle)
+		{
+		case EMinDistanceStyle::Line:
+			PathDrawer.DrawLine(Start, End);
+			break;
+		case EMinDistanceStyle::Spline:
+			PathDrawer.DrawDefaultWire(Start, StartDirection, End, EndDirection);
+			break;
+		}
 		return;
 	}
 
@@ -121,25 +128,6 @@ void FENConnectionDrawingPolicy::DrawConnection(int32 LayerId, const FVector2D& 
 	ENCorrectZoomDisplacement(NewStart, NewEnd);
 	ENProcessRibbon(_LayerId, NewStart, StartDirection, NewEnd, EndDirection, Params);
 
-	const float Offset = ElectronicNodesSettings.HorizontalOffset * ZoomFactor;
-
-	if (ElectronicNodesSettings.DisablePinOffset)
-	{
-		if (!((Params.AssociatedPin1 != nullptr) && (Params.AssociatedPin1->GetName() == "OutputPin")))
-		{
-			PathDrawer.DrawOffset(NewStart, StartDirection, Offset, false);
-		}
-		if (!((Params.AssociatedPin2 != nullptr) && (Params.AssociatedPin2->GetName() == "InputPin")))
-		{
-			PathDrawer.DrawOffset(NewEnd, EndDirection, Offset, true);
-		}
-	}
-	else
-	{
-		PathDrawer.DrawOffset(NewStart, StartDirection, Offset, false);
-		PathDrawer.DrawOffset(NewEnd, EndDirection, Offset, true);
-	}
-
 	EWireStyle WireStyle = ElectronicNodesSettings.WireStyle;
 
 	if (ElectronicNodesSettings.OverwriteExecWireStyle)
@@ -154,17 +142,26 @@ void FENConnectionDrawingPolicy::DrawConnection(int32 LayerId, const FVector2D& 
 		}
 	}
 
-	switch (WireStyle)
+	/*
+	const int8 MembersCount = this->ENGetPinMembersCount(Params.AssociatedPin1);
+
+	if (MembersCount > 1)
 	{
-	case EWireStyle::Manhattan:
-		PathDrawer.DrawManhattanWire(NewStart, StartDirection, NewEnd, EndDirection);
-		break;
-	case EWireStyle::Subway:
-		PathDrawer.DrawSubwayWire(NewStart, StartDirection, NewEnd, EndDirection);
-		break;
-	default:
-		PathDrawer.DrawDefaultWire(NewStart, StartDirection, NewEnd, EndDirection);
+		for (int i = 0; i < MembersCount; i++)
+		{
+			const float Factor = static_cast<float>(i) - (static_cast<float>(MembersCount) / 2.0f) + 0.5f;
+			auto MultipleStart = NewStart + FVector2d(0, 4.0f * Factor * ZoomFactor);
+			auto MultipleEnd = NewEnd + FVector2d(0, 4.0f * Factor * ZoomFactor);
+			this->ENDrawMainWire(&PathDrawer, WireStyle, MultipleStart, StartDirection, MultipleEnd, EndDirection, Params);
+		}
 	}
+	else
+	{
+		this->ENDrawMainWire(&PathDrawer, WireStyle, NewStart, StartDirection, NewEnd, EndDirection, Params);
+	}
+	*/
+
+	this->ENDrawMainWire(&PathDrawer, WireStyle, NewStart, StartDirection, NewEnd, EndDirection, Params);
 
 	if (Settings->bTreatSplinesLikePins)
 	{
@@ -188,7 +185,73 @@ void FENConnectionDrawingPolicy::DrawConnection(int32 LayerId, const FVector2D& 
 	}
 }
 
-void FENConnectionDrawingPolicy::ENCorrectZoomDisplacement(FVector2D& Start, FVector2D& End)
+int8 FENConnectionDrawingPolicy::ENGetPinMembersCount(const UEdGraphPin* Pin)
+{
+	if (Pin == nullptr)
+	{
+		return 1;
+	}
+
+	if (Pin->PinType.PinSubCategoryObject.IsValid())
+	{
+		const auto TypeName = Pin->PinType.PinSubCategoryObject.Get()->GetName();
+		if (TypeName == "Vector4")
+		{
+			return 4;
+		}
+
+		if (TypeName == "Vector" || TypeName == "IntVector")
+		{
+			return 3;
+		}
+
+		if (TypeName == "Vector2D" || TypeName == "IntPoint")
+		{
+			return 2;
+		}
+	}
+
+	return 1;
+}
+
+void FENConnectionDrawingPolicy::ENDrawMainWire(FENPathDrawer* PathDrawer, EWireStyle WireStyle, FVector2D& InStart, FVector2D& StartDirection, FVector2D& InEnd, FVector2D& EndDirection, const FConnectionParams& Params)
+{
+	const float Offset = ElectronicNodesSettings.HorizontalOffset * ZoomFactor;
+
+	FVector2D Start = InStart;
+	FVector2D End = InEnd;
+
+	if (ElectronicNodesSettings.DisablePinOffset)
+	{
+		if (!((Params.AssociatedPin1 != nullptr) && (Params.AssociatedPin1->GetName() == "OutputPin")))
+		{
+			PathDrawer->DrawOffset(Start, StartDirection, Offset, false);
+		}
+		if (!((Params.AssociatedPin2 != nullptr) && (Params.AssociatedPin2->GetName() == "InputPin")))
+		{
+			PathDrawer->DrawOffset(End, EndDirection, Offset, true);
+		}
+	}
+	else
+	{
+		PathDrawer->DrawOffset(Start, StartDirection, Offset, false);
+		PathDrawer->DrawOffset(End, EndDirection, Offset, true);
+	}
+
+	switch (WireStyle)
+	{
+	case EWireStyle::Manhattan:
+		PathDrawer->DrawManhattanWire(Start, StartDirection, End, EndDirection);
+		break;
+	case EWireStyle::Subway:
+		PathDrawer->DrawSubwayWire(Start, StartDirection, End, EndDirection);
+		break;
+	default:
+		PathDrawer->DrawDefaultWire(Start, StartDirection, End, EndDirection);
+	}
+}
+
+void FENConnectionDrawingPolicy::ENCorrectZoomDisplacement(FVector2D& Start, FVector2D& End) const
 {
 	if (ElectronicNodesSettings.FixZoomDisplacement)
 	{

@@ -26,7 +26,18 @@ public:
 
 	virtual void SetHealth(int32 InValue);
 
+	virtual void AddInvincibleCauser(UObject* Causer);
+
+	virtual void RemoveInvincibleCauser(UObject* Causer);
+
+	bool IsInvincible() const
+	{
+		return bInvincible;
+	}
+
 protected:
+	virtual void SetInvincible(bool Value);
+	
 	virtual void Sync_OnIntegerWrapperAdded(UAttributeIntegerWrapperObject* InWrapper) override;
 
 	void OnMaxHealthChanged(UAttributeIntegerWrapperObject* WrapperObject, int32 InValue);
@@ -45,9 +56,14 @@ public:
 	FDamageReceiverComponentNoHealth OnNoHealth;
 
 protected:
+	UPROPERTY(Transient, Replicated)
+	bool bInvincible;
+
 	UPROPERTY(Transient, ReplicatedUsing=OnRep_Health)
 	int32 Health;
 
 	UPROPERTY(Transient, ReplicatedUsing=OnRep_MaxHealth)
 	int32 MaxHealth;
+
+	TArray<TWeakObjectPtr<UObject>> InvincibleCauserList;
 };

@@ -12,6 +12,7 @@ function WidgetCardList:PostInitialized()
         --{BindKey = "TitleMessage",   UIKey = "TitleMessage_Text",   DataBinding = DataBinding.TextContextBinding(), }
     })
 
+    self.CardList_ListView:SetSelectionMode(UE.ESelectionMode.None)
     self.CardListWrapper = ListWrapper.New(self, self.CardList_ListView)
 
     -- Cache local player id
@@ -22,16 +23,28 @@ end
 
 function WidgetCardList:Construct()
     -- Register callback for card using events
-    GetGameService(self, GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_MyCardBeginUsing, self, self.OnCardBeginUsing)
-    GetGameService(self, GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_MyCardFinished, self, self.OnCardFinished)
-    GetGameService(self, GameServiceNameDef.LuaEventService):RegisterListener(UE.ELuaEvent.LuaEvent_MyCardCancelled, self, self.OnCardCancelled)
+    ---@type LuaEventService
+    local LuaEventService = GetGameService(self, GameServiceNameDef.LuaEventService)
+    if LuaEventService then
+        LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_MyCardBeginUsing, self, self.OnCardBeginUsing)
+        LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_MyCardFinished, self, self.OnCardFinished)
+        LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_MyCardCancelled, self, self.OnCardCancelled)
+        LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_StartPlayerRound, self, self.OnPlayerRoundStart)
+        LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_FinishPlayerRound, self, self.OnPlayerRoundFinish)
+    end
 end
 
 function WidgetCardList:Destruct()
     -- Unregister callback
-    GetGameService(self, GameServiceNameDef.LuaEventService):UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardBeginUsing, self, self.OnCardBeginUsing)
-    GetGameService(self, GameServiceNameDef.LuaEventService):UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardFinished, self, self.OnCardFinished)
-    GetGameService(self, GameServiceNameDef.LuaEventService):UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardCancelled, self, self.OnCardCancelled)
+    ---@type LuaEventService
+    local LuaEventService = GetGameService(self, GameServiceNameDef.LuaEventService)
+    if LuaEventService then
+        LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardBeginUsing, self, self.OnCardBeginUsing)
+        LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardFinished, self, self.OnCardFinished)
+        LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardCancelled, self, self.OnCardCancelled)
+        LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_StartPlayerRound, self, self.OnPlayerRoundStart)
+        LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_FinishPlayerRound, self, self.OnPlayerRoundFinish)
+    end
 end
 
 function WidgetCardList:OnCardListChanged(InPlayerId)
@@ -66,6 +79,22 @@ end
 function WidgetCardList:OnCardFinished(InId)
     -- Recover card list selection
     self.CardList_ListView:SetSelectionMode(UE.ESelectionMode.Single)
+end
+
+function WidgetCardList:OnPlayerRoundStart(InPlayerId)
+    -- Check if is local player round start
+    local LocalPlayerId = UE.UCommonGameFlowFunctionLibrary.GetLocalPlayerId(self)
+    if LocalPlayerId == InPlayerId then
+        self.CardList_ListView:SetSelectionMode(UE.ESelectionMode.Single)
+    end
+end
+
+function WidgetCardList:OnPlayerRoundFinish(InPlayerId)
+    -- Check if is local player round finish
+    local LocalPlayerId = UE.UCommonGameFlowFunctionLibrary.GetLocalPlayerId(self)
+    if LocalPlayerId == InPlayerId then
+        self.CardList_ListView:SetSelectionMode(UE.ESelectionMode.None)
+    end
 end
 
 return WidgetCardList

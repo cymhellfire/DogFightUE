@@ -228,6 +228,9 @@ void ATopDownStylePlayerState::OnCharacterDead(ATopDownStylePlayerCharacter* Cha
 
 	// Change state
 	CurrentState = ETopDownStylePlayerState::PS_Dead;
+
+	// Broadcast event
+	OnPlayerStateChanged.Broadcast(this, ETopDownStylePlayerState::PS_Dead);
 }
 
 void ATopDownStylePlayerState::ClientBeginUseCard_Implementation(int32 InId)

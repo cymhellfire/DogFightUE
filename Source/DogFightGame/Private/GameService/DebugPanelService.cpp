@@ -95,6 +95,17 @@ void UDebugPanelService::OnDelayRegisterTimerExpired()
 	GatherAllControlParams();
 }
 
+void UDebugPanelService::RebuildPanel()
+{
+	ClearAllControlParams();
+	GatherAllControlParams();
+}
+
+void UDebugPanelService::ClearAllControlParams()
+{
+	DebugPanelControlMap.Empty();
+}
+
 void UDebugPanelService::ToggleDebugPanel()
 {
 	bDebugPanelEnable = !bDebugPanelEnable;

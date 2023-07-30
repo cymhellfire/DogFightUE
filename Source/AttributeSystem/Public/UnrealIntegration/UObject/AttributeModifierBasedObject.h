@@ -25,6 +25,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category="AttributeModifierBasedObject")
 	virtual UAttributeWrapperObjectBase* GetModifiedAttributeObject() const;
 
+	virtual bool SetModifierBoolFactor(bool InFactor) override;
+	virtual bool SetModifierIntegerFactor(int32 InFactor) override;
+	virtual bool SetModifierFloatFactor(float InFactor) override;
+
 protected:
 	virtual void OnModifierCreated(TSharedPtr<FAttributeModifierBase> InModifier) override;
 

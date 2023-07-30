@@ -16,6 +16,8 @@ class DOGFIGHTGAME_API AGameEffectNiagara : public AGameEffectBase
 public:
 	AGameEffectNiagara(const FObjectInitializer& ObjectInitializer);
 
+	virtual void SetTarget(AActor* InTarget) override;
+
 	virtual void PlayEffect_Implementation() override;
 
 protected:

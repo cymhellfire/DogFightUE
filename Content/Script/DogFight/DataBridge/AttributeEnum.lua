@@ -19,10 +19,28 @@ AttributeEnum.OperatorType = {
 }
 
 ---Default Value of Data Type
-AttributeEnum.DefaultValue = {
-    ["Boolean"] = false,
-    ["Integer"] = 0,
-    ["Float"] = 0,
+local DefaultValue = {
+    [AttributeEnum.DataType.Boolean] = false,
+    [AttributeEnum.DataType.Integer] = 0,
+    [AttributeEnum.DataType.Float] = 0,
 }
+
+local DataTypeString = {
+    [AttributeEnum.DataType.Boolean] = "Boolean",
+    [AttributeEnum.DataType.Integer] = "Integer",
+    [AttributeEnum.DataType.Float] = "Float",
+}
+
+---Get default value of given data type
+---@type AttribtueEnum.DataType
+function AttributeEnum:GetDefaultValue(InType)
+    return DefaultValue[InType] or 0
+end
+
+---Get name string of given data type
+---@type AttribtueEnum.DataType
+function AttributeEnum:GetDataTypeString(InType)
+    return DataTypeString[InType] or "Integer"
+end
 
 return AttributeEnum

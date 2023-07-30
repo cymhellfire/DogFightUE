@@ -1,5 +1,6 @@
 #include "FunctionLibrary/CommonGameFlowFunctionLibrary.h"
 
+#include "FunctionLibrary/CommonGameplayFunctionLibrary.h"
 #include "FunctionLibrary/LuaIntegrationFunctionLibrary.h"
 #include "GameFramework/PlayerState.h"
 #include "GameMode/TopDownStyleGameMode.h"
@@ -144,6 +145,22 @@ void UCommonGameFlowFunctionLibrary::RequestFinishLocalPlayerRound(const UObject
 	{
 		PlayerController->ServerRequestFinishRound();
 	}
+}
+
+void UCommonGameFlowFunctionLibrary::BroadcastStartPlayerRound(const UObject* WorldContextObject, int32 PlayerId)
+{
+	UCommonGameplayFunctionLibrary::ForEachPlayerControllerDo(WorldContextObject, [PlayerId](ATopDownStylePlayerController* PlayerController)
+	{
+		PlayerController->ClientSendPlayerRoundStartEvent(PlayerId);
+	});
+}
+
+void UCommonGameFlowFunctionLibrary::BroadcastFinishPlayerRound(const UObject* WorldContextObject, int32 PlayerId)
+{
+	UCommonGameplayFunctionLibrary::ForEachPlayerControllerDo(WorldContextObject, [PlayerId](ATopDownStylePlayerController* PlayerController)
+	{
+		PlayerController->ClientSendPlayerRoundFinishEvent(PlayerId);
+	});
 }
 
 ATopDownStylePlayerController* UCommonGameFlowFunctionLibrary::GetLocalPlayerController(const UObject* WorldContextObject)

@@ -12,6 +12,10 @@ local Config = {
         Class = UE.UNewBuffBase.StaticClass(),
         Script = "DogFight.Buff.BuffLogic.BuffLuckyBomb",
     },
+    [BuffTypeDef.Invincible] = {
+        Class = UE.URoundTimerBuff.StaticClass(),
+        Script = "DogFight.Buff.BuffLogic.BuffInvincible",
+    },
 }
 
 function BuffConfig:GetData()

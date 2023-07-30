@@ -6,7 +6,11 @@ public class UnrealTinyXml : ModuleRules
 	public UnrealTinyXml(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-		bEnforceIWYU = false;
+#if UE_5_2_OR_LATER
+        IWYUSupport = IWYUSupport.None;
+#else
+        bEnforceIWYU = false;
+#endif
 
 		bEnableUndefinedIdentifierWarnings = false;
 		ShadowVariableWarningLevel = WarningLevel.Off;

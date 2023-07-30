@@ -7,9 +7,9 @@
 UENUM(BlueprintType)
 enum class ELuaScriptNameTemplateMode : uint8
 {
-	TM_None,
-	TM_Prefix,
-	TM_Suffix,
+	TM_None			UMETA(DisplayName="None"),
+	TM_Prefix		UMETA(DisplayName="Prefix"),
+	TM_Suffix		UMETA(DisplayName="Suffix"),
 };
 
 USTRUCT(BlueprintType)
@@ -31,6 +31,9 @@ struct FLuaScriptCreateArgument
 
 	UPROPERTY(BlueprintReadWrite)
 	ELuaScriptNameTemplateMode TemplateMode;
+
+	UPROPERTY(BlueprintReadWrite)
+	FString TemplateOutName;
 
 	UPROPERTY(BlueprintReadWrite)
 	bool bOverrideTemplateFolder;

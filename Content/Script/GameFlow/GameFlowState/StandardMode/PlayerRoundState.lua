@@ -15,11 +15,15 @@ function PlayerRoundState:OnEnter()
     if LuaEventService then
         LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_PlayerCardFinished, self, self.OnCardFinished)
         LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_FinishPlayerRound, self, self.OnPlayerFinished)
+        LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_OnPlayerCharacterDead, self, self.OnPlayerCharacterDead)
     end
 
     -- Add use card mapping to current player
     local CurPlayerId = UE.UCommonGameFlowFunctionLibrary.GetCurrentPlayerId(self.OwnerState)
     GetGameService(self.OwnerState, GameServiceNameDef.GameInputService):AddInputMappingByPlayerId(CurPlayerId, UE.EInputMappingType.InputMapping_CardUsing)
+
+    -- Broadcast player round start event
+    UE.UCommonGameFlowFunctionLibrary.BroadcastStartPlayerRound(self.OwnerState, self.CurPlayerId)
 end
 
 function PlayerRoundState:OnExit()
@@ -31,11 +35,15 @@ function PlayerRoundState:OnExit()
     if LuaEventService then
         LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_PlayerCardFinished, self, self.OnCardFinished)
         LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_FinishPlayerRound, self, self.OnPlayerFinished)
+        LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_OnPlayerCharacterDead, self, self.OnPlayerCharacterDead)
     end
 
     -- Remove use card mapping from current player
     local CurPlayerId = UE.UCommonGameFlowFunctionLibrary.GetCurrentPlayerId(self.OwnerState)
     GetGameService(self.OwnerState, GameServiceNameDef.GameInputService):RemoveInputMappingByPlayerId(CurPlayerId, UE.EInputMappingType.InputMapping_CardUsing)
+
+    -- Broadcast player round finish event
+    UE.UCommonGameFlowFunctionLibrary.BroadcastFinishPlayerRound(self.OwnerState, self.CurPlayerId)
 end
 
 function PlayerRoundState:OnCardFinished(InPlayerId, InId)
@@ -60,6 +68,20 @@ function PlayerRoundState:OnPlayerFinished(InPlayerId)
     end
 
     self:FinishState()
+end
+
+---@param InPlayerId number
+function PlayerRoundState:OnPlayerCharacterDead(InPlayerId)
+    if InPlayerId == self.CurPlayerId then
+        -- Finish round if current player is dead
+        self:FinishState()
+    else
+        -- Check if only one player left
+        local bShouldGameEnd = UE.UCommonGameplayFunctionLibrary.GetAlivePlayerNum(self.OwnerState) <= 1
+        if bShouldGameEnd then
+            self:FinishState()
+        end
+    end
 end
 
 function PlayerRoundState:FinishState()

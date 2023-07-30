@@ -16,6 +16,14 @@ function BuffBase:OnBuffInitScript()
     end
 end
 
+---Initialize buff with given arguments
+---@param InArgs table
+function BuffBase:SetupArgument(InArgs)
+    if self._Logic then
+        self._Logic:SetupArgument(InArgs)
+    end
+end
+
 ---@param InCharacter ATopDownStylePlayerCharacter
 function BuffBase:ApplyScript(InCharacter)
     if self._Logic then

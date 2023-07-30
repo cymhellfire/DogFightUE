@@ -3,7 +3,7 @@
 
 #include "UI/Widget/ComboBoxText.h"
 
-TSharedRef<SWidget> UComboBoxText::HandleGenerateWidget(::TSharedPtr<FString, ESPMode::Fast> Item) const
+TSharedRef<SWidget> UComboBoxText::HandleGenerateWidget(TSharedPtr<FString> Item) const
 {
 	FString StringItem = Item.IsValid() ? *Item : FString();
 

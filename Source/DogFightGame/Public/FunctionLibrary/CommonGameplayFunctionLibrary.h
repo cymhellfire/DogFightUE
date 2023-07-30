@@ -15,6 +15,7 @@ UCLASS()
 class DOGFIGHTGAME_API UCommonGameplayFunctionLibrary : public UCommonFunctionLibraryBase
 {
 	GENERATED_BODY()
+	friend class UCommonGameFlowFunctionLibrary;
 public:
 	/**
 	 * Get gameplay data subsystem.
@@ -145,12 +146,47 @@ public:
 	static void DamageActor(const UObject* WorldContextObject, int32 DamageId, AActor* Target, float BaseDamage, AActor* Causer);
 
 	/**
+	 * Apply damage to all actors in given sphere.
+	 * @param DamageId			Id of damage to apply.
+	 * @param Origin			Target location.
+	 * @param Radius			Sphere radius.
+	 * @param BaseDamage		Base damage value.
+	 * @param Causer			Damage source.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
+	static void DamageArea(const UObject* WorldContextObject, int32 DamageId, const FVector& Origin, float Radius, float BaseDamage, AActor* Causer);
+
+	/**
 	 * Let character of specified player move to given position.
 	 * @param PlayerId			Id of character owner.
 	 * @param TargetPosition	Target position.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
 	static void MovePlayerCharacterToPosition(const UObject* WorldContextObject, int32 PlayerId, FVector TargetPosition);
+
+	/**
+	 * Set specified actor invincible/vulnerable.
+	 * @param Actor				Target actor to set.
+	 * @param InvincibleCauser			Invincible or vulnerable.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
+	static void SetActorInvincible(AActor* Actor, bool InValue, UObject* InvincibleCauser);
+
+	/**
+	 * Get a random point in navigation grid.
+	 * @return Location of random point.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
+	static FVector GetRandomPointInNavigationArea(const UObject* WorldContextObject);
+
+	/**
+	 * Get a random player character in current game.
+	 * @param Count				Total count of target to get.
+	 * @param bAllowDuplicated	Whether if the result can duplicated.
+	 * @return Random character list.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
+	static TArray<AActor*> GetRandomCharacterInGame(const UObject* WorldContextObject, int32 Count = 1, bool bAllowDuplicated = false);
 protected:
 	/**
 	 * Do specified function on every player state in current game meet the id mask.

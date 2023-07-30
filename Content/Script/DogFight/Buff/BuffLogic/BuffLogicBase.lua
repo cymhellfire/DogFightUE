@@ -1,12 +1,24 @@
 ---@class BuffLogicBase
 ---@field _Owner BuffBase Owner buff instance.
 ---@field _ModList table List of active buff mods.
+---@field _BuffArgs table Initialize arguments list.
 local BuffLogicBase = UnrealClass()
 
 ---@param InBuff BuffBase Owner buff instance.
 function BuffLogicBase:Init(InBuff)
     self._Owner = InBuff
     self._ModList = {}
+end
+
+---@param InArgs table
+function BuffLogicBase:SetupArgument(InArgs)
+    print("[BuffLogic] " .. self:tostring() .. " setup arguments.")
+    self._BuffArgs = InArgs
+
+    --- Trigger the setup callback
+    if type(self.OnSetupArgument) == "function" then
+        self:OnSetupArgument()
+    end
 end
 
 function BuffLogicBase:OnInit()

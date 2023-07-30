@@ -26,10 +26,10 @@ local Config = {
         Warhead = WarheadTypeDef.Default,
         Damage = 50,
     },
-    [ProjectileTypeDef.PeriodHomingProjectile] = {
-        Name = "PeriodHomingProjectile",
-        ResPath = "/Game/DogFightGame/Blueprints/Projectile/BP_Proj_PeriodHoming",
-        Warhead = WarheadTypeDef.Default,
+    [ProjectileTypeDef.NuclearBomb] = {
+        Name = "NuclearBomb",
+        ResPath = "/Game/DogFightGame/Blueprints/Projectile/BP_Proj_Default",
+        Warhead = WarheadTypeDef.Nuke,
     },
     [ProjectileTypeDef.LuckyBomb] = {
         Name = "LuckyBomb",

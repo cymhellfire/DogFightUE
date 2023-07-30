@@ -26,6 +26,30 @@ public:
 	virtual bool CreateModifier(const FModifierCreateArgument& InArgument);
 
 	/**
+	 * @brief Set the factor value of this bool modifier.
+	 * @param InFactor			New factor value.
+	 * @return Whether the factor is updated succeed.
+	 */
+	UFUNCTION(BlueprintCallable, Category="AttributeModifierCarrier")
+	virtual bool SetModifierBoolFactor(bool InFactor) = 0;
+
+	/**
+	 * @brief Set the factor value of this integer modifier.
+	 * @param InFactor			New factor value.
+	 * @return Whether the factor is updated succeed.
+	 */
+	UFUNCTION(BlueprintCallable, Category="AttributeModifierCarrier")
+	virtual bool SetModifierIntegerFactor(int32 InFactor) = 0;
+
+	/**
+	 * @brief Set the factor value of this float modifier.
+	 * @param InFactor			New factor value.
+	 * @return Whether the factor is updated succeed.
+	 */
+	UFUNCTION(BlueprintCallable, Category="AttributeModifierCarrier")
+	virtual bool SetModifierFloatFactor(float InFactor) = 0;
+
+	/**
 	 * @brief Remove this modifier from applied target.
 	 * @param OutTarget			Applied target of this modifier.
 	 */
