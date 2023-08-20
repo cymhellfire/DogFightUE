@@ -8,6 +8,8 @@
 
 class UCharacterAnimComponent;
 
+DECLARE_MULTICAST_DELEGATE(FActionCharacterOnReachActionDistance)
+
 // This class does not need to be modified.
 UINTERFACE(NotBlueprintable)
 class UActionCharacterInterface : public UInterface
@@ -25,7 +27,9 @@ class DOGFIGHTGAME_API IActionCharacterInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	UFUNCTION(BlueprintCallable, Category="ActionCharacter")
-	virtual void PlayActionAnimation(UAnimMontage* InMontage);
+	virtual float PlayActionAnimation(UAnimMontage* InMontage);
+
+	virtual void MoveToTarget(const FVector& Target, float StopDistance) = 0;
 
 	virtual float GetDistanceFrom(AActor* Target);
 	virtual float GetDistanceFrom(const FVector& Target);
@@ -34,4 +38,11 @@ protected:
 
 	virtual ACharacter* GetCharacter() = 0;
 	virtual UCharacterAnimComponent* GetAnimComponent() = 0;
+
+	/** Trigger when character reach the distance of action. (Need invoke from character class.) */
+	//virtual void OnReachActionDistance() = 0;
+
+public:
+	/** Trigger when character reach the distance of action. (Need invoke from character class.) */
+	FActionCharacterOnReachActionDistance OnReachActionDistance;
 };

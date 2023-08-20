@@ -38,6 +38,7 @@ public class DogFightGame : ModuleRules
                 "ImGui",
                 "CommonUser",
                 "NavigationSystem",
+                "DogFightAI",
             }
         );
         

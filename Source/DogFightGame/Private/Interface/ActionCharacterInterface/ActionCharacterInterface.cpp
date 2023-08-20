@@ -2,13 +2,16 @@
 
 #include "Interface/ActionCharacterInterface/ActionCharacterInterface.h"
 #include "GameFramework/Character.h"
+#include "Pawn/PlayerCharacter/CharacterAnimComponent.h"
 
-void IActionCharacterInterface::PlayActionAnimation(UAnimMontage* InMontage)
+float IActionCharacterInterface::PlayActionAnimation(UAnimMontage* InMontage)
 {
 	if (auto AnimComponent = GetAnimComponent())
 	{
-		
+		return AnimComponent->PlayAnimation(InMontage);
 	}
+
+	return 0.f;
 }
 
 float IActionCharacterInterface::GetDistanceFrom(AActor* Target)

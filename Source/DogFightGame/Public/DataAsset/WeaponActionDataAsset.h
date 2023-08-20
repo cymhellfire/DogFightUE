@@ -3,14 +3,26 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Engine/DataAsset.h"
+#include "GameObject/Weapon/WeaponCommon.h"
 #include "WeaponActionDataAsset.generated.h"
+
+USTRUCT(BlueprintType)
+struct FWeaponActionTransitionSettings
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="WeaponActionTransitionSettings")
+	EWeaponActionInput InputType;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="WeaponActionTransitionSettings")
+	UWeaponActionDataAsset* WeaponAction;
+};
 
 /**
  * Data asset that defines various weapon actions.
  */
 UCLASS(Blueprintable)
-class DOGFIGHTGAME_API UWeaponActionDataAsset : public UPrimaryDataAsset
+class DOGFIGHTGAME_API UWeaponActionDataAsset : public UObject
 {
 	GENERATED_BODY()
 
@@ -29,4 +41,7 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="WeaponAction")
 	TSoftObjectPtr<UAnimMontage> AnimMontage;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="WeaponAction")
+	TArray<FWeaponActionTransitionSettings> TransitionSettings;
 };

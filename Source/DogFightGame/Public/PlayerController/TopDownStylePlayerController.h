@@ -60,6 +60,9 @@ public:
 	UFUNCTION(Exec)
 	void ToggleDebugPanel();
 
+	UFUNCTION(Exec)
+	void TestAttackTarget();
+
 	UInGameMessageReceiverComponent* GetInGameMessageReceiverComponent() const
 	{
 		return InGameMessageReceiverComponent;

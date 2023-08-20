@@ -5,6 +5,7 @@
 #include "GameFramework/Character.h"
 #include "GameObject/Component/WidgetLocatorComponent.h"
 #include "Interface/DamageReceiverActorInterface.h"
+#include "Interface/ActionCharacterInterface/ActionCharacterInterface.h"
 #include "TopDownStylePlayerCharacter.generated.h"
 
 class ATopDownStylePlayerCharacter;
@@ -15,13 +16,14 @@ class UNewBuffBase;
 class UBuffManagerComponent;
 class UGameplayAttributesComponent;
 class UArsenalComponent;
+class UCharacterAnimComponent;
 struct FPathFollowingResult;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTopDownStylePlayerCharacterDeadEvent, ATopDownStylePlayerCharacter*, Character);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTopDownStylePlayerCharacterMoveFinishedEvent);
 
 UCLASS()
-class DOGFIGHTGAME_API ATopDownStylePlayerCharacter : public ACharacter, public IDamageReceiverActorInterface
+class DOGFIGHTGAME_API ATopDownStylePlayerCharacter : public ACharacter, public IDamageReceiverActorInterface, public IActionCharacterInterface
 {
 	GENERATED_BODY()
 public:
@@ -54,6 +56,14 @@ public:
 		return DamageReceiverComponent;
 	}
 
+	void StopMoveImmediately();
+
+#pragma region IActionCharacterInterface
+	virtual void MoveToTarget(const FVector& Target, float StopDistance) override;
+#pragma endregion IActionCharacterInterface
+
+	void TestAttackTarget();
+
 protected:
 	void InitializeStateWidget();
 	void DeinitializeStateWidget();
@@ -68,9 +78,25 @@ protected:
 	UFUNCTION()
 	void OnNoHealth();
 
+	virtual void OnReachStopDistance();
+
+#pragma region IActionCharacterInterface
+	virtual ACharacter* GetCharacter() override
+	{
+		return this;
+	}
+	virtual UCharacterAnimComponent* GetAnimComponent() override
+	{
+		return AnimComponent;
+	}
+#pragma endregion IActionCharacterInterface
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FVector ProjectileSpawnOffset;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(AllowedTypes="WeaponDataAsset"))
+	FPrimaryAssetId WeaponData;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSoftClassPtr<UPlayerCharacterStateWidget> StateWidgetClass;
@@ -100,6 +126,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="TopDownStylePlayerCharacter")
 	UArsenalComponent* ArsenalComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="TopDownStylePlayerCharacter")
+	UCharacterAnimComponent* AnimComponent;
+
 	UPROPERTY(Transient)
 	UPlayerCharacterStateWidget* StateWidget;
 
@@ -108,6 +137,4 @@ private:
 	uint8 bAlive : 1;
 
 	int32 PlayerId;
-
-	TWeakObjectPtr<UPathFollowingComponent> PathFollowingComponent;
 };

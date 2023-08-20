@@ -8,6 +8,7 @@
 #include "ArsenalComponent.generated.h"
 
 class UWeaponBase;
+class UWeaponDataAsset;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class DOGFIGHTGAME_API UArsenalComponent : public UActorComponent
@@ -18,11 +19,15 @@ public:
 	// Sets default values for this component's properties
 	UArsenalComponent();
 
-	bool EquipWeapon(EWeaponSlotType Slot, UWeaponBase* InWeapon);
+	bool EquipWeapon(EWeaponSlotType Slot, const FPrimaryAssetId& InWeaponAsset);
+
+	void AttackTarget(const FWeaponActionTarget& InTarget, EWeaponSlotType InSlot = EWeaponSlotType::WST_Primary);
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
+	void OnWeaponDataLoaded(EWeaponSlotType Slot, UWeaponDataAsset* InWeaponData);
 
 private:
 

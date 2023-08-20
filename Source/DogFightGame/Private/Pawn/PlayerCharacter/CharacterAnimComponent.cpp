@@ -3,6 +3,9 @@
 
 #include "Pawn/PlayerCharacter/CharacterAnimComponent.h"
 
+#include "Common/DogFightGameLog.h"
+#include "GameFramework/Character.h"
+
 
 // Sets default values for this component's properties
 UCharacterAnimComponent::UCharacterAnimComponent()
@@ -12,6 +15,8 @@ UCharacterAnimComponent::UCharacterAnimComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	// ...
+
+	SetIsReplicatedByDefault(true);
 }
 
 
@@ -34,3 +39,30 @@ void UCharacterAnimComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	// ...
 }
 
+float UCharacterAnimComponent::PlayAnimation(UAnimMontage* InAnimMontage)
+{
+	// Play animation across network
+	MulticastPlayMontage(InAnimMontage);
+
+	return IsValid(InAnimMontage) ? InAnimMontage->GetPlayLength() : 0.f;
+}
+
+void UCharacterAnimComponent::MulticastPlayMontage_Implementation(UAnimMontage* InMontage)
+{
+	if (!IsValid(InMontage))
+	{
+		return;
+	}
+
+	if (auto Character = Cast<ACharacter>(GetOwner()))
+	{
+		if (auto AnimInstance = Character->GetMesh()->GetAnimInstance())
+		{
+			const float Result = AnimInstance->Montage_Play(InMontage);
+			if (Result == 0)
+			{
+				UE_LOG(LogDogFightGame, Error, TEXT("[UCharacterAnimComponent] Failed to play montage: %s"), *InMontage->GetName());
+			}
+		}
+	}
+}
