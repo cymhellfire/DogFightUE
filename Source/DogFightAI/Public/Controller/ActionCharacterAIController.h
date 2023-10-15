@@ -30,7 +30,10 @@ public:
 	void MoveToTargetWithStopDistance(const FVector& Target, float InStopDistance);
 
 protected:
+	void SetState(EDogFightAIControllerState NewState);
 	void TrackStopDistance();
+
+	void OnMoveRequestFinished(FAIRequestID RequestID, const FPathFollowingResult& Result);
 
 public:
 	FDogFightAIControllerReachStopDistance OnReachStopDistance;
@@ -38,6 +41,7 @@ public:
 protected:
 	EDogFightAIControllerState ControllerState;
 
-	float StopDistance;
+	bool bManualStop ;		// Stop path following by set state
+	float SqrStopDistance;
 	FVector MoveTarget;
 };

@@ -3,8 +3,8 @@
 
 #include "Controller/ActionCharacterAIController.h"
 
-#include "NavigationPath.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
+#include "Navigation/PathFollowingComponent.h"
 
 
 // Sets default values
@@ -31,22 +31,72 @@ void AActionCharacterAIController::Tick(float DeltaTime)
 
 void AActionCharacterAIController::MoveToTargetWithStopDistance(const FVector& Target, float InStopDistance)
 {
-	StopDistance = InStopDistance;
+	SqrStopDistance = InStopDistance * InStopDistance;
 	MoveTarget = Target;
 
-	ControllerState = EDogFightAIControllerState::DFACS_Moving;
-	UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, Target);
+	SetState(EDogFightAIControllerState::DFACS_Moving);
+}
+
+void AActionCharacterAIController::OnMoveRequestFinished(FAIRequestID RequestID, const FPathFollowingResult& Result)
+{
+	// Skip if this caused by manually stop to prevent from infinity loop.
+	if (bManualStop)
+	{
+		return;
+	}
+
+	SetState(EDogFightAIControllerState::DFACS_None);
+}
+
+void AActionCharacterAIController::SetState(EDogFightAIControllerState NewState)
+{
+	if (ControllerState == NewState)
+	{
+		return;
+	}
+
+	ControllerState = NewState;
+	switch(NewState)
+	{
+	case EDogFightAIControllerState::DFACS_None:
+		{
+			TGuardValue<bool> ManualStopGuard(bManualStop, true);
+			StopMovement();
+		}
+		break;
+	case EDogFightAIControllerState::DFACS_Moving:
+		{
+			UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, MoveTarget);
+			if (auto PFComp = GetPathFollowingComponent())
+			{
+				if (!PFComp->OnRequestFinished.IsBoundToObject(this))
+				{
+					PFComp->OnRequestFinished.AddUObject(this, &AActionCharacterAIController::OnMoveRequestFinished);
+				}
+			}
+		}
+		break;
+	default: ;
+	}
 }
 
 void AActionCharacterAIController::TrackStopDistance()
 {
-	const auto CurrentPath = UAIBlueprintHelperLibrary::GetCurrentPath(this);
-	float LeftPathLength = CurrentPath ? CurrentPath->GetPathLength() : 0.f;
-	if (LeftPathLength <= StopDistance)
+	FVector ActorLoc = FVector::ZeroVector;
+	bool bValid = false;
+	if (auto MyPawn = GetPawn())
+	{
+		ActorLoc = MyPawn->GetActorLocation();
+		bValid = true;
+	}
+	DrawDebugLine(GetWorld(), ActorLoc, MoveTarget, FColor::Yellow);
+
+	float SqrDistance = bValid ? (MoveTarget - ActorLoc).SizeSquared() : 0.f;
+	if (SqrDistance <= SqrStopDistance)
 	{
 		// Exit moving state once reach the stop distance
 		OnReachStopDistance.Broadcast();
 
-		ControllerState = EDogFightAIControllerState::DFACS_None;
+		SetState(EDogFightAIControllerState::DFACS_None);
 	}
 }
