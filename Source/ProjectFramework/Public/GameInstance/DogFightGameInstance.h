@@ -65,5 +65,5 @@ private:
 	void StartupGameService();
 
 	FTickerDelegate TickDelegate;
-	FDelegateHandle TickDelegateHandle;
+	FTSTicker::FDelegateHandle TickDelegateHandle;
 };

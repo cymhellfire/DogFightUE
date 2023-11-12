@@ -5,7 +5,6 @@
 #include "Actors/Vfx/VfxBase.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/Character.h"
-#include "Runtime/Engine/Private/KismetTraceUtils.h"
 
 // Sets default values for this component's properties
 UActorTeleportComponent::UActorTeleportComponent()

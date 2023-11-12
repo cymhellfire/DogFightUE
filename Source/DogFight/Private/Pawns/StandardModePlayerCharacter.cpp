@@ -5,7 +5,7 @@
 
 #include "DogFight.h"
 #include "GameMode/DogFightGameModeBase.h"
-#include "HeadMountedDisplayFunctionLibrary.h"
+// #include "HeadMountedDisplayFunctionLibrary.h"
 #include "NavigationPath.h"
 #include "Actors/Projectiles/ProjectileBase.h"
 #include "Player/StandardModePlayerController.h"
@@ -434,22 +434,22 @@ void AStandardModePlayerCharacter::Tick(float DeltaTime)
 	if (CursorToWorld != nullptr && bShowCursorToWorld)
 	{
 		AStandardModePlayerController const * const PC = Cast<AStandardModePlayerController>(GetOwner());
-		if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled())
-		{
-			UWorld* World = GetWorld();
-			if (World != nullptr && PC != nullptr)
-			{
-				FHitResult HitResult;
-				FCollisionQueryParams Params(NAME_None, FCollisionQueryParams::GetUnknownStatId());
-				FVector StartLocation = PC->PlayerCameraManager->GetCameraLocation();
-				FVector EndLocation = PC->PlayerCameraManager->GetCameraRotation().Vector() * 2000.f;
-				Params.AddIgnoredActor(this);
-				World->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, Params);
-				FQuat SurfaceRotation = HitResult.ImpactNormal.ToOrientationRotator().Quaternion();
-				CursorToWorld->SetWorldLocationAndRotation(HitResult.Location, SurfaceRotation);
-			}
-		}
-		else if (PC != nullptr)
+		// if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled())
+		// {
+		// 	UWorld* World = GetWorld();
+		// 	if (World != nullptr && PC != nullptr)
+		// 	{
+		// 		FHitResult HitResult;
+		// 		FCollisionQueryParams Params(NAME_None, FCollisionQueryParams::GetUnknownStatId());
+		// 		FVector StartLocation = PC->PlayerCameraManager->GetCameraLocation();
+		// 		FVector EndLocation = PC->PlayerCameraManager->GetCameraRotation().Vector() * 2000.f;
+		// 		Params.AddIgnoredActor(this);
+		// 		World->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, Params);
+		// 		FQuat SurfaceRotation = HitResult.ImpactNormal.ToOrientationRotator().Quaternion();
+		// 		CursorToWorld->SetWorldLocationAndRotation(HitResult.Location, SurfaceRotation);
+		// 	}
+		// }
+		if (PC != nullptr)
 		{
 			FHitResult TraceHitResult;
 			PC->GetHitResultUnderCursor(ECC_Visibility, true, TraceHitResult);

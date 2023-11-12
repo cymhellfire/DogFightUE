@@ -8,7 +8,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "HeadMountedDisplayFunctionLibrary.h"
+//#include "HeadMountedDisplayFunctionLibrary.h"
 #include "Materials/Material.h"
 #include "Engine/World.h"
 
@@ -63,21 +63,21 @@ void ADogFightCharacter::Tick(float DeltaSeconds)
 
 	if (CursorToWorld != nullptr)
 	{
-		if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled())
-		{
-			if (UWorld* World = GetWorld())
-			{
-				FHitResult HitResult;
-				FCollisionQueryParams Params(NAME_None, FCollisionQueryParams::GetUnknownStatId());
-				FVector StartLocation = TopDownCameraComponent->GetComponentLocation();
-				FVector EndLocation = TopDownCameraComponent->GetComponentRotation().Vector() * 2000.0f;
-				Params.AddIgnoredActor(this);
-				World->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, Params);
-				FQuat SurfaceRotation = HitResult.ImpactNormal.ToOrientationRotator().Quaternion();
-				CursorToWorld->SetWorldLocationAndRotation(HitResult.Location, SurfaceRotation);
-			}
-		}
-		else if (APlayerController* PC = Cast<APlayerController>(GetController()))
+		// if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled())
+		// {
+		// 	if (UWorld* World = GetWorld())
+		// 	{
+		// 		FHitResult HitResult;
+		// 		FCollisionQueryParams Params(NAME_None, FCollisionQueryParams::GetUnknownStatId());
+		// 		FVector StartLocation = TopDownCameraComponent->GetComponentLocation();
+		// 		FVector EndLocation = TopDownCameraComponent->GetComponentRotation().Vector() * 2000.0f;
+		// 		Params.AddIgnoredActor(this);
+		// 		World->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, Params);
+		// 		FQuat SurfaceRotation = HitResult.ImpactNormal.ToOrientationRotator().Quaternion();
+		// 		CursorToWorld->SetWorldLocationAndRotation(HitResult.Location, SurfaceRotation);
+		// 	}
+		// }
+		if (APlayerController* PC = Cast<APlayerController>(GetController()))
 		{
 			FHitResult TraceHitResult;
 			PC->GetHitResultUnderCursor(ECC_Visibility, true, TraceHitResult);

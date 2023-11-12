@@ -19,7 +19,8 @@ public class ElectronicNodes : ModuleRules
 		PrivateIncludePaths.AddRange(
 			new string[]
 			{
-				Path.Combine(enginePath, "Source/Editor/AnimationBlueprintEditor/Private/")
+				Path.Combine(enginePath, "Source/Editor/AnimationBlueprintEditor/Private/"),
+				Path.Combine(enginePath, "Source/Editor/BehaviorTreeEditor/Private/")
 			}
 		);
 
@@ -50,7 +51,8 @@ public class ElectronicNodes : ModuleRules
 				"BehaviorTreeEditor",
 				"DeveloperSettings",
 				"EditorStyle",
-				"WebBrowser"
+				"WebBrowser",
+				"SettingsEditor"
 			}
 		);
 
