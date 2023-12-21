@@ -170,6 +170,22 @@ local Config = {
             }
         }
     },
+    [CardTypeDef.WeaponAttack] = {
+        Name = "WeaponAttack",
+        LogicPath = "DogFight.Card.CardLogic.LogicWeaponInput",
+        LogicParam = {
+            CardInfo = {
+                Name = "Name_WeaponAttack",
+                Desc = {
+                    Key = "Desc_WeaponAttack",
+                }
+            },
+            TargetInfo = {
+                Count = 1,
+                Type = UE.ECardTargetType.CTT_Actor,
+            }
+        }
+    },
 }
 
 function CardConfig:GetData()

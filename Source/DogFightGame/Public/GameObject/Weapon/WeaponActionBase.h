@@ -8,9 +8,12 @@
 #include "WeaponActionBase.generated.h"
 
 class UWeaponBase;
+class UWeaponActionBase;
 class UWeaponActionDataAsset;
 class UWeaponActionTransitionBase;
 class IActionCharacterInterface;
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FWeaponActionBaseEvent, UWeaponActionBase*);
 
 /**
  * Base class of all weapon actions.
@@ -46,7 +49,7 @@ public:
 
 	virtual void PerformAction();
 
-	virtual void ConsumeInput();
+	virtual UWeaponActionTransitionBase* GetTransitionByInput(EWeaponActionInput Input) const;
 
 protected:
 	/**
@@ -68,7 +71,7 @@ protected:
 	UFUNCTION()
 	void OnActionMontageFinished();
 
-	void OnActionFinished();
+	void FinishAction();
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="WeaponAction")
@@ -85,6 +88,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="WeaponAction")
 	float ActionRange;
+
+	FWeaponActionBaseEvent OnActionFinished;
 
 protected:
 	UPROPERTY(Transient)

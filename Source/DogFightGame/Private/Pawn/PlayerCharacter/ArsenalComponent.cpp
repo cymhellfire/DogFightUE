@@ -3,6 +3,7 @@
 
 #include "Pawn/PlayerCharacter/ArsenalComponent.h"
 
+#include "Common/DogFightGameLog.h"
 #include "DataAsset/WeaponDataAsset.h"
 #include "Engine/AssetManager.h"
 #include "GameObject/Weapon/WeaponBase.h"
@@ -77,5 +78,25 @@ void UArsenalComponent::OnWeaponDataLoaded(EWeaponSlotType Slot, UWeaponDataAsse
 		NewWeapon->SetOwner(Cast<IActionCharacterInterface>(GetOuter()));
 		NewWeapon->InitWithWeaponData(InWeaponData);
 		WeaponSlotMap.Add(Slot, NewWeapon);
+
+		// Listen key event
+		NewWeapon->OnWeaponInputFinished.AddLambda([Slot, this](UWeaponBase* InWeapon)
+		{
+			if (IsValid(this) && IsValid(InWeapon))
+			{
+				// Verify the weapon instance
+				if (auto WeaponPtr = WeaponSlotMap.Find(Slot))
+				{
+					if (*WeaponPtr == InWeapon)
+					{
+#if UE_BUILD_DEVELOPMENT
+						static UEnum* SlotEnum = StaticEnum<EWeaponSlotType>();
+						UE_LOG(LogDogFightGame, Log, TEXT("[ArsenalComponent] Weapon %s at slot %s finished."), *InWeapon->GetName(), *SlotEnum->GetNameStringByIndex((int32)Slot))
+#endif
+						OnSlotWeaponFinished.Broadcast(Slot);
+					}
+				}
+			}
+		});
 	}
 }

@@ -157,29 +157,13 @@ void UWeaponActionBase::PerformAction()
 	}
 }
 
-void UWeaponActionBase::ConsumeInput()
+UWeaponActionTransitionBase* UWeaponActionBase::GetTransitionByInput(EWeaponActionInput Input) const
 {
-	if (!IsValid(OwnerWeapon))
+	if (auto TransitionPtr = TransitionMap.Find(Input))
 	{
-		return;
+		return *TransitionPtr;
 	}
-
-	// Dequeue input from weapon
-	auto NextInput = OwnerWeapon->DequeueInput();
-	if (!NextInput.IsValid())
-	{
-		return;
-	}
-
-	// Check transition
-	if (auto TransitionPtr = TransitionMap.Find(NextInput.Input))
-	{
-		auto Transition = *TransitionPtr;
-		if (IsValid(Transition))
-		{
-			Transition->DoTransition(NextInput.Target);
-		}
-	}
+	return nullptr;
 }
 
 float UWeaponActionBase::PlayActionMontage()
@@ -199,12 +183,13 @@ void UWeaponActionBase::OnActionMontageFinished()
 		GetWorld()->GetTimerManager().ClearTimer(ActionTimerHandler);
 	}
 
-	OnActionFinished();
+	FinishAction();
 }
 
-void UWeaponActionBase::OnActionFinished()
+void UWeaponActionBase::FinishAction()
 {
 	UE_LOG(LogDogFightGame, Log, TEXT("[WeaponActionBase] Finish: %s"), *ActionName.ToString());
 
-	ConsumeInput();
+	//ConsumeInput();
+	OnActionFinished.Broadcast(this);
 }

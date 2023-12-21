@@ -14,7 +14,7 @@ function InGameChatView:PostInitialized()
     ---@type ListViewWrapper 
     self.ChatMsgList = ListWrapper.New(self, self.ChatMsgList_ListView)
 
-    self.ChatInput_TextBox.OnTextCommitted:Add(self, self.OnSendClicked)
+    self.ChatInput_TextBox.OnTextCommitted:Add(self, self.OnTextCommitted)
     self.Send_Button.OnClicked:Add(self, self.OnSendClicked)
 
     print("InGameChatView:PostInitialized with " .. UE.UCommonGameFlowFunctionLibrary.GetLocalPlayerId(self))
@@ -24,6 +24,10 @@ function InGameChatView:PostInitialized()
     if LuaEventService then
         LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_ReceiveInGameChatMessage, self, self.OnReceiveInGameMessage)
     end
+end
+
+function InGameChatView:OnTextCommitted(InText, Type)
+    self:OnSendClicked()
 end
 
 function InGameChatView:OnSendClicked()

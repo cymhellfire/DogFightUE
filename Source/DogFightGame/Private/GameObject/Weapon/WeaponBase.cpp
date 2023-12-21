@@ -6,6 +6,13 @@
 #include "DataAsset/WeaponActionDataAsset.h"
 #include "DataAsset/WeaponDataAsset.h"
 #include "GameObject/Weapon/WeaponActionBase.h"
+#include "GameObject/Weapon/WeaponActionTransitionBase.h"
+
+UWeaponBase::UWeaponBase()
+{
+	bFiredInputFinished = false;
+	CurrentAction = DefaultAction = nullptr;
+}
 
 void UWeaponBase::InitWithWeaponData(UWeaponDataAsset* InWeaponData)
 {
@@ -44,6 +51,7 @@ void UWeaponBase::InitWithWeaponData(UWeaponDataAsset* InWeaponData)
 	{
 		if (auto ActionPtr = ActionMap.Find(InWeaponData->DefaultAction->Name.ToString()))
 		{
+			DefaultAction = *ActionPtr;
 			PerformAction(*ActionPtr);
 		}
 	}
@@ -71,6 +79,8 @@ UWeaponActionBase* UWeaponBase::AddWeaponAction(UWeaponActionDataAsset* InAction
 void UWeaponBase::EnqueueInput(EWeaponActionInput NewInput, const FWeaponActionTarget& InTarget)
 {
 	InputQueue.Emplace(FWeaponActionInfo(NewInput, InTarget));
+
+	bFiredInputFinished = false;
 }
 
 FWeaponActionInfo UWeaponBase::DequeueInput()
@@ -93,7 +103,27 @@ void UWeaponBase::StartInputQueue()
 		return;
 	}
 
-	CurrentAction->ConsumeInput();
+	ConsumeInput();
+}
+
+void UWeaponBase::ConsumeInput()
+{
+	auto NextInput = DequeueInput();
+	if (!NextInput.IsValid())
+	{
+		CheckInputQueue();
+		return;
+	}
+
+	// Transfer to next action
+	if (auto Transition = CurrentAction->GetTransitionByInput(NextInput.Input))
+	{
+		Transition->DoTransition(NextInput.Target);
+	}
+	else
+	{
+		ResetWeapon();
+	}
 }
 
 void UWeaponBase::PerformAction(UWeaponActionBase* InAction, const FWeaponActionTarget& InTarget)
@@ -104,6 +134,45 @@ void UWeaponBase::PerformAction(UWeaponActionBase* InAction, const FWeaponAction
 	}
 
 	CurrentAction = InAction;
+	CurrentAction->OnActionFinished.AddUObject(this, &UWeaponBase::OnActionFinished);
 	CurrentAction->SetActionTarget(InTarget);
 	CurrentAction->Execute();
+}
+
+void UWeaponBase::OnActionFinished(UWeaponActionBase* InAction)
+{
+	if (!IsValid(InAction))
+		return;
+
+	InAction->OnActionFinished.RemoveAll(this);
+	ConsumeInput();
+}
+
+void UWeaponBase::ResetWeapon()
+{
+	InputQueue.Empty();
+
+	// Set default action
+	if (IsValid(DefaultAction))
+	{
+		if (DefaultAction != CurrentAction)
+		{
+			PerformAction(DefaultAction);
+		}
+	}
+	else
+	{
+		UE_LOG(LogDogFightGame, Warning, TEXT("[UWeaponBase] No default action for weapon [%s] to reset."), *GetName())
+	}
+
+	CheckInputQueue();
+}
+
+void UWeaponBase::CheckInputQueue()
+{
+	if (!bFiredInputFinished && InputQueue.IsEmpty())
+	{
+		OnWeaponInputFinished.Broadcast(this);
+		bFiredInputFinished = true;
+	}
 }

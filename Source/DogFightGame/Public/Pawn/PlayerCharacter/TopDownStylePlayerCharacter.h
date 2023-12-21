@@ -50,6 +50,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category="TopDownStylePlayerCharacter")
 	void RemoveBuff(UNewBuffBase* InBuff);
 
+	UFUNCTION(BlueprintCallable, Category="TopDownStylePlayerCharacter")
+	UArsenalComponent* GetArsenalComponent() const
+	{
+		return ArsenalComponent;
+	}
+
 	// DamageReceiverActorInterface
 	virtual UDamageReceiverComponent* GetDamageReceiverComponent() override
 	{

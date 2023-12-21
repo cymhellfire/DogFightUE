@@ -10,6 +10,7 @@
 #include "GameService/GameEffectService.h"
 #include "Interface/DamageReceiverActorInterface.h"
 #include "Math/MathHelper.h"
+#include "Pawn/PlayerCharacter/ArsenalComponent.h"
 #include "Pawn/PlayerCharacter/TopDownStylePlayerCharacter.h"
 #include "Pawn/PlayerPawn/TopDownStylePlayerPawn.h"
 #include "Player/TopDownStylePlayerState.h"
@@ -284,6 +285,19 @@ TArray<AActor*> UCommonGameplayFunctionLibrary::GetRandomCharacterInGame(const U
 	}
 
 	return Result;
+}
+
+EWeaponSlotType UCommonGameplayFunctionLibrary::CharacterAttack(ATopDownStylePlayerCharacter* InCharacter, AActor* Target)
+{
+	if (!IsValid(InCharacter) || !IsValid(Target))
+		return EWeaponSlotType::WST_None;
+
+	if (auto ArsenalComponent = InCharacter->GetArsenalComponent())
+	{
+		ArsenalComponent->AttackTarget(FWeaponActionTarget(Target));
+		return EWeaponSlotType::WST_Primary;
+	}
+	return EWeaponSlotType::WST_None;
 }
 
 void UCommonGameplayFunctionLibrary::ForEachPlayerStateDo(const UObject* WorldContextObject,

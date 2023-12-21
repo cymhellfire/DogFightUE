@@ -10,6 +10,8 @@
 class UWeaponBase;
 class UWeaponDataAsset;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FArsenalComponentSlotEvent, EWeaponSlotType, SlotType);
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class DOGFIGHTGAME_API UArsenalComponent : public UActorComponent
 {
@@ -28,6 +30,10 @@ protected:
 	virtual void BeginPlay() override;
 
 	void OnWeaponDataLoaded(EWeaponSlotType Slot, UWeaponDataAsset* InWeaponData);
+
+public:
+	UPROPERTY(BlueprintAssignable, Category="ArsenalComponent")
+	FArsenalComponentSlotEvent OnSlotWeaponFinished;
 
 private:
 
