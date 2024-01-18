@@ -23,6 +23,8 @@ void UWeaponActionBase::InitActionData(UWeaponActionDataAsset* InData, IActionCh
 	ActionName = InData->Name;
 	ActionDescription = InData->Description;
 	bNeedTarget = InData->bNeedTarget;
+	bWarpingToTarget = InData->bWarpingToTarget;
+	WarpingTargetName = InData->WarpingTargetName;
 	ActionRange = InData->Range;
 	ActionMontage = InData->AnimMontage.IsValid() ? InData->AnimMontage.Get() : InData->AnimMontage.LoadSynchronous();
 
@@ -173,7 +175,20 @@ float UWeaponActionBase::PlayActionMontage()
 		return 0.f;
 	}
 
-	return Performer->PlayActionAnimation(ActionMontage);
+	TOptional<FVector> WarpingPos;
+	if (ActionTarget.IsSet())
+	{
+		WarpingPos = ActionTarget->AsLocation();
+	}
+
+	if (bWarpingToTarget && WarpingPos.IsSet() && WarpingTargetName.IsValid())
+	{
+		return Performer->PlayActionAnimationWithWarping(ActionMontage, WarpingTargetName, WarpingPos.GetValue());
+	}
+	else
+	{
+		return Performer->PlayActionAnimation(ActionMontage);
+	}
 }
 
 void UWeaponActionBase::OnActionMontageFinished()

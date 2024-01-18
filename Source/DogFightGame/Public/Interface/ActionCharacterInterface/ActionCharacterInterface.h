@@ -29,6 +29,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="ActionCharacter")
 	virtual float PlayActionAnimation(UAnimMontage* InMontage);
 
+	UFUNCTION(BlueprintCallable, Category="ActionCharacter")
+	virtual float PlayActionAnimationWithWarping(UAnimMontage* InMontage, FName TargetName, const FVector& TargetPos);
+
 	virtual void MoveToTarget(const FVector& Target, float StopDistance) = 0;
 
 	virtual float GetDistanceFrom(AActor* Target);

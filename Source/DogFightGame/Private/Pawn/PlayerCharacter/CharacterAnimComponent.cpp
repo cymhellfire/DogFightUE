@@ -3,6 +3,7 @@
 
 #include "Pawn/PlayerCharacter/CharacterAnimComponent.h"
 
+#include "MotionWarpingComponent.h"
 #include "Common/DogFightGameLog.h"
 #include "GameFramework/Character.h"
 
@@ -25,8 +26,13 @@ void UCharacterAnimComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	
+	// Get motion warping component
+	MotionWarpingComponent = GetOwner()->GetComponentByClass<UMotionWarpingComponent>();
+
+	if (auto Character = Cast<ACharacter>(GetOwner()))
+	{
+		AnimInstance = Character->GetMesh()->GetAnimInstance();
+	}
 }
 
 
@@ -47,6 +53,18 @@ float UCharacterAnimComponent::PlayAnimation(UAnimMontage* InAnimMontage)
 	return IsValid(InAnimMontage) ? InAnimMontage->GetPlayLength() : 0.f;
 }
 
+float UCharacterAnimComponent::PlayAnimationWithWarping(UAnimMontage* InAnimMontage, FName TargetName,
+	const FVector& TargetPos)
+{
+	// Play animation across network
+	FCharacterAnimWarpingParams NewParams;
+	NewParams.TargetName = TargetName;
+	NewParams.TargetPos = TargetPos;
+	MulticastPlayMontageWithWarping(InAnimMontage, NewParams);
+
+	return IsValid(InAnimMontage) ? InAnimMontage->GetPlayLength() : 0.f;
+}
+
 void UCharacterAnimComponent::MulticastPlayMontage_Implementation(UAnimMontage* InMontage)
 {
 	if (!IsValid(InMontage))
@@ -54,15 +72,73 @@ void UCharacterAnimComponent::MulticastPlayMontage_Implementation(UAnimMontage* 
 		return;
 	}
 
-	if (auto Character = Cast<ACharacter>(GetOwner()))
+	if (AnimInstance.IsValid())
 	{
-		if (auto AnimInstance = Character->GetMesh()->GetAnimInstance())
+		const float Result = AnimInstance->Montage_Play(InMontage);
+		if (Result == 0)
 		{
-			const float Result = AnimInstance->Montage_Play(InMontage);
-			if (Result == 0)
+			UE_LOG(LogDogFightGame, Error, TEXT("[UCharacterAnimComponent] Failed to play montage: %s"), *InMontage->GetName());
+		}
+	}
+}
+
+void UCharacterAnimComponent::MulticastPlayMontageWithWarping_Implementation(UAnimMontage* InMontage,
+	const FCharacterAnimWarpingParams& WarpingParams)
+{
+	if (!IsValid(InMontage))
+	{
+		return;
+	}
+
+	// Set warping data
+	if (MotionWarpingComponent.IsValid())
+	{
+		FMotionWarpingTarget NewTarget;
+		NewTarget.Name = WarpingParams.TargetName;
+		NewTarget.Location = WarpingParams.TargetPos;
+		NewTarget.Rotation = GetOwner()->GetActorRotation();
+		MotionWarpingComponent->AddOrUpdateWarpTarget(NewTarget);
+
+		DrawDebugSphere(GetWorld(), WarpingParams.TargetPos, 20.f, 8, FColor::Yellow, false, 5.f);
+
+		// Record warping data
+		AnimWarpingDataMap.Add(InMontage, WarpingParams);
+	}
+
+	if (AnimInstance.IsValid())
+	{
+		const float Result = AnimInstance->Montage_Play(InMontage);
+		if (Result == 0)
+		{
+			UE_LOG(LogDogFightGame, Error, TEXT("[UCharacterAnimComponent] Failed to play montage: %s"), *InMontage->GetName());
+		}
+		else
+		{
+			WaitingMontage = InMontage;
+			// Listen to montage finish event
+			AnimInstance->OnMontageEnded.AddUniqueDynamic(this, &UCharacterAnimComponent::OnMontageEnded);
+		}
+	}
+}
+
+void UCharacterAnimComponent::OnMontageEnded(UAnimMontage* InMontage, bool bInterrupted)
+{
+	if (InMontage == WaitingMontage)
+	{
+		// Clear the warping target
+		if (MotionWarpingComponent.IsValid())
+		{
+			if (auto WarpingDataPtr = AnimWarpingDataMap.Find(InMontage))
 			{
-				UE_LOG(LogDogFightGame, Error, TEXT("[UCharacterAnimComponent] Failed to play montage: %s"), *InMontage->GetName());
+				MotionWarpingComponent->RemoveWarpTarget(WarpingDataPtr->TargetName);
+				AnimWarpingDataMap.Remove(InMontage);
 			}
+		}
+
+		// Remove listener
+		if (AnimInstance.IsValid())
+		{
+			AnimInstance->OnMontageEnded.RemoveDynamic(this, &UCharacterAnimComponent::OnMontageEnded);
 		}
 	}
 }

@@ -8,6 +8,7 @@
 #include "Interface/ActionCharacterInterface/ActionCharacterInterface.h"
 #include "TopDownStylePlayerCharacter.generated.h"
 
+class UMotionWarpingComponent;
 class ATopDownStylePlayerCharacter;
 class UPlayerCharacterStateWidget;
 class URagdollComponent;
@@ -134,6 +135,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="TopDownStylePlayerCharacter")
 	UCharacterAnimComponent* AnimComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="TopDownStylePlayerCharacter")
+	UMotionWarpingComponent* MotionWarpComponent;
 
 	UPROPERTY(Transient)
 	UPlayerCharacterStateWidget* StateWidget;

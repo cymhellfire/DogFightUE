@@ -39,6 +39,7 @@ public class DogFightGame : ModuleRules
                 "CommonUser",
                 "NavigationSystem",
                 "DogFightAI",
+                "MotionWarping",
             }
         );
         

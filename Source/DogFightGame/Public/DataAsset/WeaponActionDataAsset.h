@@ -37,6 +37,12 @@ public:
 	bool bNeedTarget;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="WeaponAction")
+	bool bWarpingToTarget;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="WeaponAction", meta=(EditCondition="bWarpingToTarget==true", EditConditionHides))
+	FName WarpingTargetName;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="WeaponAction")
 	float Range;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="WeaponAction")

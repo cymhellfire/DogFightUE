@@ -87,7 +87,16 @@ public:
 	bool bNeedTarget;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="WeaponAction")
+	bool bWarpingToTarget;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="WeaponAction")
 	float ActionRange;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="WeaponAction")
+	float FacingDuration;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="WeaponAction", meta=(EditCondition="bWarpingToTarget==true", EditConditionHides))
+	FName WarpingTargetName;
 
 	FWeaponActionBaseEvent OnActionFinished;
 
@@ -98,8 +107,12 @@ protected:
 	UPROPERTY(Transient)
 	TMap<EWeaponActionInput, UWeaponActionTransitionBase*> TransitionMap;
 
+	float FacingInterpolationTime;
+
 	IActionCharacterInterface* Performer;
 	TOptional<FWeaponActionTarget> ActionTarget;
 
 	FTimerHandle ActionTimerHandler;
+
+	FTSTicker::FDelegateHandle TickDelegateHandle;
 };

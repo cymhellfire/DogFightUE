@@ -2,6 +2,7 @@
 
 #include "AIController.h"
 #include "EngineUtils.h"
+#include "MotionWarpingComponent.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Controller/ActionCharacterAIController.h"
 #include "GameFramework/PawnMovementComponent.h"
@@ -22,6 +23,7 @@ ATopDownStylePlayerCharacter::ATopDownStylePlayerCharacter()
 	BuffManagerComponent = CreateDefaultSubobject<UBuffManagerComponent>("BuffManagerComponent");
 	ArsenalComponent = CreateDefaultSubobject<UArsenalComponent>("ArsenalComponent");
 	AnimComponent = CreateDefaultSubobject<UCharacterAnimComponent>("CharacterAnimComponent");
+	MotionWarpComponent = CreateDefaultSubobject<UMotionWarpingComponent>("MotionWarpingComponent");
 
 	// Initial value
 	bAlive = true;

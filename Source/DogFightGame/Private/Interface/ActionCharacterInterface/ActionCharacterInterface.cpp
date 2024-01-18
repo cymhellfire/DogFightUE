@@ -14,6 +14,16 @@ float IActionCharacterInterface::PlayActionAnimation(UAnimMontage* InMontage)
 	return 0.f;
 }
 
+float IActionCharacterInterface::PlayActionAnimationWithWarping(UAnimMontage* InMontage, FName TargetName,
+	const FVector& TargetPos)
+{
+	if (auto AnimComponent = GetAnimComponent())
+	{
+		return AnimComponent->PlayAnimationWithWarping(InMontage, TargetName, TargetPos);
+	}
+	return 0.f;
+}
+
 float IActionCharacterInterface::GetDistanceFrom(AActor* Target)
 {
 	if (auto Character = GetCharacter())

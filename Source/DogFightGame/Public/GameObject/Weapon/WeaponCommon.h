@@ -65,4 +65,17 @@ struct FWeaponActionTarget
 		}
 		return FVector::ZeroVector;
 	}
+
+	TOptional<FVector> AsLocation() const
+	{
+		switch (TargetType)
+		{
+		case EWeaponActionTargetType::WATT_Actor:
+			return IsValid(Actor) ? Actor->GetActorLocation() : TOptional<FVector>();
+		case EWeaponActionTargetType::WATT_Location:
+			return Location;
+		default:
+			return TOptional<FVector>();
+		}
+	}
 };
