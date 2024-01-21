@@ -81,6 +81,10 @@
 				"Mac",
 				"Linux"
 			]
+		},
+		{
+			"Name": "MotionWarping",
+			"Enabled": true
 		}
 	]
 }

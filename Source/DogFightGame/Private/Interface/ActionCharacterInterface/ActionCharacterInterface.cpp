@@ -41,3 +41,8 @@ float IActionCharacterInterface::GetDistanceFrom(const FVector& Target)
 	}
 	return 0.f;
 }
+
+ACharacter* IActionCharacterInterface::AsCharacter()
+{
+	return GetCharacter();
+}

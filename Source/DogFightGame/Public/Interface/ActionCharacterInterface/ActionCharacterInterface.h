@@ -37,6 +37,7 @@ public:
 	virtual float GetDistanceFrom(AActor* Target);
 	virtual float GetDistanceFrom(const FVector& Target);
 
+	ACharacter* AsCharacter();
 protected:
 
 	virtual ACharacter* GetCharacter() = 0;

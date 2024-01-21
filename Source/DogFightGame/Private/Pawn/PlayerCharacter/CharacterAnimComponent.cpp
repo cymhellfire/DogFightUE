@@ -99,8 +99,6 @@ void UCharacterAnimComponent::MulticastPlayMontageWithWarping_Implementation(UAn
 		NewTarget.Rotation = GetOwner()->GetActorRotation();
 		MotionWarpingComponent->AddOrUpdateWarpTarget(NewTarget);
 
-		DrawDebugSphere(GetWorld(), WarpingParams.TargetPos, 20.f, 8, FColor::Yellow, false, 5.f);
-
 		// Record warping data
 		AnimWarpingDataMap.Add(InMontage, WarpingParams);
 	}

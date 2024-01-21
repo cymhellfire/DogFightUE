@@ -17,6 +17,18 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=WeaponData)
 	FText WeaponName;
 
+	/** Name of parent slot when this weapon is equipped. */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=WeaponData)
+	FName ParentSocket;
+
+	/** Name of component used to detect targets to damage. */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=WeaponData)
+	FName AttackDetectComponent;
+
+	/** Class of weapon actor. */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=WeaponData)
+	TSoftClassPtr<AActor> WeaponActorClass;
+
 	/** List of all weapon action data. */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=WeaponData)
 	TArray<UWeaponActionDataAsset*> WeaponActionList;

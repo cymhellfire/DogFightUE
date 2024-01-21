@@ -69,12 +69,24 @@ public:
 	 */
 	void ResetWeapon();
 
+	/**
+	 * Change the attack detecting state of this weapon.
+	 * @param bEnable Whether to enable attack detecting.
+	 */
+	virtual void SetAttackDetectEnable(bool bEnable);
+
 protected:
+	void SpawnWeaponActor();
+	void DestroyWeaponActor();
+
 	virtual void PerformAction(UWeaponActionBase* InAction, const FWeaponActionTarget& InTarget = nullptr);
 
 	void OnActionFinished(UWeaponActionBase* InAction);
 
 	void CheckInputQueue();
+
+	UFUNCTION()
+	void OnAttackDetectingOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 public:
 	FWeaponBaseEvent OnWeaponInputFinished;
@@ -89,7 +101,15 @@ protected:
 	UPROPERTY(Transient)
 	UWeaponActionBase* DefaultAction;
 
-	uint8 bFiredInputFinished:1;
+	uint8 bFiredInputFinished: 1;
+	uint8 bAttackDetecting: 1;
+
+	FName ParentSocket;
+	FName AttackDetectComponent;
+
+	TSoftClassPtr<AActor> WeaponActorClass;
+	TWeakObjectPtr<AActor> WeaponActor;
+	TWeakObjectPtr<UPrimitiveComponent> CachedCollisionComponent;
 
 	IActionCharacterInterface* OwnerCharacter = nullptr;
 

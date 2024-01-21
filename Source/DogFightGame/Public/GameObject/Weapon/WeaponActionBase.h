@@ -73,6 +73,14 @@ protected:
 
 	void FinishAction();
 
+	/** Bind all animation notifies in action montage. */
+	virtual void BindAnimNotifies();
+
+	/** Unbind all animation notifies in action montage. */
+	virtual void UnbindAnimNotifies();
+
+	virtual void OnAttackDetectStateChanged(bool bEnable);
+
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="WeaponAction")
 	FText ActionName;

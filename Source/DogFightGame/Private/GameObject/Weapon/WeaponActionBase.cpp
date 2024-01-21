@@ -2,6 +2,8 @@
 
 #include "GameObject/Weapon/WeaponActionBase.h"
 
+#include "Animation/AnimNotifies/AnimNotifyState.h"
+#include "Animation/Notify/AnimNotifyState_AttackDetect.h"
 #include "Common/DogFightGameLog.h"
 #include "DataAsset/WeaponActionDataAsset.h"
 #include "GameObject/Weapon/WeaponActionTransitionBase.h"
@@ -148,6 +150,7 @@ void UWeaponActionBase::OnReachActionDistance()
 
 void UWeaponActionBase::PerformAction()
 {
+	BindAnimNotifies();
 	const float AnimDuration = PlayActionMontage();
 	if (AnimDuration > 0.f)
 	{
@@ -206,5 +209,57 @@ void UWeaponActionBase::FinishAction()
 	UE_LOG(LogDogFightGame, Log, TEXT("[WeaponActionBase] Finish: %s"), *ActionName.ToString());
 
 	//ConsumeInput();
+	UnbindAnimNotifies();
 	OnActionFinished.Broadcast(this);
+}
+
+void UWeaponActionBase::BindAnimNotifies()
+{
+	if (!IsValid(ActionMontage))
+	{
+		return;
+	}
+
+	// Iterate through notify list
+	for (auto& Notify : ActionMontage->Notifies)
+	{
+		if (auto NotifyState = Notify.NotifyStateClass.Get())
+		{
+			if (auto AttackDetectState = Cast<UAnimNotifyState_AttackDetect>(NotifyState))
+			{
+				AttackDetectState->OnAttackDetectStateChanged.AddUObject(this, &UWeaponActionBase::OnAttackDetectStateChanged);
+			}
+		}
+	}
+}
+
+void UWeaponActionBase::UnbindAnimNotifies()
+{
+	if (!IsValid(ActionMontage))
+	{
+		return;
+	}
+
+	// Iterate through notify list
+	for (auto& Notify : ActionMontage->Notifies)
+	{
+		if (auto NotifyState = Notify.NotifyStateClass.Get())
+		{
+			if (auto AttackDetectState = Cast<UAnimNotifyState_AttackDetect>(NotifyState))
+			{
+				AttackDetectState->OnAttackDetectStateChanged.RemoveAll(this);
+			}
+		}
+	}
+}
+
+void UWeaponActionBase::OnAttackDetectStateChanged(bool bEnable)
+{
+	UE_LOG(LogDogFightGame, Log, TEXT("[WeaponActionBase] Attack detect: %s"), bEnable ? TEXT("on") : TEXT("off"));
+
+	// Let weapon start collision detecting
+	if (IsValid(OwnerWeapon))
+	{
+		OwnerWeapon->SetAttackDetectEnable(bEnable);
+	}
 }

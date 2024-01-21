@@ -5,12 +5,16 @@
 #include "Common/DogFightGameLog.h"
 #include "DataAsset/WeaponActionDataAsset.h"
 #include "DataAsset/WeaponDataAsset.h"
+#include "FunctionLibrary/CommonGameplayFunctionLibrary.h"
+#include "GameFramework/Character.h"
 #include "GameObject/Weapon/WeaponActionBase.h"
 #include "GameObject/Weapon/WeaponActionTransitionBase.h"
+#include "Interface/ActionCharacterInterface/ActionCharacterInterface.h"
 
 UWeaponBase::UWeaponBase()
 {
 	bFiredInputFinished = false;
+	bAttackDetecting = true;
 	CurrentAction = DefaultAction = nullptr;
 }
 
@@ -20,6 +24,11 @@ void UWeaponBase::InitWithWeaponData(UWeaponDataAsset* InWeaponData)
 	{
 		return;
 	}
+
+	ParentSocket = InWeaponData->ParentSocket;
+	AttackDetectComponent = InWeaponData->AttackDetectComponent;
+	WeaponActorClass = InWeaponData->WeaponActorClass;
+	SpawnWeaponActor();
 
 	TMap<FString, UWeaponActionBase*> ActionMap;
 	for (auto ActionData : InWeaponData->WeaponActionList)
@@ -126,6 +135,81 @@ void UWeaponBase::ConsumeInput()
 	}
 }
 
+void UWeaponBase::SpawnWeaponActor()
+{
+	if (WeaponActorClass.IsNull())
+	{
+		UE_LOG(LogDogFightGame, Error, TEXT("[WeaponBase] No weapon actor class specified."));
+		return;
+	}
+
+	if (OwnerCharacter == nullptr)
+	{
+		UE_LOG(LogDogFightGame, Error, TEXT("[WeaponBase] No owner for weapon."));
+		return;
+	}
+	auto Owner = OwnerCharacter->AsCharacter();
+
+	// Destroy existing actor
+	DestroyWeaponActor();
+
+	// Get the actual class and spawn actor
+	const auto ActorClass = WeaponActorClass.IsValid() ? WeaponActorClass.Get() : WeaponActorClass.LoadSynchronous();
+	const auto SpawnTrans = Owner->GetActorTransform();
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.Instigator = Owner;
+	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	WeaponActor = GetWorld()->SpawnActor(ActorClass, &SpawnTrans, SpawnParameters);
+
+	// Attach weapon actor to character
+	if (WeaponActor.IsValid())
+	{
+		if(auto MeshComponent = Owner->GetMesh())
+		{
+			WeaponActor->AttachToComponent(MeshComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale, ParentSocket);
+		}
+
+		// Record collision detecting component
+		TInlineComponentArray<UPrimitiveComponent*> AttackDetectCandidates;
+		WeaponActor->GetComponents<UPrimitiveComponent>(AttackDetectCandidates);
+		for (auto Candidate : AttackDetectCandidates)
+		{
+			if (Candidate->GetFName() == AttackDetectComponent)
+			{
+				CachedCollisionComponent = Candidate;
+				break;
+			}
+		}
+
+		if (CachedCollisionComponent.IsValid())
+		{
+			CachedCollisionComponent->OnComponentBeginOverlap.AddUniqueDynamic(this, &UWeaponBase::OnAttackDetectingOverlapped);
+		}
+		else
+		{
+			UE_LOG(LogDogFightGame, Error, TEXT("[WeaponBase] No attack detecting component matched name %s."),
+				*AttackDetectComponent.ToString());
+		}
+
+		// Turn off detecting as default
+		SetAttackDetectEnable(false);
+	}
+}
+
+void UWeaponBase::DestroyWeaponActor()
+{
+	if (!WeaponActor.IsValid())
+	{
+		return;
+	}
+
+	CachedCollisionComponent->OnComponentBeginOverlap.RemoveDynamic(this, &UWeaponBase::OnAttackDetectingOverlapped);
+	CachedCollisionComponent.Reset();
+	WeaponActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	WeaponActor->Destroy();
+	WeaponActor.Reset();
+}
+
 void UWeaponBase::PerformAction(UWeaponActionBase* InAction, const FWeaponActionTarget& InTarget)
 {
 	if (!IsValid(InAction))
@@ -175,4 +259,33 @@ void UWeaponBase::CheckInputQueue()
 		OnWeaponInputFinished.Broadcast(this);
 		bFiredInputFinished = true;
 	}
+}
+
+void UWeaponBase::SetAttackDetectEnable(bool bEnable)
+{
+	if (bAttackDetecting == bEnable)
+	{
+		return;
+	}
+
+	// Switch the collision component
+	if (CachedCollisionComponent.IsValid())
+	{
+		CachedCollisionComponent->SetCollisionEnabled(bEnable ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
+	}
+	bAttackDetecting = bEnable;
+}
+
+void UWeaponBase::OnAttackDetectingOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	// Skip character itself
+	if (OtherActor == OwnerCharacter->AsCharacter())
+	{
+		return;
+	}
+
+	UE_LOG(LogDogFightGame, Log, TEXT("[WeaponBase] Attacked %s"), *OtherActor->GetName());
+
+	UCommonGameplayFunctionLibrary::DamageActor(this, 1, OtherActor, 5, OwnerCharacter->AsCharacter());
 }
