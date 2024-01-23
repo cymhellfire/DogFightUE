@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "GameObject/Weapon/WeaponCommon.h"
+#include "Common/WeaponCommon.h"
 #include "ArsenalComponent.generated.h"
 
 class UWeaponBase;

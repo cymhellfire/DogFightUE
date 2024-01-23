@@ -9,7 +9,7 @@
 class UWeaponActionDataAsset;
 
 UCLASS(Blueprintable)
-class DOGFIGHTGAME_API UWeaponDataAsset : public UPrimaryDataAsset
+class ACTIONGAMEWEAPON_API UWeaponDataAsset : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 

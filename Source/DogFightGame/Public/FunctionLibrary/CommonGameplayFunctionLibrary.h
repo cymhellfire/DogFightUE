@@ -2,7 +2,7 @@
 
 #include "CommonFunctionLibraryBase.h"
 #include "Common/DamageDisplayParams.h"
-#include "GameObject/Weapon/WeaponCommon.h"
+#include "Common/WeaponCommon.h"
 #include "CommonGameplayFunctionLibrary.generated.h"
 
 class UCard;

@@ -10,7 +10,7 @@
  * Base class of all weapon action that act instantaneously.
  */
 UCLASS()
-class DOGFIGHTGAME_API UInstantaneousWeaponAction : public UWeaponActionBase
+class ACTIONGAMEWEAPON_API UInstantaneousWeaponAction : public UWeaponActionBase
 {
 	GENERATED_BODY()
 

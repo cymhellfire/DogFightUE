@@ -4,8 +4,8 @@
 #include "DamageReceiver/DamageReceiverComponent.h"
 #include "GameFramework/Character.h"
 #include "GameObject/Component/WidgetLocatorComponent.h"
+#include "Interface/ActionCharacterInterface.h"
 #include "Interface/DamageReceiverActorInterface.h"
-#include "Interface/ActionCharacterInterface/ActionCharacterInterface.h"
 #include "TopDownStylePlayerCharacter.generated.h"
 
 class UMotionWarpingComponent;
@@ -66,6 +66,8 @@ public:
 	void StopMoveImmediately();
 
 #pragma region IActionCharacterInterface
+	virtual float PlayActionAnimation(UAnimMontage* InMontage) override;
+	virtual float PlayActionAnimationWithWarping(UAnimMontage* InMontage, FName TargetName, const FVector& TargetPos) override;
 	virtual void MoveToTarget(const FVector& Target, float StopDistance) override;
 #pragma endregion IActionCharacterInterface
 
@@ -91,10 +93,6 @@ protected:
 	virtual ACharacter* GetCharacter() override
 	{
 		return this;
-	}
-	virtual UCharacterAnimComponent* GetAnimComponent() override
-	{
-		return AnimComponent;
 	}
 #pragma endregion IActionCharacterInterface
 

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "WeaponCommon.h"
+#include "Common/WeaponCommon.h"
 #include "UObject/Object.h"
 #include "WeaponBase.generated.h"
 
@@ -40,7 +40,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FWeaponBaseEvent, UWeaponBase*);
  * 
  */
 UCLASS()
-class DOGFIGHTGAME_API UWeaponBase : public UObject
+class ACTIONGAMEWEAPON_API UWeaponBase : public UObject
 {
 	GENERATED_BODY()
 	friend class UWeaponActionTransitionBase;

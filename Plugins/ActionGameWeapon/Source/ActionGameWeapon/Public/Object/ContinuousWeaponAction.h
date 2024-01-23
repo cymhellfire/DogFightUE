@@ -10,7 +10,7 @@
  * Base class of all weapon action that keeps for long time.
  */
 UCLASS()
-class DOGFIGHTGAME_API UContinuousWeaponAction : public UWeaponActionBase
+class ACTIONGAMEWEAPON_API UContinuousWeaponAction : public UWeaponActionBase
 {
 	GENERATED_BODY()
 

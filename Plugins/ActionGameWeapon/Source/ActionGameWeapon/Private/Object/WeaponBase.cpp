@@ -1,15 +1,15 @@
 // Dog Fight Game Code By CYM.
 
-#include "GameObject/Weapon/WeaponBase.h"
+#include "Object/WeaponBase.h"
 
-#include "Common/DogFightGameLog.h"
+#include "Common/ActionGameWeaponLog.h"
 #include "DataAsset/WeaponActionDataAsset.h"
 #include "DataAsset/WeaponDataAsset.h"
-#include "FunctionLibrary/CommonGameplayFunctionLibrary.h"
+//#include "FunctionLibrary/CommonGameplayFunctionLibrary.h"
 #include "GameFramework/Character.h"
-#include "GameObject/Weapon/WeaponActionBase.h"
-#include "GameObject/Weapon/WeaponActionTransitionBase.h"
-#include "Interface/ActionCharacterInterface/ActionCharacterInterface.h"
+#include "Object/WeaponActionBase.h"
+#include "Object/WeaponActionTransitionBase.h"
+#include "Interface/ActionCharacterInterface.h"
 
 UWeaponBase::UWeaponBase()
 {
@@ -108,7 +108,7 @@ void UWeaponBase::StartInputQueue()
 {
 	if (!IsValid(CurrentAction))
 	{
-		UE_LOG(LogDogFightGame, Error, TEXT("[UWeaponBase] Cannot start input queue due to current action is missing."));
+		UE_LOG(LogActionGameWeapon, Error, TEXT("[UWeaponBase] Cannot start input queue due to current action is missing."));
 		return;
 	}
 
@@ -139,13 +139,13 @@ void UWeaponBase::SpawnWeaponActor()
 {
 	if (WeaponActorClass.IsNull())
 	{
-		UE_LOG(LogDogFightGame, Error, TEXT("[WeaponBase] No weapon actor class specified."));
+		UE_LOG(LogActionGameWeapon, Error, TEXT("[WeaponBase] No weapon actor class specified."));
 		return;
 	}
 
 	if (OwnerCharacter == nullptr)
 	{
-		UE_LOG(LogDogFightGame, Error, TEXT("[WeaponBase] No owner for weapon."));
+		UE_LOG(LogActionGameWeapon, Error, TEXT("[WeaponBase] No owner for weapon."));
 		return;
 	}
 	auto Owner = OwnerCharacter->AsCharacter();
@@ -187,7 +187,7 @@ void UWeaponBase::SpawnWeaponActor()
 		}
 		else
 		{
-			UE_LOG(LogDogFightGame, Error, TEXT("[WeaponBase] No attack detecting component matched name %s."),
+			UE_LOG(LogActionGameWeapon, Error, TEXT("[WeaponBase] No attack detecting component matched name %s."),
 				*AttackDetectComponent.ToString());
 		}
 
@@ -246,7 +246,7 @@ void UWeaponBase::ResetWeapon()
 	}
 	else
 	{
-		UE_LOG(LogDogFightGame, Warning, TEXT("[UWeaponBase] No default action for weapon [%s] to reset."), *GetName())
+		UE_LOG(LogActionGameWeapon, Warning, TEXT("[UWeaponBase] No default action for weapon [%s] to reset."), *GetName())
 	}
 
 	CheckInputQueue();
@@ -285,7 +285,7 @@ void UWeaponBase::OnAttackDetectingOverlapped(UPrimitiveComponent* OverlappedCom
 		return;
 	}
 
-	UE_LOG(LogDogFightGame, Log, TEXT("[WeaponBase] Attacked %s"), *OtherActor->GetName());
+	UE_LOG(LogActionGameWeapon, Log, TEXT("[WeaponBase] Attacked %s"), *OtherActor->GetName());
 
-	UCommonGameplayFunctionLibrary::DamageActor(this, 1, OtherActor, 5, OwnerCharacter->AsCharacter());
+	//UCommonGameplayFunctionLibrary::DamageActor(this, 1, OtherActor, 5, OwnerCharacter->AsCharacter());
 }

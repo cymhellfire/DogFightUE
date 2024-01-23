@@ -1,0 +1,28 @@
+﻿{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "ActionGameWeapon",
+	"Description": "A plugin provides basic weapon implementation for any game.",
+	"Category": "Other",
+	"CreatedBy": "CYM",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "ActionGameWeapon",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "ActionGameWeaponEditor",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
+		}
+	]
+}

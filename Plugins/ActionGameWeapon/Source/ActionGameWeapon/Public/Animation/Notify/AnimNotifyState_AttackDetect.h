@@ -12,7 +12,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FAnimNotifyStateAttackDetechEvent, bool);
  * AnimNotifyState used to define a window for attack detecting.
  */
 UCLASS(meta = (DisplayName = "Attack Detect"))
-class DOGFIGHTGAME_API UAnimNotifyState_AttackDetect : public UAnimNotifyState
+class ACTIONGAMEWEAPON_API UAnimNotifyState_AttackDetect : public UAnimNotifyState
 {
 	GENERATED_BODY()
 

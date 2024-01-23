@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "WeaponCommon.h"
+#include "Common/WeaponCommon.h"
 #include "UObject/Object.h"
 #include "WeaponActionTransitionBase.generated.h"
 
@@ -14,7 +14,7 @@ class UWeaponActionBase;
  * Transition behavior between weapon actions.
  */
 UCLASS(BlueprintType)
-class DOGFIGHTGAME_API UWeaponActionTransitionBase : public UObject
+class ACTIONGAMEWEAPON_API UWeaponActionTransitionBase : public UObject
 {
 	GENERATED_BODY()
 

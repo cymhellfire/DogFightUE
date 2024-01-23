@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class DOGFIGHTEDITOR_API UWeaponActionDataFactory : public UFactory
+class ACTIONGAMEWEAPONEDITOR_API UWeaponActionDataFactory : public UFactory
 {
 	GENERATED_BODY()
 public:

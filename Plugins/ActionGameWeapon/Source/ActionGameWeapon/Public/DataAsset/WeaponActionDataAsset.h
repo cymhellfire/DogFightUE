@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameObject/Weapon/WeaponCommon.h"
+#include "Common/WeaponCommon.h"
 #include "WeaponActionDataAsset.generated.h"
 
 USTRUCT(BlueprintType)
@@ -22,7 +22,7 @@ struct FWeaponActionTransitionSettings
  * Data asset that defines various weapon actions.
  */
 UCLASS(Blueprintable)
-class DOGFIGHTGAME_API UWeaponActionDataAsset : public UObject
+class ACTIONGAMEWEAPON_API UWeaponActionDataAsset : public UObject
 {
 	GENERATED_BODY()
 

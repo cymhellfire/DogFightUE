@@ -1,14 +1,14 @@
 // Dog Fight Game Code By CYM.
 
-#include "GameObject/Weapon/WeaponActionBase.h"
+#include "Object/WeaponActionBase.h"
 
 #include "Animation/AnimNotifies/AnimNotifyState.h"
 #include "Animation/Notify/AnimNotifyState_AttackDetect.h"
-#include "Common/DogFightGameLog.h"
+#include "Common/ActionGameWeaponLog.h"
 #include "DataAsset/WeaponActionDataAsset.h"
-#include "GameObject/Weapon/WeaponActionTransitionBase.h"
-#include "GameObject/Weapon/WeaponBase.h"
-#include "Interface/ActionCharacterInterface/ActionCharacterInterface.h"
+#include "Object/WeaponActionTransitionBase.h"
+#include "Object/WeaponBase.h"
+#include "Interface/ActionCharacterInterface.h"
 
 UWeaponActionBase::UWeaponActionBase()
 {
@@ -64,7 +64,7 @@ void UWeaponActionBase::Execute()
 	if (!Performer)
 		return;
 
-	UE_LOG(LogDogFightGame, Log, TEXT("[WeaponActionBase] Execute: %s"), *ActionName.ToString());
+	UE_LOG(LogActionGameWeapon, Log, TEXT("[WeaponActionBase] Execute: %s"), *ActionName.ToString());
 
 	const auto TargetResult = CheckDistance();
 	switch(TargetResult)
@@ -77,7 +77,7 @@ void UWeaponActionBase::Execute()
 		break;
 	case EDistanceCheckResult::Invalid:
 	default:
-		UE_LOG(LogDogFightGame, Error, TEXT("[UWeaponActionBase] Execute with invalid target."));
+		UE_LOG(LogActionGameWeapon, Error, TEXT("[UWeaponActionBase] Execute with invalid target."));
 	}
 }
 
@@ -142,7 +142,7 @@ void UWeaponActionBase::OnReachActionDistance()
 	{
 		Performer->OnReachActionDistance.RemoveAll(this);
 
-		UE_LOG(LogDogFightGame, Log, TEXT("[WeaponActionBase] Reach distance: %s"), *ActionName.ToString());
+		UE_LOG(LogActionGameWeapon, Log, TEXT("[WeaponActionBase] Reach distance: %s"), *ActionName.ToString());
 
 		PerformAction();
 	}
@@ -206,7 +206,7 @@ void UWeaponActionBase::OnActionMontageFinished()
 
 void UWeaponActionBase::FinishAction()
 {
-	UE_LOG(LogDogFightGame, Log, TEXT("[WeaponActionBase] Finish: %s"), *ActionName.ToString());
+	UE_LOG(LogActionGameWeapon, Log, TEXT("[WeaponActionBase] Finish: %s"), *ActionName.ToString());
 
 	//ConsumeInput();
 	UnbindAnimNotifies();
@@ -255,7 +255,7 @@ void UWeaponActionBase::UnbindAnimNotifies()
 
 void UWeaponActionBase::OnAttackDetectStateChanged(bool bEnable)
 {
-	UE_LOG(LogDogFightGame, Log, TEXT("[WeaponActionBase] Attack detect: %s"), bEnable ? TEXT("on") : TEXT("off"));
+	UE_LOG(LogActionGameWeapon, Log, TEXT("[WeaponActionBase] Attack detect: %s"), bEnable ? TEXT("on") : TEXT("off"));
 
 	// Let weapon start collision detecting
 	if (IsValid(OwnerWeapon))

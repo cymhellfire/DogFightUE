@@ -1,9 +1,9 @@
 // Dog Fight Game Code By CYM.
 
-#include "GameObject/Weapon/WeaponActionTransitionBase.h"
+#include "Object//WeaponActionTransitionBase.h"
 
-#include "GameObject/Weapon/WeaponActionBase.h"
-#include "GameObject/Weapon/WeaponBase.h"
+#include "Object/WeaponActionBase.h"
+#include "Object/WeaponBase.h"
 
 void UWeaponActionTransitionBase::InitTransition(UWeaponBase* InOwner, EWeaponActionInput InInput, UWeaponActionBase* InAction)
 {

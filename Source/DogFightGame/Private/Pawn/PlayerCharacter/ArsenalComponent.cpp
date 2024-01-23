@@ -6,8 +6,8 @@
 #include "Common/DogFightGameLog.h"
 #include "DataAsset/WeaponDataAsset.h"
 #include "Engine/AssetManager.h"
-#include "GameObject/Weapon/WeaponBase.h"
-#include "Interface/ActionCharacterInterface/ActionCharacterInterface.h"
+#include "Object/WeaponBase.h"
+#include "Interface/ActionCharacterInterface.h"
 
 
 // Sets default values for this component's properties

@@ -4,6 +4,7 @@
 #include "EngineUtils.h"
 #include "MotionWarpingComponent.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
+#include "Common/WeaponCommon.h"
 #include "Controller/ActionCharacterAIController.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "GameObject/Buff/NewBuffBase.h"
@@ -102,6 +103,25 @@ FVector ATopDownStylePlayerCharacter::GetProjectileSpawnLocation() const
 void ATopDownStylePlayerCharacter::SetRagdollEnabled(bool bEnable)
 {
 	RagdollComponent->ServerSetRagdollActive(bEnable);
+}
+
+float ATopDownStylePlayerCharacter::PlayActionAnimation(UAnimMontage* InMontage)
+{
+	if (IsValid(AnimComponent))
+	{
+		return AnimComponent->PlayAnimation(InMontage);
+	}
+	return IActionCharacterInterface::PlayActionAnimation(InMontage);
+}
+
+float ATopDownStylePlayerCharacter::PlayActionAnimationWithWarping(UAnimMontage* InMontage, FName TargetName,
+	const FVector& TargetPos)
+{
+	if (IsValid(AnimComponent))
+	{
+		return AnimComponent->PlayAnimationWithWarping(InMontage, TargetName, TargetPos);
+	}
+	return IActionCharacterInterface::PlayActionAnimationWithWarping(InMontage, TargetName, TargetPos);
 }
 
 void ATopDownStylePlayerCharacter::MoveToTarget(const FVector& Target, float StopDistance)
