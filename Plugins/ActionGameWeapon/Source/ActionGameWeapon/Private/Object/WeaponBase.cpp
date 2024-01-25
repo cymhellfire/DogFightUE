@@ -5,7 +5,7 @@
 #include "Common/ActionGameWeaponLog.h"
 #include "DataAsset/WeaponActionDataAsset.h"
 #include "DataAsset/WeaponDataAsset.h"
-//#include "FunctionLibrary/CommonGameplayFunctionLibrary.h"
+#include "Actor/WeaponModelBase.h"
 #include "GameFramework/Character.h"
 #include "Object/WeaponActionBase.h"
 #include "Object/WeaponActionTransitionBase.h"
@@ -14,8 +14,15 @@
 UWeaponBase::UWeaponBase()
 {
 	bFiredInputFinished = false;
-	bAttackDetecting = true;
 	CurrentAction = DefaultAction = nullptr;
+}
+
+void UWeaponBase::BeginDestroy()
+{
+	// Destroy weapon model
+	DestroyWeaponActor();
+
+	UObject::BeginDestroy();
 }
 
 void UWeaponBase::InitWithWeaponData(UWeaponDataAsset* InWeaponData)
@@ -27,7 +34,7 @@ void UWeaponBase::InitWithWeaponData(UWeaponDataAsset* InWeaponData)
 
 	ParentSocket = InWeaponData->ParentSocket;
 	AttackDetectComponent = InWeaponData->AttackDetectComponent;
-	WeaponActorClass = InWeaponData->WeaponActorClass;
+	WeaponModelClass = InWeaponData->WeaponModelClass;
 	SpawnWeaponActor();
 
 	TMap<FString, UWeaponActionBase*> ActionMap;
@@ -137,7 +144,7 @@ void UWeaponBase::ConsumeInput()
 
 void UWeaponBase::SpawnWeaponActor()
 {
-	if (WeaponActorClass.IsNull())
+	if (WeaponModelClass.IsNull())
 	{
 		UE_LOG(LogActionGameWeapon, Error, TEXT("[WeaponBase] No weapon actor class specified."));
 		return;
@@ -154,60 +161,41 @@ void UWeaponBase::SpawnWeaponActor()
 	DestroyWeaponActor();
 
 	// Get the actual class and spawn actor
-	const auto ActorClass = WeaponActorClass.IsValid() ? WeaponActorClass.Get() : WeaponActorClass.LoadSynchronous();
+	const auto ActorClass = WeaponModelClass.IsValid() ? WeaponModelClass.Get() : WeaponModelClass.LoadSynchronous();
 	const auto SpawnTrans = Owner->GetActorTransform();
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.Instigator = Owner;
 	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	WeaponActor = GetWorld()->SpawnActor(ActorClass, &SpawnTrans, SpawnParameters);
+	WeaponModel = Cast<AWeaponModelBase>(GetWorld()->SpawnActor(ActorClass, &SpawnTrans, SpawnParameters));
 
 	// Attach weapon actor to character
-	if (WeaponActor.IsValid())
+	if (WeaponModel.IsValid())
 	{
 		if(auto MeshComponent = Owner->GetMesh())
 		{
-			WeaponActor->AttachToComponent(MeshComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale, ParentSocket);
+			WeaponModel->AttachToComponent(MeshComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale, ParentSocket);
 		}
 
 		// Record collision detecting component
-		TInlineComponentArray<UPrimitiveComponent*> AttackDetectCandidates;
-		WeaponActor->GetComponents<UPrimitiveComponent>(AttackDetectCandidates);
-		for (auto Candidate : AttackDetectCandidates)
-		{
-			if (Candidate->GetFName() == AttackDetectComponent)
-			{
-				CachedCollisionComponent = Candidate;
-				break;
-			}
-		}
+		WeaponModel->SetOwnerCharacter(Owner);
 
-		if (CachedCollisionComponent.IsValid())
-		{
-			CachedCollisionComponent->OnComponentBeginOverlap.AddUniqueDynamic(this, &UWeaponBase::OnAttackDetectingOverlapped);
-		}
-		else
-		{
-			UE_LOG(LogActionGameWeapon, Error, TEXT("[WeaponBase] No attack detecting component matched name %s."),
-				*AttackDetectComponent.ToString());
-		}
-
-		// Turn off detecting as default
-		SetAttackDetectEnable(false);
+		// Listen to hit event
+		WeaponModel->HitEvent.AddUObject(this, &UWeaponBase::OnHitTarget);
 	}
 }
 
 void UWeaponBase::DestroyWeaponActor()
 {
-	if (!WeaponActor.IsValid())
+	if (!WeaponModel.IsValid())
 	{
 		return;
 	}
 
-	CachedCollisionComponent->OnComponentBeginOverlap.RemoveDynamic(this, &UWeaponBase::OnAttackDetectingOverlapped);
-	CachedCollisionComponent.Reset();
-	WeaponActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-	WeaponActor->Destroy();
-	WeaponActor.Reset();
+	WeaponModel->HitEvent.RemoveAll(this);
+
+	WeaponModel->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	WeaponModel->Destroy();
+	WeaponModel.Reset();
 }
 
 void UWeaponBase::PerformAction(UWeaponActionBase* InAction, const FWeaponActionTarget& InTarget)
@@ -246,7 +234,7 @@ void UWeaponBase::ResetWeapon()
 	}
 	else
 	{
-		UE_LOG(LogActionGameWeapon, Warning, TEXT("[UWeaponBase] No default action for weapon [%s] to reset."), *GetName())
+		UE_LOG(LogActionGameWeapon, Warning, TEXT("[WeaponBase] No default action for weapon [%s] to reset."), *GetName())
 	}
 
 	CheckInputQueue();
@@ -263,29 +251,17 @@ void UWeaponBase::CheckInputQueue()
 
 void UWeaponBase::SetAttackDetectEnable(bool bEnable)
 {
-	if (bAttackDetecting == bEnable)
+	if (WeaponModel.IsValid())
 	{
-		return;
+		WeaponModel->SetAttackDetectEnable(bEnable);
 	}
-
-	// Switch the collision component
-	if (CachedCollisionComponent.IsValid())
+	else
 	{
-		CachedCollisionComponent->SetCollisionEnabled(bEnable ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
+		UE_LOG(LogActionGameWeapon, Error, TEXT("[WeaponBase] No weapon model spawned for weapon %s"), *GetName());
 	}
-	bAttackDetecting = bEnable;
 }
 
-void UWeaponBase::OnAttackDetectingOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void UWeaponBase::OnHitTarget(AActor* TargetActor, UPrimitiveComponent* TargetComponent, const FHitResult& HitResult)
 {
-	// Skip character itself
-	if (OtherActor == OwnerCharacter->AsCharacter())
-	{
-		return;
-	}
-
-	UE_LOG(LogActionGameWeapon, Log, TEXT("[WeaponBase] Attacked %s"), *OtherActor->GetName());
-
-	//UCommonGameplayFunctionLibrary::DamageActor(this, 1, OtherActor, 5, OwnerCharacter->AsCharacter());
+	UE_LOG(LogActionGameWeapon, Log, TEXT("[WeaponBase] Attacked %s"), *TargetActor->GetName());
 }

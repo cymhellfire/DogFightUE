@@ -6,6 +6,7 @@
 #include "Engine/DataAsset.h"
 #include "WeaponDataAsset.generated.h"
 
+class AWeaponModelBase;
 class UWeaponActionDataAsset;
 
 UCLASS(Blueprintable)
@@ -27,7 +28,7 @@ public:
 
 	/** Class of weapon actor. */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=WeaponData)
-	TSoftClassPtr<AActor> WeaponActorClass;
+	TSoftClassPtr<AWeaponModelBase> WeaponModelClass;
 
 	/** List of all weapon action data. */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=WeaponData)

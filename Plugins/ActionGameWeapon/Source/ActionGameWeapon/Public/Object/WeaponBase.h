@@ -12,6 +12,7 @@ class IActionCharacterInterface;
 class UWeaponActionBase;
 class UWeaponDataAsset;
 class UWeaponActionDataAsset;
+class AWeaponModelBase;
 
 struct FWeaponActionInfo
 {
@@ -46,6 +47,8 @@ class ACTIONGAMEWEAPON_API UWeaponBase : public UObject
 	friend class UWeaponActionTransitionBase;
 public:
 	UWeaponBase();
+
+	virtual void BeginDestroy() override;
 
 	void SetOwner(IActionCharacterInterface* InOwner)
 	{
@@ -85,8 +88,7 @@ protected:
 
 	void CheckInputQueue();
 
-	UFUNCTION()
-	void OnAttackDetectingOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void OnHitTarget(AActor* TargetActor, UPrimitiveComponent* TargetComponent, const FHitResult& HitResult);
 
 public:
 	FWeaponBaseEvent OnWeaponInputFinished;
@@ -102,14 +104,12 @@ protected:
 	UWeaponActionBase* DefaultAction;
 
 	uint8 bFiredInputFinished: 1;
-	uint8 bAttackDetecting: 1;
 
 	FName ParentSocket;
 	FName AttackDetectComponent;
 
-	TSoftClassPtr<AActor> WeaponActorClass;
-	TWeakObjectPtr<AActor> WeaponActor;
-	TWeakObjectPtr<UPrimitiveComponent> CachedCollisionComponent;
+	TSoftClassPtr<AWeaponModelBase> WeaponModelClass;
+	TWeakObjectPtr<AWeaponModelBase> WeaponModel;
 
 	IActionCharacterInterface* OwnerCharacter = nullptr;
 
