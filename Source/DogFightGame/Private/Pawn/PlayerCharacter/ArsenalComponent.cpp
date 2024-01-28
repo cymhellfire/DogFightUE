@@ -72,7 +72,7 @@ void UArsenalComponent::OnWeaponDataLoaded(EWeaponSlotType Slot, UWeaponDataAsse
 		return;
 	}
 
-	auto NewWeapon = NewObject<UWeaponBase>(this);
+	auto NewWeapon = NewObject<UWeaponBase>(this, InWeaponData->WeaponClass.LoadSynchronous());
 	if (IsValid(NewWeapon))
 	{
 		NewWeapon->SetOwner(Cast<IActionCharacterInterface>(GetOuter()));

@@ -16,7 +16,7 @@ public class DogFightGame : ModuleRules
                 "CardSystem",
                 "UnLua",
                 "DamageSystem",
-                "ActionGameWeapon",
+                "ActionGame",
             }
         );
 
