@@ -5,9 +5,12 @@
 
 float IActionCharacterInterface::GetDistanceFrom(AActor* Target)
 {
-	if (auto Character = GetCharacter())
+	if (IsValid(Target))
 	{
-		return (Target->GetActorLocation() - Character->GetActorLocation()).Length();
+		if (auto Character = GetCharacter())
+		{
+			return (Target->GetActorLocation() - Character->GetActorLocation()).Length();
+		}
 	}
 	return 0.f;
 }

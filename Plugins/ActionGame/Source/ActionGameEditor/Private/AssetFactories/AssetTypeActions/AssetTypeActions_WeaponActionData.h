@@ -4,7 +4,7 @@
 #include "AssetTypeActions_Base.h"
 #include "DataAsset/WeaponActionDataAsset.h"
 
-class FWeaponActionDataAssetTypeAction : public FAssetTypeActions_Base
+class FAssetTypeActions_WeaponActionData : public FAssetTypeActions_Base
 {
 public:
 	UClass* GetSupportedClass() const override
@@ -14,7 +14,7 @@ public:
 
 	virtual FText GetName() const override
 	{
-		return INVTEXT("NewWeaponActionData");
+		return INVTEXT("New Weapon Action Data");
 	}
 
 	virtual FColor GetTypeColor() const override

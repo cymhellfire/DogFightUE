@@ -6,6 +6,7 @@
 #include "DataAsset/WeaponActionDataAsset.h"
 #include "DataAsset/WeaponDataAsset.h"
 #include "Actor/WeaponModelBase.h"
+#include "FunctionLibrary/WeaponDataFunctionLibrary.h"
 #include "GameFramework/Character.h"
 #include "Object/WeaponActionBase.h"
 #include "Object/WeaponActionTransitionBase.h"
@@ -88,7 +89,7 @@ UWeaponActionBase* UWeaponBase::AddWeaponAction(UWeaponActionDataAsset* InAction
 	}
 
 	// Create new weapon action
-	auto NewAction = NewObject<UWeaponActionBase>(this);
+	auto NewAction = NewObject<UWeaponActionBase>(this, InActionData->ActionClass.LoadSynchronous());
 	if (IsValid(NewAction))
 	{
 		NewAction->SetOwnerWeapon(this);

@@ -39,29 +39,19 @@ public:
 		OwnerWeapon = InOwner;
 	}
 
-	virtual void InitActionData(UWeaponActionDataAsset* InData, IActionCharacterInterface* InOwner);
+	virtual bool InitActionData(UWeaponActionDataAsset* InData, IActionCharacterInterface* InOwner);
 
 	virtual void AddTransition(EWeaponActionInput InInput, UWeaponActionBase* InAction);
 
-	virtual void SetActionTarget(const FWeaponActionTarget& InTarget);
+	virtual void SetActionTarget(const FWeaponActionTarget& InTarget) {}
 
-	virtual void Execute();
+	virtual bool Execute();
 
 	virtual void PerformAction();
 
 	virtual UWeaponActionTransitionBase* GetTransitionByInput(EWeaponActionInput Input) const;
 
 protected:
-	/**
-	 * @brief Check the distance between performer and target.
-	 * @return Whether target is in range.
-	 */
-	virtual EDistanceCheckResult CheckDistance();
-
-	virtual void GoToTarget();
-
-	virtual void OnReachActionDistance();
-
 	/**
 	 * @brief Play the montage asset.
 	 * @return Duration of played montage.
@@ -91,20 +81,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="WeaponAction")
 	UAnimMontage* ActionMontage;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="WeaponAction")
-	bool bNeedTarget;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="WeaponAction")
-	bool bWarpingToTarget;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="WeaponAction")
-	float ActionRange;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="WeaponAction")
-	float FacingDuration;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="WeaponAction", meta=(EditCondition="bWarpingToTarget==true", EditConditionHides))
-	FName WarpingTargetName;
+	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="WeaponAction")
+	// bool bNeedTarget;
 
 	FWeaponActionBaseEvent OnActionFinished;
 
@@ -115,12 +93,7 @@ protected:
 	UPROPERTY(Transient)
 	TMap<EWeaponActionInput, UWeaponActionTransitionBase*> TransitionMap;
 
-	float FacingInterpolationTime;
-
 	IActionCharacterInterface* Performer;
-	TOptional<FWeaponActionTarget> ActionTarget;
 
 	FTimerHandle ActionTimerHandler;
-
-	FTSTicker::FDelegateHandle TickDelegateHandle;
 };

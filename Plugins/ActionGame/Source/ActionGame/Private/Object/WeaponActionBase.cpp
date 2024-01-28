@@ -15,22 +15,20 @@ UWeaponActionBase::UWeaponActionBase()
 	Performer = nullptr;
 }
 
-void UWeaponActionBase::InitActionData(UWeaponActionDataAsset* InData, IActionCharacterInterface* Owner)
+bool UWeaponActionBase::InitActionData(UWeaponActionDataAsset* InData, IActionCharacterInterface* Owner)
 {
 	if (!IsValid(InData))
 	{
-		return;
+		return false;
 	}
 
 	ActionName = InData->Name;
 	ActionDescription = InData->Description;
-	bNeedTarget = InData->bNeedTarget;
-	bWarpingToTarget = InData->bWarpingToTarget;
-	WarpingTargetName = InData->WarpingTargetName;
-	ActionRange = InData->Range;
 	ActionMontage = InData->AnimMontage.IsValid() ? InData->AnimMontage.Get() : InData->AnimMontage.LoadSynchronous();
 
 	Performer = Owner;
+
+	return true;
 }
 
 void UWeaponActionBase::AddTransition(EWeaponActionInput InInput, UWeaponActionBase* InAction)
@@ -48,104 +46,13 @@ void UWeaponActionBase::AddTransition(EWeaponActionInput InInput, UWeaponActionB
 	}
 }
 
-void UWeaponActionBase::SetActionTarget(const FWeaponActionTarget& InTarget)
-{
-	// Skip if target is unnecessary
-	if (!bNeedTarget)
-	{
-		return;
-	}
-
-	ActionTarget = InTarget;
-}
-
-void UWeaponActionBase::Execute()
+bool UWeaponActionBase::Execute()
 {
 	if (!Performer)
-		return;
+		return false;
 
 	UE_LOG(LogActionGameWeapon, Log, TEXT("[WeaponActionBase] Execute: %s"), *ActionName.ToString());
-
-	const auto TargetResult = CheckDistance();
-	switch(TargetResult)
-	{
-	case EDistanceCheckResult::OutOfRange:
-		GoToTarget();
-		break;
-	case EDistanceCheckResult::InRange:
-		PerformAction();
-		break;
-	case EDistanceCheckResult::Invalid:
-	default:
-		UE_LOG(LogActionGameWeapon, Error, TEXT("[UWeaponActionBase] Execute with invalid target."));
-	}
-}
-
-UWeaponActionBase::EDistanceCheckResult UWeaponActionBase::CheckDistance()
-{
-	// It's always consider as in range when no target required.
-	if (!bNeedTarget)
-	{
-		return EDistanceCheckResult::InRange;
-	}
-
-	if (ActionTarget.IsSet())
-	{
-		float Distance;
-		switch(ActionTarget->TargetType)
-		{
-		case EWeaponActionTargetType::WATT_Actor:
-			Distance = Performer->GetDistanceFrom(ActionTarget->GetActorTarget());
-			break;
-		case EWeaponActionTargetType::WATT_Location:
-			Distance = Performer->GetDistanceFrom(ActionTarget->GetLocationTarget());
-			break;
-		case EWeaponActionTargetType::WATT_None:
-		default:
-			// Invalid target info
-			return EDistanceCheckResult::Invalid;
-		}
-
-		return (Distance <= ActionRange) ? EDistanceCheckResult::InRange : EDistanceCheckResult::OutOfRange;
-	}
-
-	// It's invalid when a target is required but no one specified
-	return EDistanceCheckResult::Invalid;
-}
-
-void UWeaponActionBase::GoToTarget()
-{
-	if (ActionTarget.IsSet())
-	{
-		FVector TargetLoc;
-		switch(ActionTarget->TargetType)
-		{
-		case EWeaponActionTargetType::WATT_Actor:
-			TargetLoc = ActionTarget->GetActorTarget()->GetActorLocation();
-			break;
-		case EWeaponActionTargetType::WATT_Location:
-			TargetLoc = ActionTarget->GetLocationTarget();
-			break;
-		case EWeaponActionTargetType::WATT_None:
-		default:
-			;
-		}
-
-		Performer->OnReachActionDistance.AddUObject(this, &UWeaponActionBase::OnReachActionDistance);
-		Performer->MoveToTarget(TargetLoc, ActionRange);
-	}
-}
-
-void UWeaponActionBase::OnReachActionDistance()
-{
-	if (Performer)
-	{
-		Performer->OnReachActionDistance.RemoveAll(this);
-
-		UE_LOG(LogActionGameWeapon, Log, TEXT("[WeaponActionBase] Reach distance: %s"), *ActionName.ToString());
-
-		PerformAction();
-	}
+	return true;
 }
 
 void UWeaponActionBase::PerformAction()
@@ -178,20 +85,7 @@ float UWeaponActionBase::PlayActionMontage()
 		return 0.f;
 	}
 
-	TOptional<FVector> WarpingPos;
-	if (ActionTarget.IsSet())
-	{
-		WarpingPos = ActionTarget->AsLocation();
-	}
-
-	if (bWarpingToTarget && WarpingPos.IsSet() && WarpingTargetName.IsValid())
-	{
-		return Performer->PlayActionAnimationWithWarping(ActionMontage, WarpingTargetName, WarpingPos.GetValue());
-	}
-	else
-	{
-		return Performer->PlayActionAnimation(ActionMontage);
-	}
+	return Performer->PlayActionAnimation(ActionMontage);
 }
 
 void UWeaponActionBase::OnActionMontageFinished()

@@ -3,7 +3,8 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-class FWeaponActionDataAssetTypeAction;
+class FAssetTypeActions_WeaponActionData;
+class FAssetTypeActions_TargetingWeaponActionData;
 
 class FActionGameEditorModule : public IModuleInterface
 {
@@ -12,5 +13,6 @@ public:
 	virtual void ShutdownModule() override;
 
 private:
-	TSharedPtr<FWeaponActionDataAssetTypeAction> WeaponActionDataAssetTypeAction;
+	TSharedPtr<FAssetTypeActions_WeaponActionData> WeaponActionDataAssetTypeAction;
+	TSharedPtr<FAssetTypeActions_TargetingWeaponActionData> TargetingWeaponActionDataAssetTypeAction;
 };
