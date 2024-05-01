@@ -2,6 +2,7 @@
 
 #include "CommonFunctionLibraryBase.h"
 #include "Common/DamageDisplayParams.h"
+#include "Common/WeaponCommon.h"
 #include "CommonGameplayFunctionLibrary.generated.h"
 
 class UCard;
@@ -187,6 +188,15 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
 	static TArray<AActor*> GetRandomCharacterInGame(const UObject* WorldContextObject, int32 Count = 1, bool bAllowDuplicated = false);
+
+	/**
+	 * Let character attack given target.
+	 * @param InCharacter		Character that start attacking.
+	 * @param Target			Target actor to attack.
+	 * @return The slot of weapon that used to attack target.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
+	static EWeaponSlotType CharacterAttack(ATopDownStylePlayerCharacter* InCharacter, AActor* Target);
 protected:
 	/**
 	 * Do specified function on every player state in current game meet the id mask.

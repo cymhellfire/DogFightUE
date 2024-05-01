@@ -4,6 +4,7 @@
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Components/SphereComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "Net/Core/PushModel/PushModel.h"
 #include "Pawn/PlayerCharacter/TopDownStylePlayerCharacter.h"
 #include "Pawn/PlayerPawn/Component/TopDownStyleCameraComponent.h"
 #include "Pawn/PlayerPawn/Component/TopDownStyleMovementComponent.h"

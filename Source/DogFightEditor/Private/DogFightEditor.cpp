@@ -19,7 +19,6 @@ void FDogFightEditorModule::StartupModule()
 void FDogFightEditorModule::ShutdownModule()
 {
 	FDogFightEditorCommands::Unregister();
-
 }
 
 #undef LOCTEXT_NAMESPACE

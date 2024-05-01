@@ -20,7 +20,7 @@ void ENUpdatePopup::Register()
 {
 	const FString PluginDirectory = IPluginManager::Get().FindPlugin(TEXT("ElectronicNodes"))->GetBaseDir();
 	const FString UpdatedConfigFile = PluginDirectory + "/UpdateConfig.ini";
-	const FString CurrentPluginVersion = "3.8";
+	const FString CurrentPluginVersion = "3.10";
 
 	UENUpdateConfig* ENUpdatePopupConfig = GetMutableDefault<UENUpdateConfig>();
 
@@ -79,7 +79,7 @@ void ENUpdatePopup::Open()
 		[
 			SNew(STextBlock)
 			.Font(HeadingFont)
-			.Text(FText::FromString("Electronic Nodes v3.8"))
+			.Text(FText::FromString("Electronic Nodes v3.10"))
 		]
 		+ SVerticalBox::Slot()
 		  .FillHeight(1.0)
@@ -106,21 +106,21 @@ I also made a marketplace search engine called <a id="browser" href="https://bit
 
 Last but not least, I'm building <a id="browser" href="https://luna-park.app">Luna Park</> (a visual scripting editor for the web) and <a id="browser" href="https://roller-coaster.app">Roller Coaster</> (an automation tool using Luna Park), and I'm looking for beta testers, so if you're interested, feel free to join the <a id="browser" href="https://discord.gg/2eAk2AHvdw">Discord server</>!
 
-But let's keep it short, here are the cool new features (and bugfixes) of version 3.8!
+But let's keep it short, here are the cool new features (and bugfixes) of version 3.10!
 
 
-<LargeText>Version 3.8</>
+<LargeText>Version 3.10</>
 
-<RichTextBlock.Bold>Features</>
+<RichTextBlock.Bold>Bugfixes</>
 
-* Add a spline type selector for wires bellow minimum distance (<a id="browser" href="https://github.com/hugoattal/ElectronicNodes/issues/66">issue #66</>)
+* Fix 5.3 compatibility (<a id="browser" href="https://github.com/hugoattal/ElectronicNodes/issues/70">issue #70</>)
 
 
-<LargeText>Version 3.7</>
+<LargeText>Version 3.9</>
 
-<RichTextBlock.Bold>Features</>
+<RichTextBlock.Bold>Bugfixes</>
 
-* Prepare UE 5.1 compatibility (<a id="browser" href="https://github.com/hugoattal/ElectronicNodes/issues/64">issue #64</>)
+* Fix bubbles on animation blueprints (<a id="browser" href="https://github.com/hugoattal/ElectronicNodes/issues/8">issue #8</>)
 
 
 <a id="browser" href="https://github.com/hugoattal/ElectronicNodes#changelog">See complete changelog</>

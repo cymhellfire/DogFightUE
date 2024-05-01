@@ -3,6 +3,7 @@
 
 #include "Actors/Common/DamageArea.h"
 #include "DamageStructures.h"
+#include "Engine/DamageEvents.h"
 #include "Actors/Interfaces/DamageableActorInterface.h"
 
 // Sets default values

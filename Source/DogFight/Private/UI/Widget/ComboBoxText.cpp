@@ -20,5 +20,5 @@ TSharedRef<SWidget> UComboBoxText::HandleGenerateWidget(TSharedPtr<FString> Item
 	// Try to create a localized item if possible
 	return SNew(STextBlock)
         .Text(LocalizationStringTable.IsValid() ? FText::FromStringTable(LocalizationStringTable, StringItem) : FText::FromString(StringItem))
-        .Font(Font);
+        .Font(GetFont());
 }

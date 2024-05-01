@@ -1,8 +1,17 @@
 #include "Pawn/PlayerCharacter/TopDownStylePlayerCharacter.h"
 
 #include "AIController.h"
+#include "EngineUtils.h"
+#include "MotionWarpingComponent.h"
+#include "Blueprint/AIBlueprintHelperLibrary.h"
+#include "Common/WeaponCommon.h"
+#include "Controller/ActionCharacterAIController.h"
+#include "GameFramework/PawnMovementComponent.h"
 #include "GameObject/Buff/NewBuffBase.h"
+#include "Navigation/PathFollowingComponent.h"
+#include "Pawn/PlayerCharacter/ArsenalComponent.h"
 #include "Pawn/PlayerCharacter/BuffManagerComponent.h"
+#include "Pawn/PlayerCharacter/CharacterAnimComponent.h"
 #include "Pawn/PlayerCharacter/RagdollComponent.h"
 #include "UI/InGame/PlayerCharacterStateWidget.h"
 
@@ -13,9 +22,13 @@ ATopDownStylePlayerCharacter::ATopDownStylePlayerCharacter()
 	StateWidgetLocatorComponent = CreateDefaultSubobject<UWidgetLocatorComponent>("StateWidgetLocatorComponent");
 	RagdollComponent = CreateDefaultSubobject<URagdollComponent>("RagdollComponent");
 	BuffManagerComponent = CreateDefaultSubobject<UBuffManagerComponent>("BuffManagerComponent");
+	ArsenalComponent = CreateDefaultSubobject<UArsenalComponent>("ArsenalComponent");
+	AnimComponent = CreateDefaultSubobject<UCharacterAnimComponent>("CharacterAnimComponent");
+	MotionWarpComponent = CreateDefaultSubobject<UMotionWarpingComponent>("MotionWarpingComponent");
 
 	// Initial value
 	bAlive = true;
+	AIControllerClass = AActionCharacterAIController::StaticClass();
 }
 
 void ATopDownStylePlayerCharacter::BeginPlay()
@@ -27,12 +40,36 @@ void ATopDownStylePlayerCharacter::BeginPlay()
 	DamageReceiverComponent->OnHealthChanged.AddDynamic(this, &ATopDownStylePlayerCharacter::OnHealthChanged);
 	DamageReceiverComponent->OnNoHealth.AddDynamic(this, &ATopDownStylePlayerCharacter::OnNoHealth);
 
-	if (auto AIController = Cast<AAIController>(GetController()))
+	if (auto AIController = Cast<AActionCharacterAIController>(GetController()))
 	{
-		PathFollowingComponent = AIController->GetPathFollowingComponent();
-		if (PathFollowingComponent.IsValid())
+		if (auto PathFollowingComponent = AIController->GetPathFollowingComponent())
 		{
 			PathFollowingComponent->OnRequestFinished.AddUObject(this, &ATopDownStylePlayerCharacter::OnMoveFinished);
+		}
+
+		AIController->OnReachStopDistance.AddUObject(this, &ATopDownStylePlayerCharacter::OnReachStopDistance);
+	}
+
+	// Init test weapon
+	if (WeaponData.IsValid() && IsValid(ArsenalComponent))
+	{
+		ArsenalComponent->EquipWeapon(EWeaponSlotType::WST_Primary, WeaponData);
+	}
+}
+
+void ATopDownStylePlayerCharacter::TestAttackTarget()
+{
+	for (TActorIterator<ATopDownStylePlayerCharacter> Iter(GetWorld()); Iter; ++Iter)
+	{
+		if (*Iter == this)
+		{
+			continue;
+		}
+
+		// Take target
+		if (IsValid(ArsenalComponent))
+		{
+			ArsenalComponent->AttackTarget(FWeaponActionTarget(*Iter));
 		}
 	}
 }
@@ -46,9 +83,14 @@ void ATopDownStylePlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayRea
 	DamageReceiverComponent->OnHealthChanged.RemoveDynamic(this, &ATopDownStylePlayerCharacter::OnHealthChanged);
 	DamageReceiverComponent->OnNoHealth.RemoveDynamic(this, &ATopDownStylePlayerCharacter::OnNoHealth);
 
-	if (PathFollowingComponent.IsValid())
+	if (auto AIController = Cast<AActionCharacterAIController>(GetController()))
 	{
-		PathFollowingComponent->OnRequestFinished.RemoveAll(this);
+		if (auto PathFollowingComponent = AIController->GetPathFollowingComponent())
+		{
+			PathFollowingComponent->OnRequestFinished.RemoveAll(this);
+		}
+
+		AIController->OnReachStopDistance.RemoveAll(this);
 	}
 }
 
@@ -61,6 +103,33 @@ FVector ATopDownStylePlayerCharacter::GetProjectileSpawnLocation() const
 void ATopDownStylePlayerCharacter::SetRagdollEnabled(bool bEnable)
 {
 	RagdollComponent->ServerSetRagdollActive(bEnable);
+}
+
+float ATopDownStylePlayerCharacter::PlayActionAnimation(UAnimMontage* InMontage)
+{
+	if (IsValid(AnimComponent))
+	{
+		return AnimComponent->PlayAnimation(InMontage);
+	}
+	return IActionCharacterInterface::PlayActionAnimation(InMontage);
+}
+
+float ATopDownStylePlayerCharacter::PlayActionAnimationWithWarping(UAnimMontage* InMontage, FName TargetName,
+	const FVector& TargetPos)
+{
+	if (IsValid(AnimComponent))
+	{
+		return AnimComponent->PlayAnimationWithWarping(InMontage, TargetName, TargetPos);
+	}
+	return IActionCharacterInterface::PlayActionAnimationWithWarping(InMontage, TargetName, TargetPos);
+}
+
+void ATopDownStylePlayerCharacter::MoveToTarget(const FVector& Target, float StopDistance)
+{
+	if (auto AIController = Cast<AActionCharacterAIController>(GetController()))
+	{
+		AIController->MoveToTargetWithStopDistance(Target, StopDistance);
+	}
 }
 
 void ATopDownStylePlayerCharacter::InitializeStateWidget()
@@ -118,6 +187,12 @@ void ATopDownStylePlayerCharacter::OnMoveFinished(FAIRequestID RequestID, const 
 	}
 }
 
+void ATopDownStylePlayerCharacter::OnReachStopDistance()
+{
+	StopMoveImmediately();
+	OnReachActionDistance.Broadcast();
+}
+
 void ATopDownStylePlayerCharacter::OnHealthChanged(float CurHealth, float MaxHealth)
 {
 	if (IsValid(StateWidget))
@@ -149,5 +224,13 @@ void ATopDownStylePlayerCharacter::RemoveBuff(UNewBuffBase* InBuff)
 	if (IsValid(BuffManagerComponent))
 	{
 		BuffManagerComponent->RemoveBuff(InBuff);
+	}
+}
+
+void ATopDownStylePlayerCharacter::StopMoveImmediately()
+{
+	if (auto MovementComponent = GetMovementComponent())
+	{
+		MovementComponent->StopMovementImmediately();
 	}
 }

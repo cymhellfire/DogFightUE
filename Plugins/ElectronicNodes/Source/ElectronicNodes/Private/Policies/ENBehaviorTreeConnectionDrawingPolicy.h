@@ -1,12 +1,12 @@
 /* Copyright (C) 2021 Hugo ATTAL - All Rights Reserved
-* This plugin is downloadable from the UE4 Marketplace
+* This plugin is downloadable from the Unreal Engine Marketplace
 */
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "ENConnectionDrawingPolicy.h"
-#include "BehaviorTreeEditor/Private/BehaviorTreeConnectionDrawingPolicy.h"
+#include "BehaviorTreeConnectionDrawingPolicy.h"
 
 class FENBehaviorTreeConnectionDrawingPolicy : public FBehaviorTreeConnectionDrawingPolicy
 {

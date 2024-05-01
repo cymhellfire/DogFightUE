@@ -5,7 +5,7 @@
 
 #include "DogFight.h"
 #include "GameMode/DogFightGameModeBase.h"
-#include "HeadMountedDisplayFunctionLibrary.h"
+// #include "HeadMountedDisplayFunctionLibrary.h"
 #include "NavigationPath.h"
 #include "Actors/Projectiles/ProjectileBase.h"
 #include "Player/StandardModePlayerController.h"
@@ -13,17 +13,15 @@
 #include "Components/WidgetComponent.h"
 #include "Actors/Components/ReceiveDamageComponent.h"
 #include "Actors/Components/ActorTeleportComponent.h"
-#include "Actors/Weapons/WeaponBase.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Game/StandardPlayerState.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Game/StandardGameMode.h"
-#include "Actors/Weapons/WeaponDisplayRelative.h"
-#include "Actors/Weapons/WeaponActionBase.h"
 #include "Card/CardDescObject.h"
 #include "DamageReceiver/DamageReceiverComponent.h"
 #include "Engine/ActorChannel.h"
+#include "Engine/DamageEvents.h"
 #include "Pawns/TestAttributeComponent.h"
 #include "UI/Widget/CharacterFloatingTextPanelWidget.h"
 
@@ -124,7 +122,6 @@ void AStandardModePlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimePr
 	DOREPLIFETIME(AStandardModePlayerCharacter, CurrentStrength);
 	DOREPLIFETIME(AStandardModePlayerCharacter, MaxStrength);
 	DOREPLIFETIME(AStandardModePlayerCharacter, CacheBlastForce);
-	DOREPLIFETIME(AStandardModePlayerCharacter, CurrentWeaponType);
 	DOREPLIFETIME(AStandardModePlayerCharacter, CardDescObjects);
 }
 
@@ -297,84 +294,6 @@ void AStandardModePlayerCharacter::MulticastPlayMontage_Implementation(UAnimMont
 	}
 }
 
-EWeaponType AStandardModePlayerCharacter::GetCurrentWeaponType()
-{
-	return CurrentWeaponType;
-}
-
-FWeaponActionDisplayInfo AStandardModePlayerCharacter::GetNextActionDisplayInfoByInput(EWeaponActionInput Input) const
-{
-	if (IsValid(CurrentWeapon))
-	{
-		return CurrentWeapon->GetNextActionByInput(Input)->GetWeaponActionDisplayInfo();
-	}
-
-	return FWeaponActionDisplayInfo();
-}
-
-void AStandardModePlayerCharacter::EquipWeapon(UWeaponBase* NewWeapon)
-{
-	if (NewWeapon == CurrentWeapon)
-	{
-		return;
-	}
-
-	// UnEquip previous weapon first
-	if (IsValid(CurrentWeapon))
-	{
-		PendingWeapon = NewWeapon;
-		UnEquipWeapon();
-	}
-	else
-	{
-		CurrentWeapon = NewWeapon;
-		CurrentWeaponType = CurrentWeapon->GetWeaponType();
-		CurrentWeapon->SetWeaponOwner(this);
-		CurrentWeapon->OnWeaponEquippedEvent.AddDynamic(this, &AStandardModePlayerCharacter::OnWeaponEquipped);
-		CurrentWeapon->OnWeaponActionFinishedEvent.AddDynamic(this, &AStandardModePlayerCharacter::OnWeaponActionFinished);
-		CurrentWeapon->Equip();
-	}
-}
-
-void AStandardModePlayerCharacter::UnEquipWeapon()
-{
-	if (CurrentWeapon == nullptr)
-	{
-		return;
-	}
-
-	CurrentWeapon->OnWeaponActionFinishedEvent.RemoveDynamic(this, &AStandardModePlayerCharacter::OnWeaponActionFinished);
-	CurrentWeapon->OnWeaponUnEquippedEvent.AddDynamic(this, &AStandardModePlayerCharacter::OnWeaponUnEquipped);
-	CurrentWeapon->UnEquip();
-	CurrentWeaponType = EWeaponType::WT_None;
-}
-
-void AStandardModePlayerCharacter::OnWeaponEquipped()
-{
-	CurrentWeapon->OnWeaponEquippedEvent.RemoveDynamic(this, &AStandardModePlayerCharacter::OnWeaponEquipped);
-
-	// Trigger callback
-	OnWeaponEquippedEvent.Broadcast(this);
-}
-
-void AStandardModePlayerCharacter::OnWeaponUnEquipped()
-{
-	CurrentWeapon->OnWeaponUnEquippedEvent.RemoveDynamic(this, &AStandardModePlayerCharacter::OnWeaponUnEquipped);
-	CurrentWeapon = nullptr;
-
-	if (IsValid(PendingWeapon))
-	{
-		EquipWeapon(PendingWeapon);
-		PendingWeapon = nullptr;
-	}
-}
-
-void AStandardModePlayerCharacter::OnWeaponActionFinished()
-{
-	// Broadcast callback
-	OnWeaponActionFinishedEvent.Broadcast(this);
-}
-
 void AStandardModePlayerCharacter::OnPlayerRoundBegin(int32 PlayerId)
 {
 	// Cache current location when round begin
@@ -388,11 +307,11 @@ void AStandardModePlayerCharacter::OnPlayerRoundEnd(int32 PlayerId)
 		if (MyPlayerState->GetPlayerId() == PlayerId)
 		{
 			// Clear weapon target and reset weapon action to initial one
-			if (CurrentWeapon != nullptr)
-			{
-				WeaponTargetActor = nullptr;
-				CurrentWeapon->ResetWeaponAction();
-			}
+			// if (CurrentWeapon != nullptr)
+			// {
+			// 	WeaponTargetActor = nullptr;
+			// 	CurrentWeapon->ResetWeaponAction();
+			// }
 		}
 	}
 }
@@ -401,44 +320,6 @@ void AStandardModePlayerCharacter::OnTeleportFinished(UActorTeleportComponent* C
 {
 	// Update cache location after teleport
 	CacheCurrentLocation();
-}
-
-void AStandardModePlayerCharacter::EnqueueInput(EWeaponActionInput NewInput)
-{
-	if (CurrentWeapon == nullptr)
-	{
-		return;
-	}
-
-	CurrentWeapon->EnqueueWeaponInput(NewInput);
-}
-
-void AStandardModePlayerCharacter::SetWeaponTargetActor(AActor* NewTarget)
-{
-	WeaponTargetActor = NewTarget;
-}
-
-void AStandardModePlayerCharacter::SetWeaponTargetLocation(FVector NewLocation)
-{
-	WeaponTargetLocation = NewLocation;
-}
-
-void AStandardModePlayerCharacter::MoveToActionDistance()
-{
-	bTracingActionDistance = true;
-	if (WeaponTargetActor)
-	{
-		UAIBlueprintHelperLibrary::SimpleMoveToActor(this->GetController(), WeaponTargetActor);
-	}
-	else
-	{
-		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this->GetController(), WeaponTargetLocation);
-	}
-}
-
-void AStandardModePlayerCharacter::SetActionDistance(float NewDistance)
-{
-	WeaponActionDistance = NewDistance;
 }
 
 // Called when the game starts or when spawned
@@ -554,22 +435,22 @@ void AStandardModePlayerCharacter::Tick(float DeltaTime)
 	if (CursorToWorld != nullptr && bShowCursorToWorld)
 	{
 		AStandardModePlayerController const * const PC = Cast<AStandardModePlayerController>(GetOwner());
-		if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled())
-		{
-			UWorld* World = GetWorld();
-			if (World != nullptr && PC != nullptr)
-			{
-				FHitResult HitResult;
-				FCollisionQueryParams Params(NAME_None, FCollisionQueryParams::GetUnknownStatId());
-				FVector StartLocation = PC->PlayerCameraManager->GetCameraLocation();
-				FVector EndLocation = PC->PlayerCameraManager->GetCameraRotation().Vector() * 2000.f;
-				Params.AddIgnoredActor(this);
-				World->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, Params);
-				FQuat SurfaceRotation = HitResult.ImpactNormal.ToOrientationRotator().Quaternion();
-				CursorToWorld->SetWorldLocationAndRotation(HitResult.Location, SurfaceRotation);
-			}
-		}
-		else if (PC != nullptr)
+		// if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled())
+		// {
+		// 	UWorld* World = GetWorld();
+		// 	if (World != nullptr && PC != nullptr)
+		// 	{
+		// 		FHitResult HitResult;
+		// 		FCollisionQueryParams Params(NAME_None, FCollisionQueryParams::GetUnknownStatId());
+		// 		FVector StartLocation = PC->PlayerCameraManager->GetCameraLocation();
+		// 		FVector EndLocation = PC->PlayerCameraManager->GetCameraRotation().Vector() * 2000.f;
+		// 		Params.AddIgnoredActor(this);
+		// 		World->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, Params);
+		// 		FQuat SurfaceRotation = HitResult.ImpactNormal.ToOrientationRotator().Quaternion();
+		// 		CursorToWorld->SetWorldLocationAndRotation(HitResult.Location, SurfaceRotation);
+		// 	}
+		// }
+		if (PC != nullptr)
 		{
 			FHitResult TraceHitResult;
 			PC->GetHitResultUnderCursor(ECC_Visibility, true, TraceHitResult);
@@ -649,7 +530,7 @@ void AStandardModePlayerCharacter::Tick(float DeltaTime)
 			StopMoveImmediately();
 
 			// Trigger callback
-			OnCarrierReachedActionDistanceEvent.Broadcast(this);
+			// OnCarrierReachedActionDistanceEvent.Broadcast(this);
 		}
 	}
 }
@@ -813,18 +694,13 @@ void AStandardModePlayerCharacter::CacheCurrentLocation()
 
 void AStandardModePlayerCharacter::ReturnToCachedLocation()
 {
-	SetWeaponTargetLocation(CachedLocation);
-	ClearWeaponTargetActor();
-	MoveToActionDistance();
+	// SetWeaponTargetLocation(CachedLocation);
+	// ClearWeaponTargetActor();
+	// MoveToActionDistance();
 }
 
 void AStandardModePlayerCharacter::EquipTestWeapon()
 {
-	if (IsValid(TestWeaponClass))
-	{
-		UWeaponBase* NewWeapon = NewObject<UWeaponBase>(this, TestWeaponClass);
-		EquipWeapon(NewWeapon);
-	}
 }
 
 void AStandardModePlayerCharacter::ShowFloatingText(FText NewText)

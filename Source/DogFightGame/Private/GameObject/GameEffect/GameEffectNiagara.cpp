@@ -1,5 +1,6 @@
 #include "GameObject/GameEffect/GameEffectNiagara.h"
 #include "NiagaraComponent.h"
+#include "NiagaraSystem.h"
 #include "Components/AudioComponent.h"
 #include "GameFramework/Character.h"
 

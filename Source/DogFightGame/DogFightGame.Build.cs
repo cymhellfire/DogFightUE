@@ -16,6 +16,7 @@ public class DogFightGame : ModuleRules
                 "CardSystem",
                 "UnLua",
                 "DamageSystem",
+                "ActionGame",
             }
         );
 
@@ -38,6 +39,8 @@ public class DogFightGame : ModuleRules
                 "ImGui",
                 "CommonUser",
                 "NavigationSystem",
+                "DogFightAI",
+                "MotionWarping",
             }
         );
         

@@ -1,5 +1,6 @@
 #include "UnrealIntegration/UObject/AttributeModifierDescObject.h"
 #include "Net/UnrealNetwork.h"
+#include "Net/Core/PushModel/PushModel.h"
 
 void UAttributeModifierDescObject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {

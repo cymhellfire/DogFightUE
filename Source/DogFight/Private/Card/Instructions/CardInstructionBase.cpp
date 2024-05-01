@@ -23,7 +23,7 @@ bool UCardInstructionBase::Tick(float DeltaSeconds)
 	Execute();
 
 	// No need to tick after Execute()
-	FTicker::GetCoreTicker().RemoveTicker(TickDelegateHandle);
+	FTSTicker::GetCoreTicker().RemoveTicker(TickDelegateHandle);
 
 	return true;
 }
@@ -40,7 +40,7 @@ void UCardInstructionBase::BeginExecute()
 {
 	// Register tick for execution
 	TickDelegate = FTickerDelegate::CreateUObject(this, &UCardInstructionBase::Tick);
-	TickDelegateHandle = FTicker::GetCoreTicker().AddTicker(TickDelegate);
+	TickDelegateHandle = FTSTicker::GetCoreTicker().AddTicker(TickDelegate);
 
 	// Increase counter of owner card
 	OwnerCard->IncreaseExecutingInstructionCounter();

@@ -3,12 +3,22 @@
 #pragma once
 
 #include "CommonUserTypes.h"
-#include "NativeGameplayTags.h"
-#include "Engine/GameInstance.h"
 #include "Engine/GameViewportClient.h"
+#include "GameFramework/OnlineReplStructs.h"
 #include "Subsystems/GameInstanceSubsystem.h"
-
+#include "UObject/WeakObjectPtr.h"
+#include "GameplayTagContainer.h"
 #include "CommonUserSubsystem.generated.h"
+
+#if COMMONUSER_OSSV1
+#include "Interfaces/OnlineIdentityInterface.h"
+#include "OnlineError.h"
+#else
+#include "Online/OnlineAsyncOpHandle.h"
+#endif
+
+class FNativeGameplayTag;
+class IOnlineSubsystem;
 
 /** List of tags used by the common user subsystem */
 struct COMMONUSER_API FCommonUserTags
@@ -62,6 +72,14 @@ public:
 	/** Overall state of the user's initialization process */
 	UPROPERTY(BlueprintReadOnly, Category = UserInfo)
 	ECommonUserInitializationState InitializationState = ECommonUserInitializationState::Invalid;
+
+	/** Returns true if this user has successfully logged in */
+	UFUNCTION(BlueprintCallable, Category = UserInfo)
+	bool IsLoggedIn() const;
+
+	/** Returns true if this user is in the middle of logging in */
+	UFUNCTION(BlueprintCallable, Category = UserInfo)
+	bool IsDoingLogin() const;
 
 	/** Returns the most recently queries result for a specific privilege, will return unknown if never queried */
 	UFUNCTION(BlueprintCallable, Category = UserInfo)
@@ -182,7 +200,7 @@ struct COMMONUSER_API FCommonUserInitializeParams
  * One subsystem is created for each game instance and can be accessed from blueprints or C++ code.
  * If a game-specific subclass exists, this base subsystem will not be created.
  */
-UCLASS(BlueprintType, Config=Game)
+UCLASS(BlueprintType, Config=Engine)
 class COMMONUSER_API UCommonUserSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
@@ -299,6 +317,10 @@ public:
 	/** Attempts to cancel an in-progress initialization attempt, this may not work on all platforms but will disable callbacks */
 	UFUNCTION(BlueprintCallable, Category = CommonUser)
 	virtual bool CancelUserInitialization(int32 LocalPlayerIndex);
+
+	/** Logs a player out of any online systems, and optionally destroys the player entirely if it's not the first one */
+	UFUNCTION(BlueprintCallable, Category = CommonUser)
+	virtual bool TryToLogOutUser(int32 LocalPlayerIndex, bool bDestroyPlayer = false);
 
 	/** Resets the login and initialization state when returning to the main menu after an error */
 	UFUNCTION(BlueprintCallable, Category = CommonUser)
@@ -593,7 +615,10 @@ protected:
 	FCommonUserInitializeParams ParamsForLoginKey;
 
 	/** Maximum number of local players */
-	int32 MaxNumberOfLocalPlayers;
+	int32 MaxNumberOfLocalPlayers = 0;
+	
+	/** True if this is a dedicated server, which doesn't require a LocalPlayer */
+	bool bIsDedicatedServer = false;
 
 	/** List of current in progress login requests */
 	TArray<TSharedRef<FUserLoginRequest>> ActiveLoginRequests;

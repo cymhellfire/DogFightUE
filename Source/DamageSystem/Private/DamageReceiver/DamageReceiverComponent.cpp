@@ -3,6 +3,7 @@
 #include "DamageSytemCommon.h"
 #include "DamageType/ExtendedDamageInstance.h"
 #include "Net/UnrealNetwork.h"
+#include "Net/Core/PushModel/PushModel.h"
 
 UDamageReceiverComponent::UDamageReceiverComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

@@ -1,5 +1,5 @@
 /* Copyright (C) 2021 Hugo ATTAL - All Rights Reserved
-* This plugin is downloadable from the UE4 Marketplace
+* This plugin is downloadable from the Unreal Engine Marketplace
 */
 
 #include "ElectronicNodes.h"
@@ -8,10 +8,10 @@
 #include "NodeFactory.h"
 #include "Interfaces/IPluginManager.h"
 #include "Lib/HotPatch.h"
-#include "MainFrame/Public/Interfaces/IMainFrameModule.h"
+#include "Interfaces/IMainFrameModule.h"
 #include "Patch/NodeFactoryPatch.h"
 #include "Popup/ENUpdatePopup.h"
-#include "SettingsEditor/Public/ISettingsEditorModule.h"
+#include "ISettingsEditorModule.h"
 
 #define LOCTEXT_NAMESPACE "FElectronicNodesModule"
 

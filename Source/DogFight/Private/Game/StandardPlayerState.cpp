@@ -14,6 +14,7 @@
 #include "Common/BitmaskOperation.h"
 #include "Engine/ActorChannel.h"
 #include "Card/CardDescObject.h"
+#include "Net/Core/PushModel/PushModel.h"
 
 AStandardPlayerState::AStandardPlayerState(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -727,7 +728,7 @@ void AStandardPlayerState::DecideCandidateAbility(int32 SelectIndex)
 {
 	if (SelectIndex < 0 || SelectIndex >= CandidateAbilities.Num())
 	{
-		UE_LOG(LogDogFight, Error, TEXT("[StandardPlayerState] Invalid index [%d] for candidate ability selection."));
+		UE_LOG(LogDogFight, Error, TEXT("[StandardPlayerState] Invalid index [%d] for candidate ability selection."), SelectIndex);
 		return;
 	}
 

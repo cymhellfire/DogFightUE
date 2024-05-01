@@ -1,5 +1,5 @@
 ﻿/* Copyright (C) 2021 Hugo ATTAL - All Rights Reserved
-* This plugin is downloadable from the UE4 Marketplace
+* This plugin is downloadable from the Unreal Engine Marketplace
 */
 
 #include "NodeFactoryPatch.h"

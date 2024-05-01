@@ -5,6 +5,7 @@
 
 #include "Card/GameCardTypes.h"
 #include "DamageStructures.h"
+#include "Engine/DamageEvents.h"
 #include "Actors/Common/BlastwaveArea.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"

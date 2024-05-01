@@ -4,6 +4,7 @@
 #include "AttributeSystem/Attribute/AttributeBase.h"
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
+#include "Net/Core/PushModel/PushModel.h"
 #include "UnrealIntegration/UObject/AttributeModifierDescObject.h"
 
 UAttributeBasedComponent::UAttributeBasedComponent(const FObjectInitializer& ObjectInitializer)

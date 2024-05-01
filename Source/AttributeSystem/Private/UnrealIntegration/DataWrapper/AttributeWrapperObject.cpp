@@ -3,6 +3,7 @@
 #include "AttributeSystem.h"
 #include "AttributeSystem/Attribute/Attribute.h"
 #include "Net/UnrealNetwork.h"
+#include "Net/Core/PushModel/PushModel.h"
 #include "UnrealIntegration/UObject/AttributeModifierDescObject.h"
 
 #define MAKE_SHARED_PARAMS(ParamName) \

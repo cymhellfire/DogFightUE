@@ -167,7 +167,7 @@ ATopDownStylePlayerController* UCommonGameFlowFunctionLibrary::GetLocalPlayerCon
 {
 	if (auto World = ULuaIntegrationFunctionLibrary::GetCurrentWorld(WorldContextObject))
 	{
-		UE_LOG(LogTemp, Log, TEXT("Get Player Controller with id: %d"), GPlayInEditorID);
+		UE_LOG(LogTemp, Log, TEXT("Get Player Controller with id: %d"), (int32)GPlayInEditorID);
 		return Cast<ATopDownStylePlayerController>(GEngine->GetFirstLocalPlayerController(World));
 	}
 

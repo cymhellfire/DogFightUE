@@ -6,6 +6,9 @@
 #include "UnLuaModule.h"
 #include "LuaEventService.generated.h"
 
+/** Helper macro for expanding the variadic. */
+#define VA_ARGS(...) , ##__VA_ARGS__
+
 /**
  * @brief Send event to lua side with parameters. 
  * @param EventName Event index to send
@@ -14,7 +17,7 @@
 #define SEND_LUA_EVENT(EventName, ...)		\
 	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>(this)) \
 	{ \
-		LuaEventService->SendEventToLua(EventName, __VA_ARGS__); \
+		LuaEventService->SendEventToLua(EventName VA_ARGS(__VA_ARGS__)); \
 	}
 
 /**

@@ -7,6 +7,7 @@
 #include "GameService/GameService.h"
 #include "GameService/LuaEventService.h"
 #include "Net/UnrealNetwork.h"
+#include "Net/Core/PushModel/PushModel.h"
 #include "PlayerController/TopDownStylePlayerController.h"
 
 struct FCompareTimelineEntryByPriority
@@ -164,7 +165,7 @@ void UGameTimelineComponent::OnRep_CurrentTimeline()
 
 TArray<int32> UGameTimelineComponent::GetTimerWaitingQueue(int32 InTime)
 {
-	ensureAlwaysMsgf(InTime > 0, TEXT("Invalid time duration [%s]"), InTime);
+	ensureAlwaysMsgf(InTime > 0, TEXT("Invalid time duration [%d]"), InTime);
 	TArray<int32> Result;
 
 	// Just use current timeline and repeat n times

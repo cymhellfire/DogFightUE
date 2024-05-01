@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/DamageEvents.h"
 #include "DamageableActorInterface.generated.h"
 
 class UReceiveDamageComponent;

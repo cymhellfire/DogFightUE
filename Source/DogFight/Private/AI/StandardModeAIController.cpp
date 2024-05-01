@@ -16,6 +16,7 @@
 #include "Actors/Managers/BuffQueue.h"
 #include "Card/CardBase.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
+#include "AI/AIType.h"
 
 AStandardModeAIController::AStandardModeAIController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -426,7 +427,8 @@ void AStandardModeAIController::SetState(EAIControllerState NewState)
 	}
 	OnStateChanged(CurrentState);
 
-	UE_LOG(LogDogFight, Log, TEXT("[AI %s] Set state to %s"), *GetName(), *UEnum::GetValueAsString<EAIControllerState>(NewState));
+	FString EnumName = UEnum::GetValueAsString(NewState);
+	UE_LOG(LogDogFight, Log, TEXT("[AI %s] Set state to %s"), *GetName(), *EnumName);
 }
 
 bool AStandardModeAIController::HasUsableCard() const
@@ -448,15 +450,15 @@ bool AStandardModeAIController::UseResponseCard()
 		{
 			const TArray<int32> UsableCardIndex = StandardPlayerState->GetAllUsableCardIndex();
 
-			for (int32 Index = 0; Index < UsableCardIndex.Num(); ++Index)
-			{
+			// for (int32 Index = 0; Index < UsableCardIndex.Num(); ++Index)
+			// {
 				//if (UsableCardList[Index]->IsCardMatchCategoryFlags(CategoryFlags))
 				{
 					const int32 TargetIndex = FMath::RandRange(0, UsableCardIndex.Num() - 1);
 					StandardPlayerState->ServerHandleSelectedCard(UsableCardIndex[TargetIndex]);
 					return true;
 				}
-			}
+			// }
 		}
 		else
 		{

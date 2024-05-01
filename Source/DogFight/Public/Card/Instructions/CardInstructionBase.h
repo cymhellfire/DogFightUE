@@ -97,5 +97,5 @@ protected:
 	ACardBase* OwnerCard;
 
 	FTickerDelegate TickDelegate;
-	FDelegateHandle TickDelegateHandle;
+	FTSTicker::FDelegateHandle TickDelegateHandle;
 };

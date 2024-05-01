@@ -374,7 +374,7 @@ void AStandardHUD::DrawMiniMap()
 		if (MiniMapTexture)
 		{
 			FCanvasTileItem MapTileItem(FVector2D(0.f, 0.f), FVector2D(0.f, 0.f), FLinearColor::White);
-			MapTileItem.Texture = MiniMapTexture->Resource;
+			MapTileItem.Texture = MiniMapTexture->GetResource();
 			MapTileItem.Size = FVector2D(MapWidth, MapHeight);
 			MapTileItem.BlendMode = SE_BLEND_Opaque;
 			Canvas->DrawItem(MapTileItem, FVector2D(ScaledMargin, Canvas->ClipY - MapHeight - ScaledMargin));

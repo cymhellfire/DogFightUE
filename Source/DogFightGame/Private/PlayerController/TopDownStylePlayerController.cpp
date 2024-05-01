@@ -2,6 +2,7 @@
 
 #include "EnhancedInputComponent.h"
 #include "Card/Card.h"
+#include "Common/LuaEventDef.h"
 #include "GameMode/TopDownStyleGameMode.h"
 #include "GameMode/GameModeComponent/InGameMessageSenderComponent.h"
 #include "GameService/DebugPanelService.h"
@@ -10,6 +11,7 @@
 #include "GameService/GameService.h"
 #include "GameService/LuaEventService.h"
 #include "Net/UnrealNetwork.h"
+#include "Net/Core/PushModel/PushModel.h"
 #include "Pawn/PlayerCharacter/TopDownStylePlayerCharacter.h"
 #include "Player/TopDownStylePlayerState.h"
 #include "Player/ControllerComponent/CardTargetProviderComponent.h"
@@ -218,5 +220,13 @@ void ATopDownStylePlayerController::ToggleDebugPanel()
 		{
 			DebugPanelService->ToggleDebugPanel();
 		}
+	}
+}
+
+void ATopDownStylePlayerController::TestAttackTarget()
+{
+	if (IsValid(CharacterPawn))
+	{
+		CharacterPawn->TestAttackTarget();
 	}
 }

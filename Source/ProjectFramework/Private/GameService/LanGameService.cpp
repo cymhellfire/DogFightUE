@@ -1,9 +1,11 @@
 #include "GameService/LanGameService.h"
+#include "OnlineSessionSettings.h"
 #include "Common/FrameworkType.h"
 #include "Common/Localization.h"
 #include "GameMode/DogFightGameModeBase.h"
 #include "GameMode/DogFightGameStateBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "Online/OnlineSessionNames.h"
 
 namespace LanGameState
 {

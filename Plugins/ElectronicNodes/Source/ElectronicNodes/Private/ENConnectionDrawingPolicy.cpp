@@ -1,5 +1,5 @@
 ﻿/* Copyright (C) 2021 Hugo ATTAL - All Rights Reserved
-* This plugin is downloadable from the UE4 Marketplace
+* This plugin is downloadable from the Unreal Engine Marketplace
 */
 
 #include "ENConnectionDrawingPolicy.h"
@@ -8,6 +8,7 @@
 #include "SGraphPanel.h"
 #include "Framework/Application/SlateApplication.h"
 #include "MaterialGraph/MaterialGraphSchema.h"
+#include "Policies/ENAnimGraphConnectionDrawingPolicy.h"
 #include "Policies/ENBehaviorTreeConnectionDrawingPolicy.h"
 
 
@@ -30,12 +31,12 @@ FConnectionDrawingPolicy* FENConnectionDrawingPolicyFactory::CreateConnectionPol
 	{
 		if (ClassName == "AnimationTransitionSchema")
 		{
-			return new FENConnectionDrawingPolicy(InBackLayerID, InFrontLayerID, ZoomFactor, InClippingRect, InDrawElements, InGraphObj);
+			return new FENAnimGraphConnectionDrawingPolicy(InBackLayerID, InFrontLayerID, ZoomFactor, InClippingRect, InDrawElements, InGraphObj);
 		}
 
 		if (ClassName == "AnimationGraphSchema" || ClassName == "AnimationStateGraphSchema")
 		{
-			return new FENConnectionDrawingPolicy(InBackLayerID, InFrontLayerID, ZoomFactor, InClippingRect, InDrawElements, InGraphObj);
+			return new FENAnimGraphConnectionDrawingPolicy(InBackLayerID, InFrontLayerID, ZoomFactor, InClippingRect, InDrawElements, InGraphObj);
 		}
 	}
 

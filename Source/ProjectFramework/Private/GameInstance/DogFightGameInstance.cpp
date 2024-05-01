@@ -24,7 +24,7 @@ void UDogFightGameInstance::Shutdown()
 	Super::Shutdown();
 
 	// Remove the ticker delegate
-	FTicker::GetCoreTicker().RemoveTicker(TickDelegateHandle);
+	FTSTicker::GetCoreTicker().RemoveTicker(TickDelegateHandle);
 }
 
 UGameService* UDogFightGameInstance::GetGameService(FName ClassName)

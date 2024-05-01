@@ -6,8 +6,6 @@
 #include "Card/Instructions/HandleTargetInstructionBase.h"
 #include "InstructionEquipWeapon.generated.h"
 
-class IWeaponCarrierInterface;
-
 /**
  * 
  */
@@ -26,8 +24,8 @@ protected:
 	virtual void OnWeaponEquipped(AActor* CarrierActor);
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Instruction")
-	TSubclassOf<class UWeaponBase> WeaponClass;
+	// UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Instruction")
+	// TSubclassOf<class UWeaponBase> WeaponClass;
 
 	int32 WaitingCount;
 };

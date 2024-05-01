@@ -297,8 +297,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="PlayerSettings")
 	FInt32Range CardGainPerRoundRange;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="PlayerSettings")
-	TSubclassOf<class UWeaponBase> CharacterDefaultWeapon;
+	// UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="PlayerSettings")
+	// TSubclassOf<class UWeaponBase> CharacterDefaultWeapon;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="PlayerSettings")
 	int32 InitialAbilityCandidateCount;

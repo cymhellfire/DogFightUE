@@ -3,6 +3,7 @@
 #include "GameFramework/PlayerState.h"
 #include "GameMode/GameStateComponent/GameTimelineComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "Net/Core/PushModel/PushModel.h"
 
 ATopDownStyleGameState::ATopDownStyleGameState(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

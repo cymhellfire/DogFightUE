@@ -5,6 +5,7 @@
 #include "Actors/Interfaces/DamageableActorInterface.h"
 #include "DogFight.h"
 #include "Actors/Components/ReceiveDamageComponent.h"
+#include "Engine/DamageEvents.h"
 #include "Game/DogFightDamageType.h"
 
 float UStandardModeDamageCalculator::CalculateActualDamage(AActor* DamageTaker, float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

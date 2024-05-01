@@ -8,6 +8,7 @@
 #include "GameService/LuaEventService.h"
 #include "Player/GameLobbyPlayerState.h"
 #include "DataAsset/GameplayExperience.h"
+#include "Net/Core/PushModel/PushModel.h"
 
 // Sets default values
 AGameLobbyGameState::AGameLobbyGameState()
