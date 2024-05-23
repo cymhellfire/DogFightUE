@@ -100,5 +100,5 @@ Content/untitled_category/*
 /Programs/LuaPathConverter/bin/
 
 # Git not care about Content anymore
-/Content/*
-!/Content/Script/*
+Content/*
+!Content/Script/

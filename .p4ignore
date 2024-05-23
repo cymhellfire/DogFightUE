@@ -1,0 +1,22 @@
+# Ignore Git files
+.git/
+.gitignore
+.gitattributes
+
+# Ignore IDE files
+.idea/
+.vs/
+.vsconfig
+*.DotSettings
+*.sln
+
+# Ignore object files, shared libraries, executables
+*.dll
+*.so
+*.exe
+*.o
+
+# Ignore Temporary files
+Intermediate/
+Build/
+Binaries/
