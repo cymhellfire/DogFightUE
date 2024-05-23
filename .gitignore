@@ -98,3 +98,6 @@ Content/untitled_category/*
 /Programs/ExcelExporter/obj/Debug/
 /Programs/LuaPathConverter/obj/
 /Programs/LuaPathConverter/bin/
+
+# Git not care about Content anymore
+/Content/*
