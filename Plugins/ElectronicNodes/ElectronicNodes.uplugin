@@ -10,7 +10,7 @@
 	"DocsURL": "https://github.com/hugoattal/ElectronicNodes",
 	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/5cb2a394d0c04e73891762be4cbd7216",
 	"SupportURL": "https://forums.unrealengine.com/unreal-engine/marketplace/1647213-electronic-nodes-wiring-style-for-blueprints-and-materials-editors",
-	"EngineVersion": "5.3.0",
+	"EngineVersion": "5.4.0",
 	"CanContainContent": false,
 	"Installed": true,
 	"Modules": [
