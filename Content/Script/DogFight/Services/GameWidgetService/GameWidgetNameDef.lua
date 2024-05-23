@@ -4,6 +4,7 @@ local GameWidgetNameDef = {
     WidgetGenericMessageDialog = "WidgetGenericMessageDialog",
     WidgetJoiningSession = "WidgetJoiningSession",
     WidgetGameLoading = "WidgetGameLoading",
+    WidgetPreparationRoom = "WidgetPreparationRoom",
     --- Main Menu
     WidgetCreateLobbyDialog = "WidgetCreateLobbyDialog",
     WidgetLobbyBrowser = "WidgetLobbyBrowser",

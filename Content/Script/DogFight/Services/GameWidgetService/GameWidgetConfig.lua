@@ -32,6 +32,9 @@ local GameWidgetConfig = {
     [WidgetNameDef.WidgetCharacterMenu] = {
         Path = "/Game/DogFightGame/UI/InGame/PlayerCharacterState/BP_Widget_PlayerCharacterDetailState"
     },
+    [WidgetNameDef.WidgetPreparationRoom] = {
+        Path = "/Game/DogFightGame/UI/PreparationRoom/BP_Widget_PreparationRoom"
+    },
 }
 
 return GameWidgetConfig

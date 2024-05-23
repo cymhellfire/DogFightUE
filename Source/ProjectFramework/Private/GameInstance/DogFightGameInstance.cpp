@@ -112,6 +112,12 @@ bool UDogFightGameInstance::LoadFrontEndMap(const FString& MapName)
 
 void UDogFightGameInstance::StartupGameService()
 {
+#if WITH_EDITOR
+	// Mark the PIE instance ID for all services
+	UGameService::PIEInstance = GetWorldContext()->PIEInstance;
+	UE_LOG(LogProjectFramework, Log, TEXT("Set UGameService::PIEInstance to %d"), UGameService::PIEInstance);
+#endif
+
 	TArray<UClass*> InstantiatedClasses;
 	// Instantiate all game service classes
 	for (TObjectIterator<UClass> It; It; ++It)

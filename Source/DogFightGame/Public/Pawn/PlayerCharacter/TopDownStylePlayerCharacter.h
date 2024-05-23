@@ -6,6 +6,7 @@
 #include "GameObject/Component/WidgetLocatorComponent.h"
 #include "Interface/ActionCharacterInterface.h"
 #include "Interface/DamageReceiverActorInterface.h"
+#include "Pawn/ActionGameCharacter.h"
 #include "TopDownStylePlayerCharacter.generated.h"
 
 class UMotionWarpingComponent;
@@ -24,7 +25,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTopDownStylePlayerCharacterDeadEven
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTopDownStylePlayerCharacterMoveFinishedEvent);
 
 UCLASS()
-class DOGFIGHTGAME_API ATopDownStylePlayerCharacter : public ACharacter, public IDamageReceiverActorInterface, public IActionCharacterInterface
+class DOGFIGHTGAME_API ATopDownStylePlayerCharacter : public AActionGameCharacter, public IDamageReceiverActorInterface, public IActionCharacterInterface
 {
 	GENERATED_BODY()
 public:

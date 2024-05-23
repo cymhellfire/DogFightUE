@@ -4,6 +4,7 @@
 #include "Modules/ModuleManager.h"
 
 class FAssetTypeActions_WeaponActionData;
+class FAssetTypeActions_AvatarActionData;
 class FAssetTypeActions_TargetingWeaponActionData;
 
 class FActionGameEditorModule : public IModuleInterface
@@ -14,5 +15,6 @@ public:
 
 private:
 	TSharedPtr<FAssetTypeActions_WeaponActionData> WeaponActionDataAssetTypeAction;
+	TSharedPtr<FAssetTypeActions_AvatarActionData> AvatarActionDataAssetTypeAction;
 	TSharedPtr<FAssetTypeActions_TargetingWeaponActionData> TargetingWeaponActionDataAssetTypeAction;
 };

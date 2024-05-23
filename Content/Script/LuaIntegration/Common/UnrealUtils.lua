@@ -44,6 +44,7 @@ local LocalizationTable = {
     CardDisplay = "ST_CardDisplay",
     Attribute = "ST_Attribute",
     GameExperience = "ST_GameExperience",
+    Character = "ST_Character",
 }
 
 ---Generic notify receiver function for lua side.

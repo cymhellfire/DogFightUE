@@ -19,6 +19,7 @@ function MainMenuView:PostInitialized()
 
     self.HostGame_Button.OnClicked:Add(self, self.OnHostGameButtonClicked)
     self.SearchGame_Button.OnClicked:Add(self, self.OnSearchGameButtonClicked)
+    self.PreparationRoom_Button.OnClicked:Add(self, self.OnPreparationRoomButtonClicked)
     self.ExitGame_Button.OnClicked:Add(self, self.OnExitButtonClicked)
 end
 
@@ -26,6 +27,7 @@ function MainMenuView:UnInitialize()
 
     self.HostGame_Button.OnClicked:Remove(self, self.OnHostGameButtonClicked)
     self.SearchGame_Button.OnClicked:Remove(self, self.OnSearchGameButtonClicked)
+    self.PreparationRoom_Button.OnClicked:Remove(self, self.OnPreparationRoomButtonClicked)
     self.ExitGame_Button.OnClicked:Remove(self, self.OnExitButtonClicked)
 end
 
@@ -86,6 +88,14 @@ function MainMenuView:OnSearchFinished(bSuccess, Msg)
 
             print(string.format("Game[%d]: %s", i, Desc))
         end
+    end
+end
+
+function MainMenuView:OnPreparationRoomButtonClicked()
+    ---@type GameWidgetService
+    local WidgetService = GetGameService(self, GameServiceNameDef.GameWidgetService)
+    if WidgetService then
+        WidgetService:ShowWidget(GameWidgetNameDef.WidgetPreparationRoom, true)
     end
 end
 

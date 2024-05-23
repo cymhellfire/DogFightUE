@@ -61,6 +61,10 @@ public:
 		return nullptr;
 	}
 
+#if WITH_EDITOR
+	static int32 PIEInstance;
+#endif
+
 	static UWorld* GetActiveWorld()
 	{
 #if WITH_EDITOR
@@ -69,6 +73,17 @@ public:
 		if (GWorld)
 		{
 			CurWorld = GWorld->GetWorld();
+			// Add a fallback logic to prevent get editor world
+			if (CurWorld->WorldType != EWorldType::PIE)
+			{
+				for (const auto& WorldContext : GEngine->GetWorldContexts())
+				{
+					if (WorldContext.PIEInstance == PIEInstance)
+					{
+						CurWorld = WorldContext.World();
+					}
+				}
+			}
 		}
 		return CurWorld;
 #else
