@@ -6,6 +6,7 @@ local GameWidgetNameDef = {
     WidgetGameLoading = "WidgetGameLoading",
     WidgetPreparationRoom = "WidgetPreparationRoom",
     --- Main Menu
+    WidgetMainMenu = "WidgetMainMenu",
     WidgetCreateLobbyDialog = "WidgetCreateLobbyDialog",
     WidgetLobbyBrowser = "WidgetLobbyBrowser",
     --- In Game

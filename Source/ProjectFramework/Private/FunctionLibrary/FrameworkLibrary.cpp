@@ -3,7 +3,9 @@
 
 #include "FunctionLibrary/FrameworkLibrary.h"
 
+#include "Engine/AssetManager.h"
 #include "GameInstance/DogFightGameInstance.h"
+#include "Kismet/GameplayStatics.h"
 
 USaveGameManager* UFrameworkLibrary::GetSaveGameManager(const UObject* WorldContextObject)
 {
@@ -21,4 +23,20 @@ USaveGameManager* UFrameworkLibrary::GetSaveGameManager(const UObject* WorldCont
 FText UFrameworkLibrary::GetTextFromLocalizedString(const FLocalizedString& LocalizedString)
 {
 	return LocalizedString.GetLocalizeText();
+}
+
+void UFrameworkLibrary::LoadGameMap(const UObject* WorldContextObject, const FString& MapName)
+{
+	auto& StreamableManager = UAssetManager::Get().GetStreamableManager();
+
+	FSoftObjectPath MapPathObject(MapName);
+
+	TWeakObjectPtr WeakWorldContext = const_cast<UObject*>(WorldContextObject);
+	StreamableManager.RequestAsyncLoad(MapPathObject, FStreamableDelegate::CreateLambda([WeakWorldContext, MapPathObject]()
+	{
+		if (WeakWorldContext.IsValid())
+		{
+			UGameplayStatics::OpenLevel(WeakWorldContext->GetWorld(), MapPathObject.GetAssetPath().GetAssetName());
+		}
+	}));
 }

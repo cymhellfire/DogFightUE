@@ -24,4 +24,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="DogFight|Framework")
 	static FText GetTextFromLocalizedString(const FLocalizedString& LocalizedString);
+
+	UFUNCTION(BlueprintCallable, Category="DogFight|Framework", meta=(WorldContext="WorldContextObject"))
+	static void LoadGameMap(const UObject* WorldContextObject, const FString& MapName);
 };

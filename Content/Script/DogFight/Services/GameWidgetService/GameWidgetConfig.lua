@@ -2,6 +2,7 @@ local WidgetNameDef = require("DogFight.Services.GameWidgetService.GameWidgetNam
 
 ---@class GameWidgetConfig Data table contains all game widgets define.
 local GameWidgetConfig = {
+    ---Common
     [WidgetNameDef.WidgetGenericMessageDialog] = {
         Path = "/Game/DogFightGame/UI/Common/BP_Widget_GenericMessageDialog",
     },
@@ -11,12 +12,17 @@ local GameWidgetConfig = {
     [WidgetNameDef.WidgetCreateLobbyDialog] = {
         Path = "/Game/DogFightGame/UI/MainMenu/BP_Widget_CreateLobbyDialog",
     },
+    ---Main Menu
+    [WidgetNameDef.WidgetMainMenu] = {
+        Path = "/Game/DogFightGame/UI/MainMenu/BP_Widget_MainMenu",
+    },
     [WidgetNameDef.WidgetLobbyBrowser] = {
         Path = "/Game/DogFightGame/UI/MainMenu/BP_Widget_LobbyBrowser",
     },
     [WidgetNameDef.WidgetGameLoading] = {
         Path = "/Game/DogFightGame/UI/Loading/BP_Widget_GameLoading",
     },
+    ---InGame
     [WidgetNameDef.WidgetCardList] = {
         Path = "/Game/DogFightGame/UI/InGame/CardList/BP_Widget_CardList",
     },

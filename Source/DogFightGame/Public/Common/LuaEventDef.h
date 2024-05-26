@@ -8,6 +8,7 @@ namespace ELuaEvent
 	enum Type
 	{
 		// ----------------- Generic -------------------
+		LuaEvent_GameStartup,
 		LuaEvent_PostLoadMap,
 		LuaEvent_NetworkFailure,
 		// --------------- Game Lobby ------------------
