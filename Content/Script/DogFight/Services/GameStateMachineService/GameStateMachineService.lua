@@ -36,10 +36,6 @@ function GameStateMachineService:OnGameStartup()
     self:TryEnterState(GameLuaStateNameDef.StateMainMenu)
 end
 
-function GameStateMachineService:OnGameInstanceStartScript()
-    self:TryEnterState(GameLuaStateNameDef.StateMainMenu)
-end
-
 function GameStateMachineService:GetConfigPath()
     return "DogFight.Services.GameStateMachineService.GameLuaStateConfig"
 end
@@ -79,6 +75,43 @@ local function PushState(self, NewState)
     self.StateStack[#self.StateStack + 1] = NewState
 end
 
+---Pop state on the stack top.
+---@param self GameStateMachineService
+---@return GameLuaState State on the top.
+local function PopState(self)
+    if #self.StateStack == 0 then
+        error("Empty state stack to pop.")
+        return
+    end
+
+    local TopState = self.StateStack[#self.StateStack]
+    self.StateStack[#self.StateStack] = nil
+    return TopState
+end
+
+---Enter the state on stack top.
+---@param self GameStateMachineService
+local function EnterStackTopState(self)
+    ---@type GameLuaState
+    local CurState = self:GetCurrentState()
+    if not CurState then
+        return
+    end
+
+    -- Start switch process
+    CurState:PreEnter()
+
+    if CurState.LoadMap then
+        -- Load map and wait
+        UE.UFrameworkLibrary.LoadGameMap(self, CurState.LoadMap)
+        self.PendingState = CurState
+        return
+    end
+
+    -- Enter the state
+    CurState:OnEnter()
+end
+
 ---Triggered after new map loaded.
 ---@param InMapName string Name of new loaded map.
 function GameStateMachineService:OnPostLoadMapScript(InMapName)
@@ -86,10 +119,15 @@ function GameStateMachineService:OnPostLoadMapScript(InMapName)
     if self.PendingState and type(self.PendingState.ShortMapName) == "string" then
         if InMapName == self.PendingState.ShortMapName then
             self.PendingState:OnEnter()
-            PushState(self, self.PendingState)
             self.PendingState = nil
         end
     end
+end
+
+---Get current state
+---@return GameLuaState Current state
+function GameStateMachineService:GetCurrentState()
+    return (#self.StateStack > 0) and self.StateStack[#self.StateStack]
 end
 
 ---Try to enter specified game state.
@@ -99,9 +137,6 @@ function GameStateMachineService:TryEnterState(InStateName)
     if not State then
         error("GameStateMachineService:TryEnterState State ", InStateName, " not found.")
     end
-
-    ---@type GameLuaState Current state
-    local CurState = (#self.StateStack > 0) and self.StateStack[#self.StateStack]
 
     -- Clear all states between last entered state and current one
     -- This helps to keep the state stack simple and clean
@@ -116,24 +151,52 @@ function GameStateMachineService:TryEnterState(InStateName)
         end
     end
 
+    ---@type GameLuaState Current state
+    local CurState = self:GetCurrentState()
+
     -- Exit current state
     if CurState then
         CurState:OnExit()
     end
 
-    -- Start switch process
-    State:PreEnter()
+    -- Directly enter state if no map to load
+    PushState(self, State)
+    EnterStackTopState(self)
+end
 
-    if State.LoadMap then
-        -- Load map and wait
-        UE.UFrameworkLibrary.LoadGameMap(self, State.LoadMap)
-        self.PendingState = State
+---Exit specified state if current in it.
+---@param InStateName string Name of state to exit.
+function GameStateMachineService:ExitState(InStateName)
+    ---@type GameLuaState
+    local TargetState = self.StateMap[InStateName]
+    if not TargetState then
+        error("GameStateMachineService:ExitState Invalid state name: ", InStateName)
         return
     end
 
-    -- Directly enter state if no map to load
-    PushState(self, State)
-    State:OnEnter()
+    ---@type GameLuaState
+    local CurState = self:GetCurrentState()
+    if not CurState then
+        error("GameStateMachineService:ExitState No state to exit.")
+        return
+    end
+    local bIsTopState = CurState == TargetState
+
+    if not table.containsValue(self.StateStack, TargetState) then
+        warn("GameStateMachineService:ExitState State ", InStateName, " not in stack.")
+        return
+    end
+
+    -- Exit current state
+    if bIsTopState then
+        TargetState:OnExit()
+
+        PopState(self)
+        EnterStackTopState(self)
+    else
+        -- Remove target state
+        table.removeValue(self.StateStack, TargetState)
+    end
 end
 
 return GameStateMachineService

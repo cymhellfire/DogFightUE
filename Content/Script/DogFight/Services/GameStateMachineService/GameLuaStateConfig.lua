@@ -2,11 +2,20 @@ local GameLuaStateNameDef = require("DogFight.Services.GameStateMachineService.G
 
 ---@class GameLuaStateConfig : ServiceConfigBase Table contains all lua game state configurations.
 local GameLuaStateConfig = UnrealClass("DogFight.Services.ServiceConfigBase")
+local GameWidgetNameDef = require("DogFight.Services.GameWidgetService.GameWidgetNameDef")
 
 local Config = {
     [GameLuaStateNameDef.StateMainMenu] = {
-        Script = "DogFight.Services.GameStateMachineService.States.StateMainMenu",
-        LoadMap = "/Game/DogFightGame/Level/MainMenu/MainMenu.MainMenu",
+        Script = "DogFight.Services.GameStateMachineService.GameLuaState",
+        InitialWidgets = {
+            GameWidgetNameDef.WidgetMainMenu,
+        },
+    },
+    [GameLuaStateNameDef.StatePreparationRoom] = {
+        Script = "DogFight.Services.GameStateMachineService.States.StatePreparationRoom",
+        InitialWidgets = {
+            GameWidgetNameDef.WidgetPreparationRoom,
+        },
     },
 }
 

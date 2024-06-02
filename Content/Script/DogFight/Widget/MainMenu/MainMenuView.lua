@@ -7,6 +7,7 @@ local MainMenuVM = require("DogFight.Widget.MainMenu.MainMenuVM")
 --local ListWrapper = require("Common.ListView.ListViewWrapper")
 
 local GameWidgetNameDef = require("DogFight.Services.GameWidgetService.GameWidgetNameDef")
+local GameLuaStateNameDef = require("DogFight.Services.GameStateMachineService.GameLuaStateNameDef")
 
 function MainMenuView:PostInitialized()
     local NewVM = InstantiateViewModel(MainMenuVM)
@@ -92,10 +93,10 @@ function MainMenuView:OnSearchFinished(bSuccess, Msg)
 end
 
 function MainMenuView:OnPreparationRoomButtonClicked()
-    ---@type GameWidgetService
-    local WidgetService = GetGameService(self, GameServiceNameDef.GameWidgetService)
-    if WidgetService then
-        WidgetService:ShowWidget(GameWidgetNameDef.WidgetPreparationRoom, true)
+    ---@type GameStateMachineService
+    local GameStateMachineService = GetGameService(self, GameServiceNameDef.GameStateMachineService)
+    if GameStateMachineService then
+        GameStateMachineService:TryEnterState(GameLuaStateNameDef.StatePreparationRoom)
     end
 end
 
