@@ -130,6 +130,18 @@ function GameStateMachineService:GetCurrentState()
     return (#self.StateStack > 0) and self.StateStack[#self.StateStack]
 end
 
+---Get activated state by name.
+---@return GameLuaState Actived state.
+function GameStateMachineService:GetActiveStateByName(InStateName)
+    local TargetState = self.StateMap[InStateName]
+    if TargetState then
+        -- Check if the target state is currently activated
+        if TargetState == self:GetCurrentState() then
+            return TargetState
+        end
+    end
+end
+
 ---Try to enter specified game state.
 ---@param InStateName GameLuaStateNameDef Name of state to enter.
 function GameStateMachineService:TryEnterState(InStateName)

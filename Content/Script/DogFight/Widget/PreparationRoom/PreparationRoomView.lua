@@ -1,4 +1,4 @@
----@class PreparationRoomView : ModelBase
+---@class PreparationRoomView : ModelBase, BP_Widget_PreparationRoom_C
 local PreparationRoomView = UnrealClass("Common.MVVM.ModelBase")
 local ViewModelBase = require("Common.MVVM.ViewModelBase")
 local DataBinding = require("Common.MVVM.DataBinding")
@@ -25,14 +25,33 @@ function PreparationRoomView:UnInitialize()
     self.BackButton.OnClicked:Remove(self, self.OnBackButtonClicked)
 end
 
+---@param self PreparationRoomView
+local function SyncPreviewWithSelection(self)
+
+    local Item = self.CharacterSelect_ComboBox:GetSelectedOption()
+    self.ViewModel.CharacterName = GetLocalizedString(LocalizationTable.Character, Item)
+
+    local Index = self.CharacterSelect_ComboBox:GetSelectedIndex()
+    self:PreviewAvatar(Index + 1)
+end
+
 function PreparationRoomView:OnShow()
-    
+    ---@type TimerService
+    local TimerService = GetGameService(self, GameServiceNameDef.TimerService)
+    if TimerService then
+        self.OnShowTimer = TimerService:RegisterTimer(self, self.OnShowTimerExpired, 0.1)
+    end
+end
+
+function PreparationRoomView:OnShowTimerExpired()
+    -- Sync with default selection
+    SyncPreviewWithSelection(self)
 end
 
 function PreparationRoomView:OnCharacterSelectChanged(Item, SelectionType)
     print("PreparationRoomView:OnCharacterSelectChanged ", Item)
-
-    self.ViewModel.CharacterName = GetLocalizedString(LocalizationTable.Character, Item)
+    -- Sync preview
+    SyncPreviewWithSelection(self)
 end
 
 function PreparationRoomView:OnBackButtonClicked()
@@ -40,6 +59,34 @@ function PreparationRoomView:OnBackButtonClicked()
     local GameStateMachineService = GetGameService(self, GameServiceNameDef.GameStateMachineService)
     if GameStateMachineService then
         GameStateMachineService:ExitState(GameLuaStateNameDef.StatePreparationRoom)
+    end
+end
+
+---Preview avatar by given config.
+function PreparationRoomView:PreviewAvatar(InConfigId)
+    ---@type StatePreparationRoom
+    local MyState
+    ---@type GameStateMachineService
+    local GameStateMachineService = GetGameService(self, GameServiceNameDef.GameStateMachineService)
+    if GameStateMachineService then
+        MyState = GameStateMachineService:GetActiveStateByName(GameLuaStateNameDef.StatePreparationRoom)
+    end
+
+    -- Skip if current state missing
+    if not MyState then
+        return
+    end
+
+    ---@type AvatarManagerService
+    local AvatarManagerService = GetGameService(self, GameServiceNameDef.AvatarManagerService)
+    if AvatarManagerService then
+        local AvatarConfig = AvatarManagerService:GetAvatarConfig(InConfigId)
+        if AvatarConfig and AvatarConfig.Asset then
+            local DescAsset = UE.ULuaIntegrationFunctionLibrary.LoadObjectByPath(AvatarConfig.Asset)
+            if DescAsset and MyState.Character then
+                MyState.Character:SetupAvatarAppearanceWithAsset(DescAsset)
+            end
+        end
     end
 end
 

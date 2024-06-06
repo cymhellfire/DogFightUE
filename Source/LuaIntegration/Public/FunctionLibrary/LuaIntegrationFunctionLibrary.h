@@ -34,6 +34,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="LuaIntegrationFunction")
 	static UClass* LoadClassByPath(FString InPath);
 
+	UFUNCTION(BlueprintCallable, Category="LuaIntegrationFunction")
+	static UObject* LoadObjectByPath(FString InPath);
+
 	/**
 	 * Check whether the object is derived from specified class.
 	 * @param InObject Object to check with.
