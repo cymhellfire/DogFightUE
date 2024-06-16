@@ -2,6 +2,7 @@
 local GameLuaStateNameDef = {
     StateMainMenu = "StateMainMenu",
     StatePreparationRoom = "StatePreparationRoom",
+    StateGameLobby = "StateGameLobby",
 }
 
 return GameLuaStateNameDef

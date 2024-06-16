@@ -6,6 +6,7 @@ local GameWidgetNameDef = require("DogFight.Services.GameWidgetService.GameWidge
 
 local Config = {
     [GameLuaStateNameDef.StateMainMenu] = {
+        LoadMap = "/Game/DogFightGame/Level/MainMenu/MainMenu",
         Script = "DogFight.Services.GameStateMachineService.GameLuaState",
         InitialWidgets = {
             GameWidgetNameDef.WidgetMainMenu,
@@ -16,6 +17,12 @@ local Config = {
         InitialWidgets = {
             GameWidgetNameDef.WidgetPreparationRoom,
         },
+    },
+    [GameLuaStateNameDef.StateGameLobby] = {
+        Script = "DogFight.Services.GameStateMachineService.States.StateGameLobby",
+        InitialWidgets = {
+            GameWidgetNameDef.WidgetGameLobby,
+        }
     },
 }
 

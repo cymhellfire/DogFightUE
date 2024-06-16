@@ -41,6 +41,9 @@ public class DogFightGame : ModuleRules
                 "NavigationSystem",
                 "DogFightAI",
                 "MotionWarping",
+                "OnlineSubsystem",
+                "OnlineSubsystemUtils",
+                "CoreOnline",
             }
         );
         

@@ -24,11 +24,11 @@ void UChildActorRegistryComponent::AddChildActor(AActor* InActor, const FName& C
 			InActor->AttachToComponent(ParentComponent, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 			ParentComponentMap.Add(InActor, ParentComponent);
 			ChildActorList.AddUnique(InActor);
-			DFLog(TEXT("Actor %s add to component %s."), *InActor->GetName(), *ComponentName.ToString());
+			DFLog(LogDogFightGame, TEXT("Actor %s add to component %s."), *InActor->GetName(), *ComponentName.ToString());
 		}
 		else
 		{
-			DFLogW(TEXT("Failed to find parent component %s."), *ComponentName.ToString());
+			DFLogW(LogDogFightGame, TEXT("Failed to find parent component %s."), *ComponentName.ToString());
 		}
 	}
 }
@@ -46,7 +46,7 @@ void UChildActorRegistryComponent::RemoveChildActor(AActor* InActor)
 			ParentComponentMap.Remove(InActor);
 		}
 		ChildActorList.Remove(InActor);
-		DFLog(TEXT("Actor %s removed."), *InActor->GetName());
+		DFLog(LogDogFightGame, TEXT("Actor %s removed."), *InActor->GetName());
 	}
 }
 

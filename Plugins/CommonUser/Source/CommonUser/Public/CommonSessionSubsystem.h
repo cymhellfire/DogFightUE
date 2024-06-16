@@ -25,7 +25,32 @@ struct FOnlineResultInformation;
 #include "CommonSessionSubsystem.generated.h"
 
 class UWorld;
-class FCommonSession_OnlineSessionSettings;
+//////////////////////////////////////////////////////////////////////
+// FCommonSession_OnlineSessionSettings
+
+class FCommonSession_OnlineSessionSettings : public FOnlineSessionSettings
+{
+public:
+
+	FCommonSession_OnlineSessionSettings(bool bIsLAN = false, bool bIsPresence = false, int32 MaxNumPlayers = 4)
+	{
+		NumPublicConnections = MaxNumPlayers;
+		if (NumPublicConnections < 0)
+		{
+			NumPublicConnections = 0;
+		}
+		NumPrivateConnections = 0;
+		bIsLANMatch = bIsLAN;
+		bShouldAdvertise = true;
+		bAllowJoinInProgress = true;
+		bAllowInvites = true;
+		bUsesPresence = bIsPresence;
+		bAllowJoinViaPresence = true;
+		bAllowJoinViaPresenceFriendsOnly = false;
+	}
+
+	virtual ~FCommonSession_OnlineSessionSettings() {}
+};
 
 #if COMMONUSER_OSSV1
 class FCommonOnlineSearchSettingsOSSv1;

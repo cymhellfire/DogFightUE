@@ -61,4 +61,12 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="GameLobbyFunctionLibrary")
 	static void DismissGameLobby(const UObject* WorldContext);
+
+	/**
+	 * Check if given id belongs local player.
+	 * @param PlayerId PlayerId to check with.
+	 * @return Whether given Id represents local player.
+	 */
+	UFUNCTION(BlueprintCallable, Category="GameLobbyFunctionLibrary")
+	static bool IsLocalPlayer(const UObject* WorldContext, int32 PlayerId);
 };

@@ -25,11 +25,11 @@ FText UFrameworkLibrary::GetTextFromLocalizedString(const FLocalizedString& Loca
 	return LocalizedString.GetLocalizeText();
 }
 
-void UFrameworkLibrary::LoadGameMap(const UObject* WorldContextObject, const FString& MapName)
+void UFrameworkLibrary::LoadGameMap(const UObject* WorldContextObject, const FString& MapPath)
 {
 	auto& StreamableManager = UAssetManager::Get().GetStreamableManager();
 
-	FSoftObjectPath MapPathObject(MapName);
+	FSoftObjectPath MapPathObject(MapPath);
 
 	TWeakObjectPtr WeakWorldContext = const_cast<UObject*>(WorldContextObject);
 	StreamableManager.RequestAsyncLoad(MapPathObject, FStreamableDelegate::CreateLambda([WeakWorldContext, MapPathObject]()
@@ -39,4 +39,21 @@ void UFrameworkLibrary::LoadGameMap(const UObject* WorldContextObject, const FSt
 			UGameplayStatics::OpenLevel(WeakWorldContext->GetWorld(), MapPathObject.GetAssetPath().GetAssetName());
 		}
 	}));
+}
+
+bool UFrameworkLibrary::IsCurrentMap(const UObject* WorldContextObject, const FString& MapPath)
+{
+	if (auto CurWorld = WorldContextObject->GetWorld())
+	{
+		if (auto CurrentLevel = CurWorld->GetCurrentLevel())
+		{
+			if (UPackage* Package = CurrentLevel->GetOutermost())
+			{
+				auto PackagePath = CurWorld->RemovePIEPrefix(Package->GetName());
+				return PackagePath == MapPath;
+			}
+		}
+	}
+
+	return false;
 }

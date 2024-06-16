@@ -87,3 +87,19 @@ void UGameLobbyFunctionLibrary::DismissGameLobby(const UObject* WorldContext)
 		}
 	}
 }
+
+bool UGameLobbyFunctionLibrary::IsLocalPlayer(const UObject* WorldContext, int32 PlayerId)
+{
+	if (!IsValid(WorldContext))
+		return false;
+
+	if (auto PC = WorldContext->GetWorld()->GetFirstPlayerController())
+	{
+		if (auto PS = PC->GetPlayerState<APlayerState>())
+		{
+			return PS->GetPlayerId() == PlayerId;
+		}
+	}
+
+	return false;
+}

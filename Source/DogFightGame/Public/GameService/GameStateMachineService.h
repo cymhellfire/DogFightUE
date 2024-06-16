@@ -18,6 +18,8 @@ public:
 	virtual void Startup() override;
 	virtual void Shutdown() override;
 
+	virtual void Tick(float DeltaTime) override;
+
 	virtual FString GetModuleName_Implementation() const override
 	{
 		return "DogFight.Services.GameStateMachineService.GameStateMachineService";
@@ -28,16 +30,10 @@ protected:
 	void OnGameInstanceStartScript();
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void OnPostLoadMapScript(const FString& MapName);
+	void OnTickScript(float DeltaTime);
 
-private:
-	/**
-	 * Convert given map path to short version.
-	 * @param InMapPath Origin map path string.
-	 * @return Short version map name.
-	 */
-	UFUNCTION(BlueprintCallable)
-	FString GetShortMapName(const FString& InMapPath) const;
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnPostLoadMapScript(const FString& MapName);
 
 private:
 	void OnPreLoadMap(const FWorldContext& WorldContext, const FString& MapName);

@@ -26,5 +26,8 @@ public:
 	static FText GetTextFromLocalizedString(const FLocalizedString& LocalizedString);
 
 	UFUNCTION(BlueprintCallable, Category="DogFight|Framework", meta=(WorldContext="WorldContextObject"))
-	static void LoadGameMap(const UObject* WorldContextObject, const FString& MapName);
+	static void LoadGameMap(const UObject* WorldContextObject, const FString& MapPath);
+
+	UFUNCTION(BlueprintCallable, Category="DogFight|Framework", meta=(WorldContext="WorldContextObject"))
+	static bool IsCurrentMap(const UObject* WorldContextObject, const FString& MapPath);
 };

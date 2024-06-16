@@ -1,8 +1,8 @@
 ---@field Name string Name of this state.
 ---@field LoadMap string Map to load when enter state.
----@field ShortMapName string Short version of map this state load.
 ---@field InitialWidgets list<string> List of widget name that automatically create when enter the state.
 ---@field StateMachine GameStateMachineService Owner state machine service.
+---@field EnterArgs table Extra arguments used in generic purposes.
 ---@class GameLuaState Base class of all lua states.
 local GameLuaState = UnrealClass()
 
@@ -12,13 +12,14 @@ local GameLuaState = UnrealClass()
 function GameLuaState:InitWithConifg(InConfig, InService)
     self.Name = InConfig.Name
     self.LoadMap = InConfig.LoadMap
-    self.ShortMapName = InConfig.ShortMapName
     self.InitialWidgets = InConfig.InitialWidgets
     self.StateMachine = InService
 end
 
-function GameLuaState:PreEnter()
-    print("GameLuaState:PreEnter", self.Name)
+---Check if the game state is ready to enter.
+---@return boolean Is ready to enter?
+function GameLuaState:CheckEnterCondition()
+    return true
 end
 
 function GameLuaState:OnEnter()

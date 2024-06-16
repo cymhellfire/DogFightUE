@@ -1,25 +1,29 @@
 
 local GameLuaStateNameDef = require("DogFight.Services.GameStateMachineService.GameLuaStateNameDef")
+local BitField = require("Common.BitField")
 ---@field StateMap table<GameLuaStateNameDef, GameLuaState> Table contains all instantiated lua game state.
 ---@field StateStack list<GameLuaState> Stack to maintain all active states.
+---@field PendingStateFlag number Bit field that represents the pending state waiting condition.
 ---@class GameStateMachineService : GameServiceBase, UGameStateMachineService Service to manage all game states.
 local GameStateMachineService = UnrealClass("DogFight.Services.GameServiceBase")
+
+local GameStatePendingCondition = {
+    None = 0,
+    MapLoading = 1,
+    StateNotReady = 2,
+}
 
 function GameStateMachineService:StartupScript(ServiceName)
     self.Super.StartupScript(self, ServiceName)
 
     self.StateStack = {}
+    self.PendingStateFlag = GameStatePendingCondition.None
     self:InitAllStates()
 end
 
 function GameStateMachineService:ShutdownScript()
     self.Super.ShutdownScript(self)
 
-    ---@type LuaEventService
-    local LuaEventService = GetGameService(self, GameServiceNameDef.LuaEventService)
-    if LuaEventService then
-        LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_GameStartup, self, self.OnGameStartup)
-    end
 end
 
 function GameStateMachineService:PostStartupScript()
@@ -34,6 +38,13 @@ end
 function GameStateMachineService:OnGameStartup()
     print("GameStateMachineService:OnGameStartup")
     self:TryEnterState(GameLuaStateNameDef.StateMainMenu)
+
+    ---Unregister event since this event is only used for initialize first state
+    ---@type LuaEventService
+    local LuaEventService = GetGameService(self, GameServiceNameDef.LuaEventService)
+    if LuaEventService then
+        LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_GameStartup, self, self.OnGameStartup)
+    end
 end
 
 function GameStateMachineService:GetConfigPath()
@@ -46,10 +57,6 @@ function GameStateMachineService:InitAllStates()
     for k, v in pairs(self.Config.Data) do
         if type(v.Script) == "string" and #v.Script > 0 then
             v.Name = k
-            -- Fill short map name
-            if type(v.LoadMap) == "string" then
-                v.ShortMapName = self:GetShortMapName(v.LoadMap)
-            end
             local StateClass = require(v.Script)
             ---@type GameLuaState
             local NewState = StateClass:New()
@@ -68,7 +75,7 @@ end
 ---@param NewState GameLuaState
 local function PushState(self, NewState)
     if table.containsValue(self.StateStack, NewState) then
-        error("Duplicated game state in stack ", NewState.Name)
+        print("Duplicated game state in stack ", NewState.Name)
         return
     end
 
@@ -98,28 +105,49 @@ local function EnterStackTopState(self)
         return
     end
 
-    -- Start switch process
-    CurState:PreEnter()
-
-    if CurState.LoadMap then
-        -- Load map and wait
-        UE.UFrameworkLibrary.LoadGameMap(self, CurState.LoadMap)
-        self.PendingState = CurState
-        return
+    -- Check if new state is ready to enter
+    local bReady = CurState:CheckEnterCondition()
+    if not bReady then
+        self.PendingStateFlag = BitField.AddBit(self.PendingStateFlag, GameStatePendingCondition.StateNotReady)
     end
 
-    -- Enter the state
-    CurState:OnEnter()
+    if CurState.LoadMap then
+        -- Only start loading when different map is given
+        if not UE.UFrameworkLibrary.IsCurrentMap(self, CurState.LoadMap) then
+            -- Load map and wait
+            UE.UFrameworkLibrary.LoadGameMap(self, CurState.LoadMap)
+            self.PendingStateFlag = BitField.AddBit(self.PendingStateFlag, GameStatePendingCondition.MapLoading)
+        end
+    end
+
+    if self.PendingStateFlag == GameStatePendingCondition.None then
+        -- Enter the state
+        CurState:OnEnter()
+    else
+        -- Record pending state
+        self.PendingState = CurState
+    end
+end
+
+---Check if pending game state condition is all completed.
+---@param self GameStateMachineService
+local function CheckPendingStateCondition(self)
+    -- Check pending condition
+    if self.PendingStateFlag == GameStatePendingCondition.None then
+        self.PendingState:OnEnter()
+        self.PendingState = nil
+    end
 end
 
 ---Triggered after new map loaded.
 ---@param InMapName string Name of new loaded map.
 function GameStateMachineService:OnPostLoadMapScript(InMapName)
     -- Check if the map is loaded by pending state
-    if self.PendingState and type(self.PendingState.ShortMapName) == "string" then
-        if InMapName == self.PendingState.ShortMapName then
-            self.PendingState:OnEnter()
-            self.PendingState = nil
+    if self.PendingState and type(self.PendingState.LoadMap) == "string" then
+        if InMapName == self.PendingState.LoadMap then
+            -- Remove condition
+            self.PendingStateFlag = BitField.RemoveBit(self.PendingStateFlag, GameStatePendingCondition.MapLoading)
+            CheckPendingStateCondition(self)
         end
     end
 end
@@ -144,11 +172,18 @@ end
 
 ---Try to enter specified game state.
 ---@param InStateName GameLuaStateNameDef Name of state to enter.
-function GameStateMachineService:TryEnterState(InStateName)
+---@param ExtraArgs table Extra argument table for new state.
+function GameStateMachineService:TryEnterState(InStateName, ExtraArgs)
     local State = self.StateMap[InStateName]
     if not State then
         error("GameStateMachineService:TryEnterState State ", InStateName, " not found.")
     end
+
+    -- Set the extra arguments
+    State.ExtraArgs = ExtraArgs
+
+    ---@type GameLuaState Current state
+    local CurState = self:GetCurrentState()
 
     -- Clear all states between last entered state and current one
     -- This helps to keep the state stack simple and clean
@@ -162,9 +197,6 @@ function GameStateMachineService:TryEnterState(InStateName)
             self.StateStack[i] = nil
         end
     end
-
-    ---@type GameLuaState Current state
-    local CurState = self:GetCurrentState()
 
     -- Exit current state
     if CurState then
@@ -208,6 +240,19 @@ function GameStateMachineService:ExitState(InStateName)
     else
         -- Remove target state
         table.removeValue(self.StateStack, TargetState)
+    end
+end
+
+---@param DeltaTime number
+function GameStateMachineService:OnTickScript(DeltaTime)
+    -- Check pending state every tick
+    if self.PendingState and self.PendingStateFlag ~= GameStatePendingCondition.None then
+        local bReady = self.PendingState:CheckEnterCondition()
+
+        if bReady then
+            self.PendingStateFlag = BitField.RemoveBit(self.PendingStateFlag, GameStatePendingCondition.StateNotReady)
+            CheckPendingStateCondition(self)
+        end
     end
 end
 

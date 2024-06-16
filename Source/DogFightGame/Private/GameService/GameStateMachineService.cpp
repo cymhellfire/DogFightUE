@@ -21,34 +21,22 @@ void UGameStateMachineService::Shutdown()
 	FCoreUObjectDelegates::PostLoadMapWithWorld.RemoveAll(this);
 }
 
+void UGameStateMachineService::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	OnTickScript(DeltaTime);
+}
+
 void UGameStateMachineService::OnPreLoadMap(const FWorldContext& WorldContext, const FString& MapName)
 {
-	DFLog(TEXT("New map: %s"), *MapName);
+	DFLog(LogDogFightGame, TEXT("New map: %s"), *MapName);
 }
 
 void UGameStateMachineService::OnPostLoadMap(UWorld* InWorld)
 {
-#if WITH_EDITOR
-	// Remove map prefix in PIE
-	int32 StartIndex = -1;
-	auto MapName = InWorld->GetMapName();
-	MapName.FindLastChar('_', StartIndex);
-	MapName.MidInline(StartIndex + 1, MapName.Len() - StartIndex - 1);
-#else
-	const auto MapName = InWorld->GetMapName();
-#endif
-	DFLog(TEXT("New map: %s"), *MapName);
+	auto MapName = InWorld->RemovePIEPrefix(InWorld->GetOutermost()->GetName());
+	DFLog(LogDogFightGame, TEXT("New map: %s"), *MapName);
 
 	OnPostLoadMapScript(MapName);
-}
-
-FString UGameStateMachineService::GetShortMapName(const FString& InMapPath) const
-{
-	int32 StartIndex = -1;
-	InMapPath.FindLastChar('.', StartIndex);
-	if (StartIndex != -1)
-	{
-		return InMapPath.Mid(StartIndex + 1, InMapPath.Len() - StartIndex - 1);
-	}
-	return InMapPath;
 }

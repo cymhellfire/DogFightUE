@@ -22,6 +22,10 @@ local GameWidgetConfig = {
     [WidgetNameDef.WidgetGameLoading] = {
         Path = "/Game/DogFightGame/UI/Loading/BP_Widget_GameLoading",
     },
+    ---GameLobby
+    [WidgetNameDef.WidgetGameLobby] = {
+        Path = "/Game/DogFightGame/UI/GameLobby/BP_Widget_GameLobby",
+    },
     ---InGame
     [WidgetNameDef.WidgetCardList] = {
         Path = "/Game/DogFightGame/UI/InGame/CardList/BP_Widget_CardList",
