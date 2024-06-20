@@ -176,8 +176,8 @@ FReply SImGuiCanvasControl::OnDragOver(const FGeometry& MyGeometry, const FDragD
 	if (Operation.IsValid())
 	{
 		const FSlateRenderTransform ScreenToWidget = MyGeometry.GetAccumulatedRenderTransform().Inverse();
-		const FVector2D DragDelta = FVector2D(ScreenToWidget.TransformVector(DragDropEvent.GetScreenSpacePosition() - Operation->StartPosition));
-	
+		const FVector2D DragDelta = ScreenToWidget.TransformVector(FVector2D(DragDropEvent.GetScreenSpacePosition()) - Operation->StartPosition);
+
 		if (Operation->DragType == EDragType::Content)
 		{
 			// Content offset is in ImGui space, so we need to scale drag calculated in widget space.

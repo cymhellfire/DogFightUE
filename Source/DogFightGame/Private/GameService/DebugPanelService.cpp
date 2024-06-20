@@ -51,7 +51,7 @@ void FDebugPanelExecuteComboBoxControl::DrawControl()
 	ImGui::BeginGroup();
 	{
 		// Make list view
-		if (ImGui::ListBoxHeader(TCHAR_TO_ANSI(*("##" + Context + "_Header")), ImVec2(ListSize.X, ListSize.Y)))
+		if (ImGui::BeginListBox(TCHAR_TO_ANSI(*("##" + Context + "_Header")), ImVec2(ListSize.X, ListSize.Y)))
 		{
 			for (auto Entry : EntryList)
 			{
@@ -62,7 +62,7 @@ void FDebugPanelExecuteComboBoxControl::DrawControl()
 					SelectedIndex = Entry.Index;
 				}
 			}
-			ImGui::ListBoxFooter();
+			ImGui::EndListBox();
 		}
 
 		// Make button

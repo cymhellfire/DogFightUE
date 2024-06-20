@@ -149,7 +149,7 @@ void AStandardGameMode::DrawPlayerRelationInfoTab()
 	ImGui::BeginGroup();
 	{
 		ImGui::Text("Player List:");
-		if (ImGui::ListBoxHeader("##PlayerRelationInfoPlayerSelect", ImVec2(120,400)))
+		if (ImGui::BeginListBox("##PlayerRelationInfoPlayerSelect", ImVec2(120,400)))
 		{
 			TArray<int32> PlayerIdList;
 			PlayerBaseInfoMap.GetKeys(PlayerIdList);
@@ -170,7 +170,7 @@ void AStandardGameMode::DrawPlayerRelationInfoTab()
 					ImGui::SetItemDefaultFocus();
 				}
 			}
-			ImGui::ListBoxFooter();
+			ImGui::EndListBox();
 		}
 	}
 	ImGui::EndGroup();
@@ -226,7 +226,7 @@ void AStandardGameMode::DrawCardManageTab()
 	ImGui::BeginGroup();
 	{
 		ImGui::Text("Player List:");
-		if (ImGui::ListBoxHeader("##CardManagePlayerSelect", ImVec2(120,400)))
+		if (ImGui::BeginListBox("##CardManagePlayerSelect", ImVec2(120,400)))
 		{
 			TArray<int32> PlayerIdList;
 			PlayerBaseInfoMap.GetKeys(PlayerIdList);
@@ -247,7 +247,7 @@ void AStandardGameMode::DrawCardManageTab()
 					ImGui::SetItemDefaultFocus();
 				}
 			}
-			ImGui::ListBoxFooter();
+			ImGui::EndListBox();
 		}
 	}
 	ImGui::EndGroup();
@@ -257,7 +257,7 @@ void AStandardGameMode::DrawCardManageTab()
 	ImGui::BeginGroup();
 	{
 		ImGui::Text("Card List:");
-		if (ImGui::ListBoxHeader("##CardManageCardSelect", ImVec2(150, 400)))
+		if (ImGui::BeginListBox("##CardManageCardSelect", ImVec2(150, 400)))
 		{
 			for (int32 Index = 0; Index < SelectedPlayerCardInfoList.Num(); ++Index)
 			{
@@ -285,7 +285,7 @@ void AStandardGameMode::DrawCardManageTab()
 			{
 				CardIndexShowDetails = SelectedPlayerCardInfoList.Num() - 1;
 			}
-			ImGui::ListBoxFooter();
+			ImGui::EndListBox();
 		}
 	}
 	ImGui::EndGroup();
@@ -342,7 +342,7 @@ void AStandardGameMode::DrawStateMachineDebugger(bool* bOpen)
 	ImGui::BeginGroup();
 	{
 		ImGui::Text("Game Phase History:");
-		if (ImGui::ListBoxHeader("##PhaseHistory", ImVec2(200, 200)))
+		if (ImGui::BeginListBox("##PhaseHistory", ImVec2(200, 200)))
 		{
 			for (int32 Index = 0; Index < StateMachineGamePhaseHistory.Num(); ++Index)
 			{
@@ -368,7 +368,7 @@ void AStandardGameMode::DrawStateMachineDebugger(bool* bOpen)
 				}
 				CachedGamePhaseHistoryCount = StateMachineGamePhaseHistory.Num();
 			}
-			ImGui::ListBoxFooter();
+			ImGui::EndListBox();
 		}
 	}
 	ImGui::EndGroup();
@@ -412,13 +412,13 @@ void AStandardGameMode::DrawStateMachineDebugger(bool* bOpen)
 		}
 
 		ImGui::Text("Extra Events:");
-		if (ImGui::ListBoxHeader("##ExtraEvents", ImVec2(ImGui::GetContentRegionAvailWidth(), 200)))
+		if (ImGui::BeginListBox("##ExtraEvents", ImVec2(ImGui::GetContentRegionAvail().x, 200)))
 		{
 			for (int32 Index = 0; Index < Record.ExtraEvents.Num(); ++Index)
 			{
 				ImGui::Text("%ls", *Record.ExtraEvents[Index]);
 			}
-			ImGui::ListBoxFooter();
+			ImGui::EndListBox();
 		}
 		ImGui::EndGroup();
 	}

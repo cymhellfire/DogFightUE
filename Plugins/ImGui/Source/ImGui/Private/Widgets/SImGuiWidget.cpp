@@ -112,6 +112,9 @@ void SImGuiWidget::Construct(const FArguments& InArgs)
 	// Initialize state.
 	UpdateVisibility();
 	UpdateMouseCursor();
+	
+	// Support Slate Global Invalidation.
+	ForceVolatile(true);
 
 	ChildSlot
 	[
@@ -275,7 +278,7 @@ FReply SImGuiWidget::OnTouchEnded(const FGeometry& MyGeometry, const FPointerEve
 	return InputHandler->OnTouchEnded(TransformScreenPointToImGui(MyGeometry, TouchEvent.GetScreenSpacePosition()), TouchEvent);
 }
 
-void SImGuiWidget::CreateInputHandler(const FStringClassReference& HandlerClassReference)
+void SImGuiWidget::CreateInputHandler(const FSoftClassPath& HandlerClassReference)
 {
 	ReleaseInputHandler();
 
@@ -441,13 +444,13 @@ void SImGuiWidget::UpdateInputState()
 		}
 	}
 
-	const bool bEnableInput = Properties.IsInputEnabled();
-	if (bInputEnabled != bEnableInput)
+	const bool bPropertiesInputEnabled = Properties.IsInputEnabled();
+	if (bInputEnabled != bPropertiesInputEnabled)
 	{
 		IMGUI_WIDGET_LOG(Log, TEXT("ImGui Widget %d - Input Enabled changed to '%s'."),
-			ContextIndex, TEXT_BOOL(bEnableInput));
+			ContextIndex, TEXT_BOOL(bPropertiesInputEnabled));
 
-		bInputEnabled = bEnableInput;
+		bInputEnabled = bPropertiesInputEnabled;
 
 		UpdateVisibility();
 		UpdateMouseCursor();
@@ -477,8 +480,9 @@ void SImGuiWidget::UpdateInputState()
 			// the whole input to match that state.
 			if (GameViewport->GetGameViewportWidget()->HasMouseCapture())
 			{
-				Properties.SetInputEnabled(false);
-				UpdateInputState();
+				// DON'T DISABLE OUR INPUT WHEN WE LOSE FOCUS
+				//Properties.SetInputEnabled(false);
+				//UpdateInputState();
 			}
 		}
 		else
@@ -650,15 +654,11 @@ int32 SImGuiWidget::OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeo
 			DrawList.CopyVertexData(VertexBuffer, ImGuiToScreen);
 #endif // ENGINE_COMPATIBILITY_LEGACY_CLIPPING_API
 
-			int IndexBufferOffset = 0;
 			for (int CommandNb = 0; CommandNb < DrawList.NumCommands(); CommandNb++)
 			{
 				const auto& DrawCommand = DrawList.GetCommand(CommandNb, ImGuiToScreen);
 
-				DrawList.CopyIndexData(IndexBuffer, IndexBufferOffset, DrawCommand.NumElements);
-
-				// Advance offset by number of copied elements to position it for the next command.
-				IndexBufferOffset += DrawCommand.NumElements;
+				DrawList.CopyIndexData(IndexBuffer, DrawCommand.IndexOffset, DrawCommand.NumElements);
 
 				// Get texture resource handle for this draw command (null index will be also mapped to a valid texture).
 				const FSlateResourceHandle& Handle = ModuleManager->GetTextureManager().GetTextureHandle(DrawCommand.TextureId);
