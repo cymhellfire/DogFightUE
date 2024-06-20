@@ -114,8 +114,10 @@ local function EnterStackTopState(self)
     if CurState.LoadMap then
         -- Only start loading when different map is given
         if not UE.UFrameworkLibrary.IsCurrentMap(self, CurState.LoadMap) then
-            -- Load map and wait
-            UE.UFrameworkLibrary.LoadGameMap(self, CurState.LoadMap)
+            if not CurState:SkipLoadMap() then
+                -- Load map and wait
+                UE.UFrameworkLibrary.LoadGameMap(self, CurState.LoadMap)
+            end
             self.PendingStateFlag = BitField.AddBit(self.PendingStateFlag, GameStatePendingCondition.MapLoading)
         end
     end

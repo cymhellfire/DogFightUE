@@ -2,7 +2,7 @@
 ---@field LoadMap string Map to load when enter state.
 ---@field InitialWidgets list<string> List of widget name that automatically create when enter the state.
 ---@field StateMachine GameStateMachineService Owner state machine service.
----@field EnterArgs table Extra arguments used in generic purposes.
+---@field ExtraArgs table Extra arguments used in generic purposes.
 ---@class GameLuaState Base class of all lua states.
 local GameLuaState = UnrealClass()
 
@@ -20,6 +20,12 @@ end
 ---@return boolean Is ready to enter?
 function GameLuaState:CheckEnterCondition()
     return true
+end
+
+---Check if the map loading should be skipped.
+---@return boolean Should the load map be skipped?
+function GameLuaState:SkipLoadMap()
+    return type(self.ExtraArgs) == "table" and self.ExtraArgs.bSkipLoadMap
 end
 
 function GameLuaState:OnEnter()

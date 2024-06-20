@@ -5,14 +5,12 @@
 
 #include "Common/LuaEventDef.h"
 #include "GameService/LuaEventService.h"
+#include "Online/OnlineSessionNames.h"
 #include "OnlineSubsystemUtils/Public/OnlineSubsystemUtils.h"
 
 void UDogFightSessionSubsystem::UpdateSessionSettings(const FString& Key, const FString& Value)
 {
-	IOnlineSubsystem* OnlineSubsystem = Online::GetSubsystem(GetWorld());
-	check(OnlineSubsystem);
-
-	const IOnlineSessionPtr SessionInterface = OnlineSubsystem->GetSessionInterface();
+	const IOnlineSessionPtr SessionInterface = GetCurrentSession();
 	if (SessionInterface.IsValid() && HostSettings.IsValid())
 	{
 		const FName SessionName(NAME_GameSession);
@@ -48,4 +46,31 @@ void UDogFightSessionSubsystem::HandlePostLoadMap(UWorld* World)
 			SEND_LUA_EVENT(ELuaEvent::LuaEvent_GameLobbyLevelLoaded)
 		}
 	}
+	// Check for non-host players
+	else
+	{
+		const auto SessionInterface = GetCurrentSession();
+		if (SessionInterface.IsValid())
+		{
+			if (auto Settings = SessionInterface->GetSessionSettings(NAME_GameSession))
+			{
+				FString LobbyMapName;
+				Settings->Get(SETTING_MAPNAME, LobbyMapName);
+				FString LoadMapName = UWorld::RemovePIEPrefix(World->GetOutermost()->GetName());
+				if (LobbyMapName == LoadMapName)
+				{
+					SEND_LUA_EVENT(ELuaEvent::LuaEvent_GameLobbyLevelLoaded)
+				}
+			}
+		}
+	}
+}
+
+IOnlineSessionPtr UDogFightSessionSubsystem::GetCurrentSession()
+{
+	IOnlineSubsystem* OnlineSubsystem = Online::GetSubsystem(GetWorld());
+	check(OnlineSubsystem);
+
+	const IOnlineSessionPtr SessionInterface = OnlineSubsystem->GetSessionInterface();
+	return SessionInterface;
 }

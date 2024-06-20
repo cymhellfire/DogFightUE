@@ -25,4 +25,6 @@ public:
 
 protected:
 	virtual void HandlePostLoadMap(UWorld* World) override;
+
+	virtual IOnlineSessionPtr GetCurrentSession();
 };

@@ -1,3 +1,4 @@
+local GameLuaStateNameDef = require("DogFight.Services.GameStateMachineService.GameLuaStateNameDef")
 ---@class GameplayDataSubsystem : LuaGameInstanceSubsystem
 local GameplayDataSubsystem = UnrealClass("DogFight.Subsystem.LuaGameInstanceSubsystem")
 
@@ -43,6 +44,15 @@ local function AddPendingMessage(self, Title, Msg, LevelName)
     end
 end
 
+---@param self GameplayDataSubsystem
+local function ReturnToMainMenu(self)
+    ---@type GameStateMachineService
+    local GameStateMachineService = GetGameService(self, GameServiceNameDef.GameStateMachineService)
+    if GameStateMachineService then
+        GameStateMachineService:TryEnterState(GameLuaStateNameDef.StateMainMenu, { bSkipLoadMap = true, })
+    end
+end
+
 ---@param InType ENetworkFailure
 function GameplayDataSubsystem:OnNetworkFailure(InType)
     --- Handle connection issues
@@ -58,6 +68,9 @@ function GameplayDataSubsystem:OnNetworkFailure(InType)
 
         -- Register listener next time create or join a session
         self:StopListenNetworkFailure()
+
+        -- Return to main menu state
+        ReturnToMainMenu(self)
     end
 end
 
@@ -75,6 +88,9 @@ function GameplayDataSubsystem:OnSessionDismiss(Reason)
     end
 
     self:StopListenNetworkFailure()
+
+    -- Return to main menu state
+    ReturnToMainMenu(self)
 end
 
 return GameplayDataSubsystem
