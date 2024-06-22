@@ -91,6 +91,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category="DebugPanelService")
 	void ToggleDebugPanel();
 
+	void ToggleImPlotDemo();
+
 	/**
 	 * Setup a tab name which will act as the default tab to place following debug controls.
 	 * @param InTabName		The name of tab.
@@ -176,6 +178,7 @@ private:
 
 private:
 	uint8 bDebugPanelEnable:1;
+	uint8 bImPlotDemoEnable:1;
 
 	FName DrawingTabName;
 
