@@ -28,11 +28,11 @@ local function InitPlayerInfo(self)
     -- Player Name
     local PlayerName = {
         Name = GetLocalizedString(LocalizationTable.CommonUI, "UI_PlayerName"),
-        Value = UE.UGameSettingsFunctionLibrary.GetPlayerName(self),
+        Value = UE.UGameSettingsFunctionLibrary.GetPlayerName(),
         bEditable = true,
         bCheckEmpty = true,
         OnChangeCallback = function(InValue)
-            UE.UGameSettingsFunctionLibrary.SetPlayerName(self, InValue)
+            UE.UGameSettingsFunctionLibrary.SetPlayerName(InValue)
         end,
     }
     PropertyDataList[#PropertyDataList + 1] = PlayerName

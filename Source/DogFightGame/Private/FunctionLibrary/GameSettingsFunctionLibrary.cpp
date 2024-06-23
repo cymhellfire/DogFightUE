@@ -6,7 +6,9 @@
 #include "Common/DogFightGameLog.h"
 #include "Common/DogFightGameUserSettings.h"
 
-void UGameSettingsFunctionLibrary::SaveGameSettings(UObject* WorldContextObject)
+#define GET_GAME_USER_SETTINGS		Cast<UDogFightGameUserSettings>(GEngine->GetGameUserSettings())
+
+void UGameSettingsFunctionLibrary::SaveGameSettings()
 {
 	if (auto GameUserSettings = GEngine->GetGameUserSettings())
 	{
@@ -14,7 +16,7 @@ void UGameSettingsFunctionLibrary::SaveGameSettings(UObject* WorldContextObject)
 	}
 }
 
-void UGameSettingsFunctionLibrary::SetPlayerName(UObject* WorldContextObject, const FString& InName)
+void UGameSettingsFunctionLibrary::SetPlayerName(const FString& InName)
 {
 	if (InName.IsEmpty())
 	{
@@ -22,17 +24,34 @@ void UGameSettingsFunctionLibrary::SetPlayerName(UObject* WorldContextObject, co
 		return;
 	}
 
-	if (auto GameUserSettings = Cast<UDogFightGameUserSettings>(GEngine->GetGameUserSettings()))
+	if (auto GameUserSettings = GET_GAME_USER_SETTINGS)
 	{
 		GameUserSettings->PlayerName = InName;
 	}
 }
 
-FString UGameSettingsFunctionLibrary::GetPlayerName(UObject* WorldContextObject)
+FString UGameSettingsFunctionLibrary::GetPlayerName()
 {
-	if (auto GameUserSettings = Cast<UDogFightGameUserSettings>(GEngine->GetGameUserSettings()))
+	if (auto GameUserSettings = GET_GAME_USER_SETTINGS)
 	{
 		return GameUserSettings->PlayerName;
 	}
 	return "";
+}
+
+void UGameSettingsFunctionLibrary::SetLastAvatarId(const FGameLobbyPlayerAvatarId& InId)
+{
+	if (auto GameUserSettings = GET_GAME_USER_SETTINGS)
+	{
+		GameUserSettings->LastAvatarId = InId;
+	}
+}
+
+FGameLobbyPlayerAvatarId UGameSettingsFunctionLibrary::GetLastAvatarId()
+{
+	if (auto GameUserSettings = GET_GAME_USER_SETTINGS)
+	{
+		return GameUserSettings->LastAvatarId;
+	}
+	return FGameLobbyPlayerAvatarId();
 }

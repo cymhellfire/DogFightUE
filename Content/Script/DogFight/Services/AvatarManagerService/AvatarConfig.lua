@@ -5,10 +5,12 @@ local AvatarConfig = UnrealClass("DogFight.Services.ServiceConfigBase")
 
 local Config = {
     [AvatarNameDef.Greystone] = {
-        Asset = "/Script/ActionGame.AvatarDataAsset'/Game/DogFightGame/DataAsset/Avatar/AD_Greystone.AD_Greystone'"
+        Name = "Char_Greystone",
+        Asset = "/Script/ActionGame.AvatarDataAsset'/Game/DogFightGame/DataAsset/Avatar/AD_Greystone.AD_Greystone'",
     },
     [AvatarNameDef.Shinbi] = {
-        Asset = "/Script/ActionGame.AvatarDataAsset'/Game/DogFightGame/DataAsset/Avatar/AD_Shinbi.AD_Shinbi'"
+        Name = "Char_Shinbi",
+        Asset = "/Script/ActionGame.AvatarDataAsset'/Game/DogFightGame/DataAsset/Avatar/AD_Shinbi.AD_Shinbi'",
     }
 }
 

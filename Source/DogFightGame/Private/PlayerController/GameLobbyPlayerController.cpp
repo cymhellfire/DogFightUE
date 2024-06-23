@@ -20,7 +20,7 @@ void AGameLobbyPlayerController::ServerSetPlayerInfo_Implementation(const FGameL
 	if (auto PS = GetPlayerState<AGameLobbyPlayerState>())
 	{
 		PS->SetPlayerName(PlayerInfo.PlayerName);
-		PS->ServerSetPlayerHostStatus(PlayerInfo.bHost);
+		PS->ServerUpdatePlayerInfo(PlayerInfo);
 	}
 }
 
@@ -32,13 +32,24 @@ void AGameLobbyPlayerController::ServerMarkPlayerReady_Implementation(bool bIsRe
 	}
 }
 
+void AGameLobbyPlayerController::ServerSelectAvatarId_Implementation(const FGameLobbyPlayerAvatarId& AvatarId)
+{
+	if (auto PS = GetPlayerState<AGameLobbyPlayerState>())
+	{
+		auto LobbyPlayerInfo = PS->GetLobbyPlayerInfo();
+		LobbyPlayerInfo.AvatarId = AvatarId;
+		PS->ServerUpdatePlayerInfo(LobbyPlayerInfo);
+	}
+}
+
 void AGameLobbyPlayerController::GatherPlayerInfo()
 {
 	Super::GatherPlayerInfo();
 
 	FGameLobbyPlayerInfo NewInfo;
-	NewInfo.PlayerName = UGameSettingsFunctionLibrary::GetPlayerName(this);
+	NewInfo.PlayerName = UGameSettingsFunctionLibrary::GetPlayerName();
 	NewInfo.bHost = GetNetMode() != NM_Client;
+	NewInfo.AvatarId = UGameSettingsFunctionLibrary::GetLastAvatarId();
 
 	ServerSetPlayerInfo(NewInfo);
 }

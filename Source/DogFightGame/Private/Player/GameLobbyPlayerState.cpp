@@ -21,7 +21,7 @@ void AGameLobbyPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	SharedParams.bIsPushBased = true;
 
 	DOREPLIFETIME_WITH_PARAMS_FAST(AGameLobbyPlayerState, bIsReady, SharedParams);
-	DOREPLIFETIME_WITH_PARAMS_FAST(AGameLobbyPlayerState, bIsHost, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(AGameLobbyPlayerState, LobbyPlayerInfo, SharedParams);
 }
 
 void AGameLobbyPlayerState::ServerSetPlayerReadyStatus_Implementation(bool bReady)
@@ -39,18 +39,19 @@ void AGameLobbyPlayerState::ServerSetPlayerReadyStatus_Implementation(bool bRead
 	}
 }
 
-void AGameLobbyPlayerState::ServerSetPlayerHostStatus_Implementation(bool bHost)
+void AGameLobbyPlayerState::ServerUpdatePlayerInfo_Implementation(const FGameLobbyPlayerInfo& PlayerInfo)
 {
-	if (bIsHost == bHost)
+	if (LobbyPlayerInfo == PlayerInfo)
 		return;
 
-	MARK_PROPERTY_DIRTY_FROM_NAME(AGameLobbyPlayerState, bIsHost, this);
-	bIsHost = bHost;
+	auto OldData = LobbyPlayerInfo;
+	MARK_PROPERTY_DIRTY_FROM_NAME(AGameLobbyPlayerState, LobbyPlayerInfo, this);
+	LobbyPlayerInfo = PlayerInfo;
 
 	// Trigger event on server side as well
 	if (HasAuthority())
 	{
-		OnRep_IsHost();
+		OnRep_LobbyPlayerInfo(OldData);
 	}
 }
 
@@ -59,9 +60,20 @@ void AGameLobbyPlayerState::OnRep_IsReady()
 	OnReadyStatusChanged.Broadcast(this, bIsReady);
 }
 
-void AGameLobbyPlayerState::OnRep_IsHost()
+#define DIFF_INFO(Member)	\
+	(OldData.Member != LobbyPlayerInfo.Member)
+
+void AGameLobbyPlayerState::OnRep_LobbyPlayerInfo(const FGameLobbyPlayerInfo& OldData)
 {
-	OnHostStatusChanged.Broadcast(this, bIsHost);
+	// Broadcast events
+	if (DIFF_INFO(bHost))
+	{
+		OnHostStatusChanged.Broadcast(this, LobbyPlayerInfo.bHost);
+	}
+	if (DIFF_INFO(AvatarId))
+	{
+		OnAvatarIdChanged.Broadcast(this, LobbyPlayerInfo.AvatarId);
+	}
 }
 
 void AGameLobbyPlayerState::OnRep_PlayerName()

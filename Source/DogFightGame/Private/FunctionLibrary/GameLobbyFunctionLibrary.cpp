@@ -11,9 +11,21 @@
 
 TArray<AGameLobbyPlayerState*> UGameLobbyFunctionLibrary::GetAllGameLobbyPlayerState(const UObject* WorldContext)
 {
+	struct FSortPlayerStateById
+	{
+		bool operator()(const AGameLobbyPlayerState& A, const AGameLobbyPlayerState& B) const
+		{
+			const auto PlayerIdA = A.GetPlayerId();
+			const auto PlayerIdB = B.GetPlayerId();
+			return PlayerIdA > PlayerIdB;
+		}
+	};
+
 	if (auto GS = GetCurrentLobbyGameState(WorldContext))
 	{
-		return GS->GetAllPlayerState();
+		auto PlayerStateList = GS->GetAllPlayerState();
+		PlayerStateList.Sort(FSortPlayerStateById());
+		return PlayerStateList;
 	}
 
 	return TArray<AGameLobbyPlayerState*>();
