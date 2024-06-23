@@ -6,7 +6,6 @@
 #include "GameMode/DogFightGameModeBase.h"
 #include "GameMode/DogFightGameStateBase.h"
 #include "Common/FrameworkType.h"
-#include "SaveGame/SaveGameManager.h"
 #include "Blueprint/UserWidget.h"
 #include "Common/Localization.h"
 #include "GameService/GameService.h"
@@ -56,9 +55,6 @@ UGameService* UDogFightGameInstance::GetGameServiceBySuperClass(UClass* SuperCla
 void UDogFightGameInstance::Init()
 {
 	Super::Init();
-
-	// Create Save Manager
-	SaveGameManager = NewObject<USaveGameManager>(this, FName(TEXT("SaveGameManager")));
 
 	// Register delegate for ticker callback
 	// TickDelegate = FTickerDelegate::CreateUObject(this, &UDogFightGameInstance::Tick);

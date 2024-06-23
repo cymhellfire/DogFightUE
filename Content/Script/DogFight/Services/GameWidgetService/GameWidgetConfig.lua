@@ -22,6 +22,9 @@ local GameWidgetConfig = {
     [WidgetNameDef.WidgetGameLoading] = {
         Path = "/Game/DogFightGame/UI/Loading/BP_Widget_GameLoading",
     },
+    [WidgetNameDef.WidgetGameSettings] = {
+        Path = "/Game/DogFightGame/UI/UserProfileManager/BP_Widget_GameSettings"
+    },
     ---GameLobby
     [WidgetNameDef.WidgetGameLobby] = {
         Path = "/Game/DogFightGame/UI/GameLobby/BP_Widget_GameLobby",

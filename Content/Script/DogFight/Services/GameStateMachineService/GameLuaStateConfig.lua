@@ -18,6 +18,12 @@ local Config = {
             GameWidgetNameDef.WidgetPreparationRoom,
         },
     },
+    [GameLuaStateNameDef.StateGameSettings] = {
+        Script = "DogFight.Services.GameStateMachineService.GameLuaState",
+        InitialWidgets = {
+            GameWidgetNameDef.WidgetGameSettings,
+        },
+    },
     [GameLuaStateNameDef.StateGameLobby] = {
         Script = "DogFight.Services.GameStateMachineService.States.StateGameLobby",
         InitialWidgets = {

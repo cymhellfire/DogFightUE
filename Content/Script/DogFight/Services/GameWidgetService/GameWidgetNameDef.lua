@@ -9,6 +9,7 @@ local GameWidgetNameDef = {
     WidgetMainMenu = "WidgetMainMenu",
     WidgetCreateLobbyDialog = "WidgetCreateLobbyDialog",
     WidgetLobbyBrowser = "WidgetLobbyBrowser",
+    WidgetGameSettings = "WidgetGameSettings",
     --- Game Lobby
     WidgetGameLobby = "WidgetGameLobby",
     --- In Game

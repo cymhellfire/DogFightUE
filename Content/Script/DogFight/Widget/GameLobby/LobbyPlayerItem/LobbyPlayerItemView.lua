@@ -20,6 +20,7 @@ local function RegisterCallback(self, InPlayerState)
     if InPlayerState then
         InPlayerState.OnReadyStatusChanged:Add(self, self.OnPlayerReadyStateChanged)
         InPlayerState.OnHostStatusChanged:Add(self, self.OnPlayerHostStateChanged)
+        InPlayerState.OnPlayerNameChanged:Add(self, self.OnPlayerNameChanged)
     end
 end
 
@@ -29,6 +30,7 @@ local function UnregisterCallback(self, InPlayerState)
     if InPlayerState then
         InPlayerState.OnReadyStatusChanged:Remove(self, self.OnPlayerReadyStateChanged)
         InPlayerState.OnHostStatusChanged:Remove(self, self.OnPlayerHostStateChanged)
+        InPlayerState.OnPlayerNameChanged:Remove(self, self.OnPlayerNameChanged)
     end
 end
 
@@ -46,6 +48,11 @@ end
 local function InitDisplay(self, InPlayerState)
     self.bHost = InPlayerState:GetPlayerHostStatus()
     self.ViewModel.PlayerStatus = GetLocalizedString(LocalizationTable.CommonUI, GetPlayerStatusLocalizeKey(InPlayerState))
+    
+    -- 
+    local PlayerId = InPlayerState:GetPlayerId()
+    local bIsLocalPlayer = UE.UGameLobbyFunctionLibrary.IsLocalPlayer(self, PlayerId)
+    self.AvatarMiniInfo:InitInfo(1, not bIsLocalPlayer)
 end
 
 function LobbyPlayerItemView:OnListItemObjectSet(InObject)
@@ -69,6 +76,10 @@ end
 function LobbyPlayerItemView:OnPlayerHostStateChanged(InPlayerState, bHost)
     self.bHost = bHost
     self.ViewModel.PlayerStatus = GetLocalizedString(LocalizationTable.CommonUI, GetPlayerStatusLocalizeKey(InPlayerState))
+end
+
+function LobbyPlayerItemView:OnPlayerNameChanged(InPlayerState, InName)
+    self.ViewModel.PlayerName = InName
 end
 
 return LobbyPlayerItemView

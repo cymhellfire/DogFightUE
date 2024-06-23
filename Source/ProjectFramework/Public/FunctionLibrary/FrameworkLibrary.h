@@ -18,10 +18,6 @@ class PROJECTFRAMEWORK_API UFrameworkLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	/** Get the SaveGameManager instance. */
-	UFUNCTION(BlueprintCallable, Category="DogFight|Framework", meta=(WorldContext="WorldContextObject"))
-	static class USaveGameManager* GetSaveGameManager(const UObject* WorldContextObject);
-
 	UFUNCTION(BlueprintCallable, Category="DogFight|Framework")
 	static FText GetTextFromLocalizedString(const FLocalizedString& LocalizedString);
 

@@ -22,6 +22,7 @@ function MainMenuView:PostInitialized()
     self.SearchGame_Button.OnClicked:Add(self, self.OnSearchGameButtonClicked)
     self.PreparationRoom_Button.OnClicked:Add(self, self.OnPreparationRoomButtonClicked)
     self.ExitGame_Button.OnClicked:Add(self, self.OnExitButtonClicked)
+    self.GameSettings_Button.OnClicked:Add(self, self.OnGameSettingsButtonClicked)
 end
 
 function MainMenuView:UnInitialize()
@@ -30,6 +31,7 @@ function MainMenuView:UnInitialize()
     self.SearchGame_Button.OnClicked:Remove(self, self.OnSearchGameButtonClicked)
     self.PreparationRoom_Button.OnClicked:Remove(self, self.OnPreparationRoomButtonClicked)
     self.ExitGame_Button.OnClicked:Remove(self, self.OnExitButtonClicked)
+    self.GameSettings_Button.OnClicked:Remove(self, self.OnGameSettingsButtonClicked)
 end
 
 function MainMenuView:OnHostGameButtonClicked()
@@ -97,6 +99,14 @@ function MainMenuView:OnPreparationRoomButtonClicked()
     local GameStateMachineService = GetGameService(self, GameServiceNameDef.GameStateMachineService)
     if GameStateMachineService then
         GameStateMachineService:TryEnterState(GameLuaStateNameDef.StatePreparationRoom)
+    end
+end
+
+function MainMenuView:OnGameSettingsButtonClicked()
+    ---@type GameStateMachineService
+    local GameStateMachineService = GetGameService(self, GameServiceNameDef.GameStateMachineService)
+    if GameStateMachineService then
+        GameStateMachineService:TryEnterState(GameLuaStateNameDef.StateGameSettings)
     end
 end
 

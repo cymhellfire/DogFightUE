@@ -9,6 +9,7 @@
 class AGameLobbyPlayerState;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGameLobbyPlayerBoolStatusChanged, AGameLobbyPlayerState*, PlayerState, bool, BoolStatus);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGameLobbyPlayerStringStatusChanged, AGameLobbyPlayerState*, PlayerState, const FString&, String);
 
 UCLASS()
 class DOGFIGHTGAME_API AGameLobbyPlayerState : public APlayerState
@@ -46,7 +47,12 @@ protected:
 	UFUNCTION()
 	void OnRep_IsHost();
 
+	virtual void OnRep_PlayerName() override;
+
 public:
+	UPROPERTY(BlueprintAssignable, Category="GameLobbyPlayerState")
+	FGameLobbyPlayerStringStatusChanged OnPlayerNameChanged;
+
 	UPROPERTY(BlueprintAssignable, Category="GameLobbyPlayerState")
 	FGameLobbyPlayerBoolStatusChanged OnReadyStatusChanged;
 

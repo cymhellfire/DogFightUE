@@ -7,11 +7,9 @@
 #include "Pawns/StandardModeCameraComponent.h"
 #include "DogFight.h"
 #include "GameInstance/DogFightGameInstance.h"
-#include "SaveGame/SaveGameManager.h"
 #include "Pawns/StandardModePlayerCharacter.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Net/UnrealNetwork.h"
-#include "SaveGame/DogFightSaveGame.h"
 #include "UI/Widget/OperationHintMessageWidget.h"
 #include "Game/StandardGameMode.h"
 #include "UI/StandardHUD.h"
@@ -662,14 +660,14 @@ void AStandardModePlayerController::BeginPlay()
 		// Update ready state
 		if (GetNetMode() == NM_Client)
 		{
-			UDogFightSaveGame* SaveGameInstance = Cast<UDogFightGameInstance>(GetGameInstance())->GetSaveGameManager()->GetCurrentSaveGameInstance();
-			if (SaveGameInstance == nullptr)
-			{
-				UE_LOG(LogDogFight, Error, TEXT("No available player profile."));
-				return;
-			}
+			//UDogFightSaveGame* SaveGameInstance = Cast<UDogFightGameInstance>(GetGameInstance())->GetSaveGameManager()->GetCurrentSaveGameInstance();
+			// if (SaveGameInstance == nullptr)
+			// {
+			// 	UE_LOG(LogDogFight, Error, TEXT("No available player profile."));
+			// 	return;
+			// }
 			
-			ServerReadyForGame(SaveGameInstance->PlayerName);
+			//ServerReadyForGame(SaveGameInstance->PlayerName);
 		}
 		// Host register to Timeline here
 		else
@@ -718,15 +716,15 @@ void AStandardModePlayerController::ProcessPlayerInput(const float DeltaTime, co
 void AStandardModePlayerController::GatherPlayerInfo()
 {
 	// Get player name
-	UDogFightSaveGame* SaveGameInstance = Cast<UDogFightGameInstance>(GetGameInstance())->GetSaveGameManager()->GetCurrentSaveGameInstance();
-	if (SaveGameInstance == nullptr)
-	{
-		UE_LOG(LogDogFight, Error, TEXT("No available player profile."));
-		return;
-	}
+	// UDogFightSaveGame* SaveGameInstance = Cast<UDogFightGameInstance>(GetGameInstance())->GetSaveGameManager()->GetCurrentSaveGameInstance();
+	// if (SaveGameInstance == nullptr)
+	// {
+	// 	UE_LOG(LogDogFight, Error, TEXT("No available player profile."));
+	// 	return;
+	// }
 
 	// Set player name
-	ServerChangeName(SaveGameInstance->PlayerName);
+	ServerChangeName("Invalid");
 }
 
 void AStandardModePlayerController::DisableInputMode()

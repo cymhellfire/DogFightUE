@@ -17,7 +17,21 @@ function LuaGameInstance:RegisterSubsystem(InSubsystem)
         self.SubsystemMap = {}
     end
 
-    self.SubsystemMap[InSubsystem:GetSubsystemName()] = InSubsystem
+    local SubsystemName = InSubsystem:GetSubsystemName()
+    self.SubsystemMap[SubsystemName] = InSubsystem
+
+    -- Register subsystem name
+    if not _G.GameSubsystemNameDef then
+        _G.GameSubsystemNameDef = {}
+    end
+
+    -- Duplicate check
+    if _G.GameSubsystemNameDef[SubsystemName] then
+        error(string:format("Dulipcate subsystem detected %s"), SubsystemName)
+        return
+    end
+
+    _G.GameSubsystemNameDef[SubsystemName] = SubsystemName
 end
 
 ---@param InSubsystem LuaGameInstanceSubsystem

@@ -4,6 +4,7 @@
 #include "PlayerController/GameLobbyPlayerController.h"
 
 #include "Common/LuaEventDef.h"
+#include "FunctionLibrary/GameSettingsFunctionLibrary.h"
 #include "GameService/LuaEventService.h"
 #include "Player/GameLobbyPlayerState.h"
 
@@ -18,7 +19,7 @@ void AGameLobbyPlayerController::ServerSetPlayerInfo_Implementation(const FGameL
 {
 	if (auto PS = GetPlayerState<AGameLobbyPlayerState>())
 	{
-		// PS->SetPlayerName(PlayerInfo.PlayerName);
+		PS->SetPlayerName(PlayerInfo.PlayerName);
 		PS->ServerSetPlayerHostStatus(PlayerInfo.bHost);
 	}
 }
@@ -36,6 +37,7 @@ void AGameLobbyPlayerController::GatherPlayerInfo()
 	Super::GatherPlayerInfo();
 
 	FGameLobbyPlayerInfo NewInfo;
+	NewInfo.PlayerName = UGameSettingsFunctionLibrary::GetPlayerName(this);
 	NewInfo.bHost = GetNetMode() != NM_Client;
 
 	ServerSetPlayerInfo(NewInfo);

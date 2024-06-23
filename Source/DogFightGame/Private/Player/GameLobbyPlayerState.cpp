@@ -4,6 +4,7 @@
 #include "Player/GameLobbyPlayerState.h"
 
 #include "Net/UnrealNetwork.h"
+#include "Net/Core/PushModel/PushModel.h"
 
 
 // Sets default values
@@ -61,4 +62,11 @@ void AGameLobbyPlayerState::OnRep_IsReady()
 void AGameLobbyPlayerState::OnRep_IsHost()
 {
 	OnHostStatusChanged.Broadcast(this, bIsHost);
+}
+
+void AGameLobbyPlayerState::OnRep_PlayerName()
+{
+	Super::OnRep_PlayerName();
+
+	OnPlayerNameChanged.Broadcast(this, GetPlayerName());
 }
