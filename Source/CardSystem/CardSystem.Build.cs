@@ -25,7 +25,6 @@ public class CardSystem : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"ProjectFramework",
-				"UnrealTinyXml",
 				"UMG",
 				"SlateCore",
 				"InputCore",

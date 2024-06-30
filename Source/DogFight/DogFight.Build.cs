@@ -33,7 +33,6 @@ public class DogFight : ModuleRules
 				"GameplayTags",
 				"Niagara",
 				"ImGui",
-				"InGameScript",
 				"UnLua",
 				"ProjectFramework",
 				"AttributeSystem",
