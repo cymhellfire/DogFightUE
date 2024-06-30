@@ -13,6 +13,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGameLobbyPlayerBoolStatusChanged, 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGameLobbyPlayerStringStatusChanged, AGameLobbyPlayerState*, PlayerState, const FString&, String);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGameLobbyPlayerAvatarIdChanged, AGameLobbyPlayerState*, PlayerState, const FGameLobbyPlayerAvatarId&, AvatarId);
 
+DECLARE_MULTICAST_DELEGATE_TwoParams(FGameLobbyPlayerInfoChangedEvent, AGameLobbyPlayerState*, const FGameLobbyPlayerInfo&);
+
 UCLASS()
 class DOGFIGHTGAME_API AGameLobbyPlayerState : public APlayerState
 {
@@ -52,6 +54,13 @@ public:
 		return LobbyPlayerInfo;
 	}
 
+	UFUNCTION()
+	FString GetUniqueNetIdStr() const
+	{
+		auto UniqueNetId = GetUniqueId();
+		return UniqueNetId.ToString();
+	}
+
 protected:
 	UFUNCTION()
 	void OnRep_IsReady();
@@ -73,6 +82,8 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="GameLobbyPlayerState")
 	FGameLobbyPlayerAvatarIdChanged OnAvatarIdChanged;
+
+	FGameLobbyPlayerInfoChangedEvent OnPlayerLobbyInfoChanged;
 
 protected:
 	UPROPERTY(ReplicatedUsing=OnRep_IsReady)

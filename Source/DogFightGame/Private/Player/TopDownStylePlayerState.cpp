@@ -9,7 +9,9 @@
 #include "GameService/GameService.h"
 #include "GameService/LuaEventService.h"
 #include "Net/UnrealNetwork.h"
+#include "Net/Core/PushModel/PushModel.h"
 #include "Pawn/PlayerCharacter/TopDownStylePlayerCharacter.h"
+#include "Subsystem/InGameStatistics/InGameStatisticsSubsystem.h"
 
 void ATopDownStylePlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -44,6 +46,21 @@ void ATopDownStylePlayerState::InitWithCharacter(ATopDownStylePlayerCharacter* I
 	}
 
 	InCharacter->SetPlayerId(GetPlayerId());
+
+	if (auto GameInstance = GetWorld()->GetGameInstance())
+	{
+		if (auto Statistics = GameInstance->GetSubsystem<UInGameStatisticsSubsystem>())
+		{
+			if (auto Info = Statistics->GetStatisticsByPlayerState(this))
+			{
+				auto AvatarId = Info->GameLobbyPlayerInfo.AvatarId;
+				if (AvatarId.Type == EGameLobbyPlayerAvatarIdType::EPAIT_AvatarId)
+				{
+					InCharacter->ServerSetupAvatarId(AvatarId.Id);
+				}
+			}
+		}
+	}
 
 	// Register callback
 	InCharacter->OnCharacterDead.AddDynamic(this, &ATopDownStylePlayerState::OnCharacterDead);

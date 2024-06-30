@@ -9,7 +9,7 @@
 #include "Player/GameLobbyPlayerState.h"
 #include "PlayerController/GameLobbyPlayerController.h"
 
-TArray<AGameLobbyPlayerState*> UGameLobbyFunctionLibrary::GetAllGameLobbyPlayerState(const UObject* WorldContext)
+TArray<AGameLobbyPlayerState*> UGameLobbyFunctionLibrary::GetAllGameLobbyPlayerState(UObject* WorldContext)
 {
 	struct FSortPlayerStateById
 	{
@@ -31,7 +31,7 @@ TArray<AGameLobbyPlayerState*> UGameLobbyFunctionLibrary::GetAllGameLobbyPlayerS
 	return TArray<AGameLobbyPlayerState*>();
 }
 
-AGameLobbyPlayerController* UGameLobbyFunctionLibrary::GetLocalGameLobbyPlayerController(const UObject* WorldContext)
+AGameLobbyPlayerController* UGameLobbyFunctionLibrary::GetLocalGameLobbyPlayerController(UObject* WorldContext)
 {
 	if (auto World = WorldContext->GetWorld())
 	{
@@ -41,7 +41,7 @@ AGameLobbyPlayerController* UGameLobbyFunctionLibrary::GetLocalGameLobbyPlayerCo
 	return nullptr;
 }
 
-AGameLobbyPlayerState* UGameLobbyFunctionLibrary::GetLocalGameLobbyPlayerState(const UObject* WorldContext)
+AGameLobbyPlayerState* UGameLobbyFunctionLibrary::GetLocalGameLobbyPlayerState(UObject* WorldContext)
 {
 	if (auto PC = GetLocalGameLobbyPlayerController(WorldContext))
 	{
@@ -51,7 +51,7 @@ AGameLobbyPlayerState* UGameLobbyFunctionLibrary::GetLocalGameLobbyPlayerState(c
 	return nullptr;
 }
 
-AGameLobbyGameState* UGameLobbyFunctionLibrary::GetCurrentLobbyGameState(const UObject* WorldContext)
+AGameLobbyGameState* UGameLobbyFunctionLibrary::GetCurrentLobbyGameState(UObject* WorldContext)
 {
 	if (!IsValid(WorldContext))
 		return nullptr;
@@ -64,7 +64,7 @@ AGameLobbyGameState* UGameLobbyFunctionLibrary::GetCurrentLobbyGameState(const U
 	return nullptr;
 }
 
-UCommonSessionSubsystem* UGameLobbyFunctionLibrary::GetCommonSessionSubSystem(const UObject* WorldContext)
+UCommonSessionSubsystem* UGameLobbyFunctionLibrary::GetCommonSessionSubSystem(UObject* WorldContext)
 {
 	if (IsValid(WorldContext))
 	{
@@ -80,7 +80,7 @@ UCommonSessionSubsystem* UGameLobbyFunctionLibrary::GetCommonSessionSubSystem(co
 	return nullptr;
 }
 
-void UGameLobbyFunctionLibrary::DismissGameLobby(const UObject* WorldContext)
+void UGameLobbyFunctionLibrary::DismissGameLobby(UObject* WorldContext)
 {
 	if (!IsValid(WorldContext))
 	{
@@ -100,7 +100,7 @@ void UGameLobbyFunctionLibrary::DismissGameLobby(const UObject* WorldContext)
 	}
 }
 
-bool UGameLobbyFunctionLibrary::IsLocalPlayer(const UObject* WorldContext, int32 PlayerId)
+bool UGameLobbyFunctionLibrary::IsLocalPlayer(UObject* WorldContext, int32 PlayerId)
 {
 	if (!IsValid(WorldContext))
 		return false;

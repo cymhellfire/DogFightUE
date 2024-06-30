@@ -77,17 +77,7 @@ function PreparationRoomView:PreviewAvatar(InConfigId)
         return
     end
 
-    ---@type AvatarManagerService
-    local AvatarManagerService = GetGameService(self, GameServiceNameDef.AvatarManagerService)
-    if AvatarManagerService then
-        local AvatarConfig = AvatarManagerService:GetAvatarConfig(InConfigId)
-        if AvatarConfig and AvatarConfig.Asset then
-            local DescAsset = UE.ULuaIntegrationFunctionLibrary.LoadObjectByPath(AvatarConfig.Asset)
-            if DescAsset and MyState.Character then
-                MyState.Character:SetupAvatarAppearanceWithAsset(DescAsset)
-            end
-        end
-    end
+    UE.UAvatarFunctionLibrary.InitAvatarAppearanceWithConfigId(self, MyState.Character, InConfigId)
 end
 
 return PreparationRoomView

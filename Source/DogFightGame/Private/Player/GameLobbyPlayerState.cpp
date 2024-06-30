@@ -65,6 +65,8 @@ void AGameLobbyPlayerState::OnRep_IsReady()
 
 void AGameLobbyPlayerState::OnRep_LobbyPlayerInfo(const FGameLobbyPlayerInfo& OldData)
 {
+	OnPlayerLobbyInfoChanged.Broadcast(this, LobbyPlayerInfo);
+
 	// Broadcast events
 	if (DIFF_INFO(bHost))
 	{

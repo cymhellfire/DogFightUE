@@ -1,6 +1,11 @@
 ---@class AvatarManagerService : GameServiceBase, UAvatarManagerService Service to manage all avatars data.
 local AvatarManagerService = UnrealClass("DogFight.Services.GameServiceBase")
 
+function AvatarManagerService:GetAvatarDescAssetPathByConfigId(ConfigId)
+    local Config = self:GetAvatarConfig(ConfigId)
+    return Config and Config.Asset
+end
+
 function AvatarManagerService:GetConfigPath()
     return "DogFight.Services.AvatarManagerService.AvatarConfig"
 end

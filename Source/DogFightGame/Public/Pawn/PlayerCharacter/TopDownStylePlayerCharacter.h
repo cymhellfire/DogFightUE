@@ -35,10 +35,15 @@ public:
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	void SetPlayerId(int32 InId)
 	{
 		PlayerId = InId;
 	}
+
+	UFUNCTION(Server, Reliable)
+	void ServerSetupAvatarId(int32 InId);
 
 	UFUNCTION(BlueprintCallable)
 	FVector GetProjectileSpawnLocation() const;
@@ -87,6 +92,9 @@ protected:
 
 	UFUNCTION()
 	void OnNoHealth();
+
+	UFUNCTION()
+	void OnRep_AvatarId();
 
 	virtual void OnReachStopDistance();
 
@@ -146,4 +154,7 @@ private:
 	uint8 bAlive : 1;
 
 	int32 PlayerId;
+
+	UPROPERTY(ReplicatedUsing=OnRep_AvatarId)
+	int32 AvatarId;
 };
