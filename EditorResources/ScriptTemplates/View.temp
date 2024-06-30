@@ -8,7 +8,7 @@ local $ClassPure$VM = require("$Path$.$ClassPure$VM")
 function $Class$:PostInitialized()
     local NewVM = InstantiateViewModel($ClassPure$VM)
     self:BindViewModel(NewVM, {
-        --{BindKey = "TitleMessage",   UIKey = "TitleMessage_Text",   DataBinding = DataBinding.TextContextBinding(), }
+        --{BindKey = "TitleMessage",   UIKey = "TitleMessage_Text",   DataBinding = DataBinding.TextContextBinding() }
     })
 
     ---@type ListViewWrapper 

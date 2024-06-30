@@ -27,8 +27,6 @@ public:
 
 	virtual void Shutdown() override;
 
-	class USaveGameManager* GetSaveGameManager() { return SaveGameManager; };
-
 	UFUNCTION(BlueprintCallable, Category="GameInstance")
 	UGameService* GetGameService(FName ClassName);
 
@@ -37,9 +35,6 @@ public:
 	bool LoadFrontEndMap(const FString& MapName);
 
 private:
-
-	UPROPERTY(Transient)
-	class USaveGameManager* SaveGameManager;
 
 	UPROPERTY(Transient)
 	TMap<FName, UGameService*> GameServiceMap; 

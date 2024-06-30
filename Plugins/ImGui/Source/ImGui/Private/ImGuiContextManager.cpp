@@ -5,11 +5,16 @@
 #include "ImGuiDelegatesContainer.h"
 #include "ImGuiImplementation.h"
 #include "ImGuiModuleSettings.h"
+#include "ImGuiModule.h"
 #include "Utilities/WorldContext.h"
 #include "Utilities/WorldContextIndex.h"
 
 #include <imgui.h>
 
+// MSVC warnings
+#ifdef _MSC_VER
+#pragma warning (disable: 4996) // 'This function or variable may be unsafe': strcpy, strdup, sprintf, vsnprintf, sscanf, fopen
+#endif
 
 // TODO: Refactor ImGui Context Manager, to handle different types of worlds.
 
@@ -73,6 +78,9 @@ FImGuiContextManager::FImGuiContextManager(FImGuiModuleSettings& InSettings)
 
 FImGuiContextManager::~FImGuiContextManager()
 {
+	// Early dealloc of contexts for clean shutdown order
+	Contexts.Reset();
+
 	Settings.OnDPIScaleChangedDelegate.RemoveAll(this);
 
 	// Order matters because contexts can be created during World Tick Start events.
@@ -254,13 +262,28 @@ void FImGuiContextManager::SetDPIScale(const FImGuiDPIScaleInfo& ScaleInfo)
 	}
 }
 
-void FImGuiContextManager::BuildFontAtlas()
+void FImGuiContextManager::BuildFontAtlas(const TMap<FName, TSharedPtr<ImFontConfig>>& CustomFontConfigs)
 {
 	if (!FontAtlas.IsBuilt())
 	{
 		ImFontConfig FontConfig = {};
 		FontConfig.SizePixels = FMath::RoundFromZero(13.f * DPIScale);
 		FontAtlas.AddFontDefault(&FontConfig);
+
+		// Build custom fonts
+		for (const TPair<FName, TSharedPtr<ImFontConfig>>& CustomFontPair : CustomFontConfigs)
+		{
+			FName CustomFontName = CustomFontPair.Key;
+			TSharedPtr<ImFontConfig> CustomFontConfig = CustomFontPair.Value;
+
+			// Set font name for debugging
+			if (CustomFontConfig.IsValid())
+			{
+				strncpy(CustomFontConfig->Name, TCHAR_TO_ANSI(*CustomFontName.ToString()), 40);
+			}
+
+			FontAtlas.AddFont(CustomFontConfig.Get());
+		}
 
 		unsigned char* Pixels;
 		int Width, Height, Bpp;
@@ -283,5 +306,5 @@ void FImGuiContextManager::RebuildFontAtlas()
 		FontResourcesReleaseCountdown = 3;
 	}
 
-	BuildFontAtlas();
+	BuildFontAtlas(FImGuiModule::Get().GetProperties().GetCustomFonts());
 }

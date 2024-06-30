@@ -3,9 +3,11 @@
 #include "AIController.h"
 #include "EngineUtils.h"
 #include "MotionWarpingComponent.h"
+#include "Net/Core/PushModel/PushModel.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Common/WeaponCommon.h"
 #include "Controller/ActionCharacterAIController.h"
+#include "FunctionLibrary/AvatarFunctionLibrary.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "GameObject/Buff/NewBuffBase.h"
 #include "Navigation/PathFollowingComponent.h"
@@ -14,6 +16,7 @@
 #include "Pawn/PlayerCharacter/CharacterAnimComponent.h"
 #include "Pawn/PlayerCharacter/RagdollComponent.h"
 #include "UI/InGame/PlayerCharacterStateWidget.h"
+#include "Net/UnrealNetwork.h"
 
 ATopDownStylePlayerCharacter::ATopDownStylePlayerCharacter()
 {
@@ -92,6 +95,37 @@ void ATopDownStylePlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayRea
 
 		AIController->OnReachStopDistance.RemoveAll(this);
 	}
+}
+
+void ATopDownStylePlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	FDoRepLifetimeParams SharedParams;
+	SharedParams.bIsPushBased = true;
+
+	DOREPLIFETIME_WITH_PARAMS_FAST(ATopDownStylePlayerCharacter, AvatarId, SharedParams)
+}
+
+void ATopDownStylePlayerCharacter::ServerSetupAvatarId_Implementation(int32 InId)
+{
+	if (!HasAuthority())
+		return;
+
+	// Skip if given id is the same
+	if (AvatarId == InId)
+		return;
+
+	MARK_PROPERTY_DIRTY_FROM_NAME(ATopDownStylePlayerCharacter, AvatarId, this);
+	AvatarId = InId;
+
+	// Trigger the event on server side
+	OnRep_AvatarId();
+}
+
+void ATopDownStylePlayerCharacter::OnRep_AvatarId()
+{
+	UAvatarFunctionLibrary::InitAvatarAppearanceWithConfigId(this, this, AvatarId);
 }
 
 FVector ATopDownStylePlayerCharacter::GetProjectileSpawnLocation() const

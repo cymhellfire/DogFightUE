@@ -5,6 +5,7 @@ local CreateLobbyDialogView = UnrealClass("Common.MVVM.ModelBase")
 local ViewModelBase = require("Common.MVVM.ViewModelBase")
 local DataBinding = require("Common.MVVM.DataBinding")
 local CreateLobbyDialogVM = require("DogFight.Widget.MainMenu.CreateLobbyDialog.CreateLobbyDialogVM")
+local GameLuaStateNameDef = require("DogFight.Services.GameStateMachineService.GameLuaStateNameDef")
 --local ListWrapper = require("Common.ListView.ListViewWrapper")
 
 function CreateLobbyDialogView:PostInitialized()
@@ -63,6 +64,13 @@ function CreateLobbyDialogView:OnConfirmButtonClicked()
 
         local LocalPC = UE.ULuaIntegrationFunctionLibrary.GetFirstLocalPlayerController(self)
         SessionSubsystem:HostSession(LocalPC, Request)
+
+        ---Switch game state
+        ---@type GameStateMachineService
+        local GameStateMachineService = GetGameService(self, GameServiceNameDef.GameStateMachineService)
+        if GameStateMachineService then
+            GameStateMachineService:TryEnterState(GameLuaStateNameDef.StateGameLobby, { bWaitingSession = true, })
+        end
     end
 end
 
@@ -72,8 +80,7 @@ function CreateLobbyDialogView:OnSessionCreated()
     if SessionSubsystem then
         SessionSubsystem.K2_OnCreateSessionCompleteEvent:Remove(self, self.OnSessionCreated)
 
-        SessionSubsystem:SetHostSessionSetting("LobbyName", self.LobbyName_InputBox:GetText() or self.DefaultLobbyName)
-        SessionSubsystem:UpdateHostSessionSetting()
+        SessionSubsystem:UpdateSessionSettings("LobbyName", self.LobbyName_InputBox:GetText() or self.DefaultLobbyName)
 
         ---Let gameplay subsystem listening network failures
         ---@type GameplayDataSubsystem

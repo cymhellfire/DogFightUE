@@ -46,14 +46,6 @@ AStandardModePlayerCharacter::AStandardModePlayerCharacter()
 	// Create a decal in the world to show the cursor's location
 	CursorToWorld = CreateDefaultSubobject<UDecalComponent>("CursorToWorld");
 	CursorToWorld->SetupAttachment(RootComponent);
-	static ConstructorHelpers::FObjectFinder<UMaterial> DecalMaterialAsset(TEXT("Material'/Game/TopDownCPP/Blueprints/M_Cursor_Decal.M_Cursor_Decal'"));
-	if (DecalMaterialAsset.Succeeded())
-	{
-		CursorToWorld->SetDecalMaterial(DecalMaterialAsset.Object);
-	}
-	CursorToWorld->DecalSize = FVector(16.0f, 32.0f, 32.0f);
-	CursorToWorld->SetRelativeRotation(FRotator(90.f, 0.f, 0.f).Quaternion());
-	CursorToWorld->SetVisibility(false);
 
 	// Create the Widget component for status UI display
 	CharacterStatusWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("CharacterStatusWidgetComponent");
@@ -336,6 +328,16 @@ void AStandardModePlayerCharacter::BeginPlay()
 		CurrentStrength = MaxStrength;
 		OnRep_CurrentStrength();
 	}
+
+	// Setup cursor decal
+	static ConstructorHelpers::FObjectFinder<UMaterial> DecalMaterialAsset(TEXT("Material'/Game/TopDownCPP/Blueprints/M_Cursor_Decal.M_Cursor_Decal'"));
+	if (DecalMaterialAsset.Succeeded())
+	{
+		CursorToWorld->SetDecalMaterial(DecalMaterialAsset.Object);
+	}
+	CursorToWorld->DecalSize = FVector(16.0f, 32.0f, 32.0f);
+	CursorToWorld->SetRelativeRotation(FRotator(90.f, 0.f, 0.f).Quaternion());
+	CursorToWorld->SetVisibility(false);
 
 	// Setup the physical animation component
 	USkeletalMeshComponent* SkeletalMeshComponent = GetMesh();

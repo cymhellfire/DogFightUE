@@ -1,5 +1,6 @@
 #include "GameService/DebugPanelService.h"
 #include "ImGuiModule.h"
+#include "implot.h"
 #include "Common/DogFightGameLog.h"
 
 #define EXECUTE_TEXT_LENGTH 32
@@ -51,7 +52,7 @@ void FDebugPanelExecuteComboBoxControl::DrawControl()
 	ImGui::BeginGroup();
 	{
 		// Make list view
-		if (ImGui::ListBoxHeader(TCHAR_TO_ANSI(*("##" + Context + "_Header")), ImVec2(ListSize.X, ListSize.Y)))
+		if (ImGui::BeginListBox(TCHAR_TO_ANSI(*("##" + Context + "_Header")), ImVec2(ListSize.X, ListSize.Y)))
 		{
 			for (auto Entry : EntryList)
 			{
@@ -62,7 +63,7 @@ void FDebugPanelExecuteComboBoxControl::DrawControl()
 					SelectedIndex = Entry.Index;
 				}
 			}
-			ImGui::ListBoxFooter();
+			ImGui::EndListBox();
 		}
 
 		// Make button
@@ -76,6 +77,7 @@ void FDebugPanelExecuteComboBoxControl::DrawControl()
 
 UDebugPanelService::UDebugPanelService()
 	: bDebugPanelEnable(false)
+	, bImPlotDemoEnable(false)
 {
 }
 
@@ -110,6 +112,11 @@ void UDebugPanelService::ToggleDebugPanel()
 {
 	bDebugPanelEnable = !bDebugPanelEnable;
 	OnDebugPanelEnableChanged();
+}
+
+void UDebugPanelService::ToggleImPlotDemo()
+{
+	bImPlotDemoEnable = !bImPlotDemoEnable;
 }
 
 void UDebugPanelService::SetDrawingTab(const FName& InTabName)
@@ -212,6 +219,11 @@ void UDebugPanelService::ImGuiTick()
 		{
 			ToggleDebugPanel();
 		}
+		ImGui::SameLine();
+		if (ImGui::Button("ImPlot Demo"))
+		{
+			ToggleImPlotDemo();
+		}
 
 		if (ImGui::BeginTabBar("DebugPanelTabBar", ImGuiTabBarFlags_None))
 		{
@@ -225,6 +237,11 @@ void UDebugPanelService::ImGuiTick()
 		}
 	}
 	ImGui::End();
+
+	if (bImPlotDemoEnable)
+	{
+		ImPlot::ShowDemoWindow();
+	}
 }
 
 void UDebugPanelService::DrawTab(const FName& InTabName)

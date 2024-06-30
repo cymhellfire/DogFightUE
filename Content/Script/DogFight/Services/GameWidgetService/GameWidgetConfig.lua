@@ -2,6 +2,7 @@ local WidgetNameDef = require("DogFight.Services.GameWidgetService.GameWidgetNam
 
 ---@class GameWidgetConfig Data table contains all game widgets define.
 local GameWidgetConfig = {
+    ---Common
     [WidgetNameDef.WidgetGenericMessageDialog] = {
         Path = "/Game/DogFightGame/UI/Common/BP_Widget_GenericMessageDialog",
     },
@@ -11,12 +12,24 @@ local GameWidgetConfig = {
     [WidgetNameDef.WidgetCreateLobbyDialog] = {
         Path = "/Game/DogFightGame/UI/MainMenu/BP_Widget_CreateLobbyDialog",
     },
+    ---Main Menu
+    [WidgetNameDef.WidgetMainMenu] = {
+        Path = "/Game/DogFightGame/UI/MainMenu/BP_Widget_MainMenu",
+    },
     [WidgetNameDef.WidgetLobbyBrowser] = {
         Path = "/Game/DogFightGame/UI/MainMenu/BP_Widget_LobbyBrowser",
     },
     [WidgetNameDef.WidgetGameLoading] = {
         Path = "/Game/DogFightGame/UI/Loading/BP_Widget_GameLoading",
     },
+    [WidgetNameDef.WidgetGameSettings] = {
+        Path = "/Game/DogFightGame/UI/UserProfileManager/BP_Widget_GameSettings"
+    },
+    ---GameLobby
+    [WidgetNameDef.WidgetGameLobby] = {
+        Path = "/Game/DogFightGame/UI/GameLobby/BP_Widget_GameLobby",
+    },
+    ---InGame
     [WidgetNameDef.WidgetCardList] = {
         Path = "/Game/DogFightGame/UI/InGame/CardList/BP_Widget_CardList",
     },
@@ -31,6 +44,9 @@ local GameWidgetConfig = {
     },
     [WidgetNameDef.WidgetCharacterMenu] = {
         Path = "/Game/DogFightGame/UI/InGame/PlayerCharacterState/BP_Widget_PlayerCharacterDetailState"
+    },
+    [WidgetNameDef.WidgetPreparationRoom] = {
+        Path = "/Game/DogFightGame/UI/PreparationRoom/BP_Widget_PreparationRoom"
     },
 }
 

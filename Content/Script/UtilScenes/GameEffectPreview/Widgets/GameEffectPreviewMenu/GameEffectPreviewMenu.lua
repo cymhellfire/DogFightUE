@@ -8,7 +8,7 @@ local ListWrapper = require("Common.ListView.ListViewWrapper")
 function GameEffectPreviewMenu:PostInitialized()
     local NewVM = InstantiateViewModel(GameEffectPreviewMenuVM)
     self:BindViewModel(NewVM, {
-        {BindKey = "TitleMessage",   UIKey = "TitleMessage_Text",   DataBinding = DataBinding.TextContextBinding(), }
+        --{BindKey = "TitleMessage",   UIKey = "TitleMessage_Text",   DataBinding = DataBinding.TextContextBinding(), }
     })
 
     self.EffectListWrapper = ListWrapper.New(self, self.EffectList_ListView)

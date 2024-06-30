@@ -7,6 +7,7 @@ local MainMenuVM = require("DogFight.Widget.MainMenu.MainMenuVM")
 --local ListWrapper = require("Common.ListView.ListViewWrapper")
 
 local GameWidgetNameDef = require("DogFight.Services.GameWidgetService.GameWidgetNameDef")
+local GameLuaStateNameDef = require("DogFight.Services.GameStateMachineService.GameLuaStateNameDef")
 
 function MainMenuView:PostInitialized()
     local NewVM = InstantiateViewModel(MainMenuVM)
@@ -19,14 +20,18 @@ function MainMenuView:PostInitialized()
 
     self.HostGame_Button.OnClicked:Add(self, self.OnHostGameButtonClicked)
     self.SearchGame_Button.OnClicked:Add(self, self.OnSearchGameButtonClicked)
+    self.PreparationRoom_Button.OnClicked:Add(self, self.OnPreparationRoomButtonClicked)
     self.ExitGame_Button.OnClicked:Add(self, self.OnExitButtonClicked)
+    self.GameSettings_Button.OnClicked:Add(self, self.OnGameSettingsButtonClicked)
 end
 
 function MainMenuView:UnInitialize()
 
     self.HostGame_Button.OnClicked:Remove(self, self.OnHostGameButtonClicked)
     self.SearchGame_Button.OnClicked:Remove(self, self.OnSearchGameButtonClicked)
+    self.PreparationRoom_Button.OnClicked:Remove(self, self.OnPreparationRoomButtonClicked)
     self.ExitGame_Button.OnClicked:Remove(self, self.OnExitButtonClicked)
+    self.GameSettings_Button.OnClicked:Remove(self, self.OnGameSettingsButtonClicked)
 end
 
 function MainMenuView:OnHostGameButtonClicked()
@@ -86,6 +91,22 @@ function MainMenuView:OnSearchFinished(bSuccess, Msg)
 
             print(string.format("Game[%d]: %s", i, Desc))
         end
+    end
+end
+
+function MainMenuView:OnPreparationRoomButtonClicked()
+    ---@type GameStateMachineService
+    local GameStateMachineService = GetGameService(self, GameServiceNameDef.GameStateMachineService)
+    if GameStateMachineService then
+        GameStateMachineService:TryEnterState(GameLuaStateNameDef.StatePreparationRoom)
+    end
+end
+
+function MainMenuView:OnGameSettingsButtonClicked()
+    ---@type GameStateMachineService
+    local GameStateMachineService = GetGameService(self, GameServiceNameDef.GameStateMachineService)
+    if GameStateMachineService then
+        GameStateMachineService:TryEnterState(GameLuaStateNameDef.StateGameSettings)
     end
 end
 

@@ -3,7 +3,7 @@ require "Common.TableUtils"
 ---@class ViewModelBase
 local ViewModelBase = {}
 
-local NoInitValue = {}
+local NoInitValue = { NoInitValue = true }
 
 ---@param t ViewModelBase
 ---@param k string Key of bind
@@ -24,7 +24,7 @@ local function InstantiateViewModel(InViewModel)
     local NewVM = table.deepCopy(ViewModelBase)
     -- Append the binding table to new ViewModel
     if InViewModel and InViewModel["BindingTable"] then
-        NewVM["BindingTable"] = InViewModel["BindingTable"]
+        NewVM["BindingTable"] = table.deepCopy(InViewModel["BindingTable"])
     end
     return NewVM
 end
@@ -46,6 +46,12 @@ function ViewModelBase:SetupBinding(InView, BindTable)
     for _, v in ipairs(BindTable) do
         self:AddBinding(v)
     end
+end
+
+local function IsNoInitValue(InValue)
+    local bIsRef = InValue == NoInitValue
+    local bEqual = (type(InValue) == "table") and (InValue["NoInitValue"] == true)
+    return bIsRef or bEqual
 end
 
 function ViewModelBase:AddBinding(InTable)
@@ -84,12 +90,7 @@ function ViewModelBase:AddBinding(InTable)
 
     -- Setup initial value
     local InitValue = BindingTable[BindKey] or NoInitValue
-    if InitValue ~= NoInitValue then
-        -- local ViewWidget = rawget(self, "BindView")
-        -- local Widget = ViewWidget[InTable.UIKey]
-        -- if Widget then
-        --     InTable.DataBinding:SetValue(Widget, InitValue)
-        -- end
+    if not IsNoInitValue(InitValue) then
         NewIndex(self, InTable.BindKey, InitValue)
     end
 end

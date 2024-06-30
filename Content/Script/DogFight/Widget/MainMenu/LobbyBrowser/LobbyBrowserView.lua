@@ -8,6 +8,7 @@ local LobbyBrowserVM = require("DogFight.Widget.MainMenu.LobbyBrowser.LobbyBrows
 local ListWrapper = require("Common.ListView.ListViewWrapper")
 
 local GameWidgetNameDef = require("DogFight.Services.GameWidgetService.GameWidgetNameDef")
+local GameLuaStateNameDef = require("DogFight.Services.GameStateMachineService.GameLuaStateNameDef")
 
 function LobbyBrowserView:PostInitialized()
     local NewVM = InstantiateViewModel(LobbyBrowserVM)
@@ -160,6 +161,12 @@ function LobbyBrowserView:OnJoinSessionSuccess()
     local GameplayDataSubsystem = UE.UCommonGameplayFunctionLibrary.GetGameplayDataSubsystem(self)
     if GameplayDataSubsystem then
         GameplayDataSubsystem:StartListenNetworkFailure()
+    end
+
+    ---@type GameStateMachineService
+    local GameStateMachineService = GetGameService(self, GameServiceNameDef.GameStateMachineService)
+    if GameStateMachineService then
+        GameStateMachineService:TryEnterState(GameLuaStateNameDef.StateGameLobby, { bWaitingSession = true, })
     end
 end
 

@@ -14,6 +14,7 @@
 struct FImGuiDrawCommand
 {
 	uint32 NumElements;
+	uint32 IndexOffset;
 	FSlateRect ClippingRect;
 	TextureIndex TextureId;
 };
@@ -33,7 +34,7 @@ public:
 	FImGuiDrawCommand GetCommand(int CommandNb, const FTransform2D& Transform) const
 	{
 		const ImDrawCmd& ImGuiCommand = ImGuiCommandBuffer[CommandNb];
-		return { ImGuiCommand.ElemCount, TransformRect(Transform, ImGuiInterops::ToSlateRect(ImGuiCommand.ClipRect)),
+		return { ImGuiCommand.ElemCount, ImGuiCommand.IdxOffset, TransformRect(Transform, ImGuiInterops::ToSlateRect(ImGuiCommand.ClipRect)),
 			ImGuiInterops::ToTextureIndex(ImGuiCommand.TextureId) };
 	}
 

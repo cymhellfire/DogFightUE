@@ -4,19 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Player/DogFightPlayerController.h"
+#include "Subsystem/InGameStatistics/GameLobbyPlayerInfo.h"
 #include "GameLobbyPlayerController.generated.h"
-
-USTRUCT()
-struct FGameLobbyPlayerInfo
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-	FString PlayerName;
-
-	UPROPERTY()
-	bool bHost;
-};
 
 UCLASS()
 class DOGFIGHTGAME_API AGameLobbyPlayerController : public ADogFightPlayerController
@@ -32,6 +21,9 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void ServerMarkPlayerReady(bool bIsReady);
+
+	UFUNCTION(Server, Reliable)
+	void ServerSelectAvatarId(const FGameLobbyPlayerAvatarId& AvatarId);
 
 	virtual void ClientReturnToMainMenuWithReason2_Implementation(EReturnToMainMenuReason::Type Reason) override;
 

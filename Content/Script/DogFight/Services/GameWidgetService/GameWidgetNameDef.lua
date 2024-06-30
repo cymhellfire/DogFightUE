@@ -4,9 +4,14 @@ local GameWidgetNameDef = {
     WidgetGenericMessageDialog = "WidgetGenericMessageDialog",
     WidgetJoiningSession = "WidgetJoiningSession",
     WidgetGameLoading = "WidgetGameLoading",
+    WidgetPreparationRoom = "WidgetPreparationRoom",
     --- Main Menu
+    WidgetMainMenu = "WidgetMainMenu",
     WidgetCreateLobbyDialog = "WidgetCreateLobbyDialog",
     WidgetLobbyBrowser = "WidgetLobbyBrowser",
+    WidgetGameSettings = "WidgetGameSettings",
+    --- Game Lobby
+    WidgetGameLobby = "WidgetGameLobby",
     --- In Game
     WidgetCardList = "WidgetCardList",
     WidgetTimeline = "WidgetTimeline",

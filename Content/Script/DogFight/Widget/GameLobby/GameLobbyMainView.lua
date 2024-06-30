@@ -10,6 +10,7 @@ local GameLobbyMainVM = require("DogFight.Widget.GameLobby.GameLobbyMainVM")
 local ListWrapper = require("Common.ListView.ListViewWrapper")
 
 local GameWidgetNameDef = require("DogFight.Services.GameWidgetService.GameWidgetNameDef")
+local GameLuaStateNameDef = require("DogFight.Services.GameStateMachineService.GameLuaStateNameDef")
 
 ---@param self GameLobbyMainView
 local function RegisterCallback(self)
@@ -238,16 +239,20 @@ end
 
 function GameLobbyMainView:OnBackButtonClicked()
     -- ---@type UCommonSessionSubsystem
-    -- local CommonSessionSubsystem = UE.UGameLobbyFunctionLibrary.GetCommonSessionSubSystem(self)
-    -- if CommonSessionSubsystem then
-    --     CommonSessionSubsystem:CleanUpSessions()
-    -- end
+    local CommonSessionSubsystem = UE.UGameLobbyFunctionLibrary.GetCommonSessionSubSystem(self)
+    if CommonSessionSubsystem then
+        CommonSessionSubsystem:CleanUpSessions()
+    end
 
     -- Dismiss session
     UE.UGameLobbyFunctionLibrary.DismissGameLobby(self)
 
     -- Back to main menu
-    UE.UGameplayStatics.OpenLevel(self, "/Game/DogFightGame/Level/MainMenu/MainMenu")
+    ---@type GameStateMachineService
+    local GameStateMachineService = GetGameService(self, GameServiceNameDef.GameStateMachineService)
+    if GameStateMachineService then
+        GameStateMachineService:TryEnterState(GameLuaStateNameDef.StateMainMenu)
+    end
 end
 
 function GameLobbyMainView:OnChangeMapButtonClicked()

@@ -9,17 +9,29 @@
 #include "Player/GameLobbyPlayerState.h"
 #include "PlayerController/GameLobbyPlayerController.h"
 
-TArray<AGameLobbyPlayerState*> UGameLobbyFunctionLibrary::GetAllGameLobbyPlayerState(const UObject* WorldContext)
+TArray<AGameLobbyPlayerState*> UGameLobbyFunctionLibrary::GetAllGameLobbyPlayerState(UObject* WorldContext)
 {
+	struct FSortPlayerStateById
+	{
+		bool operator()(const AGameLobbyPlayerState& A, const AGameLobbyPlayerState& B) const
+		{
+			const auto PlayerIdA = A.GetPlayerId();
+			const auto PlayerIdB = B.GetPlayerId();
+			return PlayerIdA > PlayerIdB;
+		}
+	};
+
 	if (auto GS = GetCurrentLobbyGameState(WorldContext))
 	{
-		return GS->GetAllPlayerState();
+		auto PlayerStateList = GS->GetAllPlayerState();
+		PlayerStateList.Sort(FSortPlayerStateById());
+		return PlayerStateList;
 	}
 
 	return TArray<AGameLobbyPlayerState*>();
 }
 
-AGameLobbyPlayerController* UGameLobbyFunctionLibrary::GetLocalGameLobbyPlayerController(const UObject* WorldContext)
+AGameLobbyPlayerController* UGameLobbyFunctionLibrary::GetLocalGameLobbyPlayerController(UObject* WorldContext)
 {
 	if (auto World = WorldContext->GetWorld())
 	{
@@ -29,7 +41,7 @@ AGameLobbyPlayerController* UGameLobbyFunctionLibrary::GetLocalGameLobbyPlayerCo
 	return nullptr;
 }
 
-AGameLobbyPlayerState* UGameLobbyFunctionLibrary::GetLocalGameLobbyPlayerState(const UObject* WorldContext)
+AGameLobbyPlayerState* UGameLobbyFunctionLibrary::GetLocalGameLobbyPlayerState(UObject* WorldContext)
 {
 	if (auto PC = GetLocalGameLobbyPlayerController(WorldContext))
 	{
@@ -39,7 +51,7 @@ AGameLobbyPlayerState* UGameLobbyFunctionLibrary::GetLocalGameLobbyPlayerState(c
 	return nullptr;
 }
 
-AGameLobbyGameState* UGameLobbyFunctionLibrary::GetCurrentLobbyGameState(const UObject* WorldContext)
+AGameLobbyGameState* UGameLobbyFunctionLibrary::GetCurrentLobbyGameState(UObject* WorldContext)
 {
 	if (!IsValid(WorldContext))
 		return nullptr;
@@ -52,7 +64,7 @@ AGameLobbyGameState* UGameLobbyFunctionLibrary::GetCurrentLobbyGameState(const U
 	return nullptr;
 }
 
-UCommonSessionSubsystem* UGameLobbyFunctionLibrary::GetCommonSessionSubSystem(const UObject* WorldContext)
+UCommonSessionSubsystem* UGameLobbyFunctionLibrary::GetCommonSessionSubSystem(UObject* WorldContext)
 {
 	if (IsValid(WorldContext))
 	{
@@ -68,7 +80,7 @@ UCommonSessionSubsystem* UGameLobbyFunctionLibrary::GetCommonSessionSubSystem(co
 	return nullptr;
 }
 
-void UGameLobbyFunctionLibrary::DismissGameLobby(const UObject* WorldContext)
+void UGameLobbyFunctionLibrary::DismissGameLobby(UObject* WorldContext)
 {
 	if (!IsValid(WorldContext))
 	{
@@ -86,4 +98,20 @@ void UGameLobbyFunctionLibrary::DismissGameLobby(const UObject* WorldContext)
 			PC->HandleReturnToMainMenu2();
 		}
 	}
+}
+
+bool UGameLobbyFunctionLibrary::IsLocalPlayer(UObject* WorldContext, int32 PlayerId)
+{
+	if (!IsValid(WorldContext))
+		return false;
+
+	if (auto PC = WorldContext->GetWorld()->GetFirstPlayerController())
+	{
+		if (auto PS = PC->GetPlayerState<APlayerState>())
+		{
+			return PS->GetPlayerId() == PlayerId;
+		}
+	}
+
+	return false;
 }
