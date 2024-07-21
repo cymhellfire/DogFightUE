@@ -13,12 +13,12 @@
 #include "Navigation/PathFollowingComponent.h"
 #include "Pawn/PlayerCharacter/ArsenalComponent.h"
 #include "Pawn/PlayerCharacter/BuffManagerComponent.h"
-#include "Pawn/PlayerCharacter/CharacterAnimComponent.h"
 #include "Pawn/PlayerCharacter/RagdollComponent.h"
 #include "UI/InGame/PlayerCharacterStateWidget.h"
 #include "Net/UnrealNetwork.h"
 
-ATopDownStylePlayerCharacter::ATopDownStylePlayerCharacter()
+ATopDownStylePlayerCharacter::ATopDownStylePlayerCharacter(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 	// Create components
 	DamageReceiverComponent = CreateDefaultSubobject<UDamageReceiverComponent>("DamageReceiverComponent");
@@ -26,7 +26,6 @@ ATopDownStylePlayerCharacter::ATopDownStylePlayerCharacter()
 	RagdollComponent = CreateDefaultSubobject<URagdollComponent>("RagdollComponent");
 	BuffManagerComponent = CreateDefaultSubobject<UBuffManagerComponent>("BuffManagerComponent");
 	ArsenalComponent = CreateDefaultSubobject<UArsenalComponent>("ArsenalComponent");
-	AnimComponent = CreateDefaultSubobject<UCharacterAnimComponent>("CharacterAnimComponent");
 	MotionWarpComponent = CreateDefaultSubobject<UMotionWarpingComponent>("MotionWarpingComponent");
 
 	// Initial value
@@ -139,33 +138,6 @@ void ATopDownStylePlayerCharacter::SetRagdollEnabled(bool bEnable)
 	RagdollComponent->ServerSetRagdollActive(bEnable);
 }
 
-float ATopDownStylePlayerCharacter::PlayActionAnimation(UAnimMontage* InMontage)
-{
-	if (IsValid(AnimComponent))
-	{
-		return AnimComponent->PlayAnimation(InMontage);
-	}
-	return IActionCharacterInterface::PlayActionAnimation(InMontage);
-}
-
-float ATopDownStylePlayerCharacter::PlayActionAnimationWithWarping(UAnimMontage* InMontage, FName TargetName,
-	const FVector& TargetPos)
-{
-	if (IsValid(AnimComponent))
-	{
-		return AnimComponent->PlayAnimationWithWarping(InMontage, TargetName, TargetPos);
-	}
-	return IActionCharacterInterface::PlayActionAnimationWithWarping(InMontage, TargetName, TargetPos);
-}
-
-void ATopDownStylePlayerCharacter::MoveToTarget(const FVector& Target, float StopDistance)
-{
-	if (auto AIController = Cast<AActionCharacterAIController>(GetController()))
-	{
-		AIController->MoveToTargetWithStopDistance(Target, StopDistance);
-	}
-}
-
 void ATopDownStylePlayerCharacter::InitializeStateWidget()
 {
 	if (StateWidgetClass.IsNull())
@@ -266,5 +238,13 @@ void ATopDownStylePlayerCharacter::StopMoveImmediately()
 	if (auto MovementComponent = GetMovementComponent())
 	{
 		MovementComponent->StopMovementImmediately();
+	}
+}
+
+void ATopDownStylePlayerCharacter::MoveToTarget(const FVector& Target, float StopDistance)
+{
+	if (auto AIController = Cast<AActionCharacterAIController>(GetController()))
+	{
+		AIController->MoveToTargetWithStopDistance(Target, StopDistance);
 	}
 }

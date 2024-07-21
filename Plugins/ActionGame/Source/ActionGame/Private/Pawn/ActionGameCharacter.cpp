@@ -6,11 +6,14 @@
 #include "Common/ActionGameWeaponLog.h"
 #include "Engine/AssetManager.h"
 #include "Engine/StreamableManager.h"
+#include "Pawn/Component/CharacterAnimComponent.h"
 
 
 // Sets default values
-AActionGameCharacter::AActionGameCharacter()
+AActionGameCharacter::AActionGameCharacter(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
 {
+	AnimComponent = CreateDefaultSubobject<UCharacterAnimComponent>("CharacterAnimComponent");
 }
 
 // Called when the game starts or when spawned
@@ -68,6 +71,7 @@ void AActionGameCharacter::SetupAvatarAppearanceWithAsset(UAvatarDataAsset* InAs
 	if (IsValid(InAsset))
 	{
 		SetupAvatarAppearance(InAsset->AvatarDescData);
+		ApplyAnimationSet(InAsset->AvatarAnimSetData);
 	}
 	else
 	{
@@ -92,10 +96,43 @@ void AActionGameCharacter::ApplyAvatarDesc(const FAvatarDescData& AvatarDescData
 		if (auto NewAnimBp = Cast<UAnimBlueprintGeneratedClass>(AvatarDescData.AnimationBlueprintClass.ResolveClass()))
 		{
 			SkelMeshComp->SetAnimInstanceClass(NewAnimBp);
+
+			// Notify animation component to update
+			if (IsValid(AnimComponent))
+			{
+				AnimComponent->RefreshAnimInstance();
+			}
 		}
 		else
 		{
 			UE_LOG(LogActionGame, Error, TEXT("[ActionGameCharacter] Invalid animation blueprint specified."))
 		}
 	}
+}
+
+void AActionGameCharacter::ApplyAnimationSet(const FAvatarAnimSetData& AvatarAnimSetData)
+{
+	if (IsValid(AnimComponent))
+	{
+		AnimComponent->SetupPredefineAnimations(AvatarAnimSetData);
+	}
+}
+
+float AActionGameCharacter::PlayActionAnimation(UAnimMontage* InMontage)
+{
+	if (IsValid(AnimComponent))
+	{
+		return AnimComponent->PlayAnimation(InMontage);
+	}
+	return IActionCharacterInterface::PlayActionAnimation(InMontage);
+}
+
+float AActionGameCharacter::PlayActionAnimationWithWarping(UAnimMontage* InMontage, FName TargetName,
+	const FVector& TargetPos)
+{
+	if (IsValid(AnimComponent))
+	{
+		return AnimComponent->PlayAnimationWithWarping(InMontage, TargetName, TargetPos);
+	}
+	return IActionCharacterInterface::PlayActionAnimationWithWarping(InMontage, TargetName, TargetPos);
 }

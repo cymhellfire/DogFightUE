@@ -1,10 +1,11 @@
 // Dog Fight Game Code By CYM.
 
 
-#include "Pawn/PlayerCharacter/CharacterAnimComponent.h"
+#include "Pawn/Component/CharacterAnimComponent.h"
 
 #include "MotionWarpingComponent.h"
-#include "Common/DogFightGameLog.h"
+#include "Common/ActionGameWeaponLog.h"
+#include "DataAsset/AvatarDataAsset.h"
 #include "GameFramework/Character.h"
 
 
@@ -29,10 +30,7 @@ void UCharacterAnimComponent::BeginPlay()
 	// Get motion warping component
 	MotionWarpingComponent = GetOwner()->GetComponentByClass<UMotionWarpingComponent>();
 
-	if (auto Character = Cast<ACharacter>(GetOwner()))
-	{
-		AnimInstance = Character->GetMesh()->GetAnimInstance();
-	}
+	RefreshAnimInstance();
 }
 
 
@@ -77,7 +75,7 @@ void UCharacterAnimComponent::MulticastPlayMontage_Implementation(UAnimMontage* 
 		const float Result = AnimInstance->Montage_Play(InMontage);
 		if (Result == 0)
 		{
-			UE_LOG(LogDogFightGame, Error, TEXT("[UCharacterAnimComponent] Failed to play montage: %s"), *InMontage->GetName());
+			UE_LOG(LogActionGame, Error, TEXT("[UCharacterAnimComponent] Failed to play montage: %s"), *InMontage->GetName());
 		}
 	}
 }
@@ -108,7 +106,7 @@ void UCharacterAnimComponent::MulticastPlayMontageWithWarping_Implementation(UAn
 		const float Result = AnimInstance->Montage_Play(InMontage);
 		if (Result == 0)
 		{
-			UE_LOG(LogDogFightGame, Error, TEXT("[UCharacterAnimComponent] Failed to play montage: %s"), *InMontage->GetName());
+			UE_LOG(LogActionGame, Error, TEXT("[UCharacterAnimComponent] Failed to play montage: %s"), *InMontage->GetName());
 		}
 		else
 		{
@@ -137,6 +135,40 @@ void UCharacterAnimComponent::OnMontageEnded(UAnimMontage* InMontage, bool bInte
 		if (AnimInstance.IsValid())
 		{
 			AnimInstance->OnMontageEnded.RemoveDynamic(this, &UCharacterAnimComponent::OnMontageEnded);
+		}
+	}
+}
+
+void UCharacterAnimComponent::SetupPredefineAnimations(const FAvatarAnimSetData& InData)
+{
+	PredefineAnimMap.Empty();
+
+	// Record all animation resources
+	for (auto& Data : InData.AnimResourceMap)
+	{
+		if (IsValid(Data.Value))
+		{
+			PredefineAnimMap.Add(Data.Key, Data.Value);
+		}
+	}
+}
+
+void UCharacterAnimComponent::RefreshAnimInstance()
+{
+	if (auto Character = Cast<ACharacter>(GetOwner()))
+	{
+		AnimInstance = Character->GetMesh()->GetAnimInstance();
+	}
+}
+
+void UCharacterAnimComponent::MulticastPlayPredefineAnimation(EActionAnimPredefinedType::Type InType)
+{
+	if (auto Result = PredefineAnimMap.Find(InType))
+	{
+		auto AnimResource = *Result;
+		if (auto Montage = Cast<UAnimMontage>(AnimResource))
+		{
+			MulticastPlayMontage(Montage);
 		}
 	}
 }

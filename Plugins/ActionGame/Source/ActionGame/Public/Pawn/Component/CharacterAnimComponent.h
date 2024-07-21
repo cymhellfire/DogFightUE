@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Common/ActionAnimCommon.h"
 #include "Components/ActorComponent.h"
 #include "CharacterAnimComponent.generated.h"
 
+struct FAvatarAnimSetData;
 class UMotionWarpingComponent;
 
 USTRUCT(BlueprintType)
@@ -21,7 +23,7 @@ struct FCharacterAnimWarpingParams
 };
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class DOGFIGHTGAME_API UCharacterAnimComponent : public UActorComponent
+class ACTIONGAME_API UCharacterAnimComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
@@ -29,11 +31,18 @@ public:
 	// Sets default values for this component's properties
 	UCharacterAnimComponent();
 
+	void SetupPredefineAnimations(const FAvatarAnimSetData& InData);
+
+	void RefreshAnimInstance();
+
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastPlayMontage(UAnimMontage* InMontage);
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastPlayMontageWithWarping(UAnimMontage* InMontage, const FCharacterAnimWarpingParams& WarpingParams);
+
+	UFUNCTION(BlueprintCallable, Category="CharacterAnimComponent")
+	void MulticastPlayPredefineAnimation(EActionAnimPredefinedType::Type InType);
 
 protected:
 	// Called when the game starts
@@ -58,4 +67,7 @@ private:
 	TWeakObjectPtr<UMotionWarpingComponent> MotionWarpingComponent;
 
 	TMap<TWeakObjectPtr<UAnimMontage>, FCharacterAnimWarpingParams> AnimWarpingDataMap;
+
+	UPROPERTY(Transient)
+	TMap<TEnumAsByte<EActionAnimPredefinedType::Type>, UAnimationAsset*> PredefineAnimMap;
 };

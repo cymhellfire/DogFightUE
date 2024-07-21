@@ -37,7 +37,8 @@ public class ActionGame : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"Slate",
-				"SlateCore",
+				"SlateCore", 
+				"MotionWarping",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

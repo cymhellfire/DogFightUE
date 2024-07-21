@@ -25,11 +25,11 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTopDownStylePlayerCharacterDeadEven
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTopDownStylePlayerCharacterMoveFinishedEvent);
 
 UCLASS()
-class DOGFIGHTGAME_API ATopDownStylePlayerCharacter : public AActionGameCharacter, public IDamageReceiverActorInterface, public IActionCharacterInterface
+class DOGFIGHTGAME_API ATopDownStylePlayerCharacter : public AActionGameCharacter, public IDamageReceiverActorInterface
 {
 	GENERATED_BODY()
 public:
-	ATopDownStylePlayerCharacter();
+	ATopDownStylePlayerCharacter(const FObjectInitializer& ObjectInitializer);
 
 	virtual void BeginPlay() override;
 
@@ -72,8 +72,6 @@ public:
 	void StopMoveImmediately();
 
 #pragma region IActionCharacterInterface
-	virtual float PlayActionAnimation(UAnimMontage* InMontage) override;
-	virtual float PlayActionAnimationWithWarping(UAnimMontage* InMontage, FName TargetName, const FVector& TargetPos) override;
 	virtual void MoveToTarget(const FVector& Target, float StopDistance) override;
 #pragma endregion IActionCharacterInterface
 
@@ -97,13 +95,6 @@ protected:
 	void OnRep_AvatarId();
 
 	virtual void OnReachStopDistance();
-
-#pragma region IActionCharacterInterface
-	virtual ACharacter* GetCharacter() override
-	{
-		return this;
-	}
-#pragma endregion IActionCharacterInterface
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -139,9 +130,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="TopDownStylePlayerCharacter")
 	UArsenalComponent* ArsenalComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="TopDownStylePlayerCharacter")
-	UCharacterAnimComponent* AnimComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="TopDownStylePlayerCharacter")
 	UMotionWarpingComponent* MotionWarpComponent;

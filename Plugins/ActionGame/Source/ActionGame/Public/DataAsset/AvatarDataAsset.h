@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Common/ActionAnimCommon.h"
 #include "Engine/DataAsset.h"
 #include "AvatarDataAsset.generated.h"
 
@@ -30,6 +31,18 @@ struct FAvatarDescData
 };
 
 /**
+ * Avatar animation data.
+ */
+USTRUCT(BlueprintType)
+struct FAvatarAnimSetData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, Category="AvatarAnimSetData")
+	TMap<TEnumAsByte<EActionAnimPredefinedType::Type>, UAnimMontage*> AnimResourceMap;
+};
+
+/**
  * Data asset that describe a character appearance.
  */
 UCLASS(Blueprintable)
@@ -40,4 +53,7 @@ class ACTIONGAME_API UAvatarDataAsset : public UPrimaryDataAsset
 public:
 	UPROPERTY(EditAnywhere, Category="AvatarDataAsset")
 	FAvatarDescData AvatarDescData;
+
+	UPROPERTY(EditAnywhere, Category="AvatarDataAsset")
+	FAvatarAnimSetData AvatarAnimSetData;
 };

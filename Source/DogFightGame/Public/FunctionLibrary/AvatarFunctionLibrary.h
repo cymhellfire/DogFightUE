@@ -23,4 +23,15 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="AvatarFunctionLibrary", meta=(WorldContext="WorldContext"))
 	static void InitAvatarAppearanceWithConfigId(UObject* WorldContext, AActionGameCharacter* InAvatar, int32 ConfigId);
+
+	UFUNCTION(BlueprintCallable, Category="AvatarFunctionLibrary")
+	static void PlayAnimationWithAvatar(AActionGameCharacter* InAvatar, const FString& AnimPath);
+
+	/**
+	 * Play predefine animation with specified avatar.
+	 * @param InAvatar Avatar to play animation with.
+	 * @param InType Predefine animation type to play.
+	 */
+	UFUNCTION(BlueprintCallable, Category="AvatarFunctionLibrary")
+	static void PlayPredefineAnimWithAvatar(AActionGameCharacter* InAvatar, EActionAnimPredefinedType::Type InType);
 };

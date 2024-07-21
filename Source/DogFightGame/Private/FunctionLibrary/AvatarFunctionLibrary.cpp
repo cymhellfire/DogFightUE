@@ -7,6 +7,7 @@
 #include "FunctionLibrary/LuaIntegrationFunctionLibrary.h"
 #include "GameService/AvatarManagerService.h"
 #include "GameService/GameService.h"
+#include "Pawn/Component/CharacterAnimComponent.h"
 
 void UAvatarFunctionLibrary::InitAvatarAppearanceWithConfigId(UObject* WorldContext, AActionGameCharacter* InAvatar,
 	int32 ConfigId)
@@ -38,5 +39,35 @@ void UAvatarFunctionLibrary::InitAvatarAppearanceWithConfigId(UObject* WorldCont
 		{
 			DFLogE(LogDogFightGame, TEXT("Failed to load avatar data asset with path: %s"), *AssetPath);
 		}
+	}
+}
+
+void UAvatarFunctionLibrary::PlayAnimationWithAvatar(AActionGameCharacter* InAvatar, const FString& AnimPath)
+{
+	if (!IsValid(InAvatar))
+	{
+		return;
+	}
+
+	FSoftObjectPath ResPath(AnimPath);
+	UAnimMontage* AnimRes = Cast<UAnimMontage>(ResPath.IsValid() ? ResPath.ResolveObject() : ResPath.TryLoad());
+	if (!IsValid(AnimRes))
+	{
+		return;
+	}
+	InAvatar->PlayAnimMontage(AnimRes);
+}
+
+void UAvatarFunctionLibrary::PlayPredefineAnimWithAvatar(AActionGameCharacter* InAvatar,
+	EActionAnimPredefinedType::Type InType)
+{
+	if (!IsValid(InAvatar))
+	{
+		return;
+	}
+
+	if (auto AnimComponent = InAvatar->GetAnimComponent())
+	{
+		AnimComponent->MulticastPlayPredefineAnimation(InType);
 	}
 }
