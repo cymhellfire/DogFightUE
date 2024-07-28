@@ -1,5 +1,6 @@
 #include "FunctionLibrary/CommonGameFlowFunctionLibrary.h"
 
+#include "PlayerController/TopDownStyleBotController.h"
 #include "FunctionLibrary/CommonGameplayFunctionLibrary.h"
 #include "FunctionLibrary/LuaIntegrationFunctionLibrary.h"
 #include "GameFramework/PlayerState.h"
@@ -8,7 +9,7 @@
 #include "GameMode/GameStateComponent/GameTimelineComponent.h"
 #include "PlayerController/TopDownStylePlayerController.h"
 
-TArray<ATopDownStylePlayerController*> UCommonGameFlowFunctionLibrary::GetAllPlayerControllers(const UObject* WorldContextObject)
+TArray<ATopDownStylePlayerController*> UCommonGameFlowFunctionLibrary::GetAllPlayerControllers(UObject* WorldContextObject)
 {
 	TArray<ATopDownStylePlayerController*> Result;
 	if (auto GameMode = GetCurrentTopDownStyleGameMode(WorldContextObject))
@@ -26,7 +27,25 @@ TArray<ATopDownStylePlayerController*> UCommonGameFlowFunctionLibrary::GetAllPla
 	return Result;
 }
 
-FName UCommonGameFlowFunctionLibrary::GetCurrentGameFlowStateName(const UObject* WorldContextObject)
+TArray<ATopDownStyleBotController*> UCommonGameFlowFunctionLibrary::GetAllBotControllers(UObject* WorldContextObject)
+{
+	TArray<ATopDownStyleBotController*> Result;
+	if (auto GameMode = GetCurrentTopDownStyleGameMode(WorldContextObject))
+	{
+		auto PCList = GameMode->GetAllBotControllers();
+		for (auto PC : PCList)
+		{
+			if (PC.IsValid())
+			{
+				Result.Add(PC.Get());
+			}
+		}
+	}
+
+	return Result;
+}
+
+FName UCommonGameFlowFunctionLibrary::GetCurrentGameFlowStateName(UObject* WorldContextObject)
 {
 	if (auto GameMode = GetCurrentTopDownStyleGameMode(WorldContextObject))
 	{
@@ -46,7 +65,17 @@ void UCommonGameFlowFunctionLibrary::SpawnPlayerCharacterPawn(ATopDownStylePlaye
 	Controller->SpawnCharacterPawn();
 }
 
-void UCommonGameFlowFunctionLibrary::SetCharacterMoveEnableForAllPlayers(const UObject* WorldContextObject, bool bEnable)
+void UCommonGameFlowFunctionLibrary::SpawnBotCharacterPawn(ATopDownStyleBotController* Controller)
+{
+	if (!IsValid(Controller))
+	{
+		return;
+	}
+
+	Controller->SpawnCharacterPawn();
+}
+
+void UCommonGameFlowFunctionLibrary::SetCharacterMoveEnableForAllPlayers(UObject* WorldContextObject, bool bEnable)
 {
 	if (auto GameMode = GetCurrentTopDownStyleGameMode(WorldContextObject))
 	{
@@ -54,7 +83,7 @@ void UCommonGameFlowFunctionLibrary::SetCharacterMoveEnableForAllPlayers(const U
 	}
 }
 
-void UCommonGameFlowFunctionLibrary::InitializeGameTimeline(const UObject* WorldContextObject)
+void UCommonGameFlowFunctionLibrary::InitializeGameTimeline(UObject* WorldContextObject)
 {
 	// Use game mode to get timeline component to ensure this operation cannot be finished on client side.
 	if (auto Timeline = GetCurrentTimeline_Server(WorldContextObject))
@@ -63,7 +92,7 @@ void UCommonGameFlowFunctionLibrary::InitializeGameTimeline(const UObject* World
 	}
 }
 
-TArray<int32> UCommonGameFlowFunctionLibrary::GetCurrentTimeline(const UObject* WorldContextObject)
+TArray<int32> UCommonGameFlowFunctionLibrary::GetCurrentTimeline(UObject* WorldContextObject)
 {
 	if (auto Timeline = GetCurrentTimeline_Common(WorldContextObject))
 	{
@@ -73,7 +102,7 @@ TArray<int32> UCommonGameFlowFunctionLibrary::GetCurrentTimeline(const UObject* 
 	return TArray<int32>();
 }
 
-void UCommonGameFlowFunctionLibrary::MoveTimelineForward(const UObject* WorldContextObject)
+void UCommonGameFlowFunctionLibrary::MoveTimelineForward(UObject* WorldContextObject)
 {
 	if (auto Timeline = GetCurrentTimeline_Server(WorldContextObject))
 	{
@@ -81,7 +110,7 @@ void UCommonGameFlowFunctionLibrary::MoveTimelineForward(const UObject* WorldCon
 	}
 }
 
-int32 UCommonGameFlowFunctionLibrary::GetTimelineFirstPlayerId(const UObject* WorldContextObject)
+int32 UCommonGameFlowFunctionLibrary::GetTimelineFirstPlayerId(UObject* WorldContextObject)
 {
 	if (auto Timeline = GetCurrentTimeline_Server(WorldContextObject))
 	{
@@ -91,7 +120,7 @@ int32 UCommonGameFlowFunctionLibrary::GetTimelineFirstPlayerId(const UObject* Wo
 	return -1;
 }
 
-UGameTimelineComponent* UCommonGameFlowFunctionLibrary::GetCurrentTimeline_Server(const UObject* WorldContextObject)
+UGameTimelineComponent* UCommonGameFlowFunctionLibrary::GetCurrentTimeline_Server(UObject* WorldContextObject)
 {
 	// Only server can access the game mode.
 	if (auto GameMode = GetCurrentTopDownStyleGameMode(WorldContextObject))
@@ -101,7 +130,7 @@ UGameTimelineComponent* UCommonGameFlowFunctionLibrary::GetCurrentTimeline_Serve
 	return nullptr;
 }
 
-UGameTimelineComponent* UCommonGameFlowFunctionLibrary::GetCurrentTimeline_Common(const UObject* WorldContextObject)
+UGameTimelineComponent* UCommonGameFlowFunctionLibrary::GetCurrentTimeline_Common(UObject* WorldContextObject)
 {
 	// Game state is available both on server and client.
 	if (auto GameState = GetCurrentTopDownStyleGameState(WorldContextObject))
@@ -111,7 +140,7 @@ UGameTimelineComponent* UCommonGameFlowFunctionLibrary::GetCurrentTimeline_Commo
 	return nullptr;
 }
 
-int32 UCommonGameFlowFunctionLibrary::GetCurrentPlayerId(const UObject* WorldContextObject)
+int32 UCommonGameFlowFunctionLibrary::GetCurrentPlayerId(UObject* WorldContextObject)
 {
 	if (auto GameState = GetCurrentTopDownStyleGameState(WorldContextObject))
 	{
@@ -120,7 +149,7 @@ int32 UCommonGameFlowFunctionLibrary::GetCurrentPlayerId(const UObject* WorldCon
 	return -1;
 }
 
-void UCommonGameFlowFunctionLibrary::SetCurrentPlayerId(const UObject* WorldContextObject, int32 InId)
+void UCommonGameFlowFunctionLibrary::SetCurrentPlayerId(UObject* WorldContextObject, int32 InId)
 {
 	if (auto GameState = GetCurrentTopDownStyleGameState(WorldContextObject))
 	{
@@ -128,7 +157,7 @@ void UCommonGameFlowFunctionLibrary::SetCurrentPlayerId(const UObject* WorldCont
 	}
 }
 
-void UCommonGameFlowFunctionLibrary::SyncCurrentPlayerIdWithTimeline(const UObject* WorldContextObject)
+void UCommonGameFlowFunctionLibrary::SyncCurrentPlayerIdWithTimeline(UObject* WorldContextObject)
 {
 	if (auto GameState = GetCurrentTopDownStyleGameState(WorldContextObject))
 	{
@@ -139,7 +168,7 @@ void UCommonGameFlowFunctionLibrary::SyncCurrentPlayerIdWithTimeline(const UObje
 	}
 }
 
-void UCommonGameFlowFunctionLibrary::RequestFinishLocalPlayerRound(const UObject* WorldContextObject)
+void UCommonGameFlowFunctionLibrary::RequestFinishLocalPlayerRound(UObject* WorldContextObject)
 {
 	if (auto PlayerController = GetLocalPlayerController(WorldContextObject))
 	{
@@ -147,7 +176,7 @@ void UCommonGameFlowFunctionLibrary::RequestFinishLocalPlayerRound(const UObject
 	}
 }
 
-void UCommonGameFlowFunctionLibrary::BroadcastStartPlayerRound(const UObject* WorldContextObject, int32 PlayerId)
+void UCommonGameFlowFunctionLibrary::BroadcastStartPlayerRound(UObject* WorldContextObject, int32 PlayerId)
 {
 	UCommonGameplayFunctionLibrary::ForEachPlayerControllerDo(WorldContextObject, [PlayerId](ATopDownStylePlayerController* PlayerController)
 	{
@@ -155,7 +184,7 @@ void UCommonGameFlowFunctionLibrary::BroadcastStartPlayerRound(const UObject* Wo
 	});
 }
 
-void UCommonGameFlowFunctionLibrary::BroadcastFinishPlayerRound(const UObject* WorldContextObject, int32 PlayerId)
+void UCommonGameFlowFunctionLibrary::BroadcastFinishPlayerRound(UObject* WorldContextObject, int32 PlayerId)
 {
 	UCommonGameplayFunctionLibrary::ForEachPlayerControllerDo(WorldContextObject, [PlayerId](ATopDownStylePlayerController* PlayerController)
 	{
@@ -163,7 +192,7 @@ void UCommonGameFlowFunctionLibrary::BroadcastFinishPlayerRound(const UObject* W
 	});
 }
 
-ATopDownStylePlayerController* UCommonGameFlowFunctionLibrary::GetLocalPlayerController(const UObject* WorldContextObject)
+ATopDownStylePlayerController* UCommonGameFlowFunctionLibrary::GetLocalPlayerController(UObject* WorldContextObject)
 {
 	if (auto World = ULuaIntegrationFunctionLibrary::GetCurrentWorld(WorldContextObject))
 	{
@@ -174,7 +203,7 @@ ATopDownStylePlayerController* UCommonGameFlowFunctionLibrary::GetLocalPlayerCon
 	return nullptr;
 }
 
-ULocalPlayer* UCommonGameFlowFunctionLibrary::GetLocalPlayer(const UObject* WorldContextObject)
+ULocalPlayer* UCommonGameFlowFunctionLibrary::GetLocalPlayer(UObject* WorldContextObject)
 {
 	if (auto GameInstance = ULuaIntegrationFunctionLibrary::GetGameInstance(WorldContextObject))
 	{
@@ -184,13 +213,31 @@ ULocalPlayer* UCommonGameFlowFunctionLibrary::GetLocalPlayer(const UObject* Worl
 	return nullptr;
 }
 
-int32 UCommonGameFlowFunctionLibrary::GetLocalPlayerId(const UObject* WorldContextObject)
+int32 UCommonGameFlowFunctionLibrary::GetLocalPlayerId(UObject* WorldContextObject)
 {
 	if (auto PC = GetLocalPlayerController(WorldContextObject))
 	{
 		if (auto PS = PC->GetPlayerState<APlayerState>())
 		{
 			return PS->GetPlayerId();
+		}
+	}
+
+	return -1;
+}
+
+int32 UCommonGameFlowFunctionLibrary::SpawnBotPlayer(UObject* WorldContextObject)
+{
+	if (auto GameMode = GetCurrentTopDownStyleGameMode(WorldContextObject))
+	{
+		// Spawn new bot controller
+		if (IsValid(GameMode->BotPlayerControllerClass))
+		{
+			auto NewController = Cast<ATopDownStyleBotController>(WorldContextObject->GetWorld()->SpawnActor(GameMode->BotPlayerControllerClass));
+			if (IsValid(NewController))
+			{
+				return GameMode->RegisterBotPlayer(NewController);
+			}
 		}
 	}
 

@@ -1,5 +1,6 @@
 #include "GameMode/TopDownStyleGameMode.h"
 #include "Common/LuaEventDef.h"
+#include "PlayerController/TopDownStyleBotController.h"
 #include "DamageCalculator/DamageCalculatorBase.h"
 #include "FunctionLibrary/CommonGameplayFunctionLibrary.h"
 #include "GameMode/TopDownStyleGameState.h"
@@ -209,4 +210,20 @@ void ATopDownStyleGameMode::OnAnyPlayerStateChanged(ATopDownStylePlayerState* Pl
 		default: ;
 		}
 	}
+}
+
+int32 ATopDownStyleGameMode::RegisterBotPlayer(ATopDownStyleBotController* InController)
+{
+	if (IsValid(InController))
+	{
+		if (!AllBotControllers.Contains(InController))
+		{
+			auto NewId = AllBotControllers.Num();
+			InController->SetPlayerId(NewId);
+			AllBotControllers.Add(InController);
+			return NewId;
+		}
+	}
+
+	return -1;
 }

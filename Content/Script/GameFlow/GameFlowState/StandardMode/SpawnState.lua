@@ -14,6 +14,16 @@ local function SpawnPlayerCharacter(self)
         end
     end
 
+    local BotList = UE.UCommonGameFlowFunctionLibrary.GetAllBotControllers(self.OwnerState)
+    local Count = BotList:Length()
+    for i = 1, Count do
+        local CurPC = BotList:Get(i)
+        UE.UCommonGameFlowFunctionLibrary.SpawnBotCharacterPawn(CurPC)
+
+        -- Delay 2 second for every player
+        UE.UKismetSystemLibrary.Delay(self.OwnerState, 0.5)
+    end
+
     -- Setup next state
     local Instigator = self.OwnerState.CreateArgument.Instigator
     local NewArgument = GetGameService(self.OwnerState, GameServiceNameDef.GameFlowStateService):GetGameFlowStateCreateArgument(Instigator)

@@ -16,12 +16,22 @@ function InitState:OnEnter()
     -- if TimerService then
     --     self.VfxTimer = TimerService:RegisterTimer(self, self.LoopVfxTimerExpired, 2, true)
     -- end
+
+    -- Spawn bot players
+    local StateMachineSettings = self:GetStateMachineSettings()
+    local BotCount = StateMachineSettings and StateMachineSettings.BotCount
+    if BotCount then
+        for i = 1, BotCount do
+            UE.UCommonGameFlowFunctionLibrary.SpawnBotPlayer(self.OwnerState)
+        end
+    end
 end
 
 function InitState:OnReadyPlayerCountChanged(InCount)
     local GameInstance = GetGameInstance(self.OwnerState)
     --local AllPlayerCount = GameInstance and GameInstance.GamePlayerCount or 0
-    local AllPlayerCount = 2
+    local StateMachineSettings = self:GetStateMachineSettings()
+    local AllPlayerCount = StateMachineSettings and StateMachineSettings.PlayerCount or 2
 
     print("Ready Player: " .. InCount .. "/" .. AllPlayerCount)
 

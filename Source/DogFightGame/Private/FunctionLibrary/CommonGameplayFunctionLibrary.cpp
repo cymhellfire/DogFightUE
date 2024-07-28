@@ -18,7 +18,7 @@
 #include "PlayerController/PlayerControllerComponent/InGameWidgetManipulatorComponent.h"
 #include "Subsystem/GameplayDataSubsystem.h"
 
-UGameplayDataSubsystem* UCommonGameplayFunctionLibrary::GetGameplayDataSubsystem(const UObject* WorldContextObject)
+UGameplayDataSubsystem* UCommonGameplayFunctionLibrary::GetGameplayDataSubsystem(UObject* WorldContextObject)
 {
 	if (auto GameInstance = WorldContextObject->GetWorld()->GetGameInstance())
 	{
@@ -28,7 +28,7 @@ UGameplayDataSubsystem* UCommonGameplayFunctionLibrary::GetGameplayDataSubsystem
 	return nullptr;
 }
 
-APlayerState* UCommonGameplayFunctionLibrary::GetPlayerStateById(const UObject* WorldContextObject, int32 InPlayerId)
+APlayerState* UCommonGameplayFunctionLibrary::GetPlayerStateById(UObject* WorldContextObject, int32 InPlayerId)
 {
 	if (auto GameState = GetCurrentTopDownStyleGameState(WorldContextObject))
 	{
@@ -37,7 +37,7 @@ APlayerState* UCommonGameplayFunctionLibrary::GetPlayerStateById(const UObject* 
 	return nullptr;
 }
 
-ATopDownStylePlayerController* UCommonGameplayFunctionLibrary::GetPlayerControllerById(const UObject* WorldContextObject, int32 InPlayerId)
+ATopDownStylePlayerController* UCommonGameplayFunctionLibrary::GetPlayerControllerById(UObject* WorldContextObject, int32 InPlayerId)
 {
 	if (auto PS = GetPlayerStateById(WorldContextObject, InPlayerId))
 	{
@@ -47,7 +47,7 @@ ATopDownStylePlayerController* UCommonGameplayFunctionLibrary::GetPlayerControll
 	return nullptr;
 }
 
-ATopDownStylePlayerCharacter* UCommonGameplayFunctionLibrary::GetPlayerCharacterById(const UObject* WorldContextObject,	int32 InPlayerId)
+ATopDownStylePlayerCharacter* UCommonGameplayFunctionLibrary::GetPlayerCharacterById(UObject* WorldContextObject,	int32 InPlayerId)
 {
 	if (auto PC = GetPlayerControllerById(WorldContextObject, InPlayerId))
 	{
@@ -57,7 +57,7 @@ ATopDownStylePlayerCharacter* UCommonGameplayFunctionLibrary::GetPlayerCharacter
 	return nullptr;
 }
 
-void UCommonGameplayFunctionLibrary::DispatchCardToPlayer(const UObject* WorldContextObject, int32 InPlayerId, UCard* InCard)
+void UCommonGameplayFunctionLibrary::DispatchCardToPlayer(UObject* WorldContextObject, int32 InPlayerId, UCard* InCard)
 {
 	if (auto PlayerState = Cast<ATopDownStylePlayerState>(GetPlayerStateById(WorldContextObject, InPlayerId)))
 	{
@@ -65,7 +65,7 @@ void UCommonGameplayFunctionLibrary::DispatchCardToPlayer(const UObject* WorldCo
 	}
 }
 
-void UCommonGameplayFunctionLibrary::UseCardByInstanceId(const UObject* WorldContextObject, int32 InInstanceId)
+void UCommonGameplayFunctionLibrary::UseCardByInstanceId(UObject* WorldContextObject, int32 InInstanceId)
 {
 	if (auto PC = UCommonGameFlowFunctionLibrary::GetLocalPlayerController(WorldContextObject))
 	{
@@ -74,7 +74,7 @@ void UCommonGameplayFunctionLibrary::UseCardByInstanceId(const UObject* WorldCon
 	}
 }
 
-int32 UCommonGameplayFunctionLibrary::GetPlayerCardNums(const UObject* WorldContextObject, int32 InPlayerId)
+int32 UCommonGameplayFunctionLibrary::GetPlayerCardNums(UObject* WorldContextObject, int32 InPlayerId)
 {
 	if (auto PS = Cast<ATopDownStylePlayerState>(GetPlayerStateById(WorldContextObject, InPlayerId)))
 	{
@@ -84,7 +84,7 @@ int32 UCommonGameplayFunctionLibrary::GetPlayerCardNums(const UObject* WorldCont
 	return -1;
 }
 
-void UCommonGameplayFunctionLibrary::AddWidgetByPlayerId(const UObject* WorldContextObject, FString WidgetName, int32 InPlayerId)
+void UCommonGameplayFunctionLibrary::AddWidgetByPlayerId(UObject* WorldContextObject, FString WidgetName, int32 InPlayerId)
 {
 	ForEachPlayerControllerDo(WorldContextObject, [WidgetName](ATopDownStylePlayerController* InPC)
 	{
@@ -95,7 +95,7 @@ void UCommonGameplayFunctionLibrary::AddWidgetByPlayerId(const UObject* WorldCon
 	}, InPlayerId);
 }
 
-void UCommonGameplayFunctionLibrary::ShowWidgetByPlayerId(const UObject* WorldContextObject, FString WidgetName, int32 InPlayerId)
+void UCommonGameplayFunctionLibrary::ShowWidgetByPlayerId(UObject* WorldContextObject, FString WidgetName, int32 InPlayerId)
 {
 	ForEachPlayerControllerDo(WorldContextObject, [WidgetName](ATopDownStylePlayerController* InPC)
 	{
@@ -106,7 +106,7 @@ void UCommonGameplayFunctionLibrary::ShowWidgetByPlayerId(const UObject* WorldCo
 	}, InPlayerId);
 }
 
-void UCommonGameplayFunctionLibrary::HideWidgetByPlayerId(const UObject* WorldContextObject, FString WidgetName, int32 InPlayerId)
+void UCommonGameplayFunctionLibrary::HideWidgetByPlayerId(UObject* WorldContextObject, FString WidgetName, int32 InPlayerId)
 {
 	ForEachPlayerControllerDo(WorldContextObject, [WidgetName](ATopDownStylePlayerController* InPC)
 	{
@@ -117,7 +117,7 @@ void UCommonGameplayFunctionLibrary::HideWidgetByPlayerId(const UObject* WorldCo
 	}, InPlayerId);
 }
 
-void UCommonGameplayFunctionLibrary::RemoveWidgetPlayerId(const UObject* WorldContextObject, FString WidgetName, int32 InPlayerId)
+void UCommonGameplayFunctionLibrary::RemoveWidgetPlayerId(UObject* WorldContextObject, FString WidgetName, int32 InPlayerId)
 {
 	ForEachPlayerControllerDo(WorldContextObject, [WidgetName](ATopDownStylePlayerController* InPC)
 	{
@@ -128,7 +128,7 @@ void UCommonGameplayFunctionLibrary::RemoveWidgetPlayerId(const UObject* WorldCo
 	}, InPlayerId);
 }
 
-void UCommonGameplayFunctionLibrary::CreateDamageDisplayByPlayerId(const UObject* WorldContextObject,
+void UCommonGameplayFunctionLibrary::CreateDamageDisplayByPlayerId(UObject* WorldContextObject,
 	const FDamageDisplayParams& DisplayParams, int32 InPlayerId)
 {
 	ForEachPlayerControllerDo(WorldContextObject, [&DisplayParams](ATopDownStylePlayerController* InPC)
@@ -140,7 +140,7 @@ void UCommonGameplayFunctionLibrary::CreateDamageDisplayByPlayerId(const UObject
 	}, InPlayerId);
 }
 
-int32 UCommonGameplayFunctionLibrary::GetAlivePlayerNum(const UObject* WorldContextObject)
+int32 UCommonGameplayFunctionLibrary::GetAlivePlayerNum(UObject* WorldContextObject)
 {
 	int32 Result = 0;
 	ForEachPlayerStateDo(WorldContextObject, [&Result](ATopDownStylePlayerState* PS)
@@ -154,7 +154,7 @@ int32 UCommonGameplayFunctionLibrary::GetAlivePlayerNum(const UObject* WorldCont
 	return Result;
 }
 
-TArray<int32> UCommonGameplayFunctionLibrary::GetAlivePlayerId(const UObject* WorldContextObject)
+TArray<int32> UCommonGameplayFunctionLibrary::GetAlivePlayerId(UObject* WorldContextObject)
 {
 	TArray<int32> Result;
 	ForEachPlayerStateDo(WorldContextObject, [&Result](ATopDownStylePlayerState* PS)
@@ -168,7 +168,7 @@ TArray<int32> UCommonGameplayFunctionLibrary::GetAlivePlayerId(const UObject* Wo
 	return Result;
 }
 
-AGameEffectBase* UCommonGameplayFunctionLibrary::SpawnGameEffectAtPos(const UObject* WorldContextObject, int32 EffectId,
+AGameEffectBase* UCommonGameplayFunctionLibrary::SpawnGameEffectAtPos(UObject* WorldContextObject, int32 EffectId,
 	FVector Pos, FRotator Rot)
 {
 	if (auto GameInstance = Cast<UDogFightGameInstance>(ULuaIntegrationFunctionLibrary::GetGameInstance(WorldContextObject)))
@@ -182,7 +182,7 @@ AGameEffectBase* UCommonGameplayFunctionLibrary::SpawnGameEffectAtPos(const UObj
 	return nullptr;
 }
 
-void UCommonGameplayFunctionLibrary::DamageActor(const UObject* WorldContextObject, int32 DamageId, AActor* Target, float BaseDamage, AActor* Causer)
+void UCommonGameplayFunctionLibrary::DamageActor(UObject* WorldContextObject, int32 DamageId, AActor* Target, float BaseDamage, AActor* Causer)
 {
 	if (auto GameMode = GetCurrentTopDownStyleGameMode(WorldContextObject))
 	{
@@ -190,7 +190,7 @@ void UCommonGameplayFunctionLibrary::DamageActor(const UObject* WorldContextObje
 	}
 }
 
-void UCommonGameplayFunctionLibrary::DamageArea(const UObject* WorldContextObject, int32 DamageId,
+void UCommonGameplayFunctionLibrary::DamageArea(UObject* WorldContextObject, int32 DamageId,
 	const FVector& Origin, float Radius, float BaseDamage, AActor* Causer)
 {
 	if (auto GameMode = GetCurrentTopDownStyleGameMode(WorldContextObject))
@@ -199,7 +199,7 @@ void UCommonGameplayFunctionLibrary::DamageArea(const UObject* WorldContextObjec
 	}
 }
 
-void UCommonGameplayFunctionLibrary::MovePlayerCharacterToPosition(const UObject* WorldContextObject, int32 PlayerId,
+void UCommonGameplayFunctionLibrary::MovePlayerCharacterToPosition(UObject* WorldContextObject, int32 PlayerId,
                                                                    FVector TargetPosition)
 {
 	ForEachPlayerControllerDo(WorldContextObject, [TargetPosition](ATopDownStylePlayerController* InPC)
@@ -234,7 +234,7 @@ void UCommonGameplayFunctionLibrary::SetActorInvincible(AActor* Actor, bool InVa
 	}
 }
 
-FVector UCommonGameplayFunctionLibrary::GetRandomPointInNavigationArea(const UObject* WorldContextObject)
+FVector UCommonGameplayFunctionLibrary::GetRandomPointInNavigationArea(UObject* WorldContextObject)
 {
 	if (IsValid(WorldContextObject))
 	{
@@ -254,7 +254,7 @@ FVector UCommonGameplayFunctionLibrary::GetRandomPointInNavigationArea(const UOb
 	return FVector::ZeroVector;
 }
 
-TArray<AActor*> UCommonGameplayFunctionLibrary::GetRandomCharacterInGame(const UObject* WorldContextObject, int32 Count,
+TArray<AActor*> UCommonGameplayFunctionLibrary::GetRandomCharacterInGame(UObject* WorldContextObject, int32 Count,
 	bool bAllowDuplicated)
 {
 	TArray<AActor*> Result;
@@ -300,7 +300,7 @@ EWeaponSlotType UCommonGameplayFunctionLibrary::CharacterAttack(ATopDownStylePla
 	return EWeaponSlotType::WST_None;
 }
 
-void UCommonGameplayFunctionLibrary::ForEachPlayerStateDo(const UObject* WorldContextObject,
+void UCommonGameplayFunctionLibrary::ForEachPlayerStateDo(UObject* WorldContextObject,
                                                           TFunction<void(ATopDownStylePlayerState*)> ExecuteFunc, int32 PlayerIdMask)
 {
 	if (auto GameState = GetCurrentTopDownStyleGameState(WorldContextObject))
@@ -324,7 +324,7 @@ void UCommonGameplayFunctionLibrary::ForEachPlayerStateDo(const UObject* WorldCo
 	}
 }
 
-void UCommonGameplayFunctionLibrary::ForEachPlayerControllerDo(const UObject* WorldContextObject,
+void UCommonGameplayFunctionLibrary::ForEachPlayerControllerDo(UObject* WorldContextObject,
                                                                TFunction<void(ATopDownStylePlayerController*)> ExecuteFunc, int32 PlayerIdMask)
 {
 	if (auto GameState = GetCurrentTopDownStyleGameState(WorldContextObject))

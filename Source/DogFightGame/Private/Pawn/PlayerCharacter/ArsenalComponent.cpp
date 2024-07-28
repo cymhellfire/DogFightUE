@@ -54,6 +54,10 @@ void UArsenalComponent::AttackTarget(const FWeaponActionTarget& InTarget, EWeapo
 		Weapon->EnqueueInput(EWeaponActionInput::WAI_Finish);
 		Weapon->StartInputQueue();
 	}
+	else
+	{
+		DFLogE(LogDogFightGame, TEXT("No weapon available in slot %d"), InSlot);
+	}
 }
 
 // Called when the game starts

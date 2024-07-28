@@ -8,4 +8,8 @@ function GameFlowStateLogicBase:Init(InState)
     self.OwnerState = InState
 end
 
+function GameFlowStateLogicBase:GetStateMachineSettings()
+    return self.OwnerState.CreateArgument.Instigator and self.OwnerState.CreateArgument.Instigator:GetStateMachineSettings()
+end
+
 return GameFlowStateLogicBase

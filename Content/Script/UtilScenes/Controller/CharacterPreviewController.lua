@@ -1,15 +1,14 @@
+local GameWidgetNameDef = require("DogFight.Services.GameWidgetService.GameWidgetNameDef")
 ---@class CharacterPreviewController : ATopDownStylePlayerController
 local CharacterPreviewController = UnrealClass()
 
 function CharacterPreviewController:ReceiveBeginPlay()
-    -- Spawn preview character when begin play
-    UE.UCommonGameFlowFunctionLibrary.SpawnPlayerCharacterPawn(self)
-
-    -- Add character movement input to all players
-    GetGameService(self, GameServiceNameDef.GameInputService):MulticastAddInputMapping(UE.EInputMappingType.InputMapping_CharacterMove)
-
-    -- Enable input for character control
-    UE.UCommonGameFlowFunctionLibrary.SetCharacterMoveEnableForAllPlayers(self, true)
+    -- Show card list widget
+    ---@type GameWidgetService
+    local WidgetService = GetGameService(self, GameServiceNameDef.GameWidgetService)
+    if WidgetService then
+        WidgetService:ShowWidget(GameWidgetNameDef.WidgetCardList, true)
+    end
 end
 
 ---Change the avatar config current character using.

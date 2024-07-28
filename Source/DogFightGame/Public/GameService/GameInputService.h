@@ -60,5 +60,5 @@ protected:
 
 	UInputMappingContext* GetInputMappingContextByType(EInputMappingType::Type InType);
 
-	UEnhancedInputLocalPlayerSubsystem* GetInputSubsystemFromLocalPlayer() const;
+	UEnhancedInputLocalPlayerSubsystem* GetInputSubsystemFromLocalPlayer();
 };

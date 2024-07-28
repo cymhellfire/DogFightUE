@@ -114,7 +114,7 @@ UInputMappingContext* UGameInputService::GetInputMappingContextByType(EInputMapp
 	return MappingContext;
 }
 
-UEnhancedInputLocalPlayerSubsystem* UGameInputService::GetInputSubsystemFromLocalPlayer() const
+UEnhancedInputLocalPlayerSubsystem* UGameInputService::GetInputSubsystemFromLocalPlayer()
 {
 	if (auto LocalPlayer = UCommonGameFlowFunctionLibrary::GetLocalPlayer(this))
 	{

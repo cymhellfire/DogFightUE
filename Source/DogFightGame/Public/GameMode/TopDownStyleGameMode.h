@@ -5,6 +5,7 @@
 #include "Player/TopDownStylePlayerState.h"
 #include "TopDownStyleGameMode.generated.h"
 
+class ATopDownStyleBotController;
 class ATopDownStylePlayerController;
 class UInGameMessageSenderComponent;
 class UGameTimelineComponent;
@@ -35,12 +36,22 @@ public:
 		return AllPlayerControllers;
 	}
 
+	TArray<TWeakObjectPtr<ATopDownStyleBotController>> GetAllBotControllers() const
+	{
+		return AllBotControllers;
+	}
+
 	UInGameMessageSenderComponent* GetInGameMessageSender() const
 	{
 		return InGameMessageSenderComponent;
 	}
 
 	UGameTimelineComponent* GetGameTimelineComponent() const;
+
+	/**
+	 * Register a new bot player into game mode.
+	 */
+	int32 RegisterBotPlayer(ATopDownStyleBotController* InController);
 
 	// ----------------- Gameplay Section ---------------------
 	/**
@@ -78,6 +89,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="TopDownStyleGameMode")
 	FString DamageCalculatorPath;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="TopDownStyleGameMode")
+	TSubclassOf<ATopDownStyleBotController> BotPlayerControllerClass;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="GameMode")
 	UInGameMessageSenderComponent* InGameMessageSenderComponent;
@@ -87,6 +101,9 @@ protected:
 
 	/* All player controllers in current game. */
 	TArray<TWeakObjectPtr<ATopDownStylePlayerController>> AllPlayerControllers;
+
+	/* All bot controllers in current game. */
+	TArray<TWeakObjectPtr<ATopDownStyleBotController>> AllBotControllers;
 
 	int32 ReadyPlayerCount;
 };
