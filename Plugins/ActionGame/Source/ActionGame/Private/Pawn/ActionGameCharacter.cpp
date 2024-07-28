@@ -4,8 +4,11 @@
 #include "Pawn/ActionGameCharacter.h"
 
 #include "Common/ActionGameWeaponLog.h"
+#include "Controller/ActionCharacterAIController.h"
 #include "Engine/AssetManager.h"
 #include "Engine/StreamableManager.h"
+#include "GameFramework/PawnMovementComponent.h"
+#include "Navigation/PathFollowingComponent.h"
 #include "Pawn/Component/CharacterAnimComponent.h"
 
 
@@ -14,13 +17,41 @@ AActionGameCharacter::AActionGameCharacter(const FObjectInitializer& ObjectIniti
 	: Super(ObjectInitializer)
 {
 	AnimComponent = CreateDefaultSubobject<UCharacterAnimComponent>("CharacterAnimComponent");
+
+	// Set default controller
+	AIControllerClass = AActionCharacterAIController::StaticClass();
+	AutoPossessAI = EAutoPossessAI::Spawned;
 }
 
 // Called when the game starts or when spawned
 void AActionGameCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (auto AIController = Cast<AActionCharacterAIController>(GetController()))
+	{
+		if (auto PathFollowingComponent = AIController->GetPathFollowingComponent())
+		{
+			PathFollowingComponent->OnRequestFinished.AddUObject(this, &AActionGameCharacter::OnMoveFinished);
+		}
+
+		AIController->OnReachStopDistance.AddUObject(this, &AActionGameCharacter::OnReachStopDistance);
+	}
+}
+
+void AActionGameCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	if (auto AIController = Cast<AActionCharacterAIController>(GetController()))
+	{
+		if (auto PathFollowingComponent = AIController->GetPathFollowingComponent())
+		{
+			PathFollowingComponent->OnRequestFinished.RemoveAll(this);
+		}
+
+		AIController->OnReachStopDistance.RemoveAll(this);
+	}
 }
 
 void AActionGameCharacter::SetupAvatarAppearance(const FAvatarDescData& AvatarDescData)
@@ -135,4 +166,34 @@ float AActionGameCharacter::PlayActionAnimationWithWarping(UAnimMontage* InMonta
 		return AnimComponent->PlayAnimationWithWarping(InMontage, TargetName, TargetPos);
 	}
 	return IActionCharacterInterface::PlayActionAnimationWithWarping(InMontage, TargetName, TargetPos);
+}
+
+void AActionGameCharacter::MoveToTarget(const FVector& Target, float StopDistance)
+{
+	if (auto AIController = Cast<AActionCharacterAIController>(GetController()))
+	{
+		AIController->MoveToTargetWithStopDistance(Target, StopDistance);
+	}
+}
+
+void AActionGameCharacter::StopMoveImmediately()
+{
+	if (auto MovementComponent = GetMovementComponent())
+	{
+		MovementComponent->StopMovementImmediately();
+	}
+}
+
+void AActionGameCharacter::OnMoveFinished(FAIRequestID RequestID, const FPathFollowingResult& Result)
+{
+	if (Result.IsSuccess())
+	{
+		OnCharacterMoveFinished.Broadcast();
+	}
+}
+
+void AActionGameCharacter::OnReachStopDistance()
+{
+	StopMoveImmediately();
+	OnReachActionDistance.Broadcast();
 }

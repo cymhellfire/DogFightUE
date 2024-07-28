@@ -1,16 +1,11 @@
 #include "Pawn/PlayerCharacter/TopDownStylePlayerCharacter.h"
 
-#include "AIController.h"
 #include "EngineUtils.h"
 #include "MotionWarpingComponent.h"
 #include "Net/Core/PushModel/PushModel.h"
-#include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Common/WeaponCommon.h"
-#include "Controller/ActionCharacterAIController.h"
 #include "FunctionLibrary/AvatarFunctionLibrary.h"
-#include "GameFramework/PawnMovementComponent.h"
 #include "GameObject/Buff/NewBuffBase.h"
-#include "Navigation/PathFollowingComponent.h"
 #include "Pawn/PlayerCharacter/ArsenalComponent.h"
 #include "Pawn/PlayerCharacter/BuffManagerComponent.h"
 #include "Pawn/PlayerCharacter/RagdollComponent.h"
@@ -30,7 +25,6 @@ ATopDownStylePlayerCharacter::ATopDownStylePlayerCharacter(const FObjectInitiali
 
 	// Initial value
 	bAlive = true;
-	AIControllerClass = AActionCharacterAIController::StaticClass();
 }
 
 void ATopDownStylePlayerCharacter::BeginPlay()
@@ -41,16 +35,6 @@ void ATopDownStylePlayerCharacter::BeginPlay()
 
 	DamageReceiverComponent->OnHealthChanged.AddDynamic(this, &ATopDownStylePlayerCharacter::OnHealthChanged);
 	DamageReceiverComponent->OnNoHealth.AddDynamic(this, &ATopDownStylePlayerCharacter::OnNoHealth);
-
-	if (auto AIController = Cast<AActionCharacterAIController>(GetController()))
-	{
-		if (auto PathFollowingComponent = AIController->GetPathFollowingComponent())
-		{
-			PathFollowingComponent->OnRequestFinished.AddUObject(this, &ATopDownStylePlayerCharacter::OnMoveFinished);
-		}
-
-		AIController->OnReachStopDistance.AddUObject(this, &ATopDownStylePlayerCharacter::OnReachStopDistance);
-	}
 
 	// Init test weapon
 	if (WeaponData.IsValid() && IsValid(ArsenalComponent))
@@ -84,16 +68,6 @@ void ATopDownStylePlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayRea
 
 	DamageReceiverComponent->OnHealthChanged.RemoveDynamic(this, &ATopDownStylePlayerCharacter::OnHealthChanged);
 	DamageReceiverComponent->OnNoHealth.RemoveDynamic(this, &ATopDownStylePlayerCharacter::OnNoHealth);
-
-	if (auto AIController = Cast<AActionCharacterAIController>(GetController()))
-	{
-		if (auto PathFollowingComponent = AIController->GetPathFollowingComponent())
-		{
-			PathFollowingComponent->OnRequestFinished.RemoveAll(this);
-		}
-
-		AIController->OnReachStopDistance.RemoveAll(this);
-	}
 }
 
 void ATopDownStylePlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -185,20 +159,6 @@ void ATopDownStylePlayerCharacter::Dead()
 	OnCharacterDead.Broadcast(this);
 }
 
-void ATopDownStylePlayerCharacter::OnMoveFinished(FAIRequestID RequestID, const FPathFollowingResult& Result)
-{
-	if (Result.IsSuccess())
-	{
-		OnCharacterMoveFinished.Broadcast();
-	}
-}
-
-void ATopDownStylePlayerCharacter::OnReachStopDistance()
-{
-	StopMoveImmediately();
-	OnReachActionDistance.Broadcast();
-}
-
 void ATopDownStylePlayerCharacter::OnHealthChanged(float CurHealth, float MaxHealth)
 {
 	if (IsValid(StateWidget))
@@ -230,21 +190,5 @@ void ATopDownStylePlayerCharacter::RemoveBuff(UNewBuffBase* InBuff)
 	if (IsValid(BuffManagerComponent))
 	{
 		BuffManagerComponent->RemoveBuff(InBuff);
-	}
-}
-
-void ATopDownStylePlayerCharacter::StopMoveImmediately()
-{
-	if (auto MovementComponent = GetMovementComponent())
-	{
-		MovementComponent->StopMovementImmediately();
-	}
-}
-
-void ATopDownStylePlayerCharacter::MoveToTarget(const FVector& Target, float StopDistance)
-{
-	if (auto AIController = Cast<AActionCharacterAIController>(GetController()))
-	{
-		AIController->MoveToTargetWithStopDistance(Target, StopDistance);
 	}
 }

@@ -16,7 +16,7 @@ enum class EDogFightAIControllerState : uint8
 };
 
 UCLASS()
-class DOGFIGHTAI_API AActionCharacterAIController : public AAIController
+class ACTIONGAME_API AActionCharacterAIController : public AAIController
 {
 	GENERATED_BODY()
 

@@ -1,10 +1,7 @@
 #pragma once
 
-#include "AITypes.h"
 #include "DamageReceiver/DamageReceiverComponent.h"
-#include "GameFramework/Character.h"
 #include "GameObject/Component/WidgetLocatorComponent.h"
-#include "Interface/ActionCharacterInterface.h"
 #include "Interface/DamageReceiverActorInterface.h"
 #include "Pawn/ActionGameCharacter.h"
 #include "TopDownStylePlayerCharacter.generated.h"
@@ -19,10 +16,8 @@ class UBuffManagerComponent;
 class UGameplayAttributesComponent;
 class UArsenalComponent;
 class UCharacterAnimComponent;
-struct FPathFollowingResult;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTopDownStylePlayerCharacterDeadEvent, ATopDownStylePlayerCharacter*, Character);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTopDownStylePlayerCharacterMoveFinishedEvent);
 
 UCLASS()
 class DOGFIGHTGAME_API ATopDownStylePlayerCharacter : public AActionGameCharacter, public IDamageReceiverActorInterface
@@ -69,12 +64,6 @@ public:
 		return DamageReceiverComponent;
 	}
 
-	void StopMoveImmediately();
-
-#pragma region IActionCharacterInterface
-	virtual void MoveToTarget(const FVector& Target, float StopDistance) override;
-#pragma endregion IActionCharacterInterface
-
 	void TestAttackTarget();
 
 protected:
@@ -82,8 +71,6 @@ protected:
 	void DeinitializeStateWidget();
 
 	virtual void Dead();
-
-	void OnMoveFinished(FAIRequestID RequestID, const FPathFollowingResult& Result);
 
 	UFUNCTION()
 	void OnHealthChanged(float CurHealth, float MaxHealth);
@@ -93,8 +80,6 @@ protected:
 
 	UFUNCTION()
 	void OnRep_AvatarId();
-
-	virtual void OnReachStopDistance();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -108,9 +93,6 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="TopDownStylePlayerCharacter")
 	FTopDownStylePlayerCharacterDeadEvent OnCharacterDead;
-
-	UPROPERTY(BlueprintAssignable, Category="TopDownStylePlayerCharacter")
-	FTopDownStylePlayerCharacterMoveFinishedEvent OnCharacterMoveFinished;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="TopDownStylePlayerCharacter")
