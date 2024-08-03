@@ -63,6 +63,33 @@ float UCharacterAnimComponent::PlayAnimationWithWarping(UAnimMontage* InAnimMont
 	return IsValid(InAnimMontage) ? InAnimMontage->GetPlayLength() : 0.f;
 }
 
+float UCharacterAnimComponent::PlayPredefineAnimation(EActionAnimPredefinedType::Type InType)
+{
+	if (auto Result = PredefineAnimMap.Find(InType))
+	{
+		auto AnimResource = *Result;
+		if (auto Montage = Cast<UAnimMontage>(AnimResource))
+		{
+			return PlayAnimation(Montage);
+		}
+	}
+	return 0.f;
+}
+
+float UCharacterAnimComponent::PlayPredefineAnimationWithWarping(EActionAnimPredefinedType::Type InType,
+	FName TargetName, const FVector& TargetPos)
+{
+	if (auto Result = PredefineAnimMap.Find(InType))
+	{
+		auto AnimResource = *Result;
+		if (auto Montage = Cast<UAnimMontage>(AnimResource))
+		{
+			return PlayAnimationWithWarping(Montage, TargetName, TargetPos);
+		}
+	}
+	return 0.f;
+}
+
 void UCharacterAnimComponent::MulticastPlayMontage_Implementation(UAnimMontage* InMontage)
 {
 	if (!IsValid(InMontage))
@@ -158,17 +185,5 @@ void UCharacterAnimComponent::RefreshAnimInstance()
 	if (auto Character = Cast<ACharacter>(GetOwner()))
 	{
 		AnimInstance = Character->GetMesh()->GetAnimInstance();
-	}
-}
-
-void UCharacterAnimComponent::MulticastPlayPredefineAnimation(EActionAnimPredefinedType::Type InType)
-{
-	if (auto Result = PredefineAnimMap.Find(InType))
-	{
-		auto AnimResource = *Result;
-		if (auto Montage = Cast<UAnimMontage>(AnimResource))
-		{
-			MulticastPlayMontage(Montage);
-		}
 	}
 }

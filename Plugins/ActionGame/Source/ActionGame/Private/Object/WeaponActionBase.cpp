@@ -24,6 +24,8 @@ bool UWeaponActionBase::InitActionData(UWeaponActionDataAsset* InData, IActionCh
 
 	ActionName = InData->Name;
 	ActionDescription = InData->Description;
+	bUseCustomMontage = InData->bUseCustomMontage;
+	PredefineAnimationType = InData->PredefineAnimationType;
 	ActionMontage = InData->AnimMontage.IsValid() ? InData->AnimMontage.Get() : InData->AnimMontage.LoadSynchronous();
 
 	Performer = Owner;
@@ -80,12 +82,17 @@ UWeaponActionTransitionBase* UWeaponActionBase::GetTransitionByInput(EWeaponActi
 
 float UWeaponActionBase::PlayActionMontage()
 {
-	if (!IsValid(ActionMontage))
+	if (bUseCustomMontage)
 	{
-		return 0.f;
+		if (!IsValid(ActionMontage))
+		{
+			return 0.f;
+		}
+
+		return Performer->PlayActionAnimation(ActionMontage);
 	}
 
-	return Performer->PlayActionAnimation(ActionMontage);
+	return Performer->PlayPredefineAnimation(PredefineAnimationType);
 }
 
 void UWeaponActionBase::OnActionMontageFinished()

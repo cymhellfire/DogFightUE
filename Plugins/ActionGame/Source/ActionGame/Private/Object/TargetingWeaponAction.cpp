@@ -131,7 +131,11 @@ float UTargetingWeaponAction::PlayActionMontage()
 
 		if (bWarpingToTarget && WarpingPos.IsSet() && WarpingTargetName.IsValid())
 		{
-			return Performer->PlayActionAnimationWithWarping(ActionMontage, WarpingTargetName, WarpingPos.GetValue());
+			if (bUseCustomMontage)
+			{
+				return Performer->PlayActionAnimationWithWarping(ActionMontage, WarpingTargetName, WarpingPos.GetValue());
+			}
+			return Performer->PlayPredefineAnimationWithWarping(PredefineAnimationType, WarpingTargetName, WarpingPos.GetValue());
 		}
 	}
 

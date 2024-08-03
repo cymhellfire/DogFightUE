@@ -42,6 +42,8 @@ public:
 #pragma region IActionCharacterInterface
 	virtual float PlayActionAnimation(UAnimMontage* InMontage) override;
 	virtual float PlayActionAnimationWithWarping(UAnimMontage* InMontage, FName TargetName, const FVector& TargetPos) override;
+	virtual float PlayPredefineAnimation(EActionAnimPredefinedType::Type InType) override;
+	virtual float PlayPredefineAnimationWithWarping(EActionAnimPredefinedType::Type InType, FName TargetName, const FVector& TargetPos) override;
 	virtual void MoveToTarget(const FVector& Target, float StopDistance) override;
 #pragma endregion IActionCharacterInterface
 

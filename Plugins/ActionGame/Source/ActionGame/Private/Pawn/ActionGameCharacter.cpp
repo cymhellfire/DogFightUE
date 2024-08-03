@@ -168,6 +168,25 @@ float AActionGameCharacter::PlayActionAnimationWithWarping(UAnimMontage* InMonta
 	return IActionCharacterInterface::PlayActionAnimationWithWarping(InMontage, TargetName, TargetPos);
 }
 
+float AActionGameCharacter::PlayPredefineAnimation(EActionAnimPredefinedType::Type InType)
+{
+	if (IsValid(AnimComponent))
+	{
+		return AnimComponent->PlayPredefineAnimation(InType);
+	}
+	return IActionCharacterInterface::PlayPredefineAnimation(InType);
+}
+
+float AActionGameCharacter::PlayPredefineAnimationWithWarping(EActionAnimPredefinedType::Type InType, FName TargetName,
+	const FVector& TargetPos)
+{
+	if (IsValid(AnimComponent))
+	{
+		return AnimComponent->PlayPredefineAnimationWithWarping(InType, TargetName, TargetPos);
+	}
+	return IActionCharacterInterface::PlayPredefineAnimationWithWarping(InType, TargetName, TargetPos);
+}
+
 void AActionGameCharacter::MoveToTarget(const FVector& Target, float StopDistance)
 {
 	if (auto AIController = Cast<AActionCharacterAIController>(GetController()))

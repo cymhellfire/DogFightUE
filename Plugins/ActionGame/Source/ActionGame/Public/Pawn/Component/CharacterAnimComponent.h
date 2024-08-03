@@ -41,8 +41,10 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastPlayMontageWithWarping(UAnimMontage* InMontage, const FCharacterAnimWarpingParams& WarpingParams);
 
-	UFUNCTION(BlueprintCallable, Category="CharacterAnimComponent")
-	void MulticastPlayPredefineAnimation(EActionAnimPredefinedType::Type InType);
+	FCharacterAnimWarpingParams* GetAnimWarpingParams(UAnimMontage* InMontage)
+	{
+		return AnimWarpingDataMap.Find(InMontage);
+	}
 
 protected:
 	// Called when the game starts
@@ -60,6 +62,10 @@ public:
 	virtual float PlayAnimation(UAnimMontage* InAnimMontage);
 
 	virtual float PlayAnimationWithWarping(UAnimMontage* InAnimMontage, FName TargetName, const FVector& TargetPos);
+
+	virtual float PlayPredefineAnimation(EActionAnimPredefinedType::Type InType);
+
+	virtual float PlayPredefineAnimationWithWarping(EActionAnimPredefinedType::Type InType, FName TargetName, const FVector& TargetPos);
 
 private:
 	TWeakObjectPtr<UAnimInstance> AnimInstance;

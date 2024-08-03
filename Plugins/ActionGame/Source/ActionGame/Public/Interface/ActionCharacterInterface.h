@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Common/ActionAnimCommon.h"
 #include "UObject/Interface.h"
 #include "ActionCharacterInterface.generated.h"
 
@@ -41,6 +42,24 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="ActionCharacter")
 	virtual float PlayActionAnimationWithWarping(UAnimMontage* InMontage, FName TargetName, const FVector& TargetPos) { return 0.f; }
+
+	/**
+	 * Play predefined animation.
+	 * @param InType	Predefined animation type to play.
+	 * @return Length of the played animation.
+	 */
+	UFUNCTION(BlueprintCallable, Category="ActionCharacter")
+	virtual float PlayPredefineAnimation(EActionAnimPredefinedType::Type InType) { return 0.f; }
+
+	/**
+	 * Play predefined animation with action warping activated.
+	 * @param InType		Predefined animation type to play.
+	 * @param TargetName	Name of target to warping with.
+	 * @param TargetPos		Position assign to warping target.
+	 * @return Length of the action animation.
+	 */
+	UFUNCTION(BlueprintCallable, Category="ActionCharacter")
+	virtual float PlayPredefineAnimationWithWarping(EActionAnimPredefinedType::Type InType, FName TargetName, const FVector& TargetPos) { return 0.f; }
 
 	virtual void MoveToTarget(const FVector& Target, float StopDistance) = 0;
 

@@ -42,6 +42,12 @@ public:
 	FText Description;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="WeaponAction")
+	bool bUseCustomMontage;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="WeaponAction", meta=(EditCondition="bUseCustomMontage==false", EditConditionHides))
+	TEnumAsByte<EActionAnimPredefinedType::Type> PredefineAnimationType;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="WeaponAction", meta=(EditCondition="bUseCustomMontage==true", EditConditionHides))
 	TSoftObjectPtr<UAnimMontage> AnimMontage;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="WeaponAction")

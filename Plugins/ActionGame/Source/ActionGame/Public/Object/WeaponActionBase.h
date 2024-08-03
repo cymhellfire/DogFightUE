@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Common/ActionAnimCommon.h"
 #include "Common/WeaponCommon.h"
 #include "UObject/Object.h"
 #include "WeaponActionBase.generated.h"
@@ -79,6 +80,12 @@ public:
 	FText ActionDescription;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="WeaponAction")
+	bool bUseCustomMontage;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="WeaponAction", meta=(EditCondition="bUseCustomMontage==false", EditConditionHides))
+	TEnumAsByte<EActionAnimPredefinedType::Type> PredefineAnimationType;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="WeaponAction", meta=(EditCondition="bUseCustomMontage==true", EditConditionHides))
 	UAnimMontage* ActionMontage;
 
 	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="WeaponAction")

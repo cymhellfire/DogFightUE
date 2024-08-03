@@ -68,6 +68,6 @@ void UAvatarFunctionLibrary::PlayPredefineAnimWithAvatar(AActionGameCharacter* I
 
 	if (auto AnimComponent = InAvatar->GetAnimComponent())
 	{
-		AnimComponent->MulticastPlayPredefineAnimation(InType);
+		AnimComponent->PlayPredefineAnimation(InType);
 	}
 }
