@@ -19,6 +19,12 @@ public:
 
 	bool SpawnCharacterPawn();
 
+	UFUNCTION(BlueprintCallable, Category="TopDownStyleBotController")
+	ATopDownStylePlayerCharacter* GetCharacterPawn() const
+	{
+		return CharacterPawn;
+	}
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

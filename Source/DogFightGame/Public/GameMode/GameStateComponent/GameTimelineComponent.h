@@ -31,6 +31,10 @@ public:
 	 */
 	int32 GetFirstPlayerId() const;
 
+	int32 GetCurrentEntityId() const;
+
+	FGameTimelineEntry const* GetCurrentTimelineEntity() const;
+
 	/**
 	 * @brief Move the timeline forward.
 	 */
@@ -67,6 +71,8 @@ protected:
 	 */
 	int32 GetRandomizedPriority();
 
+	int32 GetNextAvailableEntityId();
+
 	void UpdateTimeline();
 
 	UFUNCTION()
@@ -87,7 +93,9 @@ protected:
 	UPROPERTY(Transient, ReplicatedUsing=OnRep_CurrentTimeline)
 	TArray<int32> CurrentTimeline;
 
-	int32 RoundStartPlayerId;
+	int32 NextAvailableEntityId;
+
+	int32 RoundStartEntityId;
 
 	int32 CurrentRound;
 
@@ -95,4 +103,6 @@ protected:
 
 	TArray<TSharedPtr<FGameTimelineEntry>> TimelineEntryList;
 	TArray<TSharedPtr<FTimelineRoundTimer>> TimerList;
+
+	TMap<int32, TWeakPtr<FGameTimelineEntry>> TimelineEntityMap;
 };

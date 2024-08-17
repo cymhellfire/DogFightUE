@@ -3,6 +3,7 @@
 #include "DamageReceiver/DamageReceiverComponent.h"
 #include "GameObject/Component/WidgetLocatorComponent.h"
 #include "Interface/DamageReceiverActorInterface.h"
+#include "Interface/GameTimelineEntityInterface/GameTimelineEntityInterface.h"
 #include "Pawn/ActionGameCharacter.h"
 #include "TopDownStylePlayerCharacter.generated.h"
 
@@ -20,7 +21,7 @@ class UCharacterAnimComponent;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTopDownStylePlayerCharacterDeadEvent, ATopDownStylePlayerCharacter*, Character);
 
 UCLASS()
-class DOGFIGHTGAME_API ATopDownStylePlayerCharacter : public AActionGameCharacter, public IDamageReceiverActorInterface
+class DOGFIGHTGAME_API ATopDownStylePlayerCharacter : public AActionGameCharacter, public IDamageReceiverActorInterface, public IGameTimelineEntityInterface
 {
 	GENERATED_BODY()
 public:
@@ -63,6 +64,18 @@ public:
 	{
 		return DamageReceiverComponent;
 	}
+
+#pragma region IGameTimelineEntityInterface
+	virtual int32 GetOwnerPlayerId() const override
+	{
+		return PlayerId;
+	}
+
+	virtual FString GetEntityName() const override
+	{
+		return GetName();
+	}
+#pragma endregion 
 
 	void TestAttackTarget();
 

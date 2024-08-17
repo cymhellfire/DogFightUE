@@ -1,15 +1,34 @@
 ﻿#pragma once
 
+#include "CoreMinimal.h"
+#include "Interface/GameTimelineEntityInterface/GameTimelineEntityInterface.h"
+
+UENUM(BlueprintType)
+namespace EGameTimelineEntityType
+{
+	enum Type
+	{
+		None,
+		Player,
+		Bot,
+	};
+}
+
+/**
+ * Entry that constructs game timeline.
+ */
 class FGameTimelineEntry
 {
 public:
-	FGameTimelineEntry(int32 InPlayerId);
+	FGameTimelineEntry(int32 InId, IGameTimelineEntityInterface* InEntity);
 
 	void SetPriority(int32 InValue);
 
-	int32 GetPlayerId() const
+	void SetType(EGameTimelineEntityType::Type InType);
+
+	int32 GetId() const
 	{
-		return PlayerId;
+		return Id;
 	}
 
 	int32 GetPriority() const
@@ -17,9 +36,23 @@ public:
 		return Priority;
 	}
 
+	EGameTimelineEntityType::Type GetType() const
+	{
+		return EntityType;
+	}
+
+	int32 GetOwnerPlayerId() const;
+
+	FString GetDebugString() const;
+
 protected:
 
-	int32 PlayerId;
-
+	int32 Id;
 	int32 Priority;
+
+	FString DebugString;
+
+	EGameTimelineEntityType::Type EntityType;
+
+	IGameTimelineEntityInterface* OwnerEntity;
 };

@@ -1,11 +1,13 @@
 #include "FunctionLibrary/CommonGameFlowFunctionLibrary.h"
 
+#include "Common/CommonMagicNumber.h"
 #include "PlayerController/TopDownStyleBotController.h"
 #include "FunctionLibrary/CommonGameplayFunctionLibrary.h"
 #include "FunctionLibrary/LuaIntegrationFunctionLibrary.h"
 #include "GameFramework/PlayerState.h"
 #include "GameMode/TopDownStyleGameMode.h"
 #include "GameMode/TopDownStyleGameState.h"
+#include "GameMode/DataStruct/GameTimelineEntry.h"
 #include "GameMode/GameStateComponent/GameTimelineComponent.h"
 #include "PlayerController/TopDownStylePlayerController.h"
 
@@ -117,7 +119,7 @@ int32 UCommonGameFlowFunctionLibrary::GetTimelineFirstPlayerId(UObject* WorldCon
 		return Timeline->GetFirstPlayerId();
 	}
 
-	return -1;
+	return GameFlowMagicNumbers::InvalidPlayerId;
 }
 
 UGameTimelineComponent* UCommonGameFlowFunctionLibrary::GetCurrentTimeline_Server(UObject* WorldContextObject)
@@ -146,7 +148,7 @@ int32 UCommonGameFlowFunctionLibrary::GetCurrentPlayerId(UObject* WorldContextOb
 	{
 		return GameState->GetCurrentPlayerId();
 	}
-	return -1;
+	return GameFlowMagicNumbers::InvalidPlayerId;
 }
 
 void UCommonGameFlowFunctionLibrary::SetCurrentPlayerId(UObject* WorldContextObject, int32 InId)
@@ -155,6 +157,11 @@ void UCommonGameFlowFunctionLibrary::SetCurrentPlayerId(UObject* WorldContextObj
 	{
 		GameState->SetCurrentPlayerId(InId);
 	}
+}
+
+UGameTimelineComponent* UCommonGameFlowFunctionLibrary::GetCurrentTimelineComponent(UObject* WorldContextObject)
+{
+	return GetCurrentTimeline_Common(WorldContextObject);
 }
 
 void UCommonGameFlowFunctionLibrary::SyncCurrentPlayerIdWithTimeline(UObject* WorldContextObject)
@@ -166,6 +173,27 @@ void UCommonGameFlowFunctionLibrary::SyncCurrentPlayerIdWithTimeline(UObject* Wo
 			GameState->SetCurrentPlayerId(Timeline->GetFirstPlayerId());
 		}
 	}
+}
+
+int32 UCommonGameFlowFunctionLibrary::GetCurrentTimelineEntityId(UObject* WorldContextObject)
+{
+	if (auto Timeline = GetCurrentTimeline_Common(WorldContextObject))
+	{
+		return Timeline->GetCurrentEntityId();
+	}
+	return GameFlowMagicNumbers::InvalidTimelineEntityId;
+}
+
+EGameTimelineEntityType::Type UCommonGameFlowFunctionLibrary::GetCurrentTimelineEntityType(UObject* WorldContextObject)
+{
+	if (auto Timeline = GetCurrentTimeline_Common(WorldContextObject))
+	{
+		if (auto Entity = Timeline->GetCurrentTimelineEntity())
+		{
+			return Entity->GetType();
+		}
+	}
+	return EGameTimelineEntityType::None;
 }
 
 void UCommonGameFlowFunctionLibrary::RequestFinishLocalPlayerRound(UObject* WorldContextObject)
@@ -223,7 +251,7 @@ int32 UCommonGameFlowFunctionLibrary::GetLocalPlayerId(UObject* WorldContextObje
 		}
 	}
 
-	return -1;
+	return GameFlowMagicNumbers::InvalidPlayerId;
 }
 
 int32 UCommonGameFlowFunctionLibrary::SpawnBotPlayer(UObject* WorldContextObject)
@@ -241,5 +269,5 @@ int32 UCommonGameFlowFunctionLibrary::SpawnBotPlayer(UObject* WorldContextObject
 		}
 	}
 
-	return -1;
+	return GameFlowMagicNumbers::InvalidPlayerId;
 }

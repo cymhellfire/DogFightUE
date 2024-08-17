@@ -1,5 +1,7 @@
 ﻿#include "GameMode/GameStateComponent/GameTimelineComponent.h"
 
+#include "Common/CommonMagicNumber.h"
+#include "Common/DogFightGameLog.h"
 #include "Common/LuaEventDef.h"
 #include "GameFramework/PlayerState.h"
 #include "GameMode/TopDownStyleGameMode.h"
@@ -8,6 +10,8 @@
 #include "GameService/LuaEventService.h"
 #include "Net/UnrealNetwork.h"
 #include "Net/Core/PushModel/PushModel.h"
+#include "Pawn/PlayerCharacter/TopDownStylePlayerCharacter.h"
+#include "PlayerController/TopDownStyleBotController.h"
 #include "PlayerController/TopDownStylePlayerController.h"
 
 struct FCompareTimelineEntryByPriority
@@ -20,6 +24,7 @@ struct FCompareTimelineEntryByPriority
 
 UGameTimelineComponent::UGameTimelineComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
+	, NextAvailableEntityId(0)
 	, CurrentRound(0)
 {
 	SetIsReplicatedByDefault(true);
@@ -40,19 +45,37 @@ void UGameTimelineComponent::InitializeTimeline()
 	if (auto TopDownGameMode = Cast<ATopDownStyleGameMode>(GetWorld()->GetAuthGameMode()))
 	{
 		auto PlayerControllerList = TopDownGameMode->GetAllPlayerControllers();
+		auto BotControllerList = TopDownGameMode->GetAllBotControllers();
 		// Initialize priority
-		InitializeRandomPriorityList(PlayerControllerList.Num());
+		InitializeRandomPriorityList(PlayerControllerList.Num() + BotControllerList.Num());
 		// Generate timeline entry for each player
 		for (auto PlayerController : PlayerControllerList)
 		{
 			if (PlayerController.IsValid())
 			{
-				if (auto PS = PlayerController->GetPlayerState<APlayerState>())
-				{
-					TSharedPtr<FGameTimelineEntry> NewEntry = MakeShareable(new FGameTimelineEntry(PS->GetPlayerId()));
-					NewEntry->SetPriority(GetRandomizedPriority());
-					TimelineEntryList.Add(NewEntry);
-				}
+				TSharedPtr<FGameTimelineEntry> NewEntity = MakeShareable(new FGameTimelineEntry(GetNextAvailableEntityId(), PlayerController->GetCharacterPawn()));
+				NewEntity->SetPriority(GetRandomizedPriority());
+				NewEntity->SetType(EGameTimelineEntityType::Player);
+				TimelineEntryList.Add(NewEntity);
+				TimelineEntityMap.Add(NewEntity->GetId(), NewEntity);
+				// if (auto PS = PlayerController->GetPlayerState<APlayerState>())
+				// {
+				// 	TSharedPtr<FGameTimelineEntry> NewEntry = MakeShareable(new FGameTimelineEntry(PS->GetPlayerId()));
+				// 	NewEntry->SetPriority(GetRandomizedPriority());
+				// 	TimelineEntryList.Add(NewEntry);
+				// }
+			}
+		}
+
+		for (auto BotController : BotControllerList)
+		{
+			if (BotController.IsValid())
+			{
+				TSharedPtr<FGameTimelineEntry> NewEntity = MakeShareable(new FGameTimelineEntry(GetNextAvailableEntityId(), BotController->GetCharacterPawn()));
+				NewEntity->SetPriority(GetRandomizedPriority());
+				NewEntity->SetType(EGameTimelineEntityType::Bot);
+				TimelineEntryList.Add(NewEntity);
+				TimelineEntityMap.Add(NewEntity->GetId(), NewEntity);
 			}
 		}
 	}
@@ -60,8 +83,8 @@ void UGameTimelineComponent::InitializeTimeline()
 	// Sort the entries by priority
 	TimelineEntryList.Sort(FCompareTimelineEntryByPriority());
 
-	// Record the first player id of a round
-	RoundStartPlayerId = TimelineEntryList[0]->GetPlayerId();
+	// Record the first entity id of a round
+	RoundStartEntityId = TimelineEntryList[0]->GetId();
 
 	UpdateTimeline();
 }
@@ -101,13 +124,27 @@ int32 UGameTimelineComponent::GetRandomizedPriority()
 	return 0;
 }
 
+int32 UGameTimelineComponent::GetNextAvailableEntityId()
+{
+	int32 Result = NextAvailableEntityId;
+
+	// Loop the next value
+	NextAvailableEntityId++;
+	if (NextAvailableEntityId < 0)
+	{
+		NextAvailableEntityId = 0;
+	}
+
+	return Result;
+}
+
 void UGameTimelineComponent::UpdateTimeline()
 {
 	MARK_PROPERTY_DIRTY_FROM_NAME(UGameTimelineComponent, CurrentTimeline, this);
 	CurrentTimeline.Empty();
 	for (auto& Entry : TimelineEntryList)
 	{
-		CurrentTimeline.Add(Entry->GetPlayerId());
+		CurrentTimeline.Add(Entry->GetId());
 	}
 
 	if (GetOwnerRole() == ROLE_Authority)
@@ -123,12 +160,44 @@ TArray<int32> UGameTimelineComponent::GetTimeline() const
 
 int32 UGameTimelineComponent::GetFirstPlayerId() const
 {
+	if (auto CurrentEntity = GetCurrentTimelineEntity())
+	{
+		return CurrentEntity->GetOwnerPlayerId();
+	}
+	// if (CurrentTimeline.Num() > 0)
+	// {
+	// 	return CurrentTimeline[0];
+	// }
+
+	return GameFlowMagicNumbers::InvalidPlayerId;
+}
+
+int32 UGameTimelineComponent::GetCurrentEntityId() const
+{
 	if (CurrentTimeline.Num() > 0)
 	{
 		return CurrentTimeline[0];
 	}
 
-	return -1;
+	DFLogW(LogDogFightGame, TEXT("No entity in timeline."));
+	return GameFlowMagicNumbers::InvalidTimelineEntityId;
+}
+
+FGameTimelineEntry const* UGameTimelineComponent::GetCurrentTimelineEntity() const
+{
+	auto CurrentId = GetCurrentEntityId();
+	if (CurrentId != -1)
+	{
+		if (auto Result = TimelineEntityMap.Find(CurrentId))
+		{
+			TSharedPtr<FGameTimelineEntry> EntityPtr = Result->Pin();
+			if (EntityPtr.IsValid())
+			{
+				return EntityPtr.Get();
+			}
+		}
+	}
+	return nullptr;
 }
 
 void UGameTimelineComponent::MoveForward()
@@ -146,10 +215,10 @@ void UGameTimelineComponent::OnRep_CurrentTimeline()
 	OnGameTimelineChanged.Broadcast();
 
 	// Check and notify new round
-	const auto CurPlayerId = GetFirstPlayerId();
-	if (CurPlayerId >= 0)
+	const auto CurEntityId = GetCurrentEntityId();
+	if (CurEntityId >= 0)
 	{
-		if (CurPlayerId == RoundStartPlayerId)
+		if (CurEntityId == RoundStartEntityId)
 		{
 			CurrentRound ++;
 			OnNewRoundStarted.Broadcast();
@@ -183,13 +252,14 @@ void UGameTimelineComponent::RemoveEntryByPlayerId(int32 InId)
 	// Iterate through the entry list and remove matched one
 	for (int32 i = 0; i < TimelineEntryList.Num(); ++i)
 	{
-		if (TimelineEntryList[i].IsValid() && TimelineEntryList[i]->GetPlayerId() == InId)
+		if (TimelineEntryList[i].IsValid() && TimelineEntryList[i]->GetId() == InId)
 		{
 			TimelineEntryList.RemoveAt(i);
 			bRemoved = true;
 			break;
 		}
 	}
+	TimelineEntityMap.Remove(InId);
 
 	// Trigger the notify
 	if (bRemoved)

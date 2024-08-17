@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CommonFunctionLibraryBase.h"
+#include "GameMode/DataStruct/GameTimelineEntry.h"
 #include "CommonGameFlowFunctionLibrary.generated.h"
 
 class ATopDownStyleBotController;
@@ -98,10 +99,31 @@ public:
 	static void SetCurrentPlayerId(UObject* WorldContextObject, int32 InId);
 
 	/**
+	 * Get game timeline component of current game state.
+	 * @return Timeline component.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameFlow", meta=(WorldContext="WorldContextObject"))
+	static UGameTimelineComponent* GetCurrentTimelineComponent(UObject* WorldContextObject);
+
+	/**
 	 * Sync the CurrentPlayerId with first one of Timeline.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameFlow", meta=(WorldContext="WorldContextObject"))
 	static void SyncCurrentPlayerIdWithTimeline(UObject* WorldContextObject);
+
+	/**
+	 * Get Id of current timeline entity.
+	 * @return Id of current timeline entity.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameFlow", meta=(WorldContext="WorldContextObject"))
+	static int32 GetCurrentTimelineEntityId(UObject* WorldContextObject);
+
+	/**
+	 * Get type of current timeline entity.
+	 * @return Type of current timeline entity.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameFlow", meta=(WorldContext="WorldContextObject"))
+	static EGameTimelineEntityType::Type GetCurrentTimelineEntityType(UObject* WorldContextObject);
 
 	/**
 	 * Send a request to finish local player's round immediately.
