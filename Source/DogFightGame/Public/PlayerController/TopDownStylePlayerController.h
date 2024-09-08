@@ -48,6 +48,9 @@ public:
 	// -----=========== Character ===========-----
 	void SpawnCharacterPawn();
 
+	UFUNCTION(Server, Reliable)
+	void ServerSetControllingPawn(ATopDownStylePlayerCharacter* InPawn);
+
 	// -----=========== Card ===========-----
 	UFUNCTION(Server, Reliable)
 	void ServerUseCardByInstanceId(int32 InId);
@@ -79,6 +82,12 @@ public:
 		return CharacterPawn;
 	}
 
+	UFUNCTION(BlueprintCallable, Category="TopDownStylePlayerController")
+	ATopDownStylePlayerCharacter* GetControllingPawn() const
+	{
+		return ControllingPawn;
+	}
+
 	// ICardTargetProviderInterface interface
 	virtual void StartAcquireTargets(FTargetAcquireSettings Settings, TFunction<void(bool bSuccess, TArray<FAcquiredTargetInfo>)> Callback) override;
 
@@ -101,6 +110,9 @@ protected:
 	UFUNCTION(Server, Reliable)
 	void ServerFinishAcquireTargets(bool bSuccess, const TArray<FAcquiredTargetInfo>& TargetInfos);
 
+	UFUNCTION()
+	void OnRep_ControllingPawn(ATopDownStylePlayerCharacter* LastPawn);
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="PlayerController")
 	UInGameMessageReceiverComponent* InGameMessageReceiverComponent;
@@ -119,6 +131,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="PlayerController")
 	TSubclassOf<ATopDownStylePlayerCharacter> CharacterClass;
+
+	UPROPERTY(VisibleAnywhere, Transient, ReplicatedUsing=OnRep_ControllingPawn)
+	ATopDownStylePlayerCharacter* ControllingPawn;
 
 public:
 	UPROPERTY(BlueprintAssignable, Category="TopDownStylePlayerController")

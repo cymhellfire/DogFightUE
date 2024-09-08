@@ -11,6 +11,7 @@
 #include "Pawn/PlayerCharacter/RagdollComponent.h"
 #include "UI/InGame/PlayerCharacterStateWidget.h"
 #include "Net/UnrealNetwork.h"
+#include "Pawn/PlayerCharacter/CharacterInventoryComponent.h"
 
 ATopDownStylePlayerCharacter::ATopDownStylePlayerCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -22,6 +23,7 @@ ATopDownStylePlayerCharacter::ATopDownStylePlayerCharacter(const FObjectInitiali
 	BuffManagerComponent = CreateDefaultSubobject<UBuffManagerComponent>("BuffManagerComponent");
 	ArsenalComponent = CreateDefaultSubobject<UArsenalComponent>("ArsenalComponent");
 	MotionWarpComponent = CreateDefaultSubobject<UMotionWarpingComponent>("MotionWarpingComponent");
+	InventoryComponent = CreateDefaultSubobject<UCharacterInventoryComponent>("InventoryComponent");
 
 	// Initial value
 	bAlive = true;
@@ -190,5 +192,13 @@ void ATopDownStylePlayerCharacter::RemoveBuff(UNewBuffBase* InBuff)
 	if (IsValid(BuffManagerComponent))
 	{
 		BuffManagerComponent->RemoveBuff(InBuff);
+	}
+}
+
+void ATopDownStylePlayerCharacter::ServerUseCardByInstanceId_Implementation(int32 InId)
+{
+	if (IsValid(InventoryComponent))
+	{
+		InventoryComponent->ServerTryToUseCardByInstanceId(InId);
 	}
 }

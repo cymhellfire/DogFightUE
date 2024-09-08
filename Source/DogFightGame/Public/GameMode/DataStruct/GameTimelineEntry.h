@@ -41,6 +41,12 @@ public:
 		return EntityType;
 	}
 
+	template<class T>
+	T* GetTypedEntity() const
+	{
+		return CastChecked<T>(OwnerEntity);
+	}
+
 	int32 GetOwnerPlayerId() const;
 
 	FString GetDebugString() const;

@@ -4,6 +4,7 @@
 #include "GameMode/DataStruct/GameTimelineEntry.h"
 #include "CommonGameFlowFunctionLibrary.generated.h"
 
+class ATopDownStylePlayerCharacter;
 class ATopDownStyleBotController;
 class ATopDownStylePlayerController;
 class UGameTimelineComponent;
@@ -124,6 +125,13 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameFlow", meta=(WorldContext="WorldContextObject"))
 	static EGameTimelineEntityType::Type GetCurrentTimelineEntityType(UObject* WorldContextObject);
+
+	/**
+	 * Get the character of current timeline entity.
+	 * @return Character of current timeline entity.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameFlow", meta=(WorldContext="WorldContextObject"))
+	static ATopDownStylePlayerCharacter* GetCurrentTimelineEntityCharacter(UObject* WorldContextObject);
 
 	/**
 	 * Send a request to finish local player's round immediately.

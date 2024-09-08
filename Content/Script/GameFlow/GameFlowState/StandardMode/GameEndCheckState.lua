@@ -2,7 +2,7 @@
 local GameEndCheckState = UnrealClass("GameFlow.GameFlowState.GameFlowStateLogicBase")
 
 local EntityStateMap = {
-    [UE.EGameTimelineEntityType.Player] = "StandardMode.PrePlayerRoundBuffState",
+    [UE.EGameTimelineEntityType.Player] = "StandardMode.SyncCharacterWithPlayerState",
 }
 
 function GameEndCheckState:OnEnter()

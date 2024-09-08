@@ -2,6 +2,7 @@
 
 #include "EnhancedInputComponent.h"
 #include "Card/Card.h"
+#include "Common/DogFightGameLog.h"
 #include "Common/LuaEventDef.h"
 #include "GameMode/TopDownStyleGameMode.h"
 #include "GameMode/GameModeComponent/InGameMessageSenderComponent.h"
@@ -51,10 +52,11 @@ void ATopDownStylePlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeP
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	FDoRepLifetimeParams SharedPtr;
-	SharedPtr.bIsPushBased = true;
+	FDoRepLifetimeParams SharedParams;
+	SharedParams.bIsPushBased = true;
 
-	DOREPLIFETIME_WITH_PARAMS_FAST(ATopDownStylePlayerController, CharacterPawn, SharedPtr);
+	DOREPLIFETIME_WITH_PARAMS_FAST(ATopDownStylePlayerController, CharacterPawn, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(ATopDownStylePlayerController, ControllingPawn, SharedParams);
 }
 
 void ATopDownStylePlayerController::SetupInputComponent()
@@ -130,6 +132,22 @@ void ATopDownStylePlayerController::SpawnCharacterPawn()
 	}
 }
 
+void ATopDownStylePlayerController::ServerSetControllingPawn_Implementation(ATopDownStylePlayerCharacter* InPawn)
+{
+	if (InPawn == ControllingPawn)
+	{
+		return;
+	}
+
+	auto LastPawn = ControllingPawn;
+	MARK_PROPERTY_DIRTY_FROM_NAME(ATopDownStylePlayerController, ControllingPawn, this);
+	ControllingPawn = InPawn;
+	if (HasAuthority())
+	{
+		OnRep_ControllingPawn(LastPawn);
+	}
+}
+
 void ATopDownStylePlayerController::ServerMarkPlayerReady_Implementation()
 {
 	if (ATopDownStyleGameMode* GameMode = Cast<ATopDownStyleGameMode>(GetWorld()->GetAuthGameMode()))
@@ -150,11 +168,20 @@ void ATopDownStylePlayerController::OnTimerExpired()
 
 void ATopDownStylePlayerController::ServerUseCardByInstanceId_Implementation(int32 InId)
 {
-	if (auto PS = GetPlayerState<ATopDownStylePlayerState>())
+	// if (auto PS = GetPlayerState<ATopDownStylePlayerState>())
+	// {
+	// 	// Let player state start the using process
+	// 	PS->ServerTryToUseCardByInstanceId(InId);
+	// }
+
+	// Get current controlling character
+	if (!IsValid(ControllingPawn))
 	{
-		// Let player state start the using process
-		PS->ServerTryToUseCardByInstanceId(InId);
+		DFLogE(LogDogFightGame, TEXT("No available controlling pawn now."))
+		return;
 	}
+
+	ControllingPawn->ServerUseCardByInstanceId(InId);
 }
 
 void ATopDownStylePlayerController::ServerSendInGameChatMessage_Implementation(const FInGameChatMessage& InMessage)
@@ -229,4 +256,12 @@ void ATopDownStylePlayerController::TestAttackTarget()
 	{
 		CharacterPawn->TestAttackTarget();
 	}
+}
+
+void ATopDownStylePlayerController::OnRep_ControllingPawn(ATopDownStylePlayerCharacter* LastPawn)
+{
+	DFLog(LogDogFightGame, TEXT("Old %s -> New %s"), (IsValid(LastPawn) ? *LastPawn->GetName() : TEXT("null")),
+		(IsValid(ControllingPawn) ? *ControllingPawn->GetName() : TEXT("null")));
+
+	
 }

@@ -52,15 +52,21 @@ function WidgetCardList:OnCardListChanged(InPlayerId)
         return
     end
 
-    -- Get card list from 
-    local PlayerState = UE.UCommonGameplayFunctionLibrary.GetPlayerStateById(self, self.LocalPlayerId)
-    if PlayerState then
-        local CardDescArray = PlayerState:GetAllCardDescObject()
-        if CardDescArray:Length() > 0 then
-            local CardDescTable = CardDescArray:ToTable()
-            self.CardListWrapper:LoadDataByList(CardDescTable)
-        elseif self.CardListWrapper then
-            self.CardListWrapper:Clear()
+    -- Get card list from current character
+    ---@type ATopDownStylePlayerCharacter
+    local CurCharacter = UE.UCommonGameFlowFunctionLibrary.GetCurrentTimelineEntityCharacter(self)
+    -- Verify owner player
+    local bValid = CurCharacter and (CurCharacter:GetPlayerId() == self.LocalPlayerId) or false
+    if bValid then
+        ---@type UCharacterInventoryComponent
+        local Inventory = CurCharacter:GetInventoryComponent()
+        if Inventory then
+            local CardDescArray = Inventory:GetAllCardDescObjects():ToTable()
+            if #CardDescArray > 0 then
+                self.CardListWrapper:LoadDataByList(CardDescArray)
+            else
+                self.CardListWrapper:Clear()
+            end
         end
     end
 end

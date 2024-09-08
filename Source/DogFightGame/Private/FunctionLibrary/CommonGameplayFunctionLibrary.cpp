@@ -11,6 +11,7 @@
 #include "Interface/DamageReceiverActorInterface.h"
 #include "Math/MathHelper.h"
 #include "Pawn/PlayerCharacter/ArsenalComponent.h"
+#include "Pawn/PlayerCharacter/CharacterInventoryComponent.h"
 #include "Pawn/PlayerCharacter/TopDownStylePlayerCharacter.h"
 #include "Pawn/PlayerPawn/TopDownStylePlayerPawn.h"
 #include "Player/TopDownStylePlayerState.h"
@@ -57,12 +58,40 @@ ATopDownStylePlayerCharacter* UCommonGameplayFunctionLibrary::GetPlayerCharacter
 	return nullptr;
 }
 
+void UCommonGameplayFunctionLibrary::SetControllingPawnToOwnerPlayer(ATopDownStylePlayerCharacter* InPawn)
+{
+	if (!IsValid(InPawn))
+	{
+		return;
+	}
+
+	if (auto PC = GetPlayerControllerById(InPawn, InPawn->GetOwnerPlayerId()))
+	{
+		PC->ServerSetControllingPawn(InPawn);
+	}
+}
+
 void UCommonGameplayFunctionLibrary::DispatchCardToPlayer(UObject* WorldContextObject, int32 InPlayerId, UCard* InCard)
 {
 	if (auto PlayerState = Cast<ATopDownStylePlayerState>(GetPlayerStateById(WorldContextObject, InPlayerId)))
 	{
 		PlayerState->AddCardObject(InCard);
 	}
+}
+
+bool UCommonGameplayFunctionLibrary::DispatchCardToCharacter(UObject* WorldContextObject, ATopDownStylePlayerCharacter* InCharacter, UCard* InCard)
+{
+	if (!IsValid(InCharacter))
+	{
+		return false;
+	}
+
+	if (auto Inventory = InCharacter->GetInventoryComponent())
+	{
+		Inventory->AddCardObject(InCard);
+	}
+
+	return false;
 }
 
 void UCommonGameplayFunctionLibrary::UseCardByInstanceId(UObject* WorldContextObject, int32 InInstanceId)
@@ -74,11 +103,14 @@ void UCommonGameplayFunctionLibrary::UseCardByInstanceId(UObject* WorldContextOb
 	}
 }
 
-int32 UCommonGameplayFunctionLibrary::GetPlayerCardNums(UObject* WorldContextObject, int32 InPlayerId)
+int32 UCommonGameplayFunctionLibrary::GetCharacterCardNums(ATopDownStylePlayerCharacter* InPawn)
 {
-	if (auto PS = Cast<ATopDownStylePlayerState>(GetPlayerStateById(WorldContextObject, InPlayerId)))
+	if (IsValid(InPawn))
 	{
-		return PS->GetCardNum();
+		if (auto Inventory = InPawn->GetInventoryComponent())
+		{
+			return Inventory->GetCardNum();
+		}
 	}
 
 	return -1;

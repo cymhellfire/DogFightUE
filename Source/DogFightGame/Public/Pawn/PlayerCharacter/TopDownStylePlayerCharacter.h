@@ -17,6 +17,7 @@ class UBuffManagerComponent;
 class UGameplayAttributesComponent;
 class UArsenalComponent;
 class UCharacterAnimComponent;
+class UCharacterInventoryComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTopDownStylePlayerCharacterDeadEvent, ATopDownStylePlayerCharacter*, Character);
 
@@ -53,10 +54,26 @@ public:
 	UFUNCTION(BlueprintCallable, Category="TopDownStylePlayerCharacter")
 	void RemoveBuff(UNewBuffBase* InBuff);
 
+	// -------------- Use card --------------
+	UFUNCTION(Server, Reliable)
+	void ServerUseCardByInstanceId(int32 InId);
+
+	UFUNCTION(BlueprintCallable, Category="TopDownStylePlayerCharacter")
+	int32 GetPlayerId() const
+	{
+		return PlayerId;
+	}
+
 	UFUNCTION(BlueprintCallable, Category="TopDownStylePlayerCharacter")
 	UArsenalComponent* GetArsenalComponent() const
 	{
 		return ArsenalComponent;
+	}
+
+	UFUNCTION(BlueprintCallable, Category="TopDownStylePlayerCharacter")
+	UCharacterInventoryComponent* GetInventoryComponent() const
+	{
+		return InventoryComponent;
 	}
 
 	// DamageReceiverActorInterface
@@ -128,6 +145,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="TopDownStylePlayerCharacter")
 	UMotionWarpingComponent* MotionWarpComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="TopDownStylePlayerCharacter")
+	UCharacterInventoryComponent* InventoryComponent;
 
 	UPROPERTY(Transient)
 	UPlayerCharacterStateWidget* StateWidget;

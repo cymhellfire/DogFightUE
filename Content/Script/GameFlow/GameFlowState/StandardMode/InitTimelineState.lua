@@ -13,7 +13,7 @@ function InitTimelineState:OnEnter()
     local Instigator = self.OwnerState.CreateArgument.Instigator
     local NewArgument = GetGameService(self.OwnerState, GameServiceNameDef.GameFlowStateService):GetGameFlowStateCreateArgument(Instigator)
     if NewArgument then
-        NewArgument.StateName = "StandardMode.PrePlayerRoundBuffState"
+        NewArgument.StateName = "StandardMode.SyncCharacterWithPlayerState"
         NewArgument.Instigator = Instigator
         self.OwnerState:SetNextState(NewArgument)
     end

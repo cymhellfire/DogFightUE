@@ -50,12 +50,27 @@ public:
 	static ATopDownStylePlayerCharacter* GetPlayerCharacterById(UObject* WorldContextObject, int32 InPlayerId);
 
 	/**
+	 * Let specified pawn become its owner's controlling pawn.
+	 * @param InPawn			Pawn instance to operate.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
+	static void SetControllingPawnToOwnerPlayer(ATopDownStylePlayerCharacter* InPawn);
+
+	/**
 	 * Given player specified card.
 	 * @param InPlayerId		Id of player that cards given to.
 	 * @param InCard			The card that given to player.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameplay|Card", meta=(WorldContext="WorldContextObject"))
 	static void DispatchCardToPlayer(UObject* WorldContextObject, int32 InPlayerId, UCard* InCard);
+
+	/**
+	 * Given character specified card.
+	 * @param InCharacter		Character pawn that cards given to.
+	 * @param InCard			The card that given to character.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameplay|Card", meta=(WorldContext="WorldContextObject"))
+	static bool DispatchCardToCharacter(UObject* WorldContextObject, ATopDownStylePlayerCharacter* InCharacter, UCard* InCard);
 
 	/**
 	 * Let local player use card by instance id.
@@ -65,12 +80,12 @@ public:
 	static void UseCardByInstanceId(UObject* WorldContextObject, int32 InInstanceId);
 
 	/**
-	 * Get card count of specified player.
-	 * @param InPlayerId		Player id to get card count.
-	 * @return					Total card count of player.
+	 * Get card count of specified character.
+	 * @param InPawn			Character to get card count.
+	 * @return					Total card count.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameplay|Card", meta=(WorldContext="WorldContextObject"))
-	static int32 GetPlayerCardNums(UObject* WorldContextObject, int32 InPlayerId);
+	static int32 GetCharacterCardNums(ATopDownStylePlayerCharacter* InPawn);
 
 	/**
 	 * Add specified game widget to player with given id.

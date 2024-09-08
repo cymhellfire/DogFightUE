@@ -9,6 +9,7 @@
 #include "GameMode/TopDownStyleGameState.h"
 #include "GameMode/DataStruct/GameTimelineEntry.h"
 #include "GameMode/GameStateComponent/GameTimelineComponent.h"
+#include "Pawn/PlayerCharacter/TopDownStylePlayerCharacter.h"
 #include "PlayerController/TopDownStylePlayerController.h"
 
 TArray<ATopDownStylePlayerController*> UCommonGameFlowFunctionLibrary::GetAllPlayerControllers(UObject* WorldContextObject)
@@ -194,6 +195,24 @@ EGameTimelineEntityType::Type UCommonGameFlowFunctionLibrary::GetCurrentTimeline
 		}
 	}
 	return EGameTimelineEntityType::None;
+}
+
+ATopDownStylePlayerCharacter* UCommonGameFlowFunctionLibrary::GetCurrentTimelineEntityCharacter(
+	UObject* WorldContextObject)
+{
+	if (auto Timeline = GetCurrentTimeline_Common(WorldContextObject))
+	{
+		if (auto Entity = Timeline->GetCurrentTimelineEntity())
+		{
+			auto Character = Entity->GetTypedEntity<ATopDownStylePlayerCharacter>();
+			if (IsValid(Character))
+			{
+				UE_LOG(LogTemp,Log, TEXT("Got character %s"), *Character->GetName());
+				return Character;
+			}
+		}
+	}
+	return nullptr;
 }
 
 void UCommonGameFlowFunctionLibrary::RequestFinishLocalPlayerRound(UObject* WorldContextObject)

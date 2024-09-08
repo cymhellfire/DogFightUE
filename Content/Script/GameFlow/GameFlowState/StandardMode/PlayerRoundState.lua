@@ -53,7 +53,8 @@ function PlayerRoundState:OnCardFinished(InPlayerId, InId)
     end
 
     -- Check the remaining card count
-    local CardNum = UE.UCommonGameplayFunctionLibrary.GetPlayerCardNums(self.OwnerState, self.CurPlayerId)
+    local CurCharacter = UE.UCommonGameFlowFunctionLibrary.GetCurrentTimelineEntityCharacter(self.OwnerState)
+    local CardNum = CurCharacter and UE.UCommonGameplayFunctionLibrary.GetCharacterCardNums(CurCharacter) or 0
     print("PlayerRound: " .. CardNum .. " cards left")
     if CardNum <= 0 then
         self:FinishState()
