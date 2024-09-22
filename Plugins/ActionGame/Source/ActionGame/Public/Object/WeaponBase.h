@@ -63,8 +63,9 @@ public:
 
 	virtual FWeaponActionInfo DequeueInput();
 
-	virtual void StartInputQueue();
+	virtual void StartInputQueue(bool bDelay = false);
 
+	UFUNCTION()
 	virtual void ConsumeInput();
 
 	/**
@@ -113,4 +114,6 @@ protected:
 	IActionCharacterInterface* OwnerCharacter = nullptr;
 
 	TArray<FWeaponActionInfo> InputQueue;
+
+	FTimerHandle DelayStartInputQueueTimer;
 };

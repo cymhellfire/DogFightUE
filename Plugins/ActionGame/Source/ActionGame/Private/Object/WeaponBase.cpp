@@ -119,11 +119,22 @@ FWeaponActionInfo UWeaponBase::DequeueInput()
 	return FWeaponActionInfo();
 }
 
-void UWeaponBase::StartInputQueue()
+void UWeaponBase::StartInputQueue(bool bDelay)
 {
 	if (!IsValid(CurrentAction))
 	{
 		UE_LOG(LogActionGameWeapon, Error, TEXT("[UWeaponBase] Cannot start input queue due to current action is missing."));
+		return;
+	}
+
+	if (bDelay)
+	{
+		if (DelayStartInputQueueTimer.IsValid())
+		{
+			return;
+		}
+
+		GetWorld()->GetTimerManager().SetTimer(DelayStartInputQueueTimer, this, &UWeaponBase::ConsumeInput, 0.1f);
 		return;
 	}
 
@@ -132,6 +143,11 @@ void UWeaponBase::StartInputQueue()
 
 void UWeaponBase::ConsumeInput()
 {
+	if (DelayStartInputQueueTimer.IsValid())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(DelayStartInputQueueTimer);
+	}
+
 	auto NextInput = DequeueInput();
 	if (!NextInput.IsValid())
 	{
