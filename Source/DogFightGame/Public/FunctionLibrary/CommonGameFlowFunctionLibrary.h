@@ -55,6 +55,14 @@ public:
 	static void SpawnBotCharacterPawn(ATopDownStyleBotController* Controller);
 
 	/**
+	 * 
+	 * @param PlayerId Id of player owning new pawn.
+	 * @param CharacterClass
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameFlow", meta=(WorldContext="WorldContextObject"))
+	static AActor* SpawnCharacterPawnForPlayer(UObject* WorldContextObject, int32 PlayerId, UClass* CharacterClass);
+
+	/**
 	 * Switch character movement on/off for all players in current game.
 	 *
 	 * @param bEnable Whether to enable character movement.

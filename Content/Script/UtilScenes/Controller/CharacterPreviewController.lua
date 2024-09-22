@@ -16,7 +16,7 @@ end
 function CharacterPreviewController:ChangePreviewCharacter(ConfigId)
     local Character = self:GetCharacterPawn()
     if Character then
-        UE.UAvatarFunctionLibrary.InitAvatarAppearanceWithConfigId(self, Character, ConfigId)
+        UE.UAvatarFunctionLibrary.InitAvatarAppearanceWithConfigId(Character, ConfigId)
     end
 end
 

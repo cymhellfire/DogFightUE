@@ -52,7 +52,7 @@ void UArsenalComponent::AttackTarget(const FWeaponActionTarget& InTarget, EWeapo
 		auto Weapon = *WeaponPtr;
 		Weapon->EnqueueInput(EWeaponActionInput::WAI_Attack, InTarget);
 		Weapon->EnqueueInput(EWeaponActionInput::WAI_Finish);
-		Weapon->StartInputQueue();
+		Weapon->StartInputQueue(true);
 	}
 	else
 	{

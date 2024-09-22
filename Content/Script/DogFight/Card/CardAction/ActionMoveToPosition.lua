@@ -23,7 +23,7 @@ function ActionMoveToPosition:StartCommand()
     end
 
     ---@type ATopDownStylePlayerCharacter
-    local Character = self._PlayerController:GetCharacterPawn()
+    local Character = self._PlayerController:GetControllingPawn()
     if not Character then
         self:FailedWithParams()
         return

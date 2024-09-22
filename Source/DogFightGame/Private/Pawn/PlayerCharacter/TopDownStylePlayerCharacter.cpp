@@ -100,7 +100,7 @@ void ATopDownStylePlayerCharacter::ServerSetupAvatarId_Implementation(int32 InId
 
 void ATopDownStylePlayerCharacter::OnRep_AvatarId()
 {
-	UAvatarFunctionLibrary::InitAvatarAppearanceWithConfigId(this, this, AvatarId);
+	UAvatarFunctionLibrary::InitAvatarAppearanceWithConfigId(this, AvatarId);
 }
 
 FVector ATopDownStylePlayerCharacter::GetProjectileSpawnLocation() const

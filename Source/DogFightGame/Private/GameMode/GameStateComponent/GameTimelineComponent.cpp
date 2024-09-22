@@ -3,6 +3,7 @@
 #include "Common/CommonMagicNumber.h"
 #include "Common/DogFightGameLog.h"
 #include "Common/LuaEventDef.h"
+#include "FunctionLibrary/CommonGameplayFunctionLibrary.h"
 #include "GameFramework/PlayerState.h"
 #include "GameMode/TopDownStyleGameMode.h"
 #include "GameMode/DataStruct/GameTimelineEntry.h"
@@ -292,4 +293,21 @@ void UGameTimelineComponent::OnRoundTimerExpired(TSharedPtr<FTimelineRoundTimer>
 
 	InTimer->OnTimerExpired.RemoveAll(this);
 	TimerList.Remove(InTimer);
+}
+
+void UGameTimelineComponent::AddTimelineEntity(IGameTimelineEntityInterface* InEntity)
+{
+	auto OwnerPlayerId = InEntity->GetOwnerPlayerId();
+	if (auto OwnerPC = UCommonGameplayFunctionLibrary::GetPlayerControllerById(this, OwnerPlayerId))
+	{
+		TSharedPtr<FGameTimelineEntry> NewEntity = MakeShareable(new FGameTimelineEntry(GetNextAvailableEntityId(), InEntity));
+		NewEntity->SetPriority(1);
+		NewEntity->SetType(EGameTimelineEntityType::Player);
+		TimelineEntryList.Add(NewEntity);
+		TimelineEntityMap.Add(NewEntity->GetId(), NewEntity);
+
+		DFLog(LogDogFightGame, TEXT("Add new timeline entity %s"), *InEntity->GetEntityName());
+
+		UpdateTimeline();
+	}
 }

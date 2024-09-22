@@ -1,6 +1,7 @@
 #include "FunctionLibrary/CommonGameFlowFunctionLibrary.h"
 
 #include "Common/CommonMagicNumber.h"
+#include "Common/DogFightGameLog.h"
 #include "PlayerController/TopDownStyleBotController.h"
 #include "FunctionLibrary/CommonGameplayFunctionLibrary.h"
 #include "FunctionLibrary/LuaIntegrationFunctionLibrary.h"
@@ -76,6 +77,44 @@ void UCommonGameFlowFunctionLibrary::SpawnBotCharacterPawn(ATopDownStyleBotContr
 	}
 
 	Controller->SpawnCharacterPawn();
+}
+
+AActor* UCommonGameFlowFunctionLibrary::SpawnCharacterPawnForPlayer(UObject* WorldContextObject, int32 PlayerId, UClass* CharacterClass)
+{
+	if (!IsValid(CharacterClass))
+	{
+		DFLogE(LogDogFightGame, TEXT("Invalid character class detected."));
+		return nullptr;
+	}
+
+	if (auto PC = UCommonGameplayFunctionLibrary::GetPlayerControllerById(WorldContextObject, PlayerId))
+	{
+		auto Timeline = GetCurrentTimeline_Server(WorldContextObject);
+		if (!IsValid(Timeline))
+		{
+			DFLogE(LogDogFightGame, TEXT("No available timeline. This function only works on server side."));
+			return nullptr;
+		}
+
+		if (auto World = WorldContextObject->GetWorld())
+		{
+			FActorSpawnParameters SpawnParameters;
+			SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+			FTransform SpawnTrans = FTransform::Identity;
+
+			auto NewChar = Cast<ATopDownStylePlayerCharacter>(World->SpawnActor(CharacterClass, &SpawnTrans, SpawnParameters));
+
+			if (IsValid(NewChar))
+			{
+				NewChar->SetPlayerId(PlayerId);
+				Timeline->AddTimelineEntity(NewChar);
+
+				return NewChar;
+			}
+		}
+	}
+
+	return nullptr;
 }
 
 void UCommonGameFlowFunctionLibrary::SetCharacterMoveEnableForAllPlayers(UObject* WorldContextObject, bool bEnable)

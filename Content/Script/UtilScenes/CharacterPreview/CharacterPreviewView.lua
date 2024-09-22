@@ -33,6 +33,7 @@ function CharacterPreviewView:PostInitialized()
     self.CharacterSelect_ComboBox.OnSelectionChanged:Add(self, self.OnCharacterSelectChanged)
     self.AnimSelect_ComboBox.OnSelectionChanged:Add(self, self.OnAnimSelectChanged)
     self.PlayAnim_Button.OnClicked:Add(self, self.OnPlayAnimClicked)
+    self.AddCharacter_Button.OnClicked:Add(self, self.OnAddCharacterClicked)
 
     self:InitActionPreviewList()
 
@@ -47,6 +48,7 @@ function CharacterPreviewView:UnInitialize()
     self.CharacterSelect_ComboBox.OnSelectionChanged:Remove(self, self.OnCharacterSelectChanged)
     self.AnimSelect_ComboBox.OnSelectionChanged:Remove(self, self.OnAnimSelectChanged)
     self.PlayAnim_Button.OnClicked:Remove(self, self.OnPlayAnimClicked)
+    self.AddCharacter_Button.OnClicked:Remove(self, self.OnAddCharacterClicked)
 end
 
 function CharacterPreviewView:OnInitTimerExpired()
@@ -89,10 +91,22 @@ function CharacterPreviewView:OnPlayAnimClicked()
     ---@type CharacterPreviewController
     local PlayerController = UE.UCommonGameFlowFunctionLibrary.GetLocalPlayerController(self)
     ---@type ATopDownStylePlayerCharacter
-    local PlayerCharacter = PlayerController and PlayerController:GetCharacterPawn()
+    local PlayerCharacter = PlayerController and PlayerController:GetControllingPawn()
     local SelectAnimCfg = AnimCfg[self.CurSelectAnimIndex]
     if PlayerCharacter and SelectAnimCfg then
         UE.UAvatarFunctionLibrary.PlayPredefineAnimWithAvatar(PlayerCharacter, SelectAnimCfg.Enum)
+    end
+end
+
+function CharacterPreviewView:OnAddCharacterClicked()
+    print("CharacterPreviewView:OnAddCharacterClicked")
+
+    local LoadedClass = UE.ULuaIntegrationFunctionLibrary.LoadClassByPath("/Game/DogFightGame/Blueprints/Character/BP_Char_TopdownStyle")
+    local CurPlayerId = UE.UCommonGameFlowFunctionLibrary.GetCurrentPlayerId(self)
+    local NewChar = UE.UCommonGameFlowFunctionLibrary.SpawnCharacterPawnForPlayer(self, CurPlayerId, LoadedClass)
+
+    if NewChar and NewChar:IsValid() then
+        UE.UAvatarFunctionLibrary.InitAvatarAppearanceWithConfigId(NewChar, 1)
     end
 end
 

@@ -77,7 +77,7 @@ function PreparationRoomView:PreviewAvatar(InConfigId)
         return
     end
 
-    UE.UAvatarFunctionLibrary.InitAvatarAppearanceWithConfigId(self, MyState.Character, InConfigId)
+    UE.UAvatarFunctionLibrary.InitAvatarAppearanceWithConfigId(MyState.Character, InConfigId)
 end
 
 return PreparationRoomView

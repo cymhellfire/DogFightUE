@@ -4,6 +4,7 @@
 #include "GameTimelineComponent.generated.h"
 
 class FGameTimelineEntry;
+class IGameTimelineEntityInterface;
 
 UCLASS()
 class DOGFIGHTGAME_API UGameTimelineComponent : public UActorComponent
@@ -57,6 +58,8 @@ public:
 	void MulticastTimelineEntryRemoved(int32 InId);
 
 	void AddTimer(int32 InTime, FTimelineRoundTimerFinishDelegate& InCallback);
+
+	void AddTimelineEntity(IGameTimelineEntityInterface* InEntity);
 
 protected:
 	/**

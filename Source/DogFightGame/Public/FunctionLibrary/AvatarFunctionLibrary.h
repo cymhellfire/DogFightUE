@@ -22,7 +22,7 @@ public:
 	 * @param ConfigId Id of config to apply.
 	 */
 	UFUNCTION(BlueprintCallable, Category="AvatarFunctionLibrary", meta=(WorldContext="WorldContext"))
-	static void InitAvatarAppearanceWithConfigId(UObject* WorldContext, AActionGameCharacter* InAvatar, int32 ConfigId);
+	static void InitAvatarAppearanceWithConfigId(AActionGameCharacter* InAvatar, int32 ConfigId);
 
 	UFUNCTION(BlueprintCallable, Category="AvatarFunctionLibrary")
 	static void PlayAnimationWithAvatar(AActionGameCharacter* InAvatar, const FString& AnimPath);

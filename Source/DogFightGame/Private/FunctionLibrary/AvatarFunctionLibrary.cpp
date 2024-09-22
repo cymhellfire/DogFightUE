@@ -9,12 +9,8 @@
 #include "GameService/GameService.h"
 #include "Pawn/Component/CharacterAnimComponent.h"
 
-void UAvatarFunctionLibrary::InitAvatarAppearanceWithConfigId(UObject* WorldContext, AActionGameCharacter* InAvatar,
-	int32 ConfigId)
+void UAvatarFunctionLibrary::InitAvatarAppearanceWithConfigId(AActionGameCharacter* InAvatar, int32 ConfigId)
 {
-	if (!IsValid(WorldContext))
-		return;
-
 	if (!IsValid(InAvatar))
 	{
 		DFLogE(LogDogFightGame, TEXT("Invalid avatar actor to setup appearance."))
