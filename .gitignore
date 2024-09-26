@@ -102,3 +102,6 @@ Content/untitled_category/*
 # Git not care about Content anymore
 Content/*
 !Content/Script/
+
+# XResloader Log Files
+/GameData/*.log

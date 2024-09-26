@@ -1,0 +1,336 @@
+[2024-09-15T17:42:06.733] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T19:31:34.079] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T19:42:19.368] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T19:42:31.885] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2 -m MacroSource=资源转换示例.xlsx|macro|2,1
+
+[2024-09-15T19:42:31.885] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2 -m MacroSource=资源转换示例.xlsx|macro|2,1
+
+[2024-09-15T19:42:31.886] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t bin -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2 -m MacroSource=资源转换示例.xlsx|macro|2,1
+
+[2024-09-15T19:42:31.886] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t bin -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2 -m MacroSource=资源转换示例.xlsx|macro|2,1
+
+[2024-09-15T19:42:31.906] [ERROR] default - [Process 2 exit with code 1.]
+[2024-09-15T19:42:31.941] [ERROR] default - [Process 1 exit with code 1.]
+[2024-09-15T19:42:31.941] [ERROR] CONV - [CONV]: [Process 1 exit with code 1.]
+[2024-09-15T19:42:31.941] [ERROR] default - All jobs done, 2 job(s) failed.
+[2024-09-15T19:46:06.032] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t bin -m "Card=
+
+[2024-09-15T19:46:06.032] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t bin -m "Card=
+
+[2024-09-15T19:46:06.033] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m "Card=
+
+[2024-09-15T19:46:06.033] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m "Card=
+
+[2024-09-15T19:46:06.035] [ERROR] default - [ERROR] xresloader - Parsing failed.  reason: "Unrecognized option: -=" failed
+
+[2024-09-15T19:46:06.035] [ERROR] default - [ERROR] xresloader - Parsing failed.  reason: "Unrecognized option: -=" failed
+
+[2024-09-15T19:46:06.036] [ERROR] default - [ERROR] xresloader - Parsing failed.  reason: "Unrecognized option: -=" failed
+
+[2024-09-15T19:46:06.036] [ERROR] default - [ERROR] xresloader - Parsing failed.  reason: "Unrecognized option: -=" failed
+
+[2024-09-15T19:46:06.083] [ERROR] default - [Process 2 exit with code 2.]
+[2024-09-15T19:46:06.083] [ERROR] default - [Process 1 exit with code 2.]
+[2024-09-15T19:46:06.083] [ERROR] CONV - [CONV]: [Process 1 exit with code 2.]
+[2024-09-15T19:46:06.083] [ERROR] default - All jobs done, 4 job(s) failed.
+[2024-09-15T19:47:50.162] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T19:47:55.688] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m "Card=
+
+[2024-09-15T19:47:55.688] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m "Card=
+
+[2024-09-15T19:47:55.690] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t bin -m "Card=
+
+[2024-09-15T19:47:55.690] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t bin -m "Card=
+
+[2024-09-15T19:47:55.691] [ERROR] default - [ERROR] xresloader - Parsing failed.  reason: "Unrecognized option: -=" failed
+
+[2024-09-15T19:47:55.691] [ERROR] default - [ERROR] xresloader - Parsing failed.  reason: "Unrecognized option: -=" failed
+
+[2024-09-15T19:47:55.692] [ERROR] default - [ERROR] xresloader - Parsing failed.  reason: "Unrecognized option: -=" failed
+
+[2024-09-15T19:47:55.692] [ERROR] default - [ERROR] xresloader - Parsing failed.  reason: "Unrecognized option: -=" failed
+
+[2024-09-15T19:47:55.718] [ERROR] default - [Process 2 exit with code 2.]
+[2024-09-15T19:47:55.749] [ERROR] default - [Process 1 exit with code 2.]
+[2024-09-15T19:47:55.749] [ERROR] CONV - [CONV]: [Process 1 exit with code 2.]
+[2024-09-15T19:47:55.749] [ERROR] default - All jobs done, 4 job(s) failed.
+[2024-09-15T19:49:12.274] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T19:49:19.177] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t bin -m "Card=
+
+[2024-09-15T19:49:19.177] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t bin -m "Card=
+
+[2024-09-15T19:49:19.177] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m "Card=
+
+[2024-09-15T19:49:19.177] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m "Card=
+
+[2024-09-15T19:49:19.178] [ERROR] default - [ERROR] xresloader - Parsing failed.  reason: "Unrecognized option: -=" failed
+
+[2024-09-15T19:49:19.178] [ERROR] default - [ERROR] xresloader - Parsing failed.  reason: "Unrecognized option: -=" failed
+
+[2024-09-15T19:49:19.178] [ERROR] default - [ERROR] xresloader - Parsing failed.  reason: "Unrecognized option: -=" failed
+
+[2024-09-15T19:49:19.178] [ERROR] default - [ERROR] xresloader - Parsing failed.  reason: "Unrecognized option: -=" failed
+
+[2024-09-15T19:49:19.202] [ERROR] default - [Process 2 exit with code 2.]
+[2024-09-15T19:49:19.203] [ERROR] default - [Process 1 exit with code 2.]
+[2024-09-15T19:49:19.203] [ERROR] CONV - [CONV]: [Process 1 exit with code 2.]
+[2024-09-15T19:49:19.203] [ERROR] default - All jobs done, 4 job(s) failed.
+[2024-09-15T19:50:11.607] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T19:50:16.430] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t bin -m "Card=
+
+[2024-09-15T19:50:16.430] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t bin -m "Card=
+
+[2024-09-15T19:50:16.431] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m "Card=
+
+[2024-09-15T19:50:16.431] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m "Card=
+
+[2024-09-15T19:50:16.482] [ERROR] default - [Process 1 exit with code 1.]
+[2024-09-15T19:50:16.483] [ERROR] default - [Process 2 exit with code 1.]
+[2024-09-15T19:50:16.484] [ERROR] CONV - [CONV]: [Process 2 exit with code 1.]
+[2024-09-15T19:50:16.484] [ERROR] default - All jobs done, 2 job(s) failed.
+[2024-09-15T19:53:41.240] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T19:53:55.141] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t bin -m "Card=
+
+[2024-09-15T19:53:55.141] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t bin -m "Card=
+
+[2024-09-15T19:53:55.143] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m "Card=
+
+[2024-09-15T19:53:55.143] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m "Card=
+
+[2024-09-15T19:53:55.162] [ERROR] default - [Process 2 exit with code 1.]
+[2024-09-15T19:53:55.164] [ERROR] default - [Process 1 exit with code 1.]
+[2024-09-15T19:53:55.164] [ERROR] CONV - [CONV]: [Process 1 exit with code 1.]
+[2024-09-15T19:53:55.165] [ERROR] default - All jobs done, 2 job(s) failed.
+[2024-09-15T19:57:39.606] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T19:57:45.867] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m "Card=
+
+[2024-09-15T19:57:45.867] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m "Card=
+
+[2024-09-15T19:57:45.868] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t bin -m "Card=
+
+[2024-09-15T19:57:45.868] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t bin -m "Card=
+
+[2024-09-15T19:57:45.887] [ERROR] default - [Process 1 exit with code 1.]
+[2024-09-15T19:57:45.919] [ERROR] default - [Process 2 exit with code 1.]
+[2024-09-15T19:57:45.920] [ERROR] CONV - [CONV]: [Process 2 exit with code 1.]
+[2024-09-15T19:57:45.920] [ERROR] default - All jobs done, 2 job(s) failed.
+[2024-09-15T20:00:41.097] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T20:00:46.602] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m "Card=
+
+[2024-09-15T20:00:46.602] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m "Card=
+
+[2024-09-15T20:00:46.603] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t bin -m "Card=
+
+[2024-09-15T20:00:46.603] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t bin -m "Card=
+
+[2024-09-15T20:00:46.631] [ERROR] default - [Process 2 exit with code 1.]
+[2024-09-15T20:00:46.632] [ERROR] default - [Process 1 exit with code 1.]
+[2024-09-15T20:00:46.632] [ERROR] CONV - [CONV]: [Process 1 exit with code 1.]
+[2024-09-15T20:00:46.632] [ERROR] default - All jobs done, 2 job(s) failed.
+[2024-09-15T20:01:51.678] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T20:01:57.880] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t bin -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2 -m MacroSource=资源转换示例.xlsx|macro|2,1
+
+[2024-09-15T20:01:57.880] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t bin -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2 -m MacroSource=资源转换示例.xlsx|macro|2,1
+
+[2024-09-15T20:01:57.880] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2 -m MacroSource=资源转换示例.xlsx|macro|2,1
+
+[2024-09-15T20:01:57.880] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2 -m MacroSource=资源转换示例.xlsx|macro|2,1
+
+[2024-09-15T20:01:57.926] [ERROR] default - [Process 1 exit with code 1.]
+[2024-09-15T20:01:57.927] [ERROR] default - [Process 2 exit with code 1.]
+[2024-09-15T20:01:57.927] [ERROR] CONV - [CONV]: [Process 2 exit with code 1.]
+[2024-09-15T20:01:57.927] [ERROR] default - All jobs done, 2 job(s) failed.
+[2024-09-15T20:03:15.886] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T20:03:25.182] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t ue-csv -n /(?i)\.bin$/\.csv/ -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2 -m MacroSource=资源转换示例.xlsx|macro|2,1
+
+[2024-09-15T20:03:25.182] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t ue-csv -n /(?i)\.bin$/\.csv/ -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2 -m MacroSource=资源转换示例.xlsx|macro|2,1
+
+[2024-09-15T20:03:25.183] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2 -m MacroSource=资源转换示例.xlsx|macro|2,1
+
+[2024-09-15T20:03:25.183] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2 -m MacroSource=资源转换示例.xlsx|macro|2,1
+
+[2024-09-15T20:03:25.184] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t bin -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2 -m MacroSource=资源转换示例.xlsx|macro|2,1
+
+[2024-09-15T20:03:25.184] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t bin -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2 -m MacroSource=资源转换示例.xlsx|macro|2,1
+
+[2024-09-15T20:03:25.213] [ERROR] default - [Process 2 exit with code 1.]
+[2024-09-15T20:03:25.213] [ERROR] default - [Process 1 exit with code 2.]
+[2024-09-15T20:03:25.214] [ERROR] CONV - [CONV]: [Process 1 exit with code 2.]
+[2024-09-15T20:03:25.214] [ERROR] default - All jobs done, 3 job(s) failed.
+[2024-09-15T20:04:04.134] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T20:04:11.480] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t ue-csv -n /(?i)\.bin$/\.csv/ -m Card=Cards.xlsx|Sheet1|3,1
+
+[2024-09-15T20:04:11.480] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t ue-csv -n /(?i)\.bin$/\.csv/ -m Card=Cards.xlsx|Sheet1|3,1
+
+[2024-09-15T20:04:11.481] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m Card=Cards.xlsx|Sheet1|3,1
+
+[2024-09-15T20:04:11.481] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m Card=Cards.xlsx|Sheet1|3,1
+
+[2024-09-15T20:04:11.481] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t bin -m Card=Cards.xlsx|Sheet1|3,1
+
+[2024-09-15T20:04:11.481] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t bin -m Card=Cards.xlsx|Sheet1|3,1
+
+[2024-09-15T20:04:11.498] [ERROR] default - [Process 1 exit with code 2.]
+[2024-09-15T20:04:11.530] [ERROR] default - [Process 2 exit with code 1.]
+[2024-09-15T20:04:11.531] [ERROR] CONV - [CONV]: [Process 2 exit with code 1.]
+[2024-09-15T20:04:11.531] [ERROR] default - All jobs done, 3 job(s) failed.
+[2024-09-15T20:06:16.759] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T20:06:24.563] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2
+
+[2024-09-15T20:06:24.563] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2
+
+[2024-09-15T20:06:24.563] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t ue-csv -n /(?i)\.bin$/\.csv/ -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2
+
+[2024-09-15T20:06:24.563] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t ue-csv -n /(?i)\.bin$/\.csv/ -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2
+
+[2024-09-15T20:06:24.564] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t bin -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2
+
+[2024-09-15T20:06:24.564] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t bin -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2
+
+[2024-09-15T20:06:24.594] [ERROR] default - [Process 2 exit with code 2.]
+[2024-09-15T20:06:24.610] [ERROR] default - [Process 1 exit with code 1.]
+[2024-09-15T20:06:24.610] [ERROR] CONV - [CONV]: [Process 1 exit with code 1.]
+[2024-09-15T20:06:24.610] [ERROR] default - All jobs done, 3 job(s) failed.
+[2024-09-15T21:07:02.704] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T21:07:31.034] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m DataSource=Cards.xlsx|Sheet1|3,1 -m KeyRow=2
+
+[2024-09-15T21:07:31.034] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m DataSource=Cards.xlsx|Sheet1|3,1 -m KeyRow=2
+
+[2024-09-15T21:07:31.034] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t ue-csv -n /(?i)\.bin$/\.csv/ -m DataSource=Cards.xlsx|Sheet1|3,1 -m KeyRow=2
+
+[2024-09-15T21:07:31.034] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t ue-csv -n /(?i)\.bin$/\.csv/ -m DataSource=Cards.xlsx|Sheet1|3,1 -m KeyRow=2
+
+[2024-09-15T21:07:31.035] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t bin -m DataSource=Cards.xlsx|Sheet1|3,1 -m KeyRow=2
+
+[2024-09-15T21:07:31.035] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t bin -m DataSource=Cards.xlsx|Sheet1|3,1 -m KeyRow=2
+
+[2024-09-15T21:07:31.059] [ERROR] default - [Process 1 exit with code 1.]
+[2024-09-15T21:07:31.060] [ERROR] default - [Process 2 exit with code 2.]
+[2024-09-15T21:07:31.061] [ERROR] CONV - [CONV]: [Process 2 exit with code 2.]
+[2024-09-15T21:07:31.061] [ERROR] default - All jobs done, 3 job(s) failed.
+[2024-09-15T21:09:03.926] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T21:09:12.738] [ERROR] default - [ERROR] xresloader - Initialize data source class "org.xresloader.core.data.src.DataSrcExcel" failed
+
+[2024-09-15T21:09:12.738] [ERROR] default - [ERROR] xresloader - Initialize data source class "org.xresloader.core.data.src.DataSrcExcel" failed
+
+[2024-09-15T21:09:12.761] [ERROR] default - [Process 1 exit with code 1.]
+[2024-09-15T21:09:12.761] [ERROR] default - [Process 2 exit with code 2.]
+[2024-09-15T21:09:12.762] [ERROR] CONV - [CONV]: [Process 2 exit with code 2.]
+[2024-09-15T21:09:12.762] [ERROR] default - All jobs done, 3 job(s) failed.
+[2024-09-15T21:10:18.733] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T21:12:02.694] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T21:15:05.283] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+

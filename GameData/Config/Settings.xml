@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- <?xml-stylesheet type="text/xsl" href="helper/view.xsl"?> -->
+<root>
+    <!-- <include desc="可以包含其他文件配置，然后本文件里的配置将会覆盖或合并配置，相对于当前xml的目录">sample.xml</include> -->
+    <global>
+        <work_dir desc="工作目录，相对于当前xml的目录">./</work_dir>
+        <xresloader_path desc="xresloader地址，相对于当前xml的目录">../xresconv-gui-win32-x64/xresloader-2.19.0.jar</xresloader_path>
+
+        <proto desc="协议类型，-p选项">protobuf</proto>
+        <output_type desc="输出类型，-t选项，支持多个同时配置多种输出">bin</output_type>
+        <output_type desc="多种输出时可以额外定义某个节点的重命名规则" rename="/(?i)\.bin$/\.json/">json</output_type>
+        <output_type desc="可以通过指定class来限制输出的规则" rename="/(?i)\.bin$/\.lua/" class="client" >lua</output_type>
+        <!-- output_type 里的class标签对应下面item里的class标签，均可配置多个，多个用空格隔开，任意一个class匹配都会启用这个输出 -->
+        <proto_file desc="协议描述文件，-f选项">Config.pb</proto_file>
+
+        <output_dir desc="输出目录，-o选项">../../Content/ProtobufData</output_dir>
+        <data_src_dir desc="数据源目录，-d选项"></data_src_dir>
+        <data_version desc="数据版本号，留空则自动生成">1.0.0.0</data_version>
+
+        <rename desc="重命名规则，正则表达式：/搜索模式/替换内容/，对应xresloader的-n选项, 如果在output_type里设置了rename，以output_type里的rename为准，否则使用这里的全局配置" placeholder="/(?i)\.bin$/\.json/"></rename>
+
+        <java_option desc="java选项-最大内存限制2GB">-Xmx2048m</java_option>
+        <java_option desc="java选项-客户端模式">-client</java_option>
+
+        <default_scheme name="KeyRow" desc="默认scheme模式参数-Key行号">2</default_scheme>
+        <!-- <default_scheme name="MacroSource" desc="默认scheme模式参数-Key行号">资源转换示例.xlsx|macro|2,1</default_scheme> -->
+        <!--<default_scheme name="UeCg-CsvObjectWrapper" desc="Ue-Csv输出的包裹字符">{|}</default_scheme>-->
+        <!-- <option desc="自定义验证器">--validator-rules custom_validator.yaml</option> -->
+    </global>
+    
+    <groups desc="分组信息">
+        <group id="client" name="客户端"></group>
+        <group id="server" name="服务器"></group>
+    </groups>
+
+    <category desc="类信息">
+        <tree id="all_cats" name="大分类">
+            <tree id="Card" name="卡牌配置"></tree>
+        </tree>
+    </category>
+
+    <list>
+		<item name="卡牌" cat="Card" class="client server">
+			<scheme name="DataSource" desc="数据源(文件名|表名|数据起始行号,数据起始列号)">Cards.xlsx|Sheet1|3,1</scheme>
+			<scheme name="ProtoName" desc="协议名">Card_cfg</scheme>
+			<scheme name="OutputFile" desc="输出文件名">Card_cfg.bin</scheme>
+		</item>
+    </list>
+
+    <gui>
+        <set_name desc="这个脚本用于修改树形节点的显示数据,便于策划核对具体的表名">
+            if (item_data.file) {
+                item_data.name += " (" + item_data.file.match(/([^.]+)\.\w+$/)[1] + ")"
+            }
+        </set_name>
+    </gui>
+</root>

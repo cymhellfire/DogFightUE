@@ -1,0 +1,2248 @@
+[2024-09-15T17:42:06.733] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T19:31:34.079] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T19:42:19.368] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T19:42:25.114] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T19:42:31.548] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T19:42:31.563] [INFO] CONV EVENT - [CONV EVENT]: F:\Test\Config/../WorkDir
+
+[2024-09-15T19:42:31.564] [INFO] F:\Test\Config/../WorkDir - [F:\Test\Config/../WorkDir]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T19:42:31.564] [INFO] default - [F:\Test\Config/../WorkDir]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T19:42:31.567] [INFO] F:\Test\Config/../WorkDir - [F:\Test\Config/../WorkDir]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T19:42:31.567] [INFO] default - [F:\Test\Config/../WorkDir]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T19:42:31.613] [INFO] [CONV 1] - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" --validator-rules custom_validator.yaml -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "Card=Cards.xlsx|Sheet1|3,1" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T19:42:31.613] [INFO] default - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" --validator-rules custom_validator.yaml -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "Card=Cards.xlsx|Sheet1|3,1" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T19:42:31.613] [INFO] [CONV 2] - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" --validator-rules custom_validator.yaml -f "Config.pb" -t "bin" -m "Card=Cards.xlsx|Sheet1|3,1" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T19:42:31.613] [INFO] default - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" --validator-rules custom_validator.yaml -f "Config.pb" -t "bin" -m "Card=Cards.xlsx|Sheet1|3,1" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T19:42:31.885] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2 -m MacroSource=资源转换示例.xlsx|macro|2,1
+
+[2024-09-15T19:42:31.885] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2 -m MacroSource=资源转换示例.xlsx|macro|2,1
+
+[2024-09-15T19:42:31.886] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T19:42:31.886] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T19:42:31.886] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t bin -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2 -m MacroSource=资源转换示例.xlsx|macro|2,1
+
+[2024-09-15T19:42:31.886] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t bin -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2 -m MacroSource=资源转换示例.xlsx|macro|2,1
+
+[2024-09-15T19:42:31.886] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:42:31.886] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:42:31.906] [ERROR] default - [Process 2 exit with code 1.]
+[2024-09-15T19:42:31.906] [INFO] default - [Process 2 exit with code 1.]
+[2024-09-15T19:42:31.941] [ERROR] default - [Process 1 exit with code 1.]
+[2024-09-15T19:42:31.941] [INFO] default - [Process 1 exit with code 1.]
+[2024-09-15T19:42:31.941] [ERROR] CONV - [CONV]: [Process 1 exit with code 1.]
+[2024-09-15T19:42:31.941] [ERROR] default - All jobs done, 2 job(s) failed.
+[2024-09-15T19:46:00.975] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T19:46:05.769] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T19:46:05.770] [INFO] F:\Test\Config/../WorkDir - [F:\Test\Config/../WorkDir]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T19:46:05.770] [INFO] default - [F:\Test\Config/../WorkDir]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T19:46:05.774] [INFO] F:\Test\Config/../WorkDir - [F:\Test\Config/../WorkDir]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T19:46:05.774] [INFO] default - [F:\Test\Config/../WorkDir]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T19:46:05.809] [INFO] [CONV 1] - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" --validator-rules custom_validator.yaml -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "Card=
+            if (item_data.file) {
+                item_data.name += " (" + item_data.file.match(/([^.]+)\.\w+$/)[1] + ")"
+            }
+        
+        
+            // 这里可以执行nodejs代码，比如下面是Windows平台执行 echo work_dir
+            var os = require("os");
+            var spawn = require("child_process").spawn;
+            if (os.type().substr(0, 7).toLowerCase() == "windows") {
+                var exec = spawn("cmd", ["/c", "echo " + work_dir], {
+                    cwd: work_dir,
+                    encoding: 'utf-8'
+                });
+                exec.stdout.on("data", function(data) {
+                    log_info(data);
+                });
+                exec.stderr.on("data", function(data) {
+                    log_error(data);
+                });
+                exec.on("error", function(data) {
+                    log_error(data.toString());
+                    resolve();
+                    // reject("执行失败" + data.toString());
+                });
+                exec.on("exit", function(code) {
+                    if (code === 0) {
+                        resolve();
+                    } else {
+                        resolve();
+                        // reject("执行失败");
+                    }
+                });
+            } else {
+                resolve();
+            }
+        
+        
+            // 同上
+            alert_warning("自定义转表完成后事件，可以执行任意nodejs脚本");
+            resolve();
+        
+        
+            if (data.running) {
+                reject("上一次未完成");
+            } else {
+                data.running = true;
+                var left_times = 5;
+                function counter() {
+                    if (left_times > 0) {
+                        log_notice(`定时器计数: ${left_times}`);
+                        left_times -= 1;
+
+                        require("timers").setTimeout(function(){
+                            counter();
+                        }, 1000);
+                        return;
+                    }
+                    log_notice("定时器结束");
+                    resolve();
+                }
+                counter();
+            }
+        
+
+        
+            // 同上
+            data.call_times = (data.call_times || 0) + 1;
+            alert_warning("自定义脚本，可用于自定义按钮");
+            log_notice(`自定义脚本:\n可用于自定义按钮 - notice日志(${data.call_times})`);
+            log_warning("自定义脚本\n可用于自定义按钮 - warning日志");
+            // resolve();
+            data.running = false;
+            resolve();
+        
+    
+" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T19:46:05.809] [INFO] default - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" --validator-rules custom_validator.yaml -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "Card=
+            if (item_data.file) {
+                item_data.name += " (" + item_data.file.match(/([^.]+)\.\w+$/)[1] + ")"
+            }
+        
+        
+            // 这里可以执行nodejs代码，比如下面是Windows平台执行 echo work_dir
+            var os = require("os");
+            var spawn = require("child_process").spawn;
+            if (os.type().substr(0, 7).toLowerCase() == "windows") {
+                var exec = spawn("cmd", ["/c", "echo " + work_dir], {
+                    cwd: work_dir,
+                    encoding: 'utf-8'
+                });
+                exec.stdout.on("data", function(data) {
+                    log_info(data);
+                });
+                exec.stderr.on("data", function(data) {
+                    log_error(data);
+                });
+                exec.on("error", function(data) {
+                    log_error(data.toString());
+                    resolve();
+                    // reject("执行失败" + data.toString());
+                });
+                exec.on("exit", function(code) {
+                    if (code === 0) {
+                        resolve();
+                    } else {
+                        resolve();
+                        // reject("执行失败");
+                    }
+                });
+            } else {
+                resolve();
+            }
+        
+        
+            // 同上
+            alert_warning("自定义转表完成后事件，可以执行任意nodejs脚本");
+            resolve();
+        
+        
+            if (data.running) {
+                reject("上一次未完成");
+            } else {
+                data.running = true;
+                var left_times = 5;
+                function counter() {
+                    if (left_times > 0) {
+                        log_notice(`定时器计数: ${left_times}`);
+                        left_times -= 1;
+
+                        require("timers").setTimeout(function(){
+                            counter();
+                        }, 1000);
+                        return;
+                    }
+                    log_notice("定时器结束");
+                    resolve();
+                }
+                counter();
+            }
+        
+
+        
+            // 同上
+            data.call_times = (data.call_times || 0) + 1;
+            alert_warning("自定义脚本，可用于自定义按钮");
+            log_notice(`自定义脚本:\n可用于自定义按钮 - notice日志(${data.call_times})`);
+            log_warning("自定义脚本\n可用于自定义按钮 - warning日志");
+            // resolve();
+            data.running = false;
+            resolve();
+        
+    
+" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T19:46:05.810] [INFO] [CONV 2] - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" --validator-rules custom_validator.yaml -f "Config.pb" -t "bin" -m "Card=
+            if (item_data.file) {
+                item_data.name += " (" + item_data.file.match(/([^.]+)\.\w+$/)[1] + ")"
+            }
+        
+        
+            // 这里可以执行nodejs代码，比如下面是Windows平台执行 echo work_dir
+            var os = require("os");
+            var spawn = require("child_process").spawn;
+            if (os.type().substr(0, 7).toLowerCase() == "windows") {
+                var exec = spawn("cmd", ["/c", "echo " + work_dir], {
+                    cwd: work_dir,
+                    encoding: 'utf-8'
+                });
+                exec.stdout.on("data", function(data) {
+                    log_info(data);
+                });
+                exec.stderr.on("data", function(data) {
+                    log_error(data);
+                });
+                exec.on("error", function(data) {
+                    log_error(data.toString());
+                    resolve();
+                    // reject("执行失败" + data.toString());
+                });
+                exec.on("exit", function(code) {
+                    if (code === 0) {
+                        resolve();
+                    } else {
+                        resolve();
+                        // reject("执行失败");
+                    }
+                });
+            } else {
+                resolve();
+            }
+        
+        
+            // 同上
+            alert_warning("自定义转表完成后事件，可以执行任意nodejs脚本");
+            resolve();
+        
+        
+            if (data.running) {
+                reject("上一次未完成");
+            } else {
+                data.running = true;
+                var left_times = 5;
+                function counter() {
+                    if (left_times > 0) {
+                        log_notice(`定时器计数: ${left_times}`);
+                        left_times -= 1;
+
+                        require("timers").setTimeout(function(){
+                            counter();
+                        }, 1000);
+                        return;
+                    }
+                    log_notice("定时器结束");
+                    resolve();
+                }
+                counter();
+            }
+        
+
+        
+            // 同上
+            data.call_times = (data.call_times || 0) + 1;
+            alert_warning("自定义脚本，可用于自定义按钮");
+            log_notice(`自定义脚本:\n可用于自定义按钮 - notice日志(${data.call_times})`);
+            log_warning("自定义脚本\n可用于自定义按钮 - warning日志");
+            // resolve();
+            data.running = false;
+            resolve();
+        
+    
+" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T19:46:05.810] [INFO] default - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" --validator-rules custom_validator.yaml -f "Config.pb" -t "bin" -m "Card=
+            if (item_data.file) {
+                item_data.name += " (" + item_data.file.match(/([^.]+)\.\w+$/)[1] + ")"
+            }
+        
+        
+            // 这里可以执行nodejs代码，比如下面是Windows平台执行 echo work_dir
+            var os = require("os");
+            var spawn = require("child_process").spawn;
+            if (os.type().substr(0, 7).toLowerCase() == "windows") {
+                var exec = spawn("cmd", ["/c", "echo " + work_dir], {
+                    cwd: work_dir,
+                    encoding: 'utf-8'
+                });
+                exec.stdout.on("data", function(data) {
+                    log_info(data);
+                });
+                exec.stderr.on("data", function(data) {
+                    log_error(data);
+                });
+                exec.on("error", function(data) {
+                    log_error(data.toString());
+                    resolve();
+                    // reject("执行失败" + data.toString());
+                });
+                exec.on("exit", function(code) {
+                    if (code === 0) {
+                        resolve();
+                    } else {
+                        resolve();
+                        // reject("执行失败");
+                    }
+                });
+            } else {
+                resolve();
+            }
+        
+        
+            // 同上
+            alert_warning("自定义转表完成后事件，可以执行任意nodejs脚本");
+            resolve();
+        
+        
+            if (data.running) {
+                reject("上一次未完成");
+            } else {
+                data.running = true;
+                var left_times = 5;
+                function counter() {
+                    if (left_times > 0) {
+                        log_notice(`定时器计数: ${left_times}`);
+                        left_times -= 1;
+
+                        require("timers").setTimeout(function(){
+                            counter();
+                        }, 1000);
+                        return;
+                    }
+                    log_notice("定时器结束");
+                    resolve();
+                }
+                counter();
+            }
+        
+
+        
+            // 同上
+            data.call_times = (data.call_times || 0) + 1;
+            alert_warning("自定义脚本，可用于自定义按钮");
+            log_notice(`自定义脚本:\n可用于自定义按钮 - notice日志(${data.call_times})`);
+            log_warning("自定义脚本\n可用于自定义按钮 - warning日志");
+            // resolve();
+            data.running = false;
+            resolve();
+        
+    
+" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T19:46:06.032] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t bin -m "Card=
+
+[2024-09-15T19:46:06.032] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t bin -m "Card=
+
+[2024-09-15T19:46:06.032] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:46:06.033] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:46:06.033] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m "Card=
+
+[2024-09-15T19:46:06.033] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m "Card=
+
+[2024-09-15T19:46:06.033] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T19:46:06.033] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T19:46:06.035] [ERROR] default - [ERROR] xresloader - Parsing failed.  reason: "Unrecognized option: -=" failed
+
+[2024-09-15T19:46:06.035] [ERROR] default - [ERROR] xresloader - Parsing failed.  reason: "Unrecognized option: -=" failed
+
+[2024-09-15T19:46:06.035] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:46:06.035] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:46:06.036] [ERROR] default - [ERROR] xresloader - Parsing failed.  reason: "Unrecognized option: -=" failed
+
+[2024-09-15T19:46:06.036] [ERROR] default - [ERROR] xresloader - Parsing failed.  reason: "Unrecognized option: -=" failed
+
+[2024-09-15T19:46:06.036] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T19:46:06.036] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T19:46:06.039] [INFO] default - usage: Usage: java -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar [options...]
+ -a,--data-version            set data version
+ -c,--const-print         print all const data to file
+ -d,--data-src-dir          data source directories(where to find excel files, can be used more than once.)
+    --data-source-lru-cache-rows    set row number for LRU cache
+    --disable-alias-mapping                 do not use alias when mapping fields
+    --disable-data-validator                disable data validator, so it will not show warnings when data checking failed.
+    --disable-empty-list                    [deprecated] remove empty elements in a list or repeated field,please use
+                                            --list-strip-all-empty.
+    --disable-excel-formular                disable formular in excel. will be faster when convert data.
+    --disable-string-macro                  [default] macro will not apply to string value.
+    --enable-alias-mapping                  allow to use alias when mapping fields
+    --enable-empty-list                     [deprecated] keep empty elements in a list or repeated field with default value,please use
+                                            --list-keep-empty.
+    --enable-excel-formular                 [default] enable formular in excel. will be slower when convert data.
+    --enable-string-macro                   macro will also apply to string value.
+ -f,--proto-file                 protocol description file
+ -h,--help                                  print this help message and exit
+ -i,--option-print        print all option data to file
+    --ignore-field-tags                ignore data and only dump the default value of specify field tags.
+    --ignore-unknown-dependency             ignore unknown dependency when initialize protocol files.
+    --javascript-export        set javascript export mode(nodejs, amd or global)
+    --javascript-global               set javascript export namespace of window or global
+ -l,--delimiter                  regex delimiter for description meta when data source file is [NOTHING].(default: \|)
+    --list-keep-empty                       keep empty elements in a list or repeated field with default value.
+    --list-strip-all-empty                  [default] remove all empty elements in a list or repeated field.
+    --list-strip-empty-tail                 remove all tail empty elements in a list or repeated field.
+    --lua-global                            add data to _G if in lua mode when print const data
+    --lua-module                       module(MODULE_NAME, package.seeall) if in lua mode
+ -m,--src-meta                   data description meta information of data source.
+                                            .xls,/xlsx/.cvx/.xlsm/.dos      =>scheme sheet name
+                                            .ini/.cfg/.conf                 =>scheme section name
+                                            .json                           =>scheme key name
+                                            [NOTHING]                       =>KEY=VALUE1|VAL2|VAL3 pair of scheme configures
+ -n,--rename                rename output file name(regex), sample: /(?i)\.bin$/\.lua/
+ -o,--output-dir            output directory
+ -p,--proto                       protocol(protobuf)
+    --pretty                 set pretty output and set ident length when output type supported.(disable pretty output by set
+                                            to 0)
+ -r,--descriptor-print    print all descriptor data to file
+    --require-mapping-all                   require all fields in protocol message to be mapped from data source
+ -s,--src-file              data source file(.xls, .xlsx, .cvs, .xlsm, .ods, .ini, .cfg, .conf, .json)
+    --stdin                                 enable read from stdin and convert more files.
+ -t,--output-type                     output type(bin, lua, msgpack, json, xml, javascript/js, ue-csv, ue-json)
+    --tolerate-max-empty-rows       set max continue empty rows
+ -v,--version                               print version and exit
+    --validator-rules            set file to load custom validator
+    --xml-root                   set xml root node name.(default: root)
+
+
+[2024-09-15T19:46:06.039] [INFO] default - usage: Usage: java -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar [options...]
+ -a,--data-version            set data version
+ -c,--const-print         print all const data to file
+ -d,--data-src-dir          data source directories(where to find excel files, can be used more than once.)
+    --data-source-lru-cache-rows    set row number for LRU cache
+    --disable-alias-mapping                 do not use alias when mapping fields
+    --disable-data-validator                disable data validator, so it will not show warnings when data checking failed.
+    --disable-empty-list                    [deprecated] remove empty elements in a list or repeated field,please use
+                                            --list-strip-all-empty.
+    --disable-excel-formular                disable formular in excel. will be faster when convert data.
+    --disable-string-macro                  [default] macro will not apply to string value.
+    --enable-alias-mapping                  allow to use alias when mapping fields
+    --enable-empty-list                     [deprecated] keep empty elements in a list or repeated field with default value,please use
+                                            --list-keep-empty.
+    --enable-excel-formular                 [default] enable formular in excel. will be slower when convert data.
+    --enable-string-macro                   macro will also apply to string value.
+ -f,--proto-file                 protocol description file
+ -h,--help                                  print this help message and exit
+ -i,--option-print        print all option data to file
+    --ignore-field-tags                ignore data and only dump the default value of specify field tags.
+    --ignore-unknown-dependency             ignore unknown dependency when initialize protocol files.
+    --javascript-export        set javascript export mode(nodejs, amd or global)
+    --javascript-global               set javascript export namespace of window or global
+ -l,--delimiter                  regex delimiter for description meta when data source file is [NOTHING].(default: \|)
+    --list-keep-empty                       keep empty elements in a list or repeated field with default value.
+    --list-strip-all-empty                  [default] remove all empty elements in a list or repeated field.
+    --list-strip-empty-tail                 remove all tail empty elements in a list or repeated field.
+    --lua-global                            add data to _G if in lua mode when print const data
+    --lua-module                       module(MODULE_NAME, package.seeall) if in lua mode
+ -m,--src-meta                   data description meta information of data source.
+                                            .xls,/xlsx/.cvx/.xlsm/.dos      =>scheme sheet name
+                                            .ini/.cfg/.conf                 =>scheme section name
+                                            .json                           =>scheme key name
+                                            [NOTHING]                       =>KEY=VALUE1|VAL2|VAL3 pair of scheme configures
+ -n,--rename                rename output file name(regex), sample: /(?i)\.bin$/\.lua/
+ -o,--output-dir            output directory
+ -p,--proto                       protocol(protobuf)
+    --pretty                 set pretty output and set ident length when output type supported.(disable pretty output by set
+                                            to 0)
+ -r,--descriptor-print    print all descriptor data to file
+    --require-mapping-all                   require all fields in protocol message to be mapped from data source
+ -s,--src-file              data source file(.xls, .xlsx, .cvs, .xlsm, .ods, .ini, .cfg, .conf, .json)
+    --stdin                                 enable read from stdin and convert more files.
+ -t,--output-type                     output type(bin, lua, msgpack, json, xml, javascript/js, ue-csv, ue-json)
+    --tolerate-max-empty-rows       set max continue empty rows
+ -v,--version                               print version and exit
+    --validator-rules            set file to load custom validator
+    --xml-root                   set xml root node name.(default: root)
+
+
+[2024-09-15T19:46:06.039] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T19:46:06.039] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T19:46:06.039] [INFO] default - You can add -Dlog4j.configuration=log4j2.xml to use your own log configure.
+
+[2024-09-15T19:46:06.039] [INFO] default - You can add -Dlog4j.configuration=log4j2.xml to use your own log configure.
+
+[2024-09-15T19:46:06.039] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T19:46:06.039] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T19:46:06.040] [INFO] default - usage: Usage: java -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar [options...]
+ -a,--data-version            set data version
+ -c,--const-print         print all const data to file
+ -d,--data-src-dir          data source directories(where to find excel files, can be used more than once.)
+    --data-source-lru-cache-rows    set row number for LRU cache
+    --disable-alias-mapping                 do not use alias when mapping fields
+    --disable-data-validator                disable data validator, so it will not show warnings when data checking failed.
+    --disable-empty-list                    [deprecated] remove empty elements in a list or repeated field,please use
+                                            --list-strip-all-empty.
+    --disable-excel-formular                disable formular in excel. will be faster when convert data.
+    --disable-string-macro                  [default] macro will not apply to string value.
+    --enable-alias-mapping                  allow to use alias when mapping fields
+    --enable-empty-list                     [deprecated] keep empty elements in a list or repeated field with default value,please use
+                                            --list-keep-empty.
+    --enable-excel-formular                 [default] enable formular in excel. will be slower when convert data.
+    --enable-string-macro                   macro will also apply to string value.
+ -f,--proto-file                 protocol description file
+ -h,--help                                  print this help message and exit
+ -i,--option-print        print all option data to file
+    --ignore-field-tags                ignore data and only dump the default value of specify field tags.
+    --ignore-unknown-dependency             ignore unknown dependency when initialize protocol files.
+    --javascript-export        set javascript export mode(nodejs, amd or global)
+    --javascript-global               set javascript export namespace of window or global
+ -l,--delimiter                  regex delimiter for description meta when data source file is [NOTHING].(default: \|)
+    --list-keep-empty                       keep empty elements in a list or repeated field with default value.
+    --list-strip-all-empty                  [default] remove all empty elements in a list or repeated field.
+    --list-strip-empty-tail                 remove all tail empty elements in a list or repeated field.
+    --lua-global                            add data to _G if in lua mode when print const data
+    --lua-module                       module(MODULE_NAME, package.seeall) if in lua mode
+ -m,--src-meta                   data description meta information of data source.
+                                            .xls,/xlsx/.cvx/.xlsm/.dos      =>scheme sheet name
+                                            .ini/.cfg/.conf                 =>scheme section name
+                                            .json                           =>scheme key name
+                                            [NOTHING]                       =>KEY=VALUE1|VAL2|VAL3 pair of scheme configures
+ -n,--rename                rename output file name(regex), sample: /(?i)\.bin$/\.lua/
+ -o,--output-dir            output directory
+ -p,--proto                       protocol(protobuf)
+    --pretty                 set pretty output and set ident length when output type supported.(disable pretty output by set
+                                            to 0)
+ -r,--descriptor-print    print all descriptor data to file
+    --require-mapping-all                   require all fields in protocol message to be mapped from data source
+ -s,--src-file              data source file(.xls, .xlsx, .cvs, .xlsm, .ods, .ini, .cfg, .conf, .json)
+    --stdin                                 enable read from stdin and convert more files.
+ -t,--output-type                     output type(bin, lua, msgpack, json, xml, javascript/js, ue-csv, ue-json)
+    --tolerate-max-empty-rows       set max continue empty rows
+ -v,--version                               print version and exit
+    --validator-rules            set file to load custom validator
+    --xml-root                   set xml root node name.(default: root)
+
+You can add -Dlog4j.configuration=log4j2.xml to use your own log configure.
+
+[2024-09-15T19:46:06.040] [INFO] default - usage: Usage: java -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar [options...]
+ -a,--data-version            set data version
+ -c,--const-print         print all const data to file
+ -d,--data-src-dir          data source directories(where to find excel files, can be used more than once.)
+    --data-source-lru-cache-rows    set row number for LRU cache
+    --disable-alias-mapping                 do not use alias when mapping fields
+    --disable-data-validator                disable data validator, so it will not show warnings when data checking failed.
+    --disable-empty-list                    [deprecated] remove empty elements in a list or repeated field,please use
+                                            --list-strip-all-empty.
+    --disable-excel-formular                disable formular in excel. will be faster when convert data.
+    --disable-string-macro                  [default] macro will not apply to string value.
+    --enable-alias-mapping                  allow to use alias when mapping fields
+    --enable-empty-list                     [deprecated] keep empty elements in a list or repeated field with default value,please use
+                                            --list-keep-empty.
+    --enable-excel-formular                 [default] enable formular in excel. will be slower when convert data.
+    --enable-string-macro                   macro will also apply to string value.
+ -f,--proto-file                 protocol description file
+ -h,--help                                  print this help message and exit
+ -i,--option-print        print all option data to file
+    --ignore-field-tags                ignore data and only dump the default value of specify field tags.
+    --ignore-unknown-dependency             ignore unknown dependency when initialize protocol files.
+    --javascript-export        set javascript export mode(nodejs, amd or global)
+    --javascript-global               set javascript export namespace of window or global
+ -l,--delimiter                  regex delimiter for description meta when data source file is [NOTHING].(default: \|)
+    --list-keep-empty                       keep empty elements in a list or repeated field with default value.
+    --list-strip-all-empty                  [default] remove all empty elements in a list or repeated field.
+    --list-strip-empty-tail                 remove all tail empty elements in a list or repeated field.
+    --lua-global                            add data to _G if in lua mode when print const data
+    --lua-module                       module(MODULE_NAME, package.seeall) if in lua mode
+ -m,--src-meta                   data description meta information of data source.
+                                            .xls,/xlsx/.cvx/.xlsm/.dos      =>scheme sheet name
+                                            .ini/.cfg/.conf                 =>scheme section name
+                                            .json                           =>scheme key name
+                                            [NOTHING]                       =>KEY=VALUE1|VAL2|VAL3 pair of scheme configures
+ -n,--rename                rename output file name(regex), sample: /(?i)\.bin$/\.lua/
+ -o,--output-dir            output directory
+ -p,--proto                       protocol(protobuf)
+    --pretty                 set pretty output and set ident length when output type supported.(disable pretty output by set
+                                            to 0)
+ -r,--descriptor-print    print all descriptor data to file
+    --require-mapping-all                   require all fields in protocol message to be mapped from data source
+ -s,--src-file              data source file(.xls, .xlsx, .cvs, .xlsm, .ods, .ini, .cfg, .conf, .json)
+    --stdin                                 enable read from stdin and convert more files.
+ -t,--output-type                     output type(bin, lua, msgpack, json, xml, javascript/js, ue-csv, ue-json)
+    --tolerate-max-empty-rows       set max continue empty rows
+ -v,--version                               print version and exit
+    --validator-rules            set file to load custom validator
+    --xml-root                   set xml root node name.(default: root)
+
+You can add -Dlog4j.configuration=log4j2.xml to use your own log configure.
+
+[2024-09-15T19:46:06.041] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:46:06.041] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:46:06.083] [ERROR] default - [Process 2 exit with code 2.]
+[2024-09-15T19:46:06.083] [INFO] default - [Process 2 exit with code 2.]
+[2024-09-15T19:46:06.083] [ERROR] default - [Process 1 exit with code 2.]
+[2024-09-15T19:46:06.083] [INFO] default - [Process 1 exit with code 2.]
+[2024-09-15T19:46:06.083] [ERROR] CONV - [CONV]: [Process 1 exit with code 2.]
+[2024-09-15T19:46:06.083] [ERROR] default - All jobs done, 4 job(s) failed.
+[2024-09-15T19:47:50.162] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T19:47:52.295] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T19:47:55.419] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T19:47:55.421] [INFO] F:\Test\Config/../WorkDir - [F:\Test\Config/../WorkDir]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T19:47:55.421] [INFO] default - [F:\Test\Config/../WorkDir]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T19:47:55.425] [INFO] F:\Test\Config/../WorkDir - [F:\Test\Config/../WorkDir]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T19:47:55.425] [INFO] default - [F:\Test\Config/../WorkDir]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T19:47:55.476] [INFO] [CONV 1] - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" --validator-rules custom_validator.yaml -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "Card=
+            if (item_data.file) {
+                item_data.name += " (" + item_data.file.match(/([^.]+)\.\w+$/)[1] + ")"
+            }
+        
+        
+            // 这里可以执行nodejs代码，比如下面是Windows平台执行 echo work_dir
+            var os = require("os");
+            var spawn = require("child_process").spawn;
+            if (os.type().substr(0, 7).toLowerCase() == "windows") {
+                var exec = spawn("cmd", ["/c", "echo " + work_dir], {
+                    cwd: work_dir,
+                    encoding: 'utf-8'
+                });
+                exec.stdout.on("data", function(data) {
+                    log_info(data);
+                });
+                exec.stderr.on("data", function(data) {
+                    log_error(data);
+                });
+                exec.on("error", function(data) {
+                    log_error(data.toString());
+                    resolve();
+                    // reject("执行失败" + data.toString());
+                });
+                exec.on("exit", function(code) {
+                    if (code === 0) {
+                        resolve();
+                    } else {
+                        resolve();
+                        // reject("执行失败");
+                    }
+                });
+            } else {
+                resolve();
+            }
+        
+        
+            // 同上
+            alert_warning("自定义转表完成后事件，可以执行任意nodejs脚本");
+            resolve();
+        
+        
+            if (data.running) {
+                reject("上一次未完成");
+            } else {
+                data.running = true;
+                var left_times = 5;
+                function counter() {
+                    if (left_times > 0) {
+                        log_notice(`定时器计数: ${left_times}`);
+                        left_times -= 1;
+
+                        require("timers").setTimeout(function(){
+                            counter();
+                        }, 1000);
+                        return;
+                    }
+                    log_notice("定时器结束");
+                    resolve();
+                }
+                counter();
+            }
+        
+
+        
+            // 同上
+            data.call_times = (data.call_times || 0) + 1;
+            alert_warning("自定义脚本，可用于自定义按钮");
+            log_notice(`自定义脚本:\n可用于自定义按钮 - notice日志(${data.call_times})`);
+            log_warning("自定义脚本\n可用于自定义按钮 - warning日志");
+            // resolve();
+            data.running = false;
+            resolve();
+        
+    
+" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T19:47:55.476] [INFO] default - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" --validator-rules custom_validator.yaml -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "Card=
+            if (item_data.file) {
+                item_data.name += " (" + item_data.file.match(/([^.]+)\.\w+$/)[1] + ")"
+            }
+        
+        
+            // 这里可以执行nodejs代码，比如下面是Windows平台执行 echo work_dir
+            var os = require("os");
+            var spawn = require("child_process").spawn;
+            if (os.type().substr(0, 7).toLowerCase() == "windows") {
+                var exec = spawn("cmd", ["/c", "echo " + work_dir], {
+                    cwd: work_dir,
+                    encoding: 'utf-8'
+                });
+                exec.stdout.on("data", function(data) {
+                    log_info(data);
+                });
+                exec.stderr.on("data", function(data) {
+                    log_error(data);
+                });
+                exec.on("error", function(data) {
+                    log_error(data.toString());
+                    resolve();
+                    // reject("执行失败" + data.toString());
+                });
+                exec.on("exit", function(code) {
+                    if (code === 0) {
+                        resolve();
+                    } else {
+                        resolve();
+                        // reject("执行失败");
+                    }
+                });
+            } else {
+                resolve();
+            }
+        
+        
+            // 同上
+            alert_warning("自定义转表完成后事件，可以执行任意nodejs脚本");
+            resolve();
+        
+        
+            if (data.running) {
+                reject("上一次未完成");
+            } else {
+                data.running = true;
+                var left_times = 5;
+                function counter() {
+                    if (left_times > 0) {
+                        log_notice(`定时器计数: ${left_times}`);
+                        left_times -= 1;
+
+                        require("timers").setTimeout(function(){
+                            counter();
+                        }, 1000);
+                        return;
+                    }
+                    log_notice("定时器结束");
+                    resolve();
+                }
+                counter();
+            }
+        
+
+        
+            // 同上
+            data.call_times = (data.call_times || 0) + 1;
+            alert_warning("自定义脚本，可用于自定义按钮");
+            log_notice(`自定义脚本:\n可用于自定义按钮 - notice日志(${data.call_times})`);
+            log_warning("自定义脚本\n可用于自定义按钮 - warning日志");
+            // resolve();
+            data.running = false;
+            resolve();
+        
+    
+" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T19:47:55.478] [INFO] [CONV 2] - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" --validator-rules custom_validator.yaml -f "Config.pb" -t "bin" -m "Card=
+            if (item_data.file) {
+                item_data.name += " (" + item_data.file.match(/([^.]+)\.\w+$/)[1] + ")"
+            }
+        
+        
+            // 这里可以执行nodejs代码，比如下面是Windows平台执行 echo work_dir
+            var os = require("os");
+            var spawn = require("child_process").spawn;
+            if (os.type().substr(0, 7).toLowerCase() == "windows") {
+                var exec = spawn("cmd", ["/c", "echo " + work_dir], {
+                    cwd: work_dir,
+                    encoding: 'utf-8'
+                });
+                exec.stdout.on("data", function(data) {
+                    log_info(data);
+                });
+                exec.stderr.on("data", function(data) {
+                    log_error(data);
+                });
+                exec.on("error", function(data) {
+                    log_error(data.toString());
+                    resolve();
+                    // reject("执行失败" + data.toString());
+                });
+                exec.on("exit", function(code) {
+                    if (code === 0) {
+                        resolve();
+                    } else {
+                        resolve();
+                        // reject("执行失败");
+                    }
+                });
+            } else {
+                resolve();
+            }
+        
+        
+            // 同上
+            alert_warning("自定义转表完成后事件，可以执行任意nodejs脚本");
+            resolve();
+        
+        
+            if (data.running) {
+                reject("上一次未完成");
+            } else {
+                data.running = true;
+                var left_times = 5;
+                function counter() {
+                    if (left_times > 0) {
+                        log_notice(`定时器计数: ${left_times}`);
+                        left_times -= 1;
+
+                        require("timers").setTimeout(function(){
+                            counter();
+                        }, 1000);
+                        return;
+                    }
+                    log_notice("定时器结束");
+                    resolve();
+                }
+                counter();
+            }
+        
+
+        
+            // 同上
+            data.call_times = (data.call_times || 0) + 1;
+            alert_warning("自定义脚本，可用于自定义按钮");
+            log_notice(`自定义脚本:\n可用于自定义按钮 - notice日志(${data.call_times})`);
+            log_warning("自定义脚本\n可用于自定义按钮 - warning日志");
+            // resolve();
+            data.running = false;
+            resolve();
+        
+    
+" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T19:47:55.478] [INFO] default - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" --validator-rules custom_validator.yaml -f "Config.pb" -t "bin" -m "Card=
+            if (item_data.file) {
+                item_data.name += " (" + item_data.file.match(/([^.]+)\.\w+$/)[1] + ")"
+            }
+        
+        
+            // 这里可以执行nodejs代码，比如下面是Windows平台执行 echo work_dir
+            var os = require("os");
+            var spawn = require("child_process").spawn;
+            if (os.type().substr(0, 7).toLowerCase() == "windows") {
+                var exec = spawn("cmd", ["/c", "echo " + work_dir], {
+                    cwd: work_dir,
+                    encoding: 'utf-8'
+                });
+                exec.stdout.on("data", function(data) {
+                    log_info(data);
+                });
+                exec.stderr.on("data", function(data) {
+                    log_error(data);
+                });
+                exec.on("error", function(data) {
+                    log_error(data.toString());
+                    resolve();
+                    // reject("执行失败" + data.toString());
+                });
+                exec.on("exit", function(code) {
+                    if (code === 0) {
+                        resolve();
+                    } else {
+                        resolve();
+                        // reject("执行失败");
+                    }
+                });
+            } else {
+                resolve();
+            }
+        
+        
+            // 同上
+            alert_warning("自定义转表完成后事件，可以执行任意nodejs脚本");
+            resolve();
+        
+        
+            if (data.running) {
+                reject("上一次未完成");
+            } else {
+                data.running = true;
+                var left_times = 5;
+                function counter() {
+                    if (left_times > 0) {
+                        log_notice(`定时器计数: ${left_times}`);
+                        left_times -= 1;
+
+                        require("timers").setTimeout(function(){
+                            counter();
+                        }, 1000);
+                        return;
+                    }
+                    log_notice("定时器结束");
+                    resolve();
+                }
+                counter();
+            }
+        
+
+        
+            // 同上
+            data.call_times = (data.call_times || 0) + 1;
+            alert_warning("自定义脚本，可用于自定义按钮");
+            log_notice(`自定义脚本:\n可用于自定义按钮 - notice日志(${data.call_times})`);
+            log_warning("自定义脚本\n可用于自定义按钮 - warning日志");
+            // resolve();
+            data.running = false;
+            resolve();
+        
+    
+" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T19:47:55.688] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m "Card=
+
+[2024-09-15T19:47:55.688] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m "Card=
+
+[2024-09-15T19:47:55.688] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T19:47:55.688] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T19:47:55.690] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t bin -m "Card=
+
+[2024-09-15T19:47:55.690] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t bin -m "Card=
+
+[2024-09-15T19:47:55.690] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:47:55.690] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:47:55.691] [ERROR] default - [ERROR] xresloader - Parsing failed.  reason: "Unrecognized option: -=" failed
+
+[2024-09-15T19:47:55.691] [ERROR] default - [ERROR] xresloader - Parsing failed.  reason: "Unrecognized option: -=" failed
+
+[2024-09-15T19:47:55.691] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:47:55.691] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:47:55.692] [ERROR] default - [ERROR] xresloader - Parsing failed.  reason: "Unrecognized option: -=" failed
+
+[2024-09-15T19:47:55.692] [ERROR] default - [ERROR] xresloader - Parsing failed.  reason: "Unrecognized option: -=" failed
+
+[2024-09-15T19:47:55.692] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T19:47:55.692] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T19:47:55.695] [INFO] default - usage: Usage: java -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar [options...]
+ -a,--data-version            set data version
+ -c,--const-print         print all const data to file
+ -d,--data-src-dir          data source directories(where to find excel files, can be used more than once.)
+    --data-source-lru-cache-rows    set row number for LRU cache
+    --disable-alias-mapping                 do not use alias when mapping fields
+    --disable-data-validator                disable data validator, so it will not show warnings when data checking failed.
+    --disable-empty-list                    [deprecated] remove empty elements in a list or repeated field,please use
+                                            --list-strip-all-empty.
+    --disable-excel-formular                disable formular in excel. will be faster when convert data.
+    --disable-string-macro                  [default] macro will not apply to string value.
+    --enable-alias-mapping                  allow to use alias when mapping fields
+    --enable-empty-list                     [deprecated] keep empty elements in a list or repeated field with default value,please use
+                                            --list-keep-empty.
+    --enable-excel-formular                 [default] enable formular in excel. will be slower when convert data.
+    --enable-string-macro                   macro will also apply to string value.
+ -f,--proto-file                 protocol description file
+ -h,--help                                  print this help message and exit
+ -i,--option-print        print all option data to file
+    --ignore-field-tags                ignore data and only dump the default value of specify field tags.
+    --ignore-unknown-dependency             ignore unknown dependency when initialize protocol files.
+    --javascript-export        set javascript export mode(nodejs, amd or global)
+    --javascript-global               set javascript export namespace of window or global
+ -l,--delimiter                  regex delimiter for description meta when data source file is [NOTHING].(default: \|)
+    --list-keep-empty                       keep empty elements in a list or repeated field with default value.
+    --list-strip-all-empty                  [default] remove all empty elements in a list or repeated field.
+    --list-strip-empty-tail                 remove all tail empty elements in a list or repeated field.
+    --lua-global                            add data to _G if in lua mode when print const data
+    --lua-module                       module(MODULE_NAME, package.seeall) if in lua mode
+ -m,--src-meta                   data description meta information of data source.
+                                            .xls,/xlsx/.cvx/.xlsm/.dos      =>scheme sheet name
+                                            .ini/.cfg/.conf                 =>scheme section name
+                                            .json                           =>scheme key name
+                                            [NOTHING]                       =>KEY=VALUE1|VAL2|VAL3 pair of scheme configures
+ -n,--rename                rename output file name(regex), sample: /(?i)\.bin$/\.lua/
+ -o,--output-dir            output directory
+ -p,--proto                       protocol(protobuf)
+    --pretty                 set pretty output and set ident length when output type supported.(disable pretty output by set
+                                            to 0)
+ -r,--descriptor-print    print all descriptor data to file
+    --require-mapping-all                   require all fields in protocol message to be mapped from data source
+ -s,--src-file              data source file(.xls, .xlsx, .cvs, .xlsm, .ods, .ini, .cfg, .conf, .json)
+    --stdin                                 enable read from stdin and convert more files.
+ -t,--output-type                     output type(bin, lua, msgpack, json, xml, javascript/js, ue-csv, ue-json)
+    --tolerate-max-empty-rows       set max continue empty rows
+ -v,--version                               print version and exit
+    --validator-rules            set file to load custom validator
+    --xml-root                   set xml root node name.(default: root)
+
+[2024-09-15T19:47:55.695] [INFO] default - usage: Usage: java -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar [options...]
+ -a,--data-version            set data version
+ -c,--const-print         print all const data to file
+ -d,--data-src-dir          data source directories(where to find excel files, can be used more than once.)
+    --data-source-lru-cache-rows    set row number for LRU cache
+    --disable-alias-mapping                 do not use alias when mapping fields
+    --disable-data-validator                disable data validator, so it will not show warnings when data checking failed.
+    --disable-empty-list                    [deprecated] remove empty elements in a list or repeated field,please use
+                                            --list-strip-all-empty.
+    --disable-excel-formular                disable formular in excel. will be faster when convert data.
+    --disable-string-macro                  [default] macro will not apply to string value.
+    --enable-alias-mapping                  allow to use alias when mapping fields
+    --enable-empty-list                     [deprecated] keep empty elements in a list or repeated field with default value,please use
+                                            --list-keep-empty.
+    --enable-excel-formular                 [default] enable formular in excel. will be slower when convert data.
+    --enable-string-macro                   macro will also apply to string value.
+ -f,--proto-file                 protocol description file
+ -h,--help                                  print this help message and exit
+ -i,--option-print        print all option data to file
+    --ignore-field-tags                ignore data and only dump the default value of specify field tags.
+    --ignore-unknown-dependency             ignore unknown dependency when initialize protocol files.
+    --javascript-export        set javascript export mode(nodejs, amd or global)
+    --javascript-global               set javascript export namespace of window or global
+ -l,--delimiter                  regex delimiter for description meta when data source file is [NOTHING].(default: \|)
+    --list-keep-empty                       keep empty elements in a list or repeated field with default value.
+    --list-strip-all-empty                  [default] remove all empty elements in a list or repeated field.
+    --list-strip-empty-tail                 remove all tail empty elements in a list or repeated field.
+    --lua-global                            add data to _G if in lua mode when print const data
+    --lua-module                       module(MODULE_NAME, package.seeall) if in lua mode
+ -m,--src-meta                   data description meta information of data source.
+                                            .xls,/xlsx/.cvx/.xlsm/.dos      =>scheme sheet name
+                                            .ini/.cfg/.conf                 =>scheme section name
+                                            .json                           =>scheme key name
+                                            [NOTHING]                       =>KEY=VALUE1|VAL2|VAL3 pair of scheme configures
+ -n,--rename                rename output file name(regex), sample: /(?i)\.bin$/\.lua/
+ -o,--output-dir            output directory
+ -p,--proto                       protocol(protobuf)
+    --pretty                 set pretty output and set ident length when output type supported.(disable pretty output by set
+                                            to 0)
+ -r,--descriptor-print    print all descriptor data to file
+    --require-mapping-all                   require all fields in protocol message to be mapped from data source
+ -s,--src-file              data source file(.xls, .xlsx, .cvs, .xlsm, .ods, .ini, .cfg, .conf, .json)
+    --stdin                                 enable read from stdin and convert more files.
+ -t,--output-type                     output type(bin, lua, msgpack, json, xml, javascript/js, ue-csv, ue-json)
+    --tolerate-max-empty-rows       set max continue empty rows
+ -v,--version                               print version and exit
+    --validator-rules            set file to load custom validator
+    --xml-root                   set xml root node name.(default: root)
+
+[2024-09-15T19:47:55.695] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:47:55.695] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:47:55.695] [INFO] default - 
+You can add -Dlog4j.configuration=log4j2.xml to use your own log configure.
+
+[2024-09-15T19:47:55.695] [INFO] default - 
+You can add -Dlog4j.configuration=log4j2.xml to use your own log configure.
+
+[2024-09-15T19:47:55.695] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:47:55.695] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:47:55.697] [INFO] default - usage: Usage: java -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar [options...]
+ -a,--data-version            set data version
+ -c,--const-print         print all const data to file
+ -d,--data-src-dir          data source directories(where to find excel files, can be used more than once.)
+    --data-source-lru-cache-rows    set row number for LRU cache
+    --disable-alias-mapping                 do not use alias when mapping fields
+    --disable-data-validator                disable data validator, so it will not show warnings when data checking failed.
+    --disable-empty-list                    [deprecated] remove empty elements in a list or repeated field,please use
+                                            --list-strip-all-empty.
+    --disable-excel-formular                disable formular in excel. will be faster when convert data.
+    --disable-string-macro                  [default] macro will not apply to string value.
+    --enable-alias-mapping                  allow to use alias when mapping fields
+    --enable-empty-list                     [deprecated] keep empty elements in a list or repeated field with default value,please use
+                                            --list-keep-empty.
+    --enable-excel-formular                 [default] enable formular in excel. will be slower when convert data.
+    --enable-string-macro                   macro will also apply to string value.
+ -f,--proto-file                 protocol description file
+ -h,--help                                  print this help message and exit
+ -i,--option-print        print all option data to file
+    --ignore-field-tags                ignore data and only dump the default value of specify field tags.
+    --ignore-unknown-dependency             ignore unknown dependency when initialize protocol files.
+    --javascript-export        set javascript export mode(nodejs, amd or global)
+    --javascript-global               set javascript export namespace of window or global
+ -l,--delimiter                  regex delimiter for description meta when data source file is [NOTHING].(default: \|)
+    --list-keep-empty                       keep empty elements in a list or repeated field with default value.
+    --list-strip-all-empty                  [default] remove all empty elements in a list or repeated field.
+    --list-strip-empty-tail                 remove all tail empty elements in a list or repeated field.
+    --lua-global                            add data to _G if in lua mode when print const data
+    --lua-module                       module(MODULE_NAME, package.seeall) if in lua mode
+ -m,--src-meta                   data description meta information of data source.
+                                            .xls,/xlsx/.cvx/.xlsm/.dos      =>scheme sheet name
+                                            .ini/.cfg/.conf                 =>scheme section name
+                                            .json                           =>scheme key name
+                                            [NOTHING]                       =>KEY=VALUE1|VAL2|VAL3 pair of scheme configures
+ -n,--rename                rename output file name(regex), sample: /(?i)\.bin$/\.lua/
+ -o,--output-dir            output directory
+ -p,--proto                       protocol(protobuf)
+    --pretty                 set pretty output and set ident length when output type supported.(disable pretty output by set
+                                            to 0)
+ -r,--descriptor-print    print all descriptor data to file
+    --require-mapping-all                   require all fields in protocol message to be mapped from data source
+ -s,--src-file              data source file(.xls, .xlsx, .cvs, .xlsm, .ods, .ini, .cfg, .conf, .json)
+    --stdin                                 enable read from stdin and convert more files.
+ -t,--output-type                     output type(bin, lua, msgpack, json, xml, javascript/js, ue-csv, ue-json)
+    --tolerate-max-empty-rows       set max continue empty rows
+ -v,--version                               print version and exit
+    --validator-rules            set file to load custom validator
+    --xml-root                   set xml root node name.(default: root)
+
+You can add -Dlog4j.configuration=log4j2.xml to use your own log configure.
+
+[2024-09-15T19:47:55.697] [INFO] default - usage: Usage: java -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar [options...]
+ -a,--data-version            set data version
+ -c,--const-print         print all const data to file
+ -d,--data-src-dir          data source directories(where to find excel files, can be used more than once.)
+    --data-source-lru-cache-rows    set row number for LRU cache
+    --disable-alias-mapping                 do not use alias when mapping fields
+    --disable-data-validator                disable data validator, so it will not show warnings when data checking failed.
+    --disable-empty-list                    [deprecated] remove empty elements in a list or repeated field,please use
+                                            --list-strip-all-empty.
+    --disable-excel-formular                disable formular in excel. will be faster when convert data.
+    --disable-string-macro                  [default] macro will not apply to string value.
+    --enable-alias-mapping                  allow to use alias when mapping fields
+    --enable-empty-list                     [deprecated] keep empty elements in a list or repeated field with default value,please use
+                                            --list-keep-empty.
+    --enable-excel-formular                 [default] enable formular in excel. will be slower when convert data.
+    --enable-string-macro                   macro will also apply to string value.
+ -f,--proto-file                 protocol description file
+ -h,--help                                  print this help message and exit
+ -i,--option-print        print all option data to file
+    --ignore-field-tags                ignore data and only dump the default value of specify field tags.
+    --ignore-unknown-dependency             ignore unknown dependency when initialize protocol files.
+    --javascript-export        set javascript export mode(nodejs, amd or global)
+    --javascript-global               set javascript export namespace of window or global
+ -l,--delimiter                  regex delimiter for description meta when data source file is [NOTHING].(default: \|)
+    --list-keep-empty                       keep empty elements in a list or repeated field with default value.
+    --list-strip-all-empty                  [default] remove all empty elements in a list or repeated field.
+    --list-strip-empty-tail                 remove all tail empty elements in a list or repeated field.
+    --lua-global                            add data to _G if in lua mode when print const data
+    --lua-module                       module(MODULE_NAME, package.seeall) if in lua mode
+ -m,--src-meta                   data description meta information of data source.
+                                            .xls,/xlsx/.cvx/.xlsm/.dos      =>scheme sheet name
+                                            .ini/.cfg/.conf                 =>scheme section name
+                                            .json                           =>scheme key name
+                                            [NOTHING]                       =>KEY=VALUE1|VAL2|VAL3 pair of scheme configures
+ -n,--rename                rename output file name(regex), sample: /(?i)\.bin$/\.lua/
+ -o,--output-dir            output directory
+ -p,--proto                       protocol(protobuf)
+    --pretty                 set pretty output and set ident length when output type supported.(disable pretty output by set
+                                            to 0)
+ -r,--descriptor-print    print all descriptor data to file
+    --require-mapping-all                   require all fields in protocol message to be mapped from data source
+ -s,--src-file              data source file(.xls, .xlsx, .cvs, .xlsm, .ods, .ini, .cfg, .conf, .json)
+    --stdin                                 enable read from stdin and convert more files.
+ -t,--output-type                     output type(bin, lua, msgpack, json, xml, javascript/js, ue-csv, ue-json)
+    --tolerate-max-empty-rows       set max continue empty rows
+ -v,--version                               print version and exit
+    --validator-rules            set file to load custom validator
+    --xml-root                   set xml root node name.(default: root)
+
+You can add -Dlog4j.configuration=log4j2.xml to use your own log configure.
+
+[2024-09-15T19:47:55.697] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T19:47:55.697] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T19:47:55.718] [ERROR] default - [Process 2 exit with code 2.]
+[2024-09-15T19:47:55.719] [INFO] default - [Process 2 exit with code 2.]
+[2024-09-15T19:47:55.749] [ERROR] default - [Process 1 exit with code 2.]
+[2024-09-15T19:47:55.749] [INFO] default - [Process 1 exit with code 2.]
+[2024-09-15T19:47:55.749] [ERROR] CONV - [CONV]: [Process 1 exit with code 2.]
+[2024-09-15T19:47:55.749] [ERROR] default - All jobs done, 4 job(s) failed.
+[2024-09-15T19:49:09.321] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T19:49:12.274] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T19:49:15.833] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T19:49:18.907] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T19:49:18.909] [INFO] F:\Test\Config/../WorkDir - [F:\Test\Config/../WorkDir]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T19:49:18.909] [INFO] default - [F:\Test\Config/../WorkDir]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T19:49:18.913] [INFO] F:\Test\Config/../WorkDir - [F:\Test\Config/../WorkDir]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T19:49:18.913] [INFO] default - [F:\Test\Config/../WorkDir]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T19:49:18.948] [INFO] [CONV 1] - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" --validator-rules custom_validator.yaml -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "Card=
+            if (item_data.file) {
+                item_data.name += " (" + item_data.file.match(/([^.]+)\.\w+$/)[1] + ")"
+            }
+        
+        
+            if (data.running) {
+                reject("上一次未完成");
+            } else {
+                data.running = true;
+                var left_times = 5;
+                function counter() {
+                    if (left_times > 0) {
+                        log_notice(`定时器计数: ${left_times}`);
+                        left_times -= 1;
+
+                        require("timers").setTimeout(function(){
+                            counter();
+                        }, 1000);
+                        return;
+                    }
+                    log_notice("定时器结束");
+                    resolve();
+                }
+                counter();
+            }
+        
+
+        
+            // 同上
+            data.call_times = (data.call_times || 0) + 1;
+            alert_warning("自定义脚本，可用于自定义按钮");
+            log_notice(`自定义脚本:\n可用于自定义按钮 - notice日志(${data.call_times})`);
+            log_warning("自定义脚本\n可用于自定义按钮 - warning日志");
+            // resolve();
+            data.running = false;
+            resolve();
+        
+    
+" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T19:49:18.949] [INFO] default - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" --validator-rules custom_validator.yaml -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "Card=
+            if (item_data.file) {
+                item_data.name += " (" + item_data.file.match(/([^.]+)\.\w+$/)[1] + ")"
+            }
+        
+        
+            if (data.running) {
+                reject("上一次未完成");
+            } else {
+                data.running = true;
+                var left_times = 5;
+                function counter() {
+                    if (left_times > 0) {
+                        log_notice(`定时器计数: ${left_times}`);
+                        left_times -= 1;
+
+                        require("timers").setTimeout(function(){
+                            counter();
+                        }, 1000);
+                        return;
+                    }
+                    log_notice("定时器结束");
+                    resolve();
+                }
+                counter();
+            }
+        
+
+        
+            // 同上
+            data.call_times = (data.call_times || 0) + 1;
+            alert_warning("自定义脚本，可用于自定义按钮");
+            log_notice(`自定义脚本:\n可用于自定义按钮 - notice日志(${data.call_times})`);
+            log_warning("自定义脚本\n可用于自定义按钮 - warning日志");
+            // resolve();
+            data.running = false;
+            resolve();
+        
+    
+" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T19:49:18.951] [INFO] [CONV 2] - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" --validator-rules custom_validator.yaml -f "Config.pb" -t "bin" -m "Card=
+            if (item_data.file) {
+                item_data.name += " (" + item_data.file.match(/([^.]+)\.\w+$/)[1] + ")"
+            }
+        
+        
+            if (data.running) {
+                reject("上一次未完成");
+            } else {
+                data.running = true;
+                var left_times = 5;
+                function counter() {
+                    if (left_times > 0) {
+                        log_notice(`定时器计数: ${left_times}`);
+                        left_times -= 1;
+
+                        require("timers").setTimeout(function(){
+                            counter();
+                        }, 1000);
+                        return;
+                    }
+                    log_notice("定时器结束");
+                    resolve();
+                }
+                counter();
+            }
+        
+
+        
+            // 同上
+            data.call_times = (data.call_times || 0) + 1;
+            alert_warning("自定义脚本，可用于自定义按钮");
+            log_notice(`自定义脚本:\n可用于自定义按钮 - notice日志(${data.call_times})`);
+            log_warning("自定义脚本\n可用于自定义按钮 - warning日志");
+            // resolve();
+            data.running = false;
+            resolve();
+        
+    
+" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T19:49:18.951] [INFO] default - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" --validator-rules custom_validator.yaml -f "Config.pb" -t "bin" -m "Card=
+            if (item_data.file) {
+                item_data.name += " (" + item_data.file.match(/([^.]+)\.\w+$/)[1] + ")"
+            }
+        
+        
+            if (data.running) {
+                reject("上一次未完成");
+            } else {
+                data.running = true;
+                var left_times = 5;
+                function counter() {
+                    if (left_times > 0) {
+                        log_notice(`定时器计数: ${left_times}`);
+                        left_times -= 1;
+
+                        require("timers").setTimeout(function(){
+                            counter();
+                        }, 1000);
+                        return;
+                    }
+                    log_notice("定时器结束");
+                    resolve();
+                }
+                counter();
+            }
+        
+
+        
+            // 同上
+            data.call_times = (data.call_times || 0) + 1;
+            alert_warning("自定义脚本，可用于自定义按钮");
+            log_notice(`自定义脚本:\n可用于自定义按钮 - notice日志(${data.call_times})`);
+            log_warning("自定义脚本\n可用于自定义按钮 - warning日志");
+            // resolve();
+            data.running = false;
+            resolve();
+        
+    
+" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T19:49:19.177] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t bin -m "Card=
+
+[2024-09-15T19:49:19.177] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t bin -m "Card=
+
+[2024-09-15T19:49:19.177] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:49:19.177] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:49:19.177] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m "Card=
+
+[2024-09-15T19:49:19.177] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m "Card=
+
+[2024-09-15T19:49:19.178] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T19:49:19.178] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T19:49:19.178] [ERROR] default - [ERROR] xresloader - Parsing failed.  reason: "Unrecognized option: -=" failed
+
+[2024-09-15T19:49:19.178] [ERROR] default - [ERROR] xresloader - Parsing failed.  reason: "Unrecognized option: -=" failed
+
+[2024-09-15T19:49:19.178] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:49:19.178] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:49:19.178] [ERROR] default - [ERROR] xresloader - Parsing failed.  reason: "Unrecognized option: -=" failed
+
+[2024-09-15T19:49:19.178] [ERROR] default - [ERROR] xresloader - Parsing failed.  reason: "Unrecognized option: -=" failed
+
+[2024-09-15T19:49:19.178] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T19:49:19.178] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T19:49:19.181] [INFO] default - usage: Usage: java -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar [options...]
+ -a,--data-version            set data version
+ -c,--const-print         print all const data to file
+ -d,--data-src-dir          data source directories(where to find excel files, can be used more than once.)
+    --data-source-lru-cache-rows    set row number for LRU cache
+    --disable-alias-mapping                 do not use alias when mapping fields
+    --disable-data-validator                disable data validator, so it will not show warnings when data checking failed.
+    --disable-empty-list                    [deprecated] remove empty elements in a list or repeated field,please use
+                                            --list-strip-all-empty.
+    --disable-excel-formular                disable formular in excel. will be faster when convert data.
+    --disable-string-macro                  [default] macro will not apply to string value.
+    --enable-alias-mapping                  allow to use alias when mapping fields
+    --enable-empty-list                     [deprecated] keep empty elements in a list or repeated field with default value,please use
+                                            --list-keep-empty.
+    --enable-excel-formular                 [default] enable formular in excel. will be slower when convert data.
+    --enable-string-macro                   macro will also apply to string value.
+ -f,--proto-file                 protocol description file
+ -h,--help                                  print this help message and exit
+ -i,--option-print        print all option data to file
+    --ignore-field-tags                ignore data and only dump the default value of specify field tags.
+    --ignore-unknown-dependency             ignore unknown dependency when initialize protocol files.
+    --javascript-export        set javascript export mode(nodejs, amd or global)
+    --javascript-global               set javascript export namespace of window or global
+ -l,--delimiter                  regex delimiter for description meta when data source file is [NOTHING].(default: \|)
+    --list-keep-empty                       keep empty elements in a list or repeated field with default value.
+    --list-strip-all-empty                  [default] remove all empty elements in a list or repeated field.
+    --list-strip-empty-tail                 remove all tail empty elements in a list or repeated field.
+    --lua-global                            add data to _G if in lua mode when print const data
+    --lua-module                       module(MODULE_NAME, package.seeall) if in lua mode
+ -m,--src-meta                   data description meta information of data source.
+                                            .xls,/xlsx/.cvx/.xlsm/.dos      =>scheme sheet name
+                                            .ini/.cfg/.conf                 =>scheme section name
+                                            .json                           =>scheme key name
+                                            [NOTHING]                       =>KEY=VALUE1|VAL2|VAL3 pair of scheme configures
+ -n,--rename                rename output file name(regex), sample: /(?i)\.bin$/\.lua/
+ -o,--output-dir            output directory
+ -p,--proto                       protocol(protobuf)
+    --pretty                 set pretty output and set ident length when output type supported.(disable pretty output by set
+                                            to 0)
+ -r,--descriptor-print    print all descriptor data to file
+    --require-mapping-all                   require all fields in protocol message to be mapped from data source
+ -s,--src-file              data source file(.xls, .xlsx, .cvs, .xlsm, .ods, .ini, .cfg, .conf, .json)
+    --stdin                                 enable read from stdin and convert more files.
+ -t,--output-type                     output type(bin, lua, msgpack, json, xml, javascript/js, ue-csv, ue-json)
+    --tolerate-max-empty-rows       set max continue empty rows
+ -v,--version                               print version and exit
+    --validator-rules            set file to load custom validator
+    --xml-root                   set xml root node name.(default: root)
+
+
+[2024-09-15T19:49:19.181] [INFO] default - usage: Usage: java -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar [options...]
+ -a,--data-version            set data version
+ -c,--const-print         print all const data to file
+ -d,--data-src-dir          data source directories(where to find excel files, can be used more than once.)
+    --data-source-lru-cache-rows    set row number for LRU cache
+    --disable-alias-mapping                 do not use alias when mapping fields
+    --disable-data-validator                disable data validator, so it will not show warnings when data checking failed.
+    --disable-empty-list                    [deprecated] remove empty elements in a list or repeated field,please use
+                                            --list-strip-all-empty.
+    --disable-excel-formular                disable formular in excel. will be faster when convert data.
+    --disable-string-macro                  [default] macro will not apply to string value.
+    --enable-alias-mapping                  allow to use alias when mapping fields
+    --enable-empty-list                     [deprecated] keep empty elements in a list or repeated field with default value,please use
+                                            --list-keep-empty.
+    --enable-excel-formular                 [default] enable formular in excel. will be slower when convert data.
+    --enable-string-macro                   macro will also apply to string value.
+ -f,--proto-file                 protocol description file
+ -h,--help                                  print this help message and exit
+ -i,--option-print        print all option data to file
+    --ignore-field-tags                ignore data and only dump the default value of specify field tags.
+    --ignore-unknown-dependency             ignore unknown dependency when initialize protocol files.
+    --javascript-export        set javascript export mode(nodejs, amd or global)
+    --javascript-global               set javascript export namespace of window or global
+ -l,--delimiter                  regex delimiter for description meta when data source file is [NOTHING].(default: \|)
+    --list-keep-empty                       keep empty elements in a list or repeated field with default value.
+    --list-strip-all-empty                  [default] remove all empty elements in a list or repeated field.
+    --list-strip-empty-tail                 remove all tail empty elements in a list or repeated field.
+    --lua-global                            add data to _G if in lua mode when print const data
+    --lua-module                       module(MODULE_NAME, package.seeall) if in lua mode
+ -m,--src-meta                   data description meta information of data source.
+                                            .xls,/xlsx/.cvx/.xlsm/.dos      =>scheme sheet name
+                                            .ini/.cfg/.conf                 =>scheme section name
+                                            .json                           =>scheme key name
+                                            [NOTHING]                       =>KEY=VALUE1|VAL2|VAL3 pair of scheme configures
+ -n,--rename                rename output file name(regex), sample: /(?i)\.bin$/\.lua/
+ -o,--output-dir            output directory
+ -p,--proto                       protocol(protobuf)
+    --pretty                 set pretty output and set ident length when output type supported.(disable pretty output by set
+                                            to 0)
+ -r,--descriptor-print    print all descriptor data to file
+    --require-mapping-all                   require all fields in protocol message to be mapped from data source
+ -s,--src-file              data source file(.xls, .xlsx, .cvs, .xlsm, .ods, .ini, .cfg, .conf, .json)
+    --stdin                                 enable read from stdin and convert more files.
+ -t,--output-type                     output type(bin, lua, msgpack, json, xml, javascript/js, ue-csv, ue-json)
+    --tolerate-max-empty-rows       set max continue empty rows
+ -v,--version                               print version and exit
+    --validator-rules            set file to load custom validator
+    --xml-root                   set xml root node name.(default: root)
+
+
+[2024-09-15T19:49:19.181] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:49:19.181] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:49:19.182] [INFO] default - You can add -Dlog4j.configuration=log4j2.xml to use your own log configure.
+
+[2024-09-15T19:49:19.182] [INFO] default - You can add -Dlog4j.configuration=log4j2.xml to use your own log configure.
+
+[2024-09-15T19:49:19.182] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:49:19.182] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:49:19.183] [INFO] default - usage: Usage: java -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar [options...]
+ -a,--data-version            set data version
+ -c,--const-print         print all const data to file
+ -d,--data-src-dir          data source directories(where to find excel files, can be used more than once.)
+    --data-source-lru-cache-rows    set row number for LRU cache
+    --disable-alias-mapping                 do not use alias when mapping fields
+    --disable-data-validator                disable data validator, so it will not show warnings when data checking failed.
+    --disable-empty-list                    [deprecated] remove empty elements in a list or repeated field,please use
+                                            --list-strip-all-empty.
+    --disable-excel-formular                disable formular in excel. will be faster when convert data.
+    --disable-string-macro                  [default] macro will not apply to string value.
+    --enable-alias-mapping                  allow to use alias when mapping fields
+    --enable-empty-list                     [deprecated] keep empty elements in a list or repeated field with default value,please use
+                                            --list-keep-empty.
+    --enable-excel-formular                 [default] enable formular in excel. will be slower when convert data.
+    --enable-string-macro                   macro will also apply to string value.
+ -f,--proto-file                 protocol description file
+ -h,--help                                  print this help message and exit
+ -i,--option-print        print all option data to file
+    --ignore-field-tags                ignore data and only dump the default value of specify field tags.
+    --ignore-unknown-dependency             ignore unknown dependency when initialize protocol files.
+    --javascript-export        set javascript export mode(nodejs, amd or global)
+    --javascript-global               set javascript export namespace of window or global
+ -l,--delimiter                  regex delimiter for description meta when data source file is [NOTHING].(default: \|)
+    --list-keep-empty                       keep empty elements in a list or repeated field with default value.
+    --list-strip-all-empty                  [default] remove all empty elements in a list or repeated field.
+    --list-strip-empty-tail                 remove all tail empty elements in a list or repeated field.
+    --lua-global                            add data to _G if in lua mode when print const data
+    --lua-module                       module(MODULE_NAME, package.seeall) if in lua mode
+ -m,--src-meta                   data description meta information of data source.
+                                            .xls,/xlsx/.cvx/.xlsm/.dos      =>scheme sheet name
+                                            .ini/.cfg/.conf                 =>scheme section name
+                                            .json                           =>scheme key name
+                                            [NOTHING]                       =>KEY=VALUE1|VAL2|VAL3 pair of scheme configures
+ -n,--rename                rename output file name(regex), sample: /(?i)\.bin$/\.lua/
+ -o,--output-dir            output directory
+ -p,--proto                       protocol(protobuf)
+    --pretty                 set pretty output and set ident length when output type supported.(disable pretty output by set
+                                            to 0)
+ -r,--descriptor-print    print all descriptor data to file
+    --require-mapping-all                   require all fields in protocol message to be mapped from data source
+ -s,--src-file              data source file(.xls, .xlsx, .cvs, .xlsm, .ods, .ini, .cfg, .conf, .json)
+    --stdin                                 enable read from stdin and convert more files.
+ -t,--output-type                     output type(bin, lua, msgpack, json, xml, javascript/js, ue-csv, ue-json)
+    --tolerate-max-empty-rows       set max continue empty rows
+ -v,--version                               print version and exit
+    --validator-rules            set file to load custom validator
+    --xml-root                   set xml root node name.(default: root)
+
+You can add -Dlog4j.configuration=log4j2.xml to use your own log configure.
+
+[2024-09-15T19:49:19.183] [INFO] default - usage: Usage: java -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar [options...]
+ -a,--data-version            set data version
+ -c,--const-print         print all const data to file
+ -d,--data-src-dir          data source directories(where to find excel files, can be used more than once.)
+    --data-source-lru-cache-rows    set row number for LRU cache
+    --disable-alias-mapping                 do not use alias when mapping fields
+    --disable-data-validator                disable data validator, so it will not show warnings when data checking failed.
+    --disable-empty-list                    [deprecated] remove empty elements in a list or repeated field,please use
+                                            --list-strip-all-empty.
+    --disable-excel-formular                disable formular in excel. will be faster when convert data.
+    --disable-string-macro                  [default] macro will not apply to string value.
+    --enable-alias-mapping                  allow to use alias when mapping fields
+    --enable-empty-list                     [deprecated] keep empty elements in a list or repeated field with default value,please use
+                                            --list-keep-empty.
+    --enable-excel-formular                 [default] enable formular in excel. will be slower when convert data.
+    --enable-string-macro                   macro will also apply to string value.
+ -f,--proto-file                 protocol description file
+ -h,--help                                  print this help message and exit
+ -i,--option-print        print all option data to file
+    --ignore-field-tags                ignore data and only dump the default value of specify field tags.
+    --ignore-unknown-dependency             ignore unknown dependency when initialize protocol files.
+    --javascript-export        set javascript export mode(nodejs, amd or global)
+    --javascript-global               set javascript export namespace of window or global
+ -l,--delimiter                  regex delimiter for description meta when data source file is [NOTHING].(default: \|)
+    --list-keep-empty                       keep empty elements in a list or repeated field with default value.
+    --list-strip-all-empty                  [default] remove all empty elements in a list or repeated field.
+    --list-strip-empty-tail                 remove all tail empty elements in a list or repeated field.
+    --lua-global                            add data to _G if in lua mode when print const data
+    --lua-module                       module(MODULE_NAME, package.seeall) if in lua mode
+ -m,--src-meta                   data description meta information of data source.
+                                            .xls,/xlsx/.cvx/.xlsm/.dos      =>scheme sheet name
+                                            .ini/.cfg/.conf                 =>scheme section name
+                                            .json                           =>scheme key name
+                                            [NOTHING]                       =>KEY=VALUE1|VAL2|VAL3 pair of scheme configures
+ -n,--rename                rename output file name(regex), sample: /(?i)\.bin$/\.lua/
+ -o,--output-dir            output directory
+ -p,--proto                       protocol(protobuf)
+    --pretty                 set pretty output and set ident length when output type supported.(disable pretty output by set
+                                            to 0)
+ -r,--descriptor-print    print all descriptor data to file
+    --require-mapping-all                   require all fields in protocol message to be mapped from data source
+ -s,--src-file              data source file(.xls, .xlsx, .cvs, .xlsm, .ods, .ini, .cfg, .conf, .json)
+    --stdin                                 enable read from stdin and convert more files.
+ -t,--output-type                     output type(bin, lua, msgpack, json, xml, javascript/js, ue-csv, ue-json)
+    --tolerate-max-empty-rows       set max continue empty rows
+ -v,--version                               print version and exit
+    --validator-rules            set file to load custom validator
+    --xml-root                   set xml root node name.(default: root)
+
+You can add -Dlog4j.configuration=log4j2.xml to use your own log configure.
+
+[2024-09-15T19:49:19.183] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T19:49:19.183] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T19:49:19.202] [ERROR] default - [Process 2 exit with code 2.]
+[2024-09-15T19:49:19.203] [INFO] default - [Process 2 exit with code 2.]
+[2024-09-15T19:49:19.203] [ERROR] default - [Process 1 exit with code 2.]
+[2024-09-15T19:49:19.203] [INFO] default - [Process 1 exit with code 2.]
+[2024-09-15T19:49:19.203] [ERROR] CONV - [CONV]: [Process 1 exit with code 2.]
+[2024-09-15T19:49:19.203] [ERROR] default - All jobs done, 4 job(s) failed.
+[2024-09-15T19:50:11.607] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T19:50:13.598] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T19:50:16.156] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T19:50:16.158] [INFO] F:\Test\Config/../WorkDir - [F:\Test\Config/../WorkDir]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T19:50:16.158] [INFO] default - [F:\Test\Config/../WorkDir]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T19:50:16.161] [INFO] F:\Test\Config/../WorkDir - [F:\Test\Config/../WorkDir]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T19:50:16.161] [INFO] default - [F:\Test\Config/../WorkDir]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T19:50:16.196] [INFO] [CONV 1] - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" --validator-rules custom_validator.yaml -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "Card=
+            if (item_data.file) {
+                item_data.name += " (" + item_data.file.match(/([^.]+)\.\w+$/)[1] + ")"
+            }
+        
+    
+" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T19:50:16.197] [INFO] default - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" --validator-rules custom_validator.yaml -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "Card=
+            if (item_data.file) {
+                item_data.name += " (" + item_data.file.match(/([^.]+)\.\w+$/)[1] + ")"
+            }
+        
+    
+" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T19:50:16.198] [INFO] [CONV 2] - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" --validator-rules custom_validator.yaml -f "Config.pb" -t "bin" -m "Card=
+            if (item_data.file) {
+                item_data.name += " (" + item_data.file.match(/([^.]+)\.\w+$/)[1] + ")"
+            }
+        
+    
+" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T19:50:16.198] [INFO] default - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" --validator-rules custom_validator.yaml -f "Config.pb" -t "bin" -m "Card=
+            if (item_data.file) {
+                item_data.name += " (" + item_data.file.match(/([^.]+)\.\w+$/)[1] + ")"
+            }
+        
+    
+" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T19:50:16.430] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t bin -m "Card=
+
+[2024-09-15T19:50:16.430] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t bin -m "Card=
+
+[2024-09-15T19:50:16.430] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:50:16.430] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:50:16.431] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m "Card=
+
+[2024-09-15T19:50:16.431] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m "Card=
+
+[2024-09-15T19:50:16.431] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T19:50:16.431] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T19:50:16.482] [ERROR] default - [Process 1 exit with code 1.]
+[2024-09-15T19:50:16.483] [INFO] default - [Process 1 exit with code 1.]
+[2024-09-15T19:50:16.483] [ERROR] default - [Process 2 exit with code 1.]
+[2024-09-15T19:50:16.484] [INFO] default - [Process 2 exit with code 1.]
+[2024-09-15T19:50:16.484] [ERROR] CONV - [CONV]: [Process 2 exit with code 1.]
+[2024-09-15T19:50:16.484] [ERROR] default - All jobs done, 2 job(s) failed.
+[2024-09-15T19:53:41.240] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T19:53:44.169] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T19:53:54.867] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T19:53:54.872] [INFO] F:\Test\Config/../WorkDir - [F:\Test\Config/../WorkDir]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T19:53:54.872] [INFO] default - [F:\Test\Config/../WorkDir]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T19:53:54.878] [INFO] F:\Test\Config/../WorkDir - [F:\Test\Config/../WorkDir]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T19:53:54.878] [INFO] default - [F:\Test\Config/../WorkDir]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T19:53:54.912] [INFO] [CONV 1] - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" --validator-rules custom_validator.yaml -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "Card=
+            if (item_data.file) {
+                item_data.name += " (" + item_data.file.match(/([^.]+)\.\w+$/)[1] + ")"
+            }
+        
+    
+" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T19:53:54.913] [INFO] default - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" --validator-rules custom_validator.yaml -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "Card=
+            if (item_data.file) {
+                item_data.name += " (" + item_data.file.match(/([^.]+)\.\w+$/)[1] + ")"
+            }
+        
+    
+" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T19:53:54.914] [INFO] [CONV 2] - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" --validator-rules custom_validator.yaml -f "Config.pb" -t "bin" -m "Card=
+            if (item_data.file) {
+                item_data.name += " (" + item_data.file.match(/([^.]+)\.\w+$/)[1] + ")"
+            }
+        
+    
+" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T19:53:54.914] [INFO] default - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" --validator-rules custom_validator.yaml -f "Config.pb" -t "bin" -m "Card=
+            if (item_data.file) {
+                item_data.name += " (" + item_data.file.match(/([^.]+)\.\w+$/)[1] + ")"
+            }
+        
+    
+" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T19:53:55.141] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t bin -m "Card=
+
+[2024-09-15T19:53:55.141] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t bin -m "Card=
+
+[2024-09-15T19:53:55.142] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:53:55.142] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:53:55.143] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m "Card=
+
+[2024-09-15T19:53:55.143] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 --validator-rules custom_validator.yaml -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m "Card=
+
+[2024-09-15T19:53:55.143] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T19:53:55.143] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T19:53:55.162] [ERROR] default - [Process 2 exit with code 1.]
+[2024-09-15T19:53:55.162] [INFO] default - [Process 2 exit with code 1.]
+[2024-09-15T19:53:55.164] [ERROR] default - [Process 1 exit with code 1.]
+[2024-09-15T19:53:55.164] [INFO] default - [Process 1 exit with code 1.]
+[2024-09-15T19:53:55.164] [ERROR] CONV - [CONV]: [Process 1 exit with code 1.]
+[2024-09-15T19:53:55.165] [ERROR] default - All jobs done, 2 job(s) failed.
+[2024-09-15T19:57:39.606] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T19:57:41.589] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T19:57:45.602] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T19:57:45.604] [INFO] F:\Test\Config/../WorkDir - [F:\Test\Config/../WorkDir]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T19:57:45.604] [INFO] default - [F:\Test\Config/../WorkDir]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T19:57:45.607] [INFO] F:\Test\Config/../WorkDir - [F:\Test\Config/../WorkDir]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T19:57:45.607] [INFO] default - [F:\Test\Config/../WorkDir]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T19:57:45.643] [INFO] [CONV 1] - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "Card=
+            if (item_data.file) {
+                item_data.name += " (" + item_data.file.match(/([^.]+)\.\w+$/)[1] + ")"
+            }
+        
+    
+" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T19:57:45.643] [INFO] default - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "Card=
+            if (item_data.file) {
+                item_data.name += " (" + item_data.file.match(/([^.]+)\.\w+$/)[1] + ")"
+            }
+        
+    
+" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T19:57:45.643] [INFO] [CONV 2] - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "bin" -m "Card=
+            if (item_data.file) {
+                item_data.name += " (" + item_data.file.match(/([^.]+)\.\w+$/)[1] + ")"
+            }
+        
+    
+" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T19:57:45.643] [INFO] default - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "bin" -m "Card=
+            if (item_data.file) {
+                item_data.name += " (" + item_data.file.match(/([^.]+)\.\w+$/)[1] + ")"
+            }
+        
+    
+" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T19:57:45.867] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m "Card=
+
+[2024-09-15T19:57:45.867] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m "Card=
+
+[2024-09-15T19:57:45.867] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T19:57:45.867] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T19:57:45.868] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t bin -m "Card=
+
+[2024-09-15T19:57:45.868] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t bin -m "Card=
+
+[2024-09-15T19:57:45.868] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:57:45.868] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T19:57:45.887] [ERROR] default - [Process 1 exit with code 1.]
+[2024-09-15T19:57:45.887] [INFO] default - [Process 1 exit with code 1.]
+[2024-09-15T19:57:45.919] [ERROR] default - [Process 2 exit with code 1.]
+[2024-09-15T19:57:45.920] [INFO] default - [Process 2 exit with code 1.]
+[2024-09-15T19:57:45.920] [ERROR] CONV - [CONV]: [Process 2 exit with code 1.]
+[2024-09-15T19:57:45.920] [ERROR] default - All jobs done, 2 job(s) failed.
+[2024-09-15T20:00:41.097] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T20:00:42.907] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T20:00:46.335] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T20:00:46.338] [INFO] F:\Test\Config/../WorkDir - [F:\Test\Config/../WorkDir]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T20:00:46.338] [INFO] default - [F:\Test\Config/../WorkDir]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T20:00:46.342] [INFO] F:\Test\Config/../WorkDir - [F:\Test\Config/../WorkDir]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T20:00:46.342] [INFO] default - [F:\Test\Config/../WorkDir]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T20:00:46.376] [INFO] [CONV 1] - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "Card=
+            if (item_data.file) {
+                item_data.name += " (" + item_data.file.match(/([^.]+)\.\w+$/)[1] + ")"
+            }
+        
+    
+"
+[2024-09-15T20:00:46.376] [INFO] default - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "Card=
+            if (item_data.file) {
+                item_data.name += " (" + item_data.file.match(/([^.]+)\.\w+$/)[1] + ")"
+            }
+        
+    
+"
+[2024-09-15T20:00:46.380] [INFO] [CONV 2] - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "bin" -m "Card=
+            if (item_data.file) {
+                item_data.name += " (" + item_data.file.match(/([^.]+)\.\w+$/)[1] + ")"
+            }
+        
+    
+"
+[2024-09-15T20:00:46.380] [INFO] default - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "bin" -m "Card=
+            if (item_data.file) {
+                item_data.name += " (" + item_data.file.match(/([^.]+)\.\w+$/)[1] + ")"
+            }
+        
+    
+"
+[2024-09-15T20:00:46.602] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m "Card=
+
+[2024-09-15T20:00:46.602] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m "Card=
+
+[2024-09-15T20:00:46.602] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T20:00:46.602] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T20:00:46.603] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t bin -m "Card=
+
+[2024-09-15T20:00:46.603] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t bin -m "Card=
+
+[2024-09-15T20:00:46.603] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T20:00:46.603] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T20:00:46.631] [ERROR] default - [Process 2 exit with code 1.]
+[2024-09-15T20:00:46.632] [INFO] default - [Process 2 exit with code 1.]
+[2024-09-15T20:00:46.632] [ERROR] default - [Process 1 exit with code 1.]
+[2024-09-15T20:00:46.632] [INFO] default - [Process 1 exit with code 1.]
+[2024-09-15T20:00:46.632] [ERROR] CONV - [CONV]: [Process 1 exit with code 1.]
+[2024-09-15T20:00:46.632] [ERROR] default - All jobs done, 2 job(s) failed.
+[2024-09-15T20:01:51.678] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T20:01:53.512] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T20:01:57.607] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T20:01:57.610] [INFO] F:\Test\Config/../WorkDir - [F:\Test\Config/../WorkDir]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T20:01:57.610] [INFO] default - [F:\Test\Config/../WorkDir]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T20:01:57.615] [INFO] F:\Test\Config/../WorkDir - [F:\Test\Config/../WorkDir]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T20:01:57.615] [INFO] default - [F:\Test\Config/../WorkDir]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T20:01:57.649] [INFO] [CONV 1] - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "Card=Cards.xlsx|Sheet1|3,1" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T20:01:57.650] [INFO] default - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "Card=Cards.xlsx|Sheet1|3,1" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T20:01:57.650] [INFO] [CONV 2] - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "bin" -m "Card=Cards.xlsx|Sheet1|3,1" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T20:01:57.650] [INFO] default - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "bin" -m "Card=Cards.xlsx|Sheet1|3,1" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T20:01:57.880] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t bin -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2 -m MacroSource=资源转换示例.xlsx|macro|2,1
+
+[2024-09-15T20:01:57.880] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t bin -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2 -m MacroSource=资源转换示例.xlsx|macro|2,1
+
+[2024-09-15T20:01:57.880] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T20:01:57.880] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T20:01:57.880] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2 -m MacroSource=资源转换示例.xlsx|macro|2,1
+
+[2024-09-15T20:01:57.880] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2 -m MacroSource=资源转换示例.xlsx|macro|2,1
+
+[2024-09-15T20:01:57.881] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T20:01:57.881] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T20:01:57.926] [ERROR] default - [Process 1 exit with code 1.]
+[2024-09-15T20:01:57.927] [INFO] default - [Process 1 exit with code 1.]
+[2024-09-15T20:01:57.927] [ERROR] default - [Process 2 exit with code 1.]
+[2024-09-15T20:01:57.927] [INFO] default - [Process 2 exit with code 1.]
+[2024-09-15T20:01:57.927] [ERROR] CONV - [CONV]: [Process 2 exit with code 1.]
+[2024-09-15T20:01:57.927] [ERROR] default - All jobs done, 2 job(s) failed.
+[2024-09-15T20:03:15.886] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T20:03:21.374] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T20:03:24.910] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T20:03:24.913] [INFO] F:\Test\Config/../WorkDir - [F:\Test\Config/../WorkDir]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T20:03:24.913] [INFO] default - [F:\Test\Config/../WorkDir]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T20:03:24.918] [INFO] F:\Test\Config/../WorkDir - [F:\Test\Config/../WorkDir]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T20:03:24.918] [INFO] default - [F:\Test\Config/../WorkDir]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T20:03:24.951] [INFO] [CONV 1] - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "ue-csv" -n "/(?i)\.bin$/\.csv/" -m "Card=Cards.xlsx|Sheet1|3,1" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T20:03:24.951] [INFO] default - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "ue-csv" -n "/(?i)\.bin$/\.csv/" -m "Card=Cards.xlsx|Sheet1|3,1" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T20:03:24.954] [INFO] [CONV 2] - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "Card=Cards.xlsx|Sheet1|3,1" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T20:03:24.954] [INFO] default - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "Card=Cards.xlsx|Sheet1|3,1" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T20:03:25.182] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t ue-csv -n /(?i)\.bin$/\.csv/ -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2 -m MacroSource=资源转换示例.xlsx|macro|2,1
+
+[2024-09-15T20:03:25.182] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t ue-csv -n /(?i)\.bin$/\.csv/ -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2 -m MacroSource=资源转换示例.xlsx|macro|2,1
+
+[2024-09-15T20:03:25.182] [INFO] [CONV 1] - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "bin" -m "Card=Cards.xlsx|Sheet1|3,1" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T20:03:25.182] [INFO] default - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "bin" -m "Card=Cards.xlsx|Sheet1|3,1" -m "KeyRow=2" -m "MacroSource=资源转换示例.xlsx|macro|2,1"
+[2024-09-15T20:03:25.183] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2 -m MacroSource=资源转换示例.xlsx|macro|2,1
+
+[2024-09-15T20:03:25.183] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2 -m MacroSource=资源转换示例.xlsx|macro|2,1
+
+[2024-09-15T20:03:25.183] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T20:03:25.183] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T20:03:25.184] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t bin -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2 -m MacroSource=资源转换示例.xlsx|macro|2,1
+
+[2024-09-15T20:03:25.184] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t bin -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2 -m MacroSource=资源转换示例.xlsx|macro|2,1
+
+[2024-09-15T20:03:25.184] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T20:03:25.184] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T20:03:25.213] [ERROR] default - [Process 2 exit with code 1.]
+[2024-09-15T20:03:25.213] [INFO] default - [Process 2 exit with code 1.]
+[2024-09-15T20:03:25.213] [ERROR] default - [Process 1 exit with code 2.]
+[2024-09-15T20:03:25.213] [INFO] default - [Process 1 exit with code 2.]
+[2024-09-15T20:03:25.214] [ERROR] CONV - [CONV]: [Process 1 exit with code 2.]
+[2024-09-15T20:03:25.214] [ERROR] default - All jobs done, 3 job(s) failed.
+[2024-09-15T20:04:04.134] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T20:04:06.141] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T20:04:11.209] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T20:04:11.211] [INFO] F:\Test\Config/../WorkDir - [F:\Test\Config/../WorkDir]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T20:04:11.211] [INFO] default - [F:\Test\Config/../WorkDir]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T20:04:11.216] [INFO] F:\Test\Config/../WorkDir - [F:\Test\Config/../WorkDir]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T20:04:11.216] [INFO] default - [F:\Test\Config/../WorkDir]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T20:04:11.249] [INFO] [CONV 1] - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "ue-csv" -n "/(?i)\.bin$/\.csv/" -m "Card=Cards.xlsx|Sheet1|3,1"
+[2024-09-15T20:04:11.249] [INFO] default - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "ue-csv" -n "/(?i)\.bin$/\.csv/" -m "Card=Cards.xlsx|Sheet1|3,1"
+[2024-09-15T20:04:11.252] [INFO] [CONV 2] - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "Card=Cards.xlsx|Sheet1|3,1"
+[2024-09-15T20:04:11.252] [INFO] default - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "Card=Cards.xlsx|Sheet1|3,1"
+[2024-09-15T20:04:11.480] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t ue-csv -n /(?i)\.bin$/\.csv/ -m Card=Cards.xlsx|Sheet1|3,1
+
+[2024-09-15T20:04:11.480] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t ue-csv -n /(?i)\.bin$/\.csv/ -m Card=Cards.xlsx|Sheet1|3,1
+
+[2024-09-15T20:04:11.480] [INFO] [CONV 1] - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "bin" -m "Card=Cards.xlsx|Sheet1|3,1"
+[2024-09-15T20:04:11.480] [INFO] default - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "bin" -m "Card=Cards.xlsx|Sheet1|3,1"
+[2024-09-15T20:04:11.481] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m Card=Cards.xlsx|Sheet1|3,1
+
+[2024-09-15T20:04:11.481] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m Card=Cards.xlsx|Sheet1|3,1
+
+[2024-09-15T20:04:11.481] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T20:04:11.481] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T20:04:11.481] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t bin -m Card=Cards.xlsx|Sheet1|3,1
+
+[2024-09-15T20:04:11.481] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t bin -m Card=Cards.xlsx|Sheet1|3,1
+
+[2024-09-15T20:04:11.481] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T20:04:11.481] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T20:04:11.498] [ERROR] default - [Process 1 exit with code 2.]
+[2024-09-15T20:04:11.499] [INFO] default - [Process 1 exit with code 2.]
+[2024-09-15T20:04:11.530] [ERROR] default - [Process 2 exit with code 1.]
+[2024-09-15T20:04:11.531] [INFO] default - [Process 2 exit with code 1.]
+[2024-09-15T20:04:11.531] [ERROR] CONV - [CONV]: [Process 2 exit with code 1.]
+[2024-09-15T20:04:11.531] [ERROR] default - All jobs done, 3 job(s) failed.
+[2024-09-15T20:06:16.759] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T20:06:18.854] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T20:06:24.295] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T20:06:24.296] [INFO] F:\Test\Config/../WorkDir - [F:\Test\Config/../WorkDir]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T20:06:24.296] [INFO] default - [F:\Test\Config/../WorkDir]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T20:06:24.300] [INFO] F:\Test\Config/../WorkDir - [F:\Test\Config/../WorkDir]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T20:06:24.300] [INFO] default - [F:\Test\Config/../WorkDir]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T20:06:24.335] [INFO] [CONV 1] - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "ue-csv" -n "/(?i)\.bin$/\.csv/" -m "Card=Cards.xlsx|Sheet1|3,1" -m "KeyRow=2"
+[2024-09-15T20:06:24.335] [INFO] default - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "ue-csv" -n "/(?i)\.bin$/\.csv/" -m "Card=Cards.xlsx|Sheet1|3,1" -m "KeyRow=2"
+[2024-09-15T20:06:24.336] [INFO] [CONV 2] - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "Card=Cards.xlsx|Sheet1|3,1" -m "KeyRow=2"
+[2024-09-15T20:06:24.336] [INFO] default - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "Card=Cards.xlsx|Sheet1|3,1" -m "KeyRow=2"
+[2024-09-15T20:06:24.563] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2
+
+[2024-09-15T20:06:24.563] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2
+
+[2024-09-15T20:06:24.563] [INFO] [CONV 2] - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "bin" -m "Card=Cards.xlsx|Sheet1|3,1" -m "KeyRow=2"
+[2024-09-15T20:06:24.563] [INFO] default - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "bin" -m "Card=Cards.xlsx|Sheet1|3,1" -m "KeyRow=2"
+[2024-09-15T20:06:24.563] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t ue-csv -n /(?i)\.bin$/\.csv/ -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2
+
+[2024-09-15T20:06:24.563] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t ue-csv -n /(?i)\.bin$/\.csv/ -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2
+
+[2024-09-15T20:06:24.563] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T20:06:24.563] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T20:06:24.564] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t bin -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2
+
+[2024-09-15T20:06:24.564] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t bin -m Card=Cards.xlsx|Sheet1|3,1 -m KeyRow=2
+
+[2024-09-15T20:06:24.564] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T20:06:24.564] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T20:06:24.594] [ERROR] default - [Process 2 exit with code 2.]
+[2024-09-15T20:06:24.594] [INFO] default - [Process 2 exit with code 2.]
+[2024-09-15T20:06:24.610] [ERROR] default - [Process 1 exit with code 1.]
+[2024-09-15T20:06:24.610] [INFO] default - [Process 1 exit with code 1.]
+[2024-09-15T20:06:24.610] [ERROR] CONV - [CONV]: [Process 1 exit with code 1.]
+[2024-09-15T20:06:24.610] [ERROR] default - All jobs done, 3 job(s) failed.
+[2024-09-15T21:07:02.704] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T21:07:26.466] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T21:07:30.745] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T21:07:30.746] [INFO] F:\Test\Config/../WorkDir - [F:\Test\Config/../WorkDir]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T21:07:30.746] [INFO] default - [F:\Test\Config/../WorkDir]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T21:07:30.752] [INFO] F:\Test\Config/../WorkDir - [F:\Test\Config/../WorkDir]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T21:07:30.752] [INFO] default - [F:\Test\Config/../WorkDir]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T21:07:30.793] [INFO] [CONV 1] - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "ue-csv" -n "/(?i)\.bin$/\.csv/" -m "DataSource=Cards.xlsx|Sheet1|3,1" -m "KeyRow=2"
+[2024-09-15T21:07:30.793] [INFO] default - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "ue-csv" -n "/(?i)\.bin$/\.csv/" -m "DataSource=Cards.xlsx|Sheet1|3,1" -m "KeyRow=2"
+[2024-09-15T21:07:30.794] [INFO] [CONV 2] - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "DataSource=Cards.xlsx|Sheet1|3,1" -m "KeyRow=2"
+[2024-09-15T21:07:30.794] [INFO] default - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "DataSource=Cards.xlsx|Sheet1|3,1" -m "KeyRow=2"
+[2024-09-15T21:07:31.034] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m DataSource=Cards.xlsx|Sheet1|3,1 -m KeyRow=2
+
+[2024-09-15T21:07:31.034] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t json -n /(?i)\.bin$/\.json/ -m DataSource=Cards.xlsx|Sheet1|3,1 -m KeyRow=2
+
+[2024-09-15T21:07:31.034] [INFO] [CONV 2] - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "bin" -m "DataSource=Cards.xlsx|Sheet1|3,1" -m "KeyRow=2"
+[2024-09-15T21:07:31.034] [INFO] default - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "bin" -m "DataSource=Cards.xlsx|Sheet1|3,1" -m "KeyRow=2"
+[2024-09-15T21:07:31.034] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t ue-csv -n /(?i)\.bin$/\.csv/ -m DataSource=Cards.xlsx|Sheet1|3,1 -m KeyRow=2
+
+[2024-09-15T21:07:31.034] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t ue-csv -n /(?i)\.bin$/\.csv/ -m DataSource=Cards.xlsx|Sheet1|3,1 -m KeyRow=2
+
+[2024-09-15T21:07:31.034] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T21:07:31.034] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T21:07:31.035] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t bin -m DataSource=Cards.xlsx|Sheet1|3,1 -m KeyRow=2
+
+[2024-09-15T21:07:31.035] [ERROR] default - [ERROR] xresloader - Initlize failed.Data source error. DataSource,ProtoName,OutputFile and KeyRow is required.
+  > -p protobuf -a 1.0.0.0 -f Config.pb -t bin -m DataSource=Cards.xlsx|Sheet1|3,1 -m KeyRow=2
+
+[2024-09-15T21:07:31.035] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T21:07:31.035] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T21:07:31.059] [ERROR] default - [Process 1 exit with code 1.]
+[2024-09-15T21:07:31.060] [INFO] default - [Process 1 exit with code 1.]
+[2024-09-15T21:07:31.060] [ERROR] default - [Process 2 exit with code 2.]
+[2024-09-15T21:07:31.061] [INFO] default - [Process 2 exit with code 2.]
+[2024-09-15T21:07:31.061] [ERROR] CONV - [CONV]: [Process 2 exit with code 2.]
+[2024-09-15T21:07:31.061] [ERROR] default - All jobs done, 3 job(s) failed.
+[2024-09-15T21:09:03.926] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T21:09:10.130] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T21:09:12.465] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T21:09:12.467] [INFO] F:\Test\Config/../WorkDir - [F:\Test\Config/../WorkDir]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T21:09:12.467] [INFO] default - [F:\Test\Config/../WorkDir]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T21:09:12.470] [INFO] F:\Test\Config/../WorkDir - [F:\Test\Config/../WorkDir]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T21:09:12.470] [INFO] default - [F:\Test\Config/../WorkDir]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T21:09:12.503] [INFO] [CONV 1] - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "ue-csv" -n "/(?i)\.bin$/\.csv/" -m "DataSource=Cards.xlsx|Sheet1|3,1" -m "ProtoName=Card_cfg" -m "OutputFile=Card_cfg.bin" -m "KeyRow=2"
+[2024-09-15T21:09:12.503] [INFO] default - [[CONV 1]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "ue-csv" -n "/(?i)\.bin$/\.csv/" -m "DataSource=Cards.xlsx|Sheet1|3,1" -m "ProtoName=Card_cfg" -m "OutputFile=Card_cfg.bin" -m "KeyRow=2"
+[2024-09-15T21:09:12.507] [INFO] [CONV 2] - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "DataSource=Cards.xlsx|Sheet1|3,1" -m "ProtoName=Card_cfg" -m "OutputFile=Card_cfg.bin" -m "KeyRow=2"
+[2024-09-15T21:09:12.507] [INFO] default - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "DataSource=Cards.xlsx|Sheet1|3,1" -m "ProtoName=Card_cfg" -m "OutputFile=Card_cfg.bin" -m "KeyRow=2"
+[2024-09-15T21:09:12.737] [WARN] default - [WARN ] xresloader - Open data source file "Cards.xlsx" failed, not found.
+
+[2024-09-15T21:09:12.737] [WARN] default - [WARN ] xresloader - Open data source file "Cards.xlsx" failed, not found.
+
+[2024-09-15T21:09:12.737] [INFO] [CONV 2] - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "bin" -m "DataSource=Cards.xlsx|Sheet1|3,1" -m "ProtoName=Card_cfg" -m "OutputFile=Card_cfg.bin" -m "KeyRow=2"
+[2024-09-15T21:09:12.737] [INFO] default - [[CONV 2]]:  -p "protobuf" -a "1.0.0.0" -f "Config.pb" -t "bin" -m "DataSource=Cards.xlsx|Sheet1|3,1" -m "ProtoName=Card_cfg" -m "OutputFile=Card_cfg.bin" -m "KeyRow=2"
+[2024-09-15T21:09:12.738] [ERROR] default - [ERROR] xresloader - Initialize data source class "org.xresloader.core.data.src.DataSrcExcel" failed
+
+[2024-09-15T21:09:12.738] [ERROR] default - [ERROR] xresloader - Initialize data source class "org.xresloader.core.data.src.DataSrcExcel" failed
+
+[2024-09-15T21:09:12.738] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T21:09:12.738] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T21:09:12.738] [WARN] default - [WARN ] xresloader - Open data source file "Cards.xlsx" failed, not found.
+[ERROR] xresloader - Initialize data source class "org.xresloader.core.data.src.DataSrcExcel" failed
+
+[2024-09-15T21:09:12.738] [WARN] default - [WARN ] xresloader - Open data source file "Cards.xlsx" failed, not found.
+[ERROR] xresloader - Initialize data source class "org.xresloader.core.data.src.DataSrcExcel" failed
+
+[2024-09-15T21:09:12.739] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T21:09:12.739] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T21:09:12.739] [WARN] default - [WARN ] xresloader - Open data source file "Cards.xlsx" failed, not found.
+[ERROR] xresloader - Initialize data source class "org.xresloader.core.data.src.DataSrcExcel" failed
+
+[2024-09-15T21:09:12.739] [WARN] default - [WARN ] xresloader - Open data source file "Cards.xlsx" failed, not found.
+[ERROR] xresloader - Initialize data source class "org.xresloader.core.data.src.DataSrcExcel" failed
+
+[2024-09-15T21:09:12.739] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T21:09:12.739] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T21:09:12.761] [ERROR] default - [Process 1 exit with code 1.]
+[2024-09-15T21:09:12.761] [INFO] default - [Process 1 exit with code 1.]
+[2024-09-15T21:09:12.761] [ERROR] default - [Process 2 exit with code 2.]
+[2024-09-15T21:09:12.762] [INFO] default - [Process 2 exit with code 2.]
+[2024-09-15T21:09:12.762] [ERROR] CONV - [CONV]: [Process 2 exit with code 2.]
+[2024-09-15T21:09:12.762] [ERROR] default - All jobs done, 3 job(s) failed.
+[2024-09-15T21:10:18.733] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T21:10:23.087] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T21:10:24.347] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T21:10:24.349] [INFO] F:\Test\Config/./ - [F:\Test\Config/./]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T21:10:24.349] [INFO] default - [F:\Test\Config/./]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T21:10:24.352] [INFO] F:\Test\Config/./ - [F:\Test\Config/./]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T21:10:24.352] [INFO] default - [F:\Test\Config/./]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T21:10:24.387] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T21:10:24.387] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T21:10:24.388] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T21:10:24.388] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T21:10:24.672] [INFO] default - [Process 1 exit.]
+[2024-09-15T21:10:24.672] [INFO] default - [Process 1 exit.]
+[2024-09-15T21:10:24.677] [INFO] default - [Process 2 exit.]
+[2024-09-15T21:10:24.678] [INFO] default - [Process 2 exit.]
+[2024-09-15T21:10:24.678] [INFO] default - All jobs done.
+[2024-09-15T21:12:02.694] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T21:12:05.030] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T21:12:07.292] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: UE资源Csv格式(ue-csv)    重命名规则: "/(?i)\.bin$/\.csv/"    限定class列表: "client"
+[2024-09-15T21:12:07.294] [INFO] F:\Test\Config/./ - [F:\Test\Config/./]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T21:12:07.294] [INFO] default - [F:\Test\Config/./]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T21:12:07.297] [INFO] F:\Test\Config/./ - [F:\Test\Config/./]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T21:12:07.297] [INFO] default - [F:\Test\Config/./]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T21:12:07.332] [INFO] [CONV 1] - [[CONV 1]]:  -p "protobuf" -o "./bin" -a "1.0.0.0" -f "Config.pb" -t "ue-csv" -n "/(?i)\.bin$/\.csv/" -m "DataSource=Cards.xlsx|Sheet1|3,1" -m "ProtoName=Card_cfg" -m "OutputFile=Card_cfg.bin" -m "KeyRow=2"
+[2024-09-15T21:12:07.332] [INFO] default - [[CONV 1]]:  -p "protobuf" -o "./bin" -a "1.0.0.0" -f "Config.pb" -t "ue-csv" -n "/(?i)\.bin$/\.csv/" -m "DataSource=Cards.xlsx|Sheet1|3,1" -m "ProtoName=Card_cfg" -m "OutputFile=Card_cfg.bin" -m "KeyRow=2"
+[2024-09-15T21:12:07.333] [INFO] [CONV 2] - [[CONV 2]]:  -p "protobuf" -o "./bin" -a "1.0.0.0" -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "DataSource=Cards.xlsx|Sheet1|3,1" -m "ProtoName=Card_cfg" -m "OutputFile=Card_cfg.bin" -m "KeyRow=2"
+[2024-09-15T21:12:07.333] [INFO] default - [[CONV 2]]:  -p "protobuf" -o "./bin" -a "1.0.0.0" -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "DataSource=Cards.xlsx|Sheet1|3,1" -m "ProtoName=Card_cfg" -m "OutputFile=Card_cfg.bin" -m "KeyRow=2"
+[2024-09-15T21:12:07.825] [INFO] default - [INFO ] xresloader - Convert from "Cards.xlsx|Sheet1" to "Card_cfg.csv" success.(charset: utf-8, 1 excel row(s))
+
+[2024-09-15T21:12:07.825] [INFO] default - [INFO ] xresloader - Convert from "Cards.xlsx|Sheet1" to "Card_cfg.csv" success.(charset: utf-8, 1 excel row(s))
+
+[2024-09-15T21:12:07.825] [INFO] [CONV 1] - [[CONV 1]]:  -p "protobuf" -o "./bin" -a "1.0.0.0" -f "Config.pb" -t "bin" -m "DataSource=Cards.xlsx|Sheet1|3,1" -m "ProtoName=Card_cfg" -m "OutputFile=Card_cfg.bin" -m "KeyRow=2"
+[2024-09-15T21:12:07.825] [INFO] default - [[CONV 1]]:  -p "protobuf" -o "./bin" -a "1.0.0.0" -f "Config.pb" -t "bin" -m "DataSource=Cards.xlsx|Sheet1|3,1" -m "ProtoName=Card_cfg" -m "OutputFile=Card_cfg.bin" -m "KeyRow=2"
+[2024-09-15T21:12:07.830] [INFO] default - [INFO ] xresloader - Convert from "Cards.xlsx|Sheet1" to "Card_cfg.json" success.(charset: utf-8, 1 excel row(s))
+
+[2024-09-15T21:12:07.830] [INFO] default - [INFO ] xresloader - Convert from "Cards.xlsx|Sheet1" to "Card_cfg.json" success.(charset: utf-8, 1 excel row(s))
+
+[2024-09-15T21:12:07.830] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T21:12:07.830] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T21:12:07.839] [INFO] default - [INFO ] xresloader - Convert from "Cards.xlsx|Sheet1" to "Card_cfg.bin" success.(charset: utf-8, 1 excel row(s))
+
+[2024-09-15T21:12:07.839] [INFO] default - [INFO ] xresloader - Convert from "Cards.xlsx|Sheet1" to "Card_cfg.bin" success.(charset: utf-8, 1 excel row(s))
+
+[2024-09-15T21:12:07.839] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T21:12:07.839] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T21:12:07.878] [INFO] default - [Process 2 exit.]
+[2024-09-15T21:12:07.878] [INFO] default - [Process 2 exit.]
+[2024-09-15T21:12:07.894] [INFO] default - [Process 1 exit.]
+[2024-09-15T21:12:07.895] [INFO] default - [Process 1 exit.]
+[2024-09-15T21:12:07.895] [INFO] default - All jobs done.
+[2024-09-15T21:15:05.283] [ERROR] default - java version "17.0.8" 2023-07-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.8+9-LTS-211)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.8+9-LTS-211, mixed mode, sharing)
+
+[2024-09-15T21:15:07.326] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: Lua配置(lua)    重命名规则: "/(?i)\.bin$/\.lua/"    限定class列表: "client"
+[2024-09-15T21:15:13.194] [INFO] default - 当前选中的是来自配置文件的自定义输出类型    输出类型: 协议二进制(bin)    输出类型: Json格式(json)    重命名规则: "/(?i)\.bin$/\.json/"    输出类型: Lua配置(lua)    重命名规则: "/(?i)\.bin$/\.lua/"    限定class列表: "client"
+[2024-09-15T21:15:13.196] [INFO] F:\Test\Config/./ - [F:\Test\Config/./]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T21:15:13.196] [INFO] default - [F:\Test\Config/./]: Process 1 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T21:15:13.199] [INFO] F:\Test\Config/./ - [F:\Test\Config/./]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T21:15:13.199] [INFO] default - [F:\Test\Config/./]: Process 2 : -Dfile.encoding=UTF-8 -Xmx2048m -client -jar ../xresconv-gui-win32-x64/xresloader-2.19.0.jar --stdin
+
+[2024-09-15T21:15:13.232] [INFO] [CONV 1] - [[CONV 1]]:  -p "protobuf" -o "./bin" -a "1.0.0.0" -f "Config.pb" -t "lua" -n "/(?i)\.bin$/\.lua/" -m "DataSource=Cards.xlsx|Sheet1|3,1" -m "ProtoName=Card_cfg" -m "OutputFile=Card_cfg.bin" -m "KeyRow=2"
+[2024-09-15T21:15:13.232] [INFO] default - [[CONV 1]]:  -p "protobuf" -o "./bin" -a "1.0.0.0" -f "Config.pb" -t "lua" -n "/(?i)\.bin$/\.lua/" -m "DataSource=Cards.xlsx|Sheet1|3,1" -m "ProtoName=Card_cfg" -m "OutputFile=Card_cfg.bin" -m "KeyRow=2"
+[2024-09-15T21:15:13.235] [INFO] [CONV 2] - [[CONV 2]]:  -p "protobuf" -o "./bin" -a "1.0.0.0" -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "DataSource=Cards.xlsx|Sheet1|3,1" -m "ProtoName=Card_cfg" -m "OutputFile=Card_cfg.bin" -m "KeyRow=2"
+[2024-09-15T21:15:13.235] [INFO] default - [[CONV 2]]:  -p "protobuf" -o "./bin" -a "1.0.0.0" -f "Config.pb" -t "json" -n "/(?i)\.bin$/\.json/" -m "DataSource=Cards.xlsx|Sheet1|3,1" -m "ProtoName=Card_cfg" -m "OutputFile=Card_cfg.bin" -m "KeyRow=2"
+[2024-09-15T21:15:13.696] [INFO] default - [INFO ] xresloader - Convert from "Cards.xlsx|Sheet1" to "Card_cfg.lua" success.(charset: utf-8, 1 excel row(s))
+
+[2024-09-15T21:15:13.696] [INFO] default - [INFO ] xresloader - Convert from "Cards.xlsx|Sheet1" to "Card_cfg.lua" success.(charset: utf-8, 1 excel row(s))
+
+[2024-09-15T21:15:13.696] [INFO] [CONV 1] - [[CONV 1]]:  -p "protobuf" -o "./bin" -a "1.0.0.0" -f "Config.pb" -t "bin" -m "DataSource=Cards.xlsx|Sheet1|3,1" -m "ProtoName=Card_cfg" -m "OutputFile=Card_cfg.bin" -m "KeyRow=2"
+[2024-09-15T21:15:13.696] [INFO] default - [[CONV 1]]:  -p "protobuf" -o "./bin" -a "1.0.0.0" -f "Config.pb" -t "bin" -m "DataSource=Cards.xlsx|Sheet1|3,1" -m "ProtoName=Card_cfg" -m "OutputFile=Card_cfg.bin" -m "KeyRow=2"
+[2024-09-15T21:15:13.697] [INFO] default - [INFO ] xresloader - Convert from "Cards.xlsx|Sheet1" to "Card_cfg.json" success.(charset: utf-8, 1 excel row(s))
+
+[2024-09-15T21:15:13.697] [INFO] default - [INFO ] xresloader - Convert from "Cards.xlsx|Sheet1" to "Card_cfg.json" success.(charset: utf-8, 1 excel row(s))
+
+[2024-09-15T21:15:13.697] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T21:15:13.697] [INFO] default - [Process 2 close stdin.]
+[2024-09-15T21:15:13.703] [INFO] default - [INFO ] xresloader - Convert from "Cards.xlsx|Sheet1" to "Card_cfg.bin" success.(charset: utf-8, 1 excel row(s))
+
+[2024-09-15T21:15:13.703] [INFO] default - [INFO ] xresloader - Convert from "Cards.xlsx|Sheet1" to "Card_cfg.bin" success.(charset: utf-8, 1 excel row(s))
+
+[2024-09-15T21:15:13.703] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T21:15:13.703] [INFO] default - [Process 1 close stdin.]
+[2024-09-15T21:15:13.740] [INFO] default - [Process 2 exit.]
+[2024-09-15T21:15:13.740] [INFO] default - [Process 2 exit.]
+[2024-09-15T21:15:13.757] [INFO] default - [Process 1 exit.]
+[2024-09-15T21:15:13.757] [INFO] default - [Process 1 exit.]
+[2024-09-15T21:15:13.757] [INFO] default - All jobs done.

@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+import "xresloader.proto";
+
+enum ECostType {
+	CT_Unknown = 0;
+	CT_Coin = 1 [(org.xresloader.enum_alias) = "金币"];
+	CT_Diamond = 2 [(org.xresloader.enum_alias) = "钻石"];
+}
+
+message Card_cfg {
+	uint32 Id = 1;
+	string Name = 2;
+	uint32 CostType = 3 [(org.xresloader.validator) = "ECostType"];
+}
