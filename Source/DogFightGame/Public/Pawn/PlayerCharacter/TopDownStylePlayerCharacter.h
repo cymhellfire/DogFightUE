@@ -34,10 +34,7 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	void SetPlayerId(int32 InId)
-	{
-		PlayerId = InId;
-	}
+	void SetPlayerId(int32 InId);
 
 	UFUNCTION(Server, Reliable)
 	void ServerSetupAvatarId(int32 InId);
@@ -156,6 +153,7 @@ private:
 
 	uint8 bAlive : 1;
 
+	UPROPERTY(Replicated)
 	int32 PlayerId;
 
 	UPROPERTY(ReplicatedUsing=OnRep_AvatarId)

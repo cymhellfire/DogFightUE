@@ -31,6 +31,7 @@ function WidgetCardList:Construct()
         LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_MyCardCancelled, self, self.OnCardCancelled)
         LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_StartPlayerRound, self, self.OnPlayerRoundStart)
         LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_FinishPlayerRound, self, self.OnPlayerRoundFinish)
+        LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_GameTimelineChanged, self, self.OnGameTimelineChanged)
     end
 end
 
@@ -44,22 +45,19 @@ function WidgetCardList:Destruct()
         LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardCancelled, self, self.OnCardCancelled)
         LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_StartPlayerRound, self, self.OnPlayerRoundStart)
         LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_FinishPlayerRound, self, self.OnPlayerRoundFinish)
+        LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_GameTimelineChanged, self, self.OnGameTimelineChanged)
     end
 end
 
-function WidgetCardList:OnCardListChanged(InPlayerId)
-    if InPlayerId ~= self.LocalPlayerId then
-        return
-    end
-
-    -- Get card list from current character
-    ---@type ATopDownStylePlayerCharacter
-    local CurCharacter = UE.UCommonGameFlowFunctionLibrary.GetCurrentTimelineEntityCharacter(self)
+local function LoadCardList(self)
+    -- Get description object of current timeline entry
+    ---@type FGameTimelineEntryDescObject
+    local DescObject = UE.UCommonGameFlowFunctionLibrary.GetCurrentTimelineEntityDescObject(self)
     -- Verify owner player
-    local bValid = CurCharacter and (CurCharacter:GetPlayerId() == self.LocalPlayerId) or false
+    local bValid = DescObject and (DescObject.PlayerId == self.LocalPlayerId) or false
     if bValid then
         ---@type UCharacterInventoryComponent
-        local Inventory = CurCharacter:GetInventoryComponent()
+        local Inventory = DescObject.RepresentActor and DescObject.RepresentActor:GetInventoryComponent()
         if Inventory then
             local CardDescArray = Inventory:GetAllCardDescObjects():ToTable()
             if #CardDescArray > 0 then
@@ -67,8 +65,48 @@ function WidgetCardList:OnCardListChanged(InPlayerId)
             else
                 self.CardListWrapper:Clear()
             end
+
+            return true
         end
     end
+    return false
+end
+
+function WidgetCardList:OnCardListChanged(InPlayerId)
+    if InPlayerId ~= self.LocalPlayerId then
+        return
+    end
+
+    -- -- Get description object of current timeline entry
+    -- ---@type FGameTimelineEntryDescObject
+    -- local DescObject = UE.UCommonGameFlowFunctionLibrary.GetCurrentTimelineEntityDescObject(self)
+    -- -- Verify owner player
+    -- local bValid = DescObject and (DescObject.PlayerId == self.LocalPlayerId) or false
+    -- if bValid then
+    --     ---@type UCharacterInventoryComponent
+    --     local Inventory = DescObject.RepresentActor and DescObject.RepresentActor:GetInventoryComponent()
+    --     if Inventory then
+    --         local CardDescArray = Inventory:GetAllCardDescObjects():ToTable()
+    --         if #CardDescArray > 0 then
+    --             self.CardListWrapper:LoadDataByList(CardDescArray)
+    --         else
+    --             self.CardListWrapper:Clear()
+    --         end
+    --     end
+    -- end
+
+    if not LoadCardList(self) then
+        self.bPendingFlushCardList = true
+    end
+end
+
+function WidgetCardList:OnGameTimelineChanged()
+    if not self.bPendingFlushCardList then
+        return
+    end
+
+    LoadCardList(self)
+    self.bPendingFlushCardList = nil
 end
 
 function WidgetCardList:OnCardBeginUsing(InId)

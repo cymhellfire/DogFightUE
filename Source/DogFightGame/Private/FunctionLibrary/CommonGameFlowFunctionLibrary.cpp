@@ -134,14 +134,14 @@ void UCommonGameFlowFunctionLibrary::InitializeGameTimeline(UObject* WorldContex
 	}
 }
 
-TArray<int32> UCommonGameFlowFunctionLibrary::GetCurrentTimeline(UObject* WorldContextObject)
+TArray<FGameTimelineEntryDescObject> UCommonGameFlowFunctionLibrary::GetCurrentTimelineDescObjectList(UObject* WorldContextObject)
 {
 	if (auto Timeline = GetCurrentTimeline_Common(WorldContextObject))
 	{
-		return Timeline->GetTimeline();
+		return Timeline->GetTimelineDescObjectList();
 	}
 
-	return TArray<int32>();
+	return TArray<FGameTimelineEntryDescObject>();
 }
 
 void UCommonGameFlowFunctionLibrary::MoveTimelineForward(UObject* WorldContextObject)
@@ -252,6 +252,15 @@ ATopDownStylePlayerCharacter* UCommonGameFlowFunctionLibrary::GetCurrentTimeline
 		}
 	}
 	return nullptr;
+}
+
+FGameTimelineEntryDescObject UCommonGameFlowFunctionLibrary::GetCurrentTimelineEntityDescObject(UObject* WorldContextObject)
+{
+	if (auto Timeline = GetCurrentTimeline_Common(WorldContextObject))
+	{
+		return Timeline->GetCurrentEntryDescObject();
+	}
+	return FGameTimelineEntryDescObject();
 }
 
 void UCommonGameFlowFunctionLibrary::RequestFinishLocalPlayerRound(UObject* WorldContextObject)

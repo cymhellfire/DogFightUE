@@ -77,10 +77,10 @@ public:
 	static void InitializeGameTimeline(UObject* WorldContextObject);
 
 	/**
-	 * Get player id list of current timeline.
+	 * Get entry description object list of current timeline.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameFlow", meta=(WorldContext="WorldContextObject"))
-	static TArray<int32> GetCurrentTimeline(UObject* WorldContextObject);
+	static TArray<FGameTimelineEntryDescObject> GetCurrentTimelineDescObjectList(UObject* WorldContextObject);
 
 	/**
 	 * Move current timeline forward.
@@ -140,6 +140,13 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameFlow", meta=(WorldContext="WorldContextObject"))
 	static ATopDownStylePlayerCharacter* GetCurrentTimelineEntityCharacter(UObject* WorldContextObject);
+
+	/**
+	 * Get the description object of current timeline entity.
+	 * @return Description object of current timeline entity.
+	 */
+	UFUNCTION(BlueprintCallable, Category="CommonGameFlow", meta=(WorldContext="WorldContextObject"))
+	static FGameTimelineEntryDescObject GetCurrentTimelineEntityDescObject(UObject* WorldContextObject);
 
 	/**
 	 * Send a request to finish local player's round immediately.

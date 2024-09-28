@@ -2,6 +2,9 @@
 
 #include "CoreMinimal.h"
 #include "Interface/GameTimelineEntityInterface/GameTimelineEntityInterface.h"
+#include "GameTimelineEntry.generated.h"
+
+struct FGameTimelineEntryDescObject;
 
 UENUM(BlueprintType)
 namespace EGameTimelineEntityType
@@ -49,6 +52,8 @@ public:
 
 	int32 GetOwnerPlayerId() const;
 
+	FGameTimelineEntryDescObject GetDescObject() const;
+
 	FString GetDebugString() const;
 
 protected:
@@ -61,4 +66,22 @@ protected:
 	EGameTimelineEntityType::Type EntityType;
 
 	IGameTimelineEntityInterface* OwnerEntity;
+};
+
+/**
+ * Replicated version of Timeline Entry.
+ */
+USTRUCT(BlueprintType)
+struct FGameTimelineEntryDescObject
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, Category="GameTimelineEntry")
+	int32 PlayerId;
+
+	UPROPERTY(EditAnywhere, Category="GameTimelineEntry")
+	FString DescString;
+
+	UPROPERTY(EditAnywhere, Category="GameTimelineEntry")
+	AActor* RepresentActor;
 };

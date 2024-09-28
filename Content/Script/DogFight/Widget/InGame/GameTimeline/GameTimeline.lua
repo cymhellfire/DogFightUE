@@ -20,14 +20,14 @@ end
 
 function GameTimeline:OnTimelineChanged()
     -- Get current timeline
-    local CurTimeline = UE.UCommonGameFlowFunctionLibrary.GetCurrentTimeline(self)
+    local CurTimeline = UE.UCommonGameFlowFunctionLibrary.GetCurrentTimelineDescObjectList(self)
 
-    if CurTimeline:Length() > 0 then
-        print("Show timeline: ")
-        for i = 1, CurTimeline:Length() do
-            print(i .. ": " .. CurTimeline:Get(i))
-        end
-    end
+    -- if CurTimeline:Length() > 0 then
+    --     print("Show timeline: ")
+    --     for i = 1, CurTimeline:Length() do
+    --         print(i .. ": " .. CurTimeline:Get(i).DescString)
+    --     end
+    -- end
 
     local TimelineData = CurTimeline:ToTable()
     self.TimelineViewList:LoadDataByList(TimelineData)

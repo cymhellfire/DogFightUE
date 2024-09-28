@@ -12,9 +12,9 @@ end
 
 function GameTimelineItem:OnListItemObjectSet(InObject)
     if InObject and InObject["GetData"] then
-        local PlayerId = InObject:GetData()
-        if PlayerId then
-            self.ViewModel.PlayerName = "Player " .. PlayerId
+        local EntryDesc = InObject:GetData()
+        if EntryDesc then
+            self.ViewModel.PlayerName = EntryDesc.DescString
         end
     end   
 end

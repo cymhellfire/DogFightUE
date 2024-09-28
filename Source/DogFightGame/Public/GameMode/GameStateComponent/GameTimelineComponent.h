@@ -4,6 +4,7 @@
 #include "GameTimelineComponent.generated.h"
 
 class FGameTimelineEntry;
+struct FGameTimelineEntryDescObject;
 class IGameTimelineEntityInterface;
 
 UCLASS()
@@ -27,12 +28,20 @@ public:
 	TArray<int32> GetTimeline() const;
 
 	/**
+	 * Get description object list of current timeline entries.
+	 * @return List of all timeline entry description objects.
+	 */
+	TArray<FGameTimelineEntryDescObject> GetTimelineDescObjectList() const;
+
+	/**
 	 * @brief			Get the first player Id in current order.
 	 * @return			The Id of first player in timeline.
 	 */
 	int32 GetFirstPlayerId() const;
 
 	int32 GetCurrentEntityId() const;
+
+	FGameTimelineEntryDescObject GetCurrentEntryDescObject() const;
 
 	FGameTimelineEntry const* GetCurrentTimelineEntity() const;
 
@@ -95,6 +104,9 @@ public:
 protected:
 	UPROPERTY(Transient, ReplicatedUsing=OnRep_CurrentTimeline)
 	TArray<int32> CurrentTimeline;
+
+	UPROPERTY(Transient, Replicated)
+	TArray<FGameTimelineEntryDescObject> TimelineEntryDescObjectList;
 
 	int32 NextAvailableEntityId;
 

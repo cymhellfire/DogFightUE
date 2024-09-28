@@ -80,6 +80,19 @@ void ATopDownStylePlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimePr
 	SharedParams.bIsPushBased = true;
 
 	DOREPLIFETIME_WITH_PARAMS_FAST(ATopDownStylePlayerCharacter, AvatarId, SharedParams)
+	DOREPLIFETIME_WITH_PARAMS_FAST(ATopDownStylePlayerCharacter, PlayerId, SharedParams)
+}
+
+void ATopDownStylePlayerCharacter::SetPlayerId(int32 InId)
+{
+	if (!HasAuthority())
+		return;
+
+	if (PlayerId == InId)
+		return;
+
+	MARK_PROPERTY_DIRTY_FROM_NAME(ATopDownStylePlayerCharacter, PlayerId, this);
+	PlayerId = InId;
 }
 
 void ATopDownStylePlayerCharacter::ServerSetupAvatarId_Implementation(int32 InId)

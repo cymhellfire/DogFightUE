@@ -39,6 +39,7 @@ void UGameTimelineComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 	SharedParams.bIsPushBased = true;
 
 	DOREPLIFETIME_WITH_PARAMS_FAST(UGameTimelineComponent, CurrentTimeline, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(UGameTimelineComponent, TimelineEntryDescObjectList, SharedParams);
 }
 
 void UGameTimelineComponent::InitializeTimeline()
@@ -142,10 +143,13 @@ int32 UGameTimelineComponent::GetNextAvailableEntityId()
 void UGameTimelineComponent::UpdateTimeline()
 {
 	MARK_PROPERTY_DIRTY_FROM_NAME(UGameTimelineComponent, CurrentTimeline, this);
+	MARK_PROPERTY_DIRTY_FROM_NAME(UGameTimelineComponent, TimelineEntryDescObjectList, this);
 	CurrentTimeline.Empty();
+	TimelineEntryDescObjectList.Empty();
 	for (auto& Entry : TimelineEntryList)
 	{
 		CurrentTimeline.Add(Entry->GetId());
+		TimelineEntryDescObjectList.Add(Entry->GetDescObject());
 	}
 
 	if (GetOwnerRole() == ROLE_Authority)
@@ -157,6 +161,11 @@ void UGameTimelineComponent::UpdateTimeline()
 TArray<int32> UGameTimelineComponent::GetTimeline() const
 {
 	return CurrentTimeline;
+}
+
+TArray<FGameTimelineEntryDescObject> UGameTimelineComponent::GetTimelineDescObjectList() const
+{
+	return TimelineEntryDescObjectList;
 }
 
 int32 UGameTimelineComponent::GetFirstPlayerId() const
@@ -182,6 +191,17 @@ int32 UGameTimelineComponent::GetCurrentEntityId() const
 
 	DFLogW(LogDogFightGame, TEXT("No entity in timeline."));
 	return GameFlowMagicNumbers::InvalidTimelineEntityId;
+}
+
+FGameTimelineEntryDescObject UGameTimelineComponent::GetCurrentEntryDescObject() const
+{
+	if (TimelineEntryDescObjectList.Num() > 0)
+	{
+		return TimelineEntryDescObjectList[0];
+	}
+
+	DFLogW(LogDogFightGame, TEXT("No desc object in timeline."));
+	return FGameTimelineEntryDescObject();
 }
 
 FGameTimelineEntry const* UGameTimelineComponent::GetCurrentTimelineEntity() const

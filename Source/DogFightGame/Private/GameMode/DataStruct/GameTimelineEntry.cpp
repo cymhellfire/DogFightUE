@@ -31,6 +31,16 @@ int32 FGameTimelineEntry::GetOwnerPlayerId() const
 	return GameFlowMagicNumbers::InvalidPlayerId;
 }
 
+FGameTimelineEntryDescObject FGameTimelineEntry::GetDescObject() const
+{
+	FGameTimelineEntryDescObject NewDescObject{
+		GetOwnerPlayerId(),
+		GetDebugString(),
+		Cast<AActor>(OwnerEntity)
+	};
+	return NewDescObject;
+}
+
 FString FGameTimelineEntry::GetDebugString() const
 {
 	switch(EntityType)
