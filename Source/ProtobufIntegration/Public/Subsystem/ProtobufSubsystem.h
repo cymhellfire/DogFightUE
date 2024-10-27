@@ -6,6 +6,8 @@
 #include "Subsystem/LuaGameInstanceSubsystem.h"
 #include "ProtobufSubsystem.generated.h"
 
+class FProtobufReaderBase;
+
 /**
  * 
  */
@@ -16,6 +18,7 @@ class PROTOBUFINTEGRATION_API UProtobufSubsystem : public ULuaGameInstanceSubsys
 
 public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	virtual void Deinitialize() override;
 
 	virtual FString GetModuleName_Implementation() const override
 	{
@@ -24,4 +27,9 @@ public:
 
 private:
 	void LoadConfigs();
+
+	void LoadByReader();
+
+private:
+	TMap<FString, TSharedPtr<FProtobufReaderBase>> ProtobufReaderMap;
 };
