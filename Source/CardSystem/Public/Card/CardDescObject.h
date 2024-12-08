@@ -32,6 +32,15 @@ public:
 		return CardInstanceId;
 	}
 
+	UFUNCTION(BlueprintCallable, Category="CardDescObject")
+	void SetCardExtraInfo(const FString& InExtraInfo);
+
+	UFUNCTION(BlueprintCallable, Category="CardDescObject")
+	FString GetCardExtraInfo() const
+	{
+		return CardExtraInfo;
+	}
+
 protected:
 	UFUNCTION()
 	void OnRep_CardDesc();
@@ -52,4 +61,7 @@ protected:
 
 	UPROPERTY(Transient, Replicated)
 	int32 CardInstanceId;
+
+	UPROPERTY(Transient, Replicated)
+	FString CardExtraInfo;
 };

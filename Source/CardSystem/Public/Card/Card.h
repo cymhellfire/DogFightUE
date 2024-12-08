@@ -94,6 +94,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Card")
 	void SetCardLogicId(int32 InId);
 
+	// ---------------- Extra Card Info ---------------------
+	UFUNCTION(BlueprintCallable, Category="Card")
+	void SetCardExtraInfo(const FString& InExtraInfo);
+
+	UFUNCTION(BlueprintCallable, Category="Card")
+	FString GetCardExtraInfo() const
+	{
+		return ExtraCardInfo;
+	}
+
 protected:
 	void CreateCardLogic();
 
@@ -137,6 +147,9 @@ protected:
 	int32 CardInstanceId;
 
 	int32 OwnerPlayerId;
+
+	/** Extra card info string. */
+	FString ExtraCardInfo;
 
 	/** The owner controller to handle necessary RPC function call. */
 	TWeakObjectPtr<AController> OwnerController;

@@ -111,6 +111,11 @@ function WidgetCardListItem:OnDescUpdated()
         if self.CardModifierList then
             self.CardModifierList:InitModifierList(self.Data)
         end
+
+        -- Init poker info
+        if self.BP_Widget_PokerInfo then
+            self.BP_Widget_PokerInfo:InitInfo(self.Data:GetCardExtraInfo())
+        end
     end
 end
 

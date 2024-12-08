@@ -14,6 +14,7 @@ void UCardDescObject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	DOREPLIFETIME_WITH_PARAMS_FAST(UCardDescObject, CardDesc, SharedParams);
 	DOREPLIFETIME_WITH_PARAMS_FAST(UCardDescObject, CardPicturePath, SharedParams);
 	DOREPLIFETIME_WITH_PARAMS_FAST(UCardDescObject, CardInstanceId, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(UCardDescObject, CardExtraInfo, SharedParams);
 }
 
 void UCardDescObject::SetCardName(FText InName)
@@ -38,6 +39,12 @@ void UCardDescObject::SetCardInstanceId(int32 InId)
 {
 	MARK_PROPERTY_DIRTY_FROM_NAME(UCardDescObject, CardInstanceId, this);
 	CardInstanceId = InId;
+}
+
+void UCardDescObject::SetCardExtraInfo(const FString& InExtraInfo)
+{
+	MARK_PROPERTY_DIRTY_FROM_NAME(UCardDescObject, CardExtraInfo, this);
+	CardExtraInfo = InExtraInfo;
 }
 
 void UCardDescObject::OnRep_CardDesc()

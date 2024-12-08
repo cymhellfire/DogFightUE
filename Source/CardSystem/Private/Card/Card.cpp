@@ -202,3 +202,13 @@ void UCard::OnCardFinished()
 	// Broadcast finish event
 	OnCardExecutionFinished.Broadcast(ECardExecutionResult::CER_Default, this);
 }
+
+void UCard::SetCardExtraInfo(const FString& InExtraInfo)
+{
+	ExtraCardInfo = InExtraInfo;
+
+	if (IsValid(DescObject))
+	{
+		DescObject->SetCardExtraInfo(InExtraInfo);
+	}
+}

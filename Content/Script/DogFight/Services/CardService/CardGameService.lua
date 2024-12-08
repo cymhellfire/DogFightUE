@@ -1,4 +1,5 @@
 require "LuaIntegration.Common.UnrealUtils"
+local json = require "Common.json"
 
 ---@class CardGameService : UCardGameService Service to handle card relative functionality.
 local CardGameService = UnrealClass("DogFight.Services.GameServiceBase")
@@ -34,6 +35,23 @@ function CardGameService:CreateCard(CardConfigId, Instigator)
     NewCard:SetInstanceId(self:GetNewCardInstanceId())
     -- Set owner controller
     NewCard:SetOwnerController(Instigator)
+
+    -- Set card info
+    ---@type CardGeneratorService
+    local CardGeneratorService = GetGameService(self, GameServiceNameDef.CardGeneratorService)
+    if CardGeneratorService then
+        local PokerIndex = CardGeneratorService:TakeCard()
+        if PokerIndex then
+            local CardInfo = CardGeneratorService:GetCardInfo(PokerIndex)
+            if CardInfo then
+                local ExtraInfoTable = table.deepCopy(CardInfo)
+                ExtraInfoTable.CardIndex = PokerIndex
+
+                local InfoString = json.encode(ExtraInfoTable)
+                NewCard:SetCardExtraInfo(InfoString)
+            end
+        end
+    end
     return NewCard
 end
 
@@ -43,6 +61,19 @@ end
 
 function CardGameService:DestroyCard(InCard)
     InCard:Destroy()
+
+    local ExtraInfoString = InCard:GetCardExtraInfo()
+    if ExtraInfoString and #ExtraInfoString > 0 then
+        local ExtraInfoTable = json.decode(ExtraInfoString)
+        local PokerIndex = ExtraInfoTable and ExtraInfoTable.CardIndex
+        if PokerIndex then
+            ---@type CardGeneratorService
+            local CardGeneratorService = GetGameService(self, GameServiceNameDef.CardGeneratorService)
+            if CardGeneratorService then
+                CardGeneratorService:DiscardCard(PokerIndex)
+            end
+        end
+    end
 end
 
 ---Get a unused instance Id.
