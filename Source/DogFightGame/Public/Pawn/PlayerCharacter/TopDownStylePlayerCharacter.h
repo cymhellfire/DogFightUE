@@ -62,6 +62,12 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable, Category="TopDownStylePlayerCharacter")
+	URagdollComponent* GetRagdollComponent() const
+	{
+		return RagdollComponent;
+	}
+
+	UFUNCTION(BlueprintCallable, Category="TopDownStylePlayerCharacter")
 	UArsenalComponent* GetArsenalComponent() const
 	{
 		return ArsenalComponent;
@@ -114,6 +120,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(AllowedTypes="WeaponDataAsset"))
 	FPrimaryAssetId WeaponData;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	int32 DefaultAvatarId;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSoftClassPtr<UPlayerCharacterStateWidget> StateWidgetClass;

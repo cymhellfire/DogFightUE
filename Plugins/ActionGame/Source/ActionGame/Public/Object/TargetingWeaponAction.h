@@ -28,11 +28,15 @@ protected:
 	 */
 	virtual EDistanceCheckResult CheckDistance();
 
+	virtual void UpdateCollisionCorrectDistance();
+
 	virtual void GoToTarget();
 
 	virtual void OnReachActionDistance();
 
 	virtual float PlayActionMontage() override;
+
+	FORCEINLINE float GetFinalActionDistance() const;
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="WeaponAction")
@@ -45,5 +49,7 @@ public:
 	FName WarpingTargetName;
 
 protected:
+	float CollisionCorrectDistance;
+
 	TOptional<FWeaponActionTarget> ActionTarget;
 };

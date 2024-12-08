@@ -4,6 +4,7 @@
 #include "Pawn/ActionGameCharacter.h"
 
 #include "Common/ActionGameWeaponLog.h"
+#include "Components/CapsuleComponent.h"
 #include "Controller/ActionCharacterAIController.h"
 #include "Engine/AssetManager.h"
 #include "Engine/StreamableManager.h"
@@ -103,6 +104,7 @@ void AActionGameCharacter::SetupAvatarAppearanceWithAsset(UAvatarDataAsset* InAs
 	{
 		SetupAvatarAppearance(InAsset->AvatarDescData);
 		ApplyAnimationSet(InAsset->AvatarAnimSetData);
+		ApplyPhysicsData(InAsset->AvatarPhysicsData);
 	}
 	else
 	{
@@ -146,6 +148,23 @@ void AActionGameCharacter::ApplyAnimationSet(const FAvatarAnimSetData& AvatarAni
 	if (IsValid(AnimComponent))
 	{
 		AnimComponent->SetupPredefineAnimations(AvatarAnimSetData);
+	}
+}
+
+void AActionGameCharacter::ApplyPhysicsData(const FAvatarPhysicsData& AvatarPhysicsData)
+{
+	if (auto CollideComponent = GetCapsuleComponent())
+	{
+		CollideComponent->SetCapsuleRadius(AvatarPhysicsData.CollisionRadius);
+		CollideComponent->SetCapsuleHalfHeight(AvatarPhysicsData.CollisionHalfHeight);
+	}
+
+	if (auto MeshComponent = GetMesh())
+	{
+		// Use negative collision half height plus offset as Z axis value
+		FVector NewOffset;
+		NewOffset.Z = -AvatarPhysicsData.CollisionHalfHeight + AvatarPhysicsData.SkeletalMeshOffset;
+		MeshComponent->SetRelativeLocation(NewOffset);
 	}
 }
 

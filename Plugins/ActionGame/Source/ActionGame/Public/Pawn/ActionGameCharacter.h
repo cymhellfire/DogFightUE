@@ -55,6 +55,8 @@ protected:
 
 	void ApplyAnimationSet(const FAvatarAnimSetData& AvatarAnimSetData);
 
+	void ApplyPhysicsData(const FAvatarPhysicsData& AvatarPhysicsData);
+
 	void OnMoveFinished(FAIRequestID RequestID, const FPathFollowingResult& Result);
 
 	virtual void OnReachStopDistance();

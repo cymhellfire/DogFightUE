@@ -42,6 +42,22 @@ struct FAvatarAnimSetData
 	TMap<TEnumAsByte<EActionAnimPredefinedType::Type>, UAnimMontage*> AnimResourceMap;
 };
 
+USTRUCT(BlueprintType)
+struct FAvatarPhysicsData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, Category="AvatarPhysicsData")
+	float CollisionRadius = 34.f;
+
+	UPROPERTY(EditAnywhere, Category="AvatarPhysicsData")
+	float CollisionHalfHeight = 88.f;
+
+	/** Additional offset for skeletal mesh component after applied negative CollisionHalfHeight. */
+	UPROPERTY(EditAnywhere, Category="AvatarPhysicsData")
+	float SkeletalMeshOffset = -2.f;
+};
+
 /**
  * Data asset that describe a character appearance.
  */
@@ -56,4 +72,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Category="AvatarDataAsset")
 	FAvatarAnimSetData AvatarAnimSetData;
+
+	UPROPERTY(EditAnywhere, Category="AvatarDataAsset")
+	FAvatarPhysicsData AvatarPhysicsData;
 };

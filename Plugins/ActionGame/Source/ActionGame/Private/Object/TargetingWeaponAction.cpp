@@ -5,7 +5,9 @@
 
 #include "Common/ActionGameWeaponLog.h"
 #include "DataAsset/TargetingWeaponActionDataAsset.h"
+#include "FunctionLibrary/ActionGameCharacterFunctionLibrary.h"
 #include "Interface/ActionCharacterInterface.h"
+#include "Pawn/ActionGameCharacter.h"
 
 bool UTargetingWeaponAction::InitActionData(UWeaponActionDataAsset* InData, IActionCharacterInterface* InOwner)
 {
@@ -32,6 +34,9 @@ bool UTargetingWeaponAction::InitActionData(UWeaponActionDataAsset* InData, IAct
 void UTargetingWeaponAction::SetActionTarget(const FWeaponActionTarget& InTarget)
 {
 	ActionTarget = InTarget;
+
+	// Update collision correction distance once target set
+	UpdateCollisionCorrectDistance();
 }
 
 bool UTargetingWeaponAction::Execute()
@@ -77,11 +82,31 @@ UTargetingWeaponAction::EDistanceCheckResult UTargetingWeaponAction::CheckDistan
 			return EDistanceCheckResult::Invalid;
 		}
 
-		return (Distance <= ActionRange) ? EDistanceCheckResult::InRange : EDistanceCheckResult::OutOfRange;
+		return (Distance <= GetFinalActionDistance()) ? EDistanceCheckResult::InRange : EDistanceCheckResult::OutOfRange;
 	}
 
 	// It's invalid when a target is required but no one specified
 	return EDistanceCheckResult::Invalid;
+}
+
+void UTargetingWeaponAction::UpdateCollisionCorrectDistance()
+{
+	if (ActionTarget.IsSet())
+	{
+		if (ActionTarget->TargetType == EWeaponActionTargetType::WATT_Actor)
+		{
+			auto TargetCharacter = Cast<AActionGameCharacter>(ActionTarget->GetActorTarget());
+			auto SourceCharacter = Cast<AActionGameCharacter>(Performer->AsCharacter());
+			if (TargetCharacter && SourceCharacter)
+			{
+				CollisionCorrectDistance = UActionGameCharacterFunctionLibrary::GetCollideDistance(TargetCharacter, SourceCharacter);
+				return;
+			}
+		}
+	}
+
+	// Clear the correction distance as default
+	CollisionCorrectDistance = 0.f;
 }
 
 void UTargetingWeaponAction::GoToTarget()
@@ -103,7 +128,7 @@ void UTargetingWeaponAction::GoToTarget()
 		}
 
 		Performer->OnReachActionDistance.AddUObject(this, &UTargetingWeaponAction::OnReachActionDistance);
-		Performer->MoveToTarget(TargetLoc, ActionRange);
+		Performer->MoveToTarget(TargetLoc, GetFinalActionDistance());
 	}
 }
 
@@ -140,4 +165,9 @@ float UTargetingWeaponAction::PlayActionMontage()
 	}
 
 	return Super::PlayActionMontage();
+}
+
+float UTargetingWeaponAction::GetFinalActionDistance() const
+{
+	return ActionRange + CollisionCorrectDistance;
 }

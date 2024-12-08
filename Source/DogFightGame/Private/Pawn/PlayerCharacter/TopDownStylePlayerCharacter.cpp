@@ -27,6 +27,7 @@ ATopDownStylePlayerCharacter::ATopDownStylePlayerCharacter(const FObjectInitiali
 
 	// Initial value
 	bAlive = true;
+	DefaultAvatarId = -1;
 }
 
 void ATopDownStylePlayerCharacter::BeginPlay()
@@ -42,6 +43,12 @@ void ATopDownStylePlayerCharacter::BeginPlay()
 	if (WeaponData.IsValid() && IsValid(ArsenalComponent))
 	{
 		ArsenalComponent->EquipWeapon(EWeaponSlotType::WST_Primary, WeaponData);
+	}
+
+	// Initialize avatar
+	if (HasAuthority() && DefaultAvatarId > 0)
+	{
+		ServerSetupAvatarId(DefaultAvatarId);
 	}
 }
 
