@@ -50,9 +50,18 @@ local function GiveCard(self, CardId)
                 NewCard = CardGameService:CreateCard(CardId, LocalPC)
             end
 
-            -- Dispatch card to player
+            -- Dispatch card to current character
             local PlayerId = UE.UCommonGameFlowFunctionLibrary.GetLocalPlayerId(self)
-            UE.UCommonGameplayFunctionLibrary.DispatchCardToPlayer(self, PlayerId, NewCard)
+            local TargetPlayerCtrl = UE.UCommonGameplayFunctionLibrary.GetPlayerControllerById(self, PlayerId)
+            if not TargetPlayerCtrl then
+                print("No valid controller to create cards.")
+                return
+            end
+
+            local CurCharacter = UE.UCommonGameFlowFunctionLibrary.GetCurrentTimelineEntityCharacter(self)
+            if CurCharacter then
+                UE.UCommonGameplayFunctionLibrary.DispatchCardToCharacter(self, CurCharacter, NewCard)
+            end
         end
     end
 end

@@ -5,8 +5,9 @@ local CardCommandHelper = require "Card.CardCommand.CardCommandHelper"
 ---@class ActionWeaponInput : CardActionCommand
 local ActionWeaponInput = UnrealClass(CardActionCommand)
 
-function ActionWeaponInput:InitWeaponInputCommand(InTarget)
+function ActionWeaponInput:InitWeaponInputCommand(InTarget, InputType)
     self._Target = InTarget
+    self._InputType = InputType
 end
 
 local function RegisterListener(self, ArsenalComponent)
@@ -67,7 +68,7 @@ function ActionWeaponInput:StartCommand()
     RegisterListener(self, ArsenalComponent)
     self._ArsenalComponent = ArsenalComponent
 
-    local UsedSlot = UE.UCommonGameplayFunctionLibrary.CharacterAttack(Character, Target.Target)
+    local UsedSlot = UE.UCommonGameplayFunctionLibrary.PerformWeaponInputWithTarget(Character, Target.Target, self._InputType)
     if UsedSlot == UE.EWeaponSlotType.WST_None then
         print("[ActionWeaponInput] Cannot attack target.")
         UnregisterListener(self)

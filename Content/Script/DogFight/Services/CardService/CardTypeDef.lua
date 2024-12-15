@@ -7,6 +7,7 @@ local CardTypeDef = {
     HolyShield = 4,
     NuclearStrike = 5,
     WeaponAttack = 6,
+    WeaponDefence = 7,
 }
 
 return CardTypeDef

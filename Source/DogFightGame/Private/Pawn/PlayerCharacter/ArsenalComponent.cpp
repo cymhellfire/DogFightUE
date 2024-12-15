@@ -45,12 +45,17 @@ bool UArsenalComponent::EquipWeapon(EWeaponSlotType Slot, const FPrimaryAssetId&
 	return true;
 }
 
-void UArsenalComponent::AttackTarget(const FWeaponActionTarget& InTarget, EWeaponSlotType InSlot)
+void UArsenalComponent::ExecuteInputWithTarget(const FWeaponActionTarget& InTarget, EWeaponActionInput InputType, EWeaponSlotType InSlot)
 {
+	if (InputType == EWeaponActionInput::WAI_None)
+	{
+		return;
+	}
+
 	if (auto WeaponPtr = WeaponSlotMap.Find(InSlot))
 	{
 		auto Weapon = *WeaponPtr;
-		Weapon->EnqueueInput(EWeaponActionInput::WAI_Attack, InTarget);
+		Weapon->EnqueueInput(InputType, InTarget);
 		Weapon->EnqueueInput(EWeaponActionInput::WAI_Finish);
 		Weapon->StartInputQueue(true);
 	}

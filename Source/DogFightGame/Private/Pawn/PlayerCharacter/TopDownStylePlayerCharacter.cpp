@@ -64,7 +64,7 @@ void ATopDownStylePlayerCharacter::TestAttackTarget()
 		// Take target
 		if (IsValid(ArsenalComponent))
 		{
-			ArsenalComponent->AttackTarget(FWeaponActionTarget(*Iter));
+			ArsenalComponent->ExecuteInputWithTarget(FWeaponActionTarget(*Iter), EWeaponActionInput::WAI_Attack);
 		}
 	}
 }

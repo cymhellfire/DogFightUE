@@ -205,13 +205,14 @@ public:
 	static TArray<AActor*> GetRandomCharacterInGame(UObject* WorldContextObject, int32 Count = 1, bool bAllowDuplicated = false);
 
 	/**
-	 * Let character attack given target.
-	 * @param InCharacter		Character that start attacking.
-	 * @param Target			Target actor to attack.
-	 * @return The slot of weapon that used to attack target.
+	 * Let character perform weapon input with given target.
+	 * @param InCharacter		Character that perform action.
+	 * @param Target			Target actor to perform with.
+	 * @param InputType			Weapon input type.
+	 * @return The slot of weapon that used to execute input.
 	 */
 	UFUNCTION(BlueprintCallable, Category="CommonGameplay")
-	static EWeaponSlotType CharacterAttack(ATopDownStylePlayerCharacter* InCharacter, AActor* Target);
+	static EWeaponSlotType PerformWeaponInputWithTarget(ATopDownStylePlayerCharacter* InCharacter, AActor* Target, EWeaponActionInput InputType);
 protected:
 	/**
 	 * Do specified function on every player state in current game meet the id mask.

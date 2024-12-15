@@ -319,14 +319,15 @@ TArray<AActor*> UCommonGameplayFunctionLibrary::GetRandomCharacterInGame(UObject
 	return Result;
 }
 
-EWeaponSlotType UCommonGameplayFunctionLibrary::CharacterAttack(ATopDownStylePlayerCharacter* InCharacter, AActor* Target)
+EWeaponSlotType UCommonGameplayFunctionLibrary::PerformWeaponInputWithTarget(ATopDownStylePlayerCharacter* InCharacter,
+	AActor* Target, EWeaponActionInput InputType)
 {
 	if (!IsValid(InCharacter) || !IsValid(Target))
 		return EWeaponSlotType::WST_None;
 
 	if (auto ArsenalComponent = InCharacter->GetArsenalComponent())
 	{
-		ArsenalComponent->AttackTarget(FWeaponActionTarget(Target));
+		ArsenalComponent->ExecuteInputWithTarget(FWeaponActionTarget(Target), InputType);
 		return EWeaponSlotType::WST_Primary;
 	}
 	return EWeaponSlotType::WST_None;

@@ -23,7 +23,7 @@ public:
 
 	bool EquipWeapon(EWeaponSlotType Slot, const FPrimaryAssetId& InWeaponAsset);
 
-	void AttackTarget(const FWeaponActionTarget& InTarget, EWeaponSlotType InSlot = EWeaponSlotType::WST_Primary);
+	void ExecuteInputWithTarget(const FWeaponActionTarget& InTarget, EWeaponActionInput InputType, EWeaponSlotType InSlot = EWeaponSlotType::WST_Primary);
 
 protected:
 	// Called when the game starts

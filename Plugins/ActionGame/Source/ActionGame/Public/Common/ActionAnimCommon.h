@@ -11,5 +11,6 @@ namespace EActionAnimPredefinedType
 		None,
 		Attack1			UMETA(DisplayName="Attack 1"),
 		Attack2			UMETA(DisplayName="Attack 2"),
+		Defence1		UMETA(DisplayName="Defence 1"),
 	};
 }

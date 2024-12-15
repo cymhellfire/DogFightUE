@@ -12,6 +12,8 @@ local CommandNameDef = {
 function LogicWeaponInput:OnInit(InParam)
     CardLogicCommand.OnInit(self, InParam)
 
+    self._InputInfo = InParam.InputInfo
+
     -- Register all commands
     local CommandTable = {
         [CommandNameDef.AcquireTarget] = {
@@ -52,7 +54,8 @@ end
 ---Command create callback
 ---@param InCommand ActionWeaponInput
 function LogicWeaponInput:OnWeaponInputCreated(InCommand)
-    InCommand:InitWeaponInputCommand(self._TargetInfo)
+    InCommand:InitWeaponInputCommand(self._TargetInfo, 
+        self._InputInfo and self._InputInfo.InputType or UE.EWeaponActionInput.WAI_Attack)
 end
 
 ---Finish callback

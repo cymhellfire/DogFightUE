@@ -183,6 +183,28 @@ local Config = {
             TargetInfo = {
                 Count = 1,
                 Type = UE.ECardTargetType.CTT_Actor,
+            },
+            InputInfo = {
+                InputType = UE.EWeaponActionInput.WAI_Attack,
+            }
+        }
+    },
+    [CardTypeDef.WeaponDefence] = {
+        Name = "WeaponDefence",
+        LogicPath = "DogFight.Card.CardLogic.LogicWeaponInput",
+        LogicParam = {
+            CardInfo = {
+                Name = "Name_WeaponDefence",
+                Desc = {
+                    Key = "Desc_WeaponDefence",
+                }
+            },
+            TargetInfo = {
+                Count = 1,
+                Type = UE.ECardTargetType.CTT_Actor,
+            },
+            InputInfo = {
+                InputType = UE.EWeaponActionInput.WAI_Defence
             }
         }
     },

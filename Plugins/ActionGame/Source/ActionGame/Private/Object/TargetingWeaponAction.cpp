@@ -146,20 +146,20 @@ void UTargetingWeaponAction::OnReachActionDistance()
 
 float UTargetingWeaponAction::PlayActionMontage()
 {
-	if (IsValid(ActionMontage))
+	TOptional<FVector> WarpingPos;
+	if (ActionTarget.IsSet())
 	{
-		TOptional<FVector> WarpingPos;
-		if (ActionTarget.IsSet())
-		{
-			WarpingPos = ActionTarget->AsLocation();
-		}
+		WarpingPos = ActionTarget->AsLocation();
+	}
 
-		if (bWarpingToTarget && WarpingPos.IsSet() && WarpingTargetName.IsValid())
+	if (bWarpingToTarget && WarpingPos.IsSet() && WarpingTargetName.IsValid())
+	{
+		if (bUseCustomMontage && IsValid(ActionMontage))
 		{
-			if (bUseCustomMontage)
-			{
-				return Performer->PlayActionAnimationWithWarping(ActionMontage, WarpingTargetName, WarpingPos.GetValue());
-			}
+			return Performer->PlayActionAnimationWithWarping(ActionMontage, WarpingTargetName, WarpingPos.GetValue());
+		}
+		if (PredefineAnimationType != EActionAnimPredefinedType::None)
+		{
 			return Performer->PlayPredefineAnimationWithWarping(PredefineAnimationType, WarpingTargetName, WarpingPos.GetValue());
 		}
 	}
