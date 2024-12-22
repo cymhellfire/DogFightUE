@@ -1,6 +1,7 @@
 #include "GameFlowStateMachine/GameFlowStateCirculation.h"
 #include "GameFlowState/GameFlowStateBase.h"
 #include "GameFlowCommon.h"
+#include "Common/GlobalLog.h"
 #include "GameFlowState/GameFlowStateCreateArgument.h"
 #include "GameFlowStateMachine/GameFlowStateMachine.h"
 #include "GameService/GameFlowStateService.h"
@@ -85,6 +86,7 @@ void UGameFlowStateCirculation::DoStateSwitch()
 
 		if (IsValid(CurrentState))
 		{
+			CurrentState->SetParentCirculation(this);
 			CurrentState->OnGameFlowStateFinished.AddDynamic(this, &UGameFlowStateCirculation::OnGameFlowStateFinished);
 			// Enter new state
 			CurrentState->OnEnter();
@@ -115,6 +117,7 @@ void UGameFlowStateCirculation::FinishCirculation()
 		CurrentState->OnExit();
 	}
 
+	DFLog(LogGameFlow, TEXT("Circulation %s finished."), *GetName())
 	OnCirculationFinished.Broadcast(this);
 }
 

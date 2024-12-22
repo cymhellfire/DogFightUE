@@ -19,6 +19,12 @@ public:
 	void SetCardName(FText InName);
 
 	UFUNCTION(BlueprintCallable, Category="CardDescObject")
+	FText GetCardName()
+	{
+		return CardName;
+	}
+
+	UFUNCTION(BlueprintCallable, Category="CardDescObject")
 	void SetCardDesc(const FText& InDesc);
 
 	UFUNCTION(BlueprintCallable, Category="CardDescObject")

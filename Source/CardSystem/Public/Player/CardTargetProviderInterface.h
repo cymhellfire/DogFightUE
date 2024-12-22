@@ -3,6 +3,8 @@
 #include "CoreMinimal.h"
 #include "CardTargetProviderInterface.generated.h"
 
+class UCard;
+
 UENUM(BlueprintType)
 enum class ECardTargetType : uint8
 {
@@ -10,6 +12,7 @@ enum class ECardTargetType : uint8
 	CTT_Actor,
 	CTT_Point,
 	CTT_Direction,
+	CTT_Card,
 };
 
 USTRUCT(BlueprintType)
@@ -40,6 +43,7 @@ struct FAcquiredTargetInfo
 		Type = ECardTargetType::CTT_None;
 		ActorPtr = nullptr;
 		Vector = FVector::ZeroVector;
+		CardPtr = nullptr;
 	}
 
 	UPROPERTY()
@@ -50,6 +54,9 @@ struct FAcquiredTargetInfo
 
 	UPROPERTY()
 	FVector Vector;
+
+	UPROPERTY()
+	UCard* CardPtr;
 };
 
 /**

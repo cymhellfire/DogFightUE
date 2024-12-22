@@ -1,5 +1,6 @@
 #include "GameFlowStateMachine/GameFlowStateMachine.h"
 #include "GameFlowCommon.h"
+#include "Common/GlobalLog.h"
 #include "GameFlowStateMachine/GameFlowStateCirculation.h"
 #include "GameFlowState/GameFlowStateCreateArgument.h"
 
@@ -39,25 +40,11 @@ void UGameFlowStateMachine::PopState()
 		return;
 	}
 
+	DFLog(LogGameFlow, TEXT("Pop %s"), *CurrentCirculation->GetName());
+	CurrentCirculation->ConditionalBeginDestroy();
 	// Resume popped circulation
 	CurrentCirculation = StateStack.Pop();
 	CurrentCirculation->ResumeState();
-}
-
-void UGameFlowStateMachine::SetNextState(UGameFlowStateCreateArgument* InArgument)
-{
-	if (IsValid(CurrentCirculation))
-	{
-		CurrentCirculation->SetNextStateArgument(InArgument);
-	}
-}
-
-void UGameFlowStateMachine::SetInsertState(UGameFlowStateCreateArgument* InArgument)
-{
-	if (IsValid(CurrentCirculation))
-	{
-		CurrentCirculation->InsertNewState(InArgument);
-	}
 }
 
 void UGameFlowStateMachine::Tick(float DeltaTime)

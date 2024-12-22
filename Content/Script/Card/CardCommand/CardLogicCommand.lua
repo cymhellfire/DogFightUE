@@ -1,10 +1,12 @@
 local CardCommandBase = require "Card.CardCommand.CardCommandBase"
 local CardCommandHelper = require "Card.CardCommand.CardCommandHelper"
+local CardTargetHelper = require "Card.CardTarget.CardTargetHelper"
 
 ---@field _PendingQueue table List of commands will be executed next frame.
 ---@field _CardInfo table Table of card display infomration.
 ---@field _AttrInfo table Table of all attributes.
 ---@field _TargetInfo table Table of all target information.
+---@field _NativePushTarget table Table of all targets that pushed from native code. 
 ---@class CardLogicCommand : CardCommandBase Base class of all card logic command.
 local CardLogicCommand = UnrealClass(CardCommandBase)
 
@@ -18,6 +20,7 @@ function CardLogicCommand:OnInit(InParam)
     end
 
     self._PendingQueue = {}
+    self._NativePushTarget = {}
 end
 
 ---@param DescObject UCardDescObject
@@ -106,6 +109,13 @@ function CardLogicCommand:UpdateDescObject(DescObject)
 
         DescObject:SetCardDesc(GetLocalizedString(LocalizationTable.CardDisplay, CardInfo.Desc.Key, table.unpack(Params)))
     end
+end
+
+---@param InTarget FAcquiredTargetInfo Target info from native code
+function CardLogicCommand:AddNativeTargetInfo(InTarget)
+    print("CardLogicCommand:AddNativeTargetInfo ", self._CardInfo.Name)
+
+    self._NativePushTarget[#self._NativePushTarget + 1] = CardTargetHelper.TargetInfoToTable(InTarget)
 end
 
 function CardLogicCommand:StartCommand()

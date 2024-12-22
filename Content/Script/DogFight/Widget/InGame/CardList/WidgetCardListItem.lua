@@ -29,7 +29,7 @@ function WidgetCardListItem:Construct()
     ---@type LuaEventService
     local LuaEventService = GetGameService(self, GameServiceNameDef.LuaEventService)
     if LuaEventService then
-        LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_MyCardBeginUsing, self, self.OnCardBeginUsing)
+        LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_MyCardStartAcquireTarget, self, self.OnCardBeginUsing)
         LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_MyCardFinished, self, self.OnCardFinished)
         LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_MyCardCancelled, self, self.OnCardCancelled)
     end
@@ -40,7 +40,7 @@ function WidgetCardListItem:Destruct()
     ---@type LuaEventService
     local LuaEventService = GetGameService(self, GameServiceNameDef.LuaEventService)
     if LuaEventService then
-        LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardBeginUsing, self, self.OnCardBeginUsing)
+        LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardStartAcquireTarget, self, self.OnCardBeginUsing)
         LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardFinished, self, self.OnCardFinished)
         LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_MyCardCancelled, self, self.OnCardCancelled)
     end

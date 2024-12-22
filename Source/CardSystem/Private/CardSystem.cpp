@@ -1,8 +1,8 @@
 ﻿#include "CardSystem.h"
 
-#define LOCTEXT_NAMESPACE "FCardSystemModule"
+#include "Common/CardSystemLog.h"
 
-DEFINE_LOG_CATEGORY(LogCardSystem)
+#define LOCTEXT_NAMESPACE "FCardSystemModule"
 
 void FCardSystemModule::StartupModule()
 {

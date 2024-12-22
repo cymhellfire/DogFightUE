@@ -34,7 +34,13 @@ end
 function LogicWeaponInput:StartCommand()
     CardLogicCommand.StartCommand(self)
 
-    self:RunCommand(CommandNameDef.AcquireTarget)
+    -- Check if target already acquired
+    local Target = self._CardLogic:GetTargetInfo()
+    if Target then
+        self:OnAcquireTargetFinished(nil, Target)
+    else
+        self:RunCommand(CommandNameDef.AcquireTarget)
+    end
 end
 
 function LogicWeaponInput:OnAcquireTargetCreated(InCommand)

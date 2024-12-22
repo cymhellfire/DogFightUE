@@ -10,6 +10,17 @@ enum ECardCommandType
 };
 
 UENUM(BlueprintType)
+namespace ECardTargetAcquireType
+{
+	enum Type
+	{
+		Success,
+		Failed,
+		Cancel,
+	};
+}
+
+UENUM(BlueprintType)
 namespace ECardLogicFinishType
 {
 	enum Type

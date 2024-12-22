@@ -1,4 +1,5 @@
 local BuffTypeDef = require "DogFight.Services.BuffService.BuffTypeDef"
+local json = require "Common.json"
 
 ---@class PlayerRoundState : GameFlowStateLogicBase Player can use cards in this state.
 local PlayerRoundState = UnrealClass("GameFlow.GameFlowState.GameFlowStateLogicBase")
@@ -13,6 +14,7 @@ function PlayerRoundState:OnEnter()
     ---@type LuaEventService
     local LuaEventService = GetGameService(self.OwnerState, GameServiceNameDef.LuaEventService)
     if LuaEventService then
+        LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_PlayerCardAcquiredTarget, self, self.OnCardAcquiredTarget)
         LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_PlayerCardFinished, self, self.OnCardFinished)
         LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_FinishPlayerRound, self, self.OnPlayerFinished)
         LuaEventService:RegisterListener(UE.ELuaEvent.LuaEvent_OnPlayerCharacterDead, self, self.OnPlayerCharacterDead)
@@ -33,6 +35,7 @@ function PlayerRoundState:OnExit()
     ---@type LuaEventService
     local LuaEventService = GetGameService(self.OwnerState, GameServiceNameDef.LuaEventService)
     if LuaEventService then
+        LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_PlayerCardAcquiredTarget, self, self.OnCardAcquiredTarget)
         LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_PlayerCardFinished, self, self.OnCardFinished)
         LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_FinishPlayerRound, self, self.OnPlayerFinished)
         LuaEventService:UnregisterListener(UE.ELuaEvent.LuaEvent_OnPlayerCharacterDead, self, self.OnPlayerCharacterDead)
@@ -44,6 +47,29 @@ function PlayerRoundState:OnExit()
 
     -- Broadcast player round finish event
     UE.UCommonGameFlowFunctionLibrary.BroadcastFinishPlayerRound(self.OwnerState, self.CurPlayerId)
+end
+
+function PlayerRoundState:OnCardAcquiredTarget(InPlayerId, InId)
+    -- Skip if the triggered card is not used by current player
+    if InPlayerId ~= self.CurPlayerId then
+        return
+    end
+
+    -- Create CardUseFlow here
+    local Instigator = self.OwnerState.CreateArgument.Instigator
+    local NewArgument = GetGameService(self.OwnerState, GameServiceNameDef.GameFlowStateService):GetGameFlowStateCreateArgument(Instigator)
+    if NewArgument then
+        NewArgument.StateName = "StandardMode.CardUseFlowState"
+        NewArgument.Instigator = Instigator
+
+        -- Add extra info
+        local ExtraInfo = {
+            CardId = InId,
+        }
+        NewArgument.ExtraData = json.encode(ExtraInfo)
+
+        self.OwnerState:InsertState(NewArgument)
+    end
 end
 
 function PlayerRoundState:OnCardFinished(InPlayerId, InId)

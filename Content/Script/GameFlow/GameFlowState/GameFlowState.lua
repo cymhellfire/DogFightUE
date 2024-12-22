@@ -1,3 +1,5 @@
+local json = require "Common.json"
+
 ---@field Logic GameFlowStateLogicBase Logic class of this game flow state.
 ---@class GameFlowState : UGameFlowStateBase Base class of all game flow state.
 local GameFlowState = UnrealClass()
@@ -49,8 +51,13 @@ function GameFlowState:LoadLogic(LogicPath)
     local Logic = require(self.LogicBasePath .. LogicPath)
     if Logic then
         self.Logic = Logic:New()
+        -- Decode extra data
+        local ExtraData
+        if #self.CreateArgument.ExtraData > 0 then
+            ExtraData = json.decode(self.CreateArgument.ExtraData)
+        end
         -- Register state to logic
-        self.Logic:Init(self)
+        self.Logic:Init(self, ExtraData)
     else
         print("Failed to load logic " .. LogicPath)
     end

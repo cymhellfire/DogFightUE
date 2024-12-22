@@ -1,8 +1,8 @@
 ﻿#include "Card/Card.h"
 
-#include "CardSystem.h"
 #include "Card/CardDescObject.h"
 #include "Card/CardLogic.h"
+#include "Common/CardSystemLog.h"
 #include "UnrealIntegration/UObject/AttributeModifierBasedObject.h"
 
 UCard::UCard()
@@ -123,6 +123,7 @@ void UCard::CreateCardLogic()
 	CardLogic = NewObject<UCardLogic>(this, TEXT("CardLogic"), RF_Transient);
 	if (IsValid(CardLogic))
 	{
+		CardLogic->OnCardTargetAcquired.AddDynamic(this, &UCard::OnCardTargetAcquired);
 		CardLogic->OnCardLogicFinished.AddDynamic(this, &UCard::OnCardLogicFinished);
 		CardLogic->InitLogic(this, CardLogicId);
 	}
@@ -134,6 +135,14 @@ void UCard::StartCardLogic()
 	{
 		// Start the logic
 		CardLogic->StartLogic();
+	}
+}
+
+void UCard::SelectTarget()
+{
+	if (IsValid(CardLogic))
+	{
+		CardLogic->StartTargetSelect();
 	}
 }
 
@@ -181,6 +190,26 @@ void UCard::OnCardCancel()
 
 	// Broadcast cancel event
 	OnCardExecutionFinished.Broadcast(ECardExecutionResult::CER_Cancelled, this);
+}
+
+void UCard::OnCardTargetAcquired(ECardTargetAcquireType::Type FinishType)
+{
+	if (FinishType == ECardTargetAcquireType::Success)
+	{
+		OnAcquiredTarget();
+	}
+	else
+	{
+		OnCardCancel();
+	}
+}
+
+void UCard::OnAcquiredTarget()
+{
+	UE_LOG(LogCardSystem, Log, TEXT("[Card] %s acquired target "), *GetName());
+
+	// Broadcast event
+	OnCardAcquiredTarget.Broadcast(ECardExecutionResult::CER_Default, this);
 }
 
 void UCard::OnCardLogicFinished(ECardLogicFinishType::Type FinishType)

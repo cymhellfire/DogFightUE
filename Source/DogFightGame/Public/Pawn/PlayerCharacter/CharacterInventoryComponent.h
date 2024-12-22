@@ -68,6 +68,7 @@ public:
 	 * @param InId			Instance id that search card with.
 	 * @return				Card with given instance id.
 	 */
+	UFUNCTION(BlueprintCallable, Category="CharacterInventory")
 	UCard* GetCardByInstanceId(int32 InId);
 
 	/**
@@ -76,6 +77,34 @@ public:
 	 */
 	UFUNCTION(Server, Reliable)
 	void ServerTryToUseCardByInstanceId(int32 InId);
+
+	/**
+	 * Notify client side a card is start acquiring target.
+	 * @param InId			Instance id of card to use.
+	 */
+	UFUNCTION(Client, Reliable)
+	void ClientBeginAcquireTarget(int32 InId);
+
+	/**
+	 * Notify server side a card is start acquiring target.
+	 * @param InId			Instance id of card to use.
+	 */
+	UFUNCTION(Server, Reliable)
+	void ServerBeginAcquireTarget(int32 InId);
+
+	/**
+	 * Notify client side a card acquired target.
+	 * @param InId			Instance id of card to use.
+	 */
+	UFUNCTION(Client, Reliable)
+	void ClientAcquiredTarget(int32 InId);
+
+	/**
+	 * Notify server side a card acquired target.
+	 * @param InId			Instance id of card to use.
+	 */
+	UFUNCTION(Server, Reliable)
+	void ServerAcquiredTarget(int32 InId);
 
 	/**
 	 * Notify client side a card is started using.
@@ -124,6 +153,9 @@ protected:
 
 	UFUNCTION()
 	void OnRep_CardDescObjectList();
+
+	UFUNCTION()
+	void OnCardAcquiredTarget(ECardExecutionResult Result, UCard* Card);
 
 	UFUNCTION()
 	void OnCardFinished(ECardExecutionResult Result, UCard* Card);

@@ -94,6 +94,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Card")
 	void SetCardLogicId(int32 InId);
 
+	UFUNCTION(BlueprintCallable, Category="Card")
+	UCardLogic* GetCardLogic() const
+	{
+		return CardLogic;
+	}
+
 	// ---------------- Extra Card Info ---------------------
 	UFUNCTION(BlueprintCallable, Category="Card")
 	void SetCardExtraInfo(const FString& InExtraInfo);
@@ -110,9 +116,14 @@ protected:
 	void StartCardLogic();
 
 	UFUNCTION()
+	void OnCardTargetAcquired(ECardTargetAcquireType::Type FinishType);
+
+	UFUNCTION()
 	void OnCardLogicFinished(ECardLogicFinishType::Type FinishType);
 
 public:
+	void SelectTarget();
+
 	/**
 	 * Execute this card logic flow.
 	 */
@@ -120,6 +131,7 @@ public:
 
 public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FCardExecutedSignature, ECardExecutionResult, Result, UCard*, Card);
+	FCardExecutedSignature OnCardAcquiredTarget;
 	FCardExecutedSignature OnCardExecutionFinished;
 
 	// ------------------ Card Cancel -----------------------
@@ -127,6 +139,8 @@ public:
 	void OnCardCancel();
 
 	// ----------------- Card Finished ----------------------
+
+	void OnAcquiredTarget();
 
 	/** Invoke when card execution finished. */
 	UFUNCTION()

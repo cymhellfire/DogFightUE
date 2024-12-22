@@ -178,13 +178,47 @@ void UCharacterInventoryComponent::ServerTryToUseCardByInstanceId_Implementation
 	{
 		DFLog(LogDogFightGame, TEXT("Start use card with id: %d"), InId);
 		// Notify server
-		ServerBeginUseCard(InId);
+		// ServerBeginUseCard(InId);
+		ServerBeginAcquireTarget(InId);
 
 		// Callback to notify client that card is started
-		ClientBeginUseCard(InId);
+		// ClientBeginUseCard(InId);
+		ClientBeginAcquireTarget(InId);
 
+		Card->OnCardAcquiredTarget.AddDynamic(this, &UCharacterInventoryComponent::OnCardAcquiredTarget);
 		Card->OnCardExecutionFinished.AddDynamic(this, &UCharacterInventoryComponent::OnCardFinished);
-		Card->Execute();
+		// Card->Execute();
+
+		Card->SelectTarget();
+	}
+}
+
+void UCharacterInventoryComponent::OnCardAcquiredTarget(ECardExecutionResult Result, UCard* Card)
+{
+	if (IsValid(Card))
+	{
+		Card->OnCardAcquiredTarget.RemoveDynamic(this, &UCharacterInventoryComponent::OnCardAcquiredTarget);
+	}
+
+	if (Result == ECardExecutionResult::CER_Default)
+	{
+		DFLog(LogDogFightGame, TEXT("OnCardAcquiredTarget called"));
+
+		// Notify server
+		ServerAcquiredTarget(Card->GetInstanceId());
+
+		// Notify client
+		ClientAcquiredTarget(Card->GetInstanceId());
+	}
+	else if (Result == ECardExecutionResult::CER_Cancelled)
+	{
+		DFLog(LogDogFightGame, TEXT("OnCardAcquiredTarget Cancelled"));
+
+		// Notify server
+		ServerCancelCard(Card->GetInstanceId());
+
+		// Notify client
+		ClientCancelCard(Card->GetInstanceId());
 	}
 }
 
@@ -223,6 +257,26 @@ void UCharacterInventoryComponent::OnCardFinished(ECardExecutionResult Result, U
 		// Notify client
 		ClientCancelCard(Card->GetInstanceId());
 	}
+}
+
+void UCharacterInventoryComponent::ClientBeginAcquireTarget_Implementation(int32 InId)
+{
+	SEND_LUA_EVENT(ELuaEvent::LuaEvent_MyCardStartAcquireTarget, InId);
+}
+
+void UCharacterInventoryComponent::ServerBeginAcquireTarget_Implementation(int32 InId)
+{
+	SEND_LUA_EVENT(ELuaEvent::LuaEvent_PlayerCardStartAcquireTarget, GetPlayerId(), InId);
+}
+
+void UCharacterInventoryComponent::ClientAcquiredTarget_Implementation(int32 InId)
+{
+	SEND_LUA_EVENT(ELuaEvent::LuaEvent_MyCardAcquiredTarget, InId);
+}
+
+void UCharacterInventoryComponent::ServerAcquiredTarget_Implementation(int32 InId)
+{
+	SEND_LUA_EVENT(ELuaEvent::LuaEvent_PlayerCardAcquiredTarget, GetPlayerId(), InId);
 }
 
 void UCharacterInventoryComponent::ClientBeginUseCard_Implementation(int32 InId)

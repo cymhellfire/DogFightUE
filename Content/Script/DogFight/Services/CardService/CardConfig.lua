@@ -172,6 +172,13 @@ local Config = {
     },
     [CardTypeDef.WeaponAttack] = {
         Name = "WeaponAttack",
+        SelectTargetPath = "DogFight.Card.SelectTarget.SelectTargetDefault",
+        SelectTargetParam = {
+            TargetInfo = {
+                Count = 1,
+                Type = UE.ECardTargetType.CTT_Actor,
+            },
+        },
         LogicPath = "DogFight.Card.CardLogic.LogicWeaponInput",
         LogicParam = {
             CardInfo = {

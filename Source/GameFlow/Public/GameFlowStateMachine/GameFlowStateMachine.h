@@ -21,10 +21,6 @@ public:
 
 	void PopState();
 
-	void SetNextState(UGameFlowStateCreateArgument* InArgument);
-
-	void SetInsertState(UGameFlowStateCreateArgument* InArgument);
-
 	FName GetCurrentStateName() const;
 
 	// FTickableGameObject

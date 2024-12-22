@@ -11,6 +11,8 @@ function CardTargetHelper.TargetInfoToTable(TargetInfo)
 
     if TargetInfo.Type == UE.ECardTargetType.CTT_Actor then
         NewTable["Target"] = TargetInfo.ActorPtr
+    elseif TargetInfo.Type == UE.ECardTargetType.CTT_Card then
+        NewTable["Target"] = TargetInfo.CardPtr
     else
         NewTable["Target"] = TargetInfo.Vector
     end

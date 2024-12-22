@@ -13,4 +13,7 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, Category="GameFlowStateCreateArgumnet")
 	UObject* Instigator;
+
+	UPROPERTY(BlueprintReadWrite, Category="GameFlowStateCreateArgument")
+	FString ExtraData;
 };

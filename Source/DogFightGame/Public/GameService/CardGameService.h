@@ -6,6 +6,8 @@
 #include "CardGameService.generated.h"
 
 class AStandardModePlayerCharacter;
+class UCard;
+class UCardUseFlow;
 
 UCLASS()
 class DOGFIGHTGAME_API UCardGameService : public ULuaGameService
@@ -26,11 +28,31 @@ public:
 		return TEXT("DogFight.Services.CardService.CardGameService");
 	}
 
-protected:
+	/**
+	 * Start a card use flow with given card.
+	 * @param InCard Card that used to start a new use flow.
+	 */
+	UFUNCTION(BlueprintCallable, Category=CardGameService)
+	void StartCardUseFlow(UCard* InCard);
 
-	UFUNCTION()
-	void OnCardFinished(ECardExecutionResult Result, UCard* Card);
+	/**
+	 * Push a new card to current card use flow.
+	 * @param InCard New card to push.
+	 */
+	UFUNCTION(BlueprintCallable, Category=CardGameService)
+	void PushCardToUseFlow(UCard* InCard);
+
+	/**
+	 * Mark the card use flow as ended and start to execute.
+	 */
+	UFUNCTION(BlueprintCallable, Category=CardGameService)
+	void EndAndExecuteCardUseFlow();
+
+protected:
+	void ClearCardUseFlow();
+
+	void OnCardUseCompleted(UCardUseFlow* InFlow);
 
 	UPROPERTY(Transient)
-	UCard* HoldingCard;
+	UCardUseFlow* CurrentCardUseFlow;
 };

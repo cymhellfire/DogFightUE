@@ -4,6 +4,7 @@
 UCardLogic::UCardLogic()
 {
 	bFinished = false;
+	CurState = ECardLogicStateType::ECLST_None;
 }
 
 void UCardLogic::Tick(float DeltaTime)
@@ -17,8 +18,22 @@ void UCardLogic::InitLogic(UCard* InCard, int32 LogicId)
 	LoadAndInitLogicScript(LogicId);
 }
 
+void UCardLogic::StartTargetSelect()
+{
+	CurState = ECardLogicStateType::ECLST_AcquireTarget;
+
+	OnSelectTargetStarted();
+}
+
+void UCardLogic::MarkTargetAcquired(ECardTargetAcquireType::Type Type)
+{
+	OnCardTargetAcquired.Broadcast(Type);
+}
+
 void UCardLogic::StartLogic()
 {
+	CurState = ECardLogicStateType::ECLST_Logic;
+
 	OnLogicStarted();
 }
 
@@ -27,12 +42,24 @@ void UCardLogic::TickLogic(float DeltaTime)
 	if (bFinished)
 		return;
 
-	TickLogicScript(DeltaTime);
+	switch (CurState)
+	{
+	case ECardLogicStateType::ECLST_AcquireTarget:
+		TickSelectTargetScript(DeltaTime);
+		break;
+	case ECardLogicStateType::ECLST_Logic:
+		TickLogicScript(DeltaTime);
+		break;
+	case ECardLogicStateType::ECLST_None:
+	default:
+		break;
+	}
 }
 
 void UCardLogic::MarkLogicFinished(ECardLogicFinishType::Type Type)
 {
 	bFinished = true;
+	CurState = ECardLogicStateType::ECLST_None;
 	OnCardLogicFinished.Broadcast(Type);
 }
 

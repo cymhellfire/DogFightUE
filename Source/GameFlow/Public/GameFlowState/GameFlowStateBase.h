@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "UnLuaInterface.h"
+#include "GameFlowStateMachine/GameFlowStateCirculation.h"
 #include "GameFlowStateBase.generated.h"
 
 class UGameFlowStateMachine;
@@ -78,6 +79,11 @@ public:
 		return TEXT("GameFlow.GameFlowState.GameFlowState");
 	}
 
+	void SetParentCirculation(UGameFlowStateCirculation* InCirculation)
+	{
+		ParentCirculation = InCirculation;
+	}
+
 public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGameFlowStateEvent, UGameFlowStateBase*, InState);
 	FGameFlowStateEvent OnGameFlowStateFinished;
@@ -85,4 +91,6 @@ public:
 protected:
 	UPROPERTY(Transient)
 	UGameFlowStateCreateArgument* CreateArgument;
+
+	TWeakObjectPtr<UGameFlowStateCirculation> ParentCirculation;
 };

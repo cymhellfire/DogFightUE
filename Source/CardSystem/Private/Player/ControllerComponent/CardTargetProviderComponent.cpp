@@ -1,7 +1,7 @@
 ﻿#include "Player/ControllerComponent/CardTargetProviderComponent.h"
 
-#include "CardSystem.h"
 #include "EnhancedInputComponent.h"
+#include "Common/CardSystemLog.h"
 
 UCardTargetProviderComponent::UCardTargetProviderComponent()
 {
