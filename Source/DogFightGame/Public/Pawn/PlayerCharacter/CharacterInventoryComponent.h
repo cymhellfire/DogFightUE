@@ -166,6 +166,8 @@ protected:
 
 	int32 GetPlayerId() const;
 
+	int32 GetTimelineEntityId() const;
+
 private:
 	UPROPERTY(Transient)
 	TArray<UCard*> CardObjectList;

@@ -7,8 +7,8 @@ local PlayerRoundState = UnrealClass("GameFlow.GameFlowState.GameFlowStateLogicB
 function PlayerRoundState:OnEnter()
     print("PlayerRoundState: OnEnter")
 
-    -- Record player id
-    self.CurPlayerId = UE.UCommonGameFlowFunctionLibrary.GetCurrentPlayerId(self.OwnerState)
+    -- Record entity id
+    self.CurEntityId = UE.UCommonGameFlowFunctionLibrary.GetCurrentTimelineEntityId(self.OwnerState)
 
     -- Listen to player card events
     ---@type LuaEventService
@@ -25,7 +25,7 @@ function PlayerRoundState:OnEnter()
     GetGameService(self.OwnerState, GameServiceNameDef.GameInputService):AddInputMappingByPlayerId(CurPlayerId, UE.EInputMappingType.InputMapping_CardUsing)
 
     -- Broadcast player round start event
-    UE.UCommonGameFlowFunctionLibrary.BroadcastStartPlayerRound(self.OwnerState, self.CurPlayerId)
+    UE.UCommonGameFlowFunctionLibrary.BroadcastStartPlayerRound(self.OwnerState, CurPlayerId)
 end
 
 function PlayerRoundState:OnExit()
@@ -46,12 +46,12 @@ function PlayerRoundState:OnExit()
     GetGameService(self.OwnerState, GameServiceNameDef.GameInputService):RemoveInputMappingByPlayerId(CurPlayerId, UE.EInputMappingType.InputMapping_CardUsing)
 
     -- Broadcast player round finish event
-    UE.UCommonGameFlowFunctionLibrary.BroadcastFinishPlayerRound(self.OwnerState, self.CurPlayerId)
+    UE.UCommonGameFlowFunctionLibrary.BroadcastFinishPlayerRound(self.OwnerState, CurPlayerId)
 end
 
-function PlayerRoundState:OnCardAcquiredTarget(InPlayerId, InId)
-    -- Skip if the triggered card is not used by current player
-    if InPlayerId ~= self.CurPlayerId then
+function PlayerRoundState:OnCardAcquiredTarget(InEntityId, InId)
+    -- Skip if the triggered card is not used by current timeline entity
+    if InEntityId ~= self.CurEntityId then
         return
     end
 
@@ -72,9 +72,9 @@ function PlayerRoundState:OnCardAcquiredTarget(InPlayerId, InId)
     end
 end
 
-function PlayerRoundState:OnCardFinished(InPlayerId, InId)
-    -- Skip if the finished card is not used by current player
-    if InPlayerId ~= self.CurPlayerId then
+function PlayerRoundState:OnCardFinished(InEntityId, InId)
+    -- Skip if the finished card is not used by current timeline entity
+    if InEntityId ~= self.CurEntityId then
         return
     end
 
@@ -89,8 +89,9 @@ end
 
 ---@param InPlayerId number
 function PlayerRoundState:OnPlayerFinished(InPlayerId)
+    local CurPlayerId = UE.UCommonGameFlowFunctionLibrary.GetCurrentPlayerId(self.OwnerState)
     -- Skip if the event not triggered by current player
-    if InPlayerId ~= self.CurPlayerId then
+    if InPlayerId ~= CurPlayerId then
         return
     end
 
@@ -99,7 +100,8 @@ end
 
 ---@param InPlayerId number
 function PlayerRoundState:OnPlayerCharacterDead(InPlayerId)
-    if InPlayerId == self.CurPlayerId then
+    local CurPlayerId = UE.UCommonGameFlowFunctionLibrary.GetCurrentPlayerId(self.OwnerState)
+    if InPlayerId == CurPlayerId then
         -- Finish round if current player is dead
         self:FinishState()
     else

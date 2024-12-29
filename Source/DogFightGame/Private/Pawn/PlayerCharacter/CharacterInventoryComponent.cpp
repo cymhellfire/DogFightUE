@@ -149,6 +149,15 @@ int32 UCharacterInventoryComponent::GetPlayerId() const
 	return -1;
 }
 
+int32 UCharacterInventoryComponent::GetTimelineEntityId() const
+{
+	if (ATopDownStylePlayerCharacter* Character = Cast<ATopDownStylePlayerCharacter>(GetOwner()))
+	{
+		return Character->GetEntityId();
+	}
+	return -1;
+}
+
 UCardDescObject* UCharacterInventoryComponent::GetCardDescObjectByIndex(int32 Index)
 {
 	if (Index < 0 || Index >= CardDescObjectList.Num())
@@ -266,7 +275,7 @@ void UCharacterInventoryComponent::ClientBeginAcquireTarget_Implementation(int32
 
 void UCharacterInventoryComponent::ServerBeginAcquireTarget_Implementation(int32 InId)
 {
-	SEND_LUA_EVENT(ELuaEvent::LuaEvent_PlayerCardStartAcquireTarget, GetPlayerId(), InId);
+	SEND_LUA_EVENT(ELuaEvent::LuaEvent_PlayerCardStartAcquireTarget, GetTimelineEntityId(), InId);
 }
 
 void UCharacterInventoryComponent::ClientAcquiredTarget_Implementation(int32 InId)
@@ -276,7 +285,7 @@ void UCharacterInventoryComponent::ClientAcquiredTarget_Implementation(int32 InI
 
 void UCharacterInventoryComponent::ServerAcquiredTarget_Implementation(int32 InId)
 {
-	SEND_LUA_EVENT(ELuaEvent::LuaEvent_PlayerCardAcquiredTarget, GetPlayerId(), InId);
+	SEND_LUA_EVENT(ELuaEvent::LuaEvent_PlayerCardAcquiredTarget, GetTimelineEntityId(), InId);
 }
 
 void UCharacterInventoryComponent::ClientBeginUseCard_Implementation(int32 InId)
@@ -291,7 +300,7 @@ void UCharacterInventoryComponent::ServerBeginUseCard_Implementation(int32 InId)
 {
 	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>())
 	{
-		LuaEventService->SendEventToLua(ELuaEvent::Type::LuaEvent_PlayerCardBeginUsing, GetPlayerId(), InId);
+		LuaEventService->SendEventToLua(ELuaEvent::Type::LuaEvent_PlayerCardBeginUsing, GetTimelineEntityId(), InId);
 	}
 }
 
@@ -307,7 +316,7 @@ void UCharacterInventoryComponent::ServerCancelCard(int32 InId)
 {
 	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>())
 	{
-		LuaEventService->SendEventToLua(ELuaEvent::Type::LuaEvent_PlayerCardCancelled, GetPlayerId(), InId);
+		LuaEventService->SendEventToLua(ELuaEvent::Type::LuaEvent_PlayerCardCancelled, GetTimelineEntityId(), InId);
 	}
 }
 
@@ -323,6 +332,6 @@ void UCharacterInventoryComponent::ServerCardFinished_Implementation(int32 InId)
 {
 	if (auto LuaEventService = UGameService::GetGameService<ULuaEventService>())
 	{
-		LuaEventService->SendEventToLua(ELuaEvent::Type::LuaEvent_PlayerCardFinished, GetPlayerId(), InId);
+		LuaEventService->SendEventToLua(ELuaEvent::Type::LuaEvent_PlayerCardFinished, GetTimelineEntityId(), InId);
 	}
 }

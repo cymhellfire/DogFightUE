@@ -7,6 +7,7 @@ FGameTimelineEntry::FGameTimelineEntry(int32 InId, IGameTimelineEntityInterface*
 	, EntityType(EGameTimelineEntityType::None)
 	, OwnerEntity(InEntity)
 {
+	InEntity->EntityId = InId;
 }
 
 void FGameTimelineEntry::SetPriority(int32 InValue)
